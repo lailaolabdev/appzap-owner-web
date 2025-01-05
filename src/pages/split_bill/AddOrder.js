@@ -32,7 +32,7 @@ import {
 
 import {
   CATEGORY,
-  END_POINT_SEVER,
+  END_POINT_SEVER_TABLE_MENU,
   getLocalData,
   MENUS,
 } from "../../constants/api";
@@ -56,19 +56,16 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import printFlutter from "../../helpers/printFlutter";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { useMenuStore } from "../../zustand/menuStore";
 
 function AddOrder() {
   const { state } = useLocation();
   const params = useParams();
   const navigate = useNavigate();
   const code = params?.code;
-  const [billId, setBillId] = useState();
   const tableId = params?.tableId;
   const [isLoading, setIsLoading] = useState(false);
   const [disabledButton, setDisabledButton] = useState(false);
-  const [Categorys, setCategorys] = useState();
-  const [Menus, setMenus] = useState();
-  const [userData, setUserData] = useState({});
 
   const [selectedMenu, setSelectedMenu] = useState([]);
   const [selectedItem, setSelectedItem] = useState();
@@ -96,7 +93,6 @@ function AddOrder() {
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
 
-  console.log("State", state);
 
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
@@ -183,8 +179,36 @@ function AddOrder() {
   const [currency, setCurrency] = useState([]);
 
   const [search, setSearch] = useState("");
+
+  const { menus, menuCategories, getMenus, getMenuCategories, setMenus, setMenuCategories } = useMenuStore();
+
+  // Get Menus & Categories, and persist it in localstorage. 
+  // Only no data in localstorage then fetch, if when to clear data just logout
+  useEffect(() => {
+    const fetchData = async () => {
+      if (storeDetail?._id) {
+        const storeId = storeDetail?._id;
+
+        // Check if menus and categories are already in the zustand store
+        if (!menus.length || !menuCategories.length) {
+          // If menus or categories are not found, fetch them
+          if (!menus.length) {
+            const fetchedMenus = await getMenus(storeId);
+            setMenus(fetchedMenus); // Save to zustand store
+          }
+          if (!menuCategories.length) {
+            const fetchedCategories = await getMenuCategories(storeId);
+            setMenuCategories(fetchedCategories); // Save to zustand store
+          }
+        }
+      }
+    };
+
+    fetchData();
+  }, [menus, menuCategories, getMenus, getMenuCategories, setMenus, setMenuCategories]);
+
   const afterSearch = _.filter(
-    allSelectedMenu,
+    menus,
     (e) =>
       (e?.name?.indexOf(search) > -1 && selectedCategory === "All") ||
       e?.categoryId?._id === selectedCategory
@@ -340,21 +364,7 @@ function AddOrder() {
     }, {});
   };
 
-  useEffect(() => {
-    const ADMIN = localStorage.getItem(USER_KEY);
-    // const ADMIN = profile;
-    const _localJson = JSON.parse(ADMIN);
-    setUserData(_localJson);
-    const fetchData = async () => {
-      const _localData = await getLocalData();
-      if (_localData) {
-        getData(_localData?.DATA?.storeId);
-        getMenu(_localData?.DATA?.storeId);
-      }
-    };
-    fetchData();
-    // getcurrency();
-  }, []);
+
 
   useEffect(() => {
     // TODO: check selectTable
@@ -363,16 +373,6 @@ function AddOrder() {
     }
   }, [selectedTable]);
 
-  useEffect(() => {
-    (async () => {
-      let findby = "?";
-      findby += `storeId=${storeDetail?._id}`;
-      findby += `&code=${code}`;
-      const data = await getBills(findby);
-
-      setBillId(data?.[0]);
-    })();
-  }, []);
 
   const handleAddOption = (menuId, option) => {
     console.log({ option });
@@ -505,36 +505,6 @@ function AddOrder() {
     handleClose();
   };
 
-  const getData = async (id) => {
-    await fetch(CATEGORY + `?storeId=${id}`, {
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((json) => setCategorys(json));
-  };
-  const getMenu = async (id) => {
-    setIsLoading(true);
-    await fetch(
-      MENUS +
-        `?storeId=${id}&${
-          selectedCategory === "All" ? "" : "categoryId =" + selectedCategory
-        }`,
-      {
-        method: "GET",
-      }
-    )
-      .then((response) => response.json())
-      .then((json) => {
-        setMenus(json);
-        setAllSelectedMenu(json);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        console.log(err);
-      });
-  };
-
   const _checkMenuOption = (menu) => {
     try {
       return menu.menuOptions && menu.menuOptions.length > 0
@@ -552,47 +522,6 @@ function AddOrder() {
       return [];
     }
   };
-
-  // const addToCart = async (menu) => {
-  //   const _menuOptions = await _checkMenuOption(menu?._id);
-  //   if (_menuOptions.length >= 1) {
-  //     setMenuOptions(_menuOptions);
-  //     handleShow();
-  //     return;
-  //   }
-  //   setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
-  //   let allowToAdd = true;
-  //   let itemIndexInSelectedMenu = 0;
-  //   let data = {
-  //     id: menu._id,
-  //     name: menu.name,
-  //     quantity: 1,
-  //     price: menu.price,
-  //     categoryId: menu?.categoryId,
-  //     printer: menu?.categoryId?.printer,
-  //     note: "",
-  //   };
-  //   if (selectedMenu.length === 0) {
-  //     setSelectedMenu([...selectedMenu, data]);
-  //   } else {
-  //     let thisSelectedMenu = [...selectedMenu];
-  //     for (let index in thisSelectedMenu) {
-  //       if (thisSelectedMenu[index]?.id === menu?._id) {
-  //         allowToAdd = false;
-  //         itemIndexInSelectedMenu = index;
-  //       }
-  //     }
-  //     if (allowToAdd) {
-  //       setSelectedMenu([...selectedMenu, data]);
-  //     } else {
-  //       let copySelectedMenu = [...selectedMenu];
-  //       let currentData = copySelectedMenu[itemIndexInSelectedMenu];
-  //       currentData.quantity += 1;
-  //       copySelectedMenu[itemIndexInSelectedMenu] = currentData;
-  //       setSelectedMenu(copySelectedMenu);
-  //     }
-  //   }
-  // };
 
   const addToCart = async (menu) => {
     console.log("addToCart: ", menu);
@@ -654,15 +583,10 @@ function AddOrder() {
   };
 
   const createOrder = async (data, header, isPrinted) => {
-    console.log({ data, header, isPrinted });
     try {
-      const _storeId = userData?.data?.storeId;
-      let findby = "?";
-      findby += `storeId=${_storeId}`;
-      findby += `&code=${code}`;
-      findby += `&tableId=${tableId}`;
-      const _bills = await getBills(findby);
-      const _billId = _bills?.[0]?._id;
+      const _storeId = storeDetail._id;
+      const _billId = selectedTable?.billId;
+  
       if (!_billId) {
         Swal.fire({
           icon: "error",
@@ -673,10 +597,12 @@ function AddOrder() {
         setDisabledButton(false);
         return;
       }
+  
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
+  
       const _body = {
         orders: data,
         storeId: _storeId,
@@ -684,79 +610,43 @@ function AddOrder() {
         code: code,
         billId: _billId,
       };
-
-      // console.log("CreateOrder: ", _body);
-
-      axios
-        .post(END_POINT_SEVER + "/v3/admin/bill/create", _body, {
-          headers: headers,
-        })
-        .then(async (response) => {
-          if (response?.data) {
-            Swal.fire({
-              icon: "success",
-              title: `${t("add_order_success")}`,
-              showConfirmButton: false,
-              timer: 1800,
-            });
-
-            // Send print command
-            if (isPrinted) {
-              const hasNoCut = printers.some(
-                (printer) => printer.cutPaper === "not_cut"
-              );
-
-              // console.log("PRINT TEST : ", hasNoCut);
-
-              if (hasNoCut) {
-                // Print with no cut
-                printItems(groupedItems, combinedBillRefs, printers).then(
-                  () => {
-                    onSelectTable(selectedTable);
-                    if (state?.key === false) {
-                      navigate(`/bill/split/${tableId}`);
-                    }
-                    navigate(
-                      `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                    );
-                  }
-                );
-              } else {
-                // Print with cut
-                onPrintForCher().then(() => {
-                  onSelectTable(selectedTable);
-                  if (state?.key === false) {
-                    navigate(`/bill/split/${tableId}`);
-                  }
-                  navigate(
-                    `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-                  );
-                });
-              }
-              // print for flutter
-              // onPrintForCher().then(() => {
-              //   onSelectTable(selectedTable);
-              //   navigate(
-              //     `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-              //   );
-              // });
-            } else {
-              onSelectTable(selectedTable);
-              navigate(
-                `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
-              );
-            }
-          }
-        })
-        .catch((error) => {
-          Swal.fire({
-            icon: "warning",
-            title: `${t("food_not_enouch")}`,
-            showConfirmButton: false,
-            timer: 1800,
-          });
-          setDisabledButton(false);
+  
+      const localZone = localStorage.getItem("selectedZone");
+  
+      const response = await axios.post(END_POINT_SEVER_TABLE_MENU + "/v3/admin/bill/create", _body, { headers });
+  
+      if (response?.data) {
+        Swal.fire({
+          icon: "success",
+          title: `${t("add_order_success")}`,
+          showConfirmButton: false,
+          timer: 1800,
         });
+  
+        if (isPrinted) {
+          const selectedPrinterIds = selectedMenu.map((e) => e.printer);
+          const pickedUpPrinters = printers.filter((printer) =>
+            selectedPrinterIds.includes(printer._id)
+          );
+  
+          const hasNoCut = pickedUpPrinters.some((printer) => printer.cutPaper === "not_cut");
+  
+          if (hasNoCut) {
+            printItems(groupedItems, combinedBillRefs, printers, selectedTable).then(() => {
+              onSelectTable(selectedTable);
+              navigate(`/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`, { state: { zoneId: localZone } });
+            });
+          } else {
+            onPrintForCher().then(() => {
+              onSelectTable(selectedTable);
+              navigate(`/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`, { state: { zoneId: localZone } });
+            });
+          }
+        } else {
+          onSelectTable(selectedTable);
+          navigate(`/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`, { state: { zoneId: localZone } });
+        }
+      }
     } catch (error) {
       console.log("error", error);
       Swal.fire({
@@ -911,8 +801,8 @@ function AddOrder() {
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
                 <option value="All">{t("all")}</option>
-                {Categorys &&
-                  Categorys?.map((data, index) => {
+                {menuCategories &&
+                  menuCategories?.map((data, index) => {
                     return (
                       <option key={"category" + index} value={data?._id}>
                         {data?.name}
@@ -1160,7 +1050,7 @@ function AddOrder() {
                     }}
                     onClick={() =>
                       navigate(
-                        `/tables/pagenumber/1/tableid/${tableId}/${userData?.data?.storeId}`
+                        `/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`
                       )
                     }
                   >
@@ -1279,28 +1169,6 @@ function AddOrder() {
           </div>
         ))}
       </div>
-
-      {/* Render the combined bill for 58mm (if needed)
-        <div>
-          {Object.entries(groupedItems).map(([printerIp, items]) => (
-            <div key={printerIp}>
-              <div
-                style={{
-                  width: "58mm",
-                  paddingRight: "20px",
-                }}
-                ref={combinedBillRefs[printerIp]}
-              >
-                <CombinedBillForChefNoCut
-                  storeDetail={storeDetail}
-                  selectedTable={selectedTable}
-                  selectedMenu={items}
-                  table={{ tableId: { name: selectedTable?.tableName } }}
-                />
-              </div>
-            </div>
-          ))}
-        </div> */}
 
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>

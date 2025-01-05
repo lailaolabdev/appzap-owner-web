@@ -60,10 +60,13 @@ export default function NavBar() {
   }, []);
 
   const _onLogout = () => {
-    setProfile({});
-    clearStoreDetail()
+    // Clear all data from localStorage
+    localStorage.clear();
+  
+    // Redirect the user to the home page or login page
     navigate(`/`);
   };
+  
 
   const switchLanguage = (language) => {
     // localStorage.setItem("i18nextLng", language);

@@ -34,6 +34,7 @@ function Cart() {
   };
 
   const createOrder = async (data, header, isPrinted) => {
+    console.log("createOrder: /v3/public/bill/create")
     try {
       const headers = {
         "Content-Type": "application/json",

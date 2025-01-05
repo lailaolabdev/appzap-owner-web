@@ -59,6 +59,7 @@ import { cn } from "../../utils/cn";
 import { fontMap } from "../../utils/font-map";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { useMenuStore } from "../../zustand/menuStore";
 
 function Homecafe() {
   const params = useParams();
@@ -68,10 +69,6 @@ function Homecafe() {
   const tableId = params?.tableId;
   const [isLoading, setIsLoading] = useState(false);
   const [disabledButton, setDisabledButton] = useState(false);
-  const [Categorys, setCategorys] = useState();
-  const [Menus, setMenus] = useState();
-  const [userData, setUserData] = useState({});
-  const [usersData, setUsersData] = useState({});
 
   const [selectedMenu, setSelectedMenu] = useState([]);
   const [selectedItem, setSelectedItem] = useState();
@@ -197,13 +194,41 @@ function Homecafe() {
   } = useStore();
   const { storeDetail } = useStoreStore()
   const [search, setSearch] = useState("");
+
+  const { menus, menuCategories, getMenus, getMenuCategories, setMenus, setMenuCategories } = useMenuStore();
+
+  // Get Menus & Categories, and persist it in localstorage. 
+  // Only no data in localstorage then fetch, if when to clear data just logout
+  useEffect(() => {
+    const fetchData = async () => {
+      if (storeDetail?._id) {
+        const storeId = storeDetail?._id;
+
+        // Check if menus and categories are already in the zustand store
+        if (!menus.length || !menuCategories.length) {
+          // If menus or categories are not found, fetch them
+          if (!menus.length) {
+            const fetchedMenus = await getMenus(storeId);
+            setMenus(fetchedMenus); // Save to zustand store
+          }
+          if (!menuCategories.length) {
+            const fetchedCategories = await getMenuCategories(storeId);
+            setMenuCategories(fetchedCategories); // Save to zustand store
+          }
+        }
+      }
+    };
+
+    fetchData();
+  }, [menus, menuCategories, getMenus, getMenuCategories, setMenus, setMenuCategories]);
+
   const afterSearch = _.filter(
-    allSelectedMenu,
+    menus,
     (e) =>
       (e?.name?.indexOf(search) > -1 && selectedCategory === "All") ||
       e?.categoryId?._id === selectedCategory
   );
-  // console.log("afterSearch",afterSearch)
+  
   const arrLength = selectedMenu?.length;
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
@@ -221,25 +246,6 @@ function Homecafe() {
   }
 
   useEffect(() => {
-    const ADMIN = localStorage.getItem(USER_KEY);
-
-    // const ADMIN = profile;
-    const _localJson = JSON.parse(ADMIN);
-
-    setUserData(_localJson);
-    const fetchData = async () => {
-      const _localData = await getLocalData();
-      if (_localData) {
-        getData(_localData?.DATA?.storeId);
-        getMenu(_localData?.DATA?.storeId);
-      }
-    };
-    fetchData();
-    getUserData();
-    // getcurrency();
-  }, []);
-
-  useEffect(() => {
     (async () => {
       let findby = "?";
       findby += `storeId=${storeDetail?._id}`;
@@ -248,44 +254,6 @@ function Homecafe() {
       setBillId(data?.[0]);
     })();
   }, []);
-
-  const getUserData = async () => {
-    // setIsLoading(true);
-    await fetch(`${USERS}/skip/0/limit/0/?storeId=${storeDetail?._id}`, {
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((json) => setUsersData(json));
-    // setIsLoading(false);
-  };
-  const getData = async (id) => {
-    await fetch(`${CATEGORY}?storeId=${id}`, {
-      method: "GET",
-    })
-      .then((response) => response.json())
-      .then((json) => setCategorys(json));
-  };
-  const getMenu = async (id) => {
-    setIsLoading(true);
-    await fetch(
-      `${MENUS}?storeId=${id}&${
-        selectedCategory === "All" ? "" : `categoryId =${selectedCategory}`
-      }`,
-      {
-        method: "GET",
-      }
-    )
-      .then((response) => response.json())
-      .then((json) => {
-        setMenus(json);
-        setAllSelectedMenu(json);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        setIsLoading(false);
-        console.log(err);
-      });
-  };
 
   useEffect(() => {
     _calculateTotal();
@@ -849,8 +817,8 @@ function Homecafe() {
                 {t("all")}
                 <div className="ml-12"></div>
               </button>
-              {Categorys &&
-                Categorys.map((data, index) => {
+              {menuCategories &&
+                menuCategories.map((data, index) => {
                   return (
                     <button
                       key={"category" + index}

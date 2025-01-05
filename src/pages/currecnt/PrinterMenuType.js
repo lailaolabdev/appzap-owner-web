@@ -10,6 +10,9 @@ import Loading from "../../components/Loading";
 import { Form } from "react-bootstrap";
 import { updateCategory } from "../../services/menuCategory";
 
+import { useMenuStore } from "../../zustand/menuStore";
+import { useStoreStore } from "../../zustand/storeStore";
+
 export default function PrinterMenuType() {
   const navigate = useNavigate();
 
@@ -17,23 +20,24 @@ export default function PrinterMenuType() {
   const [popup, setPopup] = useState({ add: false });
 
   const {
-    menuCategorys,
-    isMenuCategoryLoadings,
-    printers,
-    getMenuCategorysState,
+    printers
   } = useStore();
+
+  const { menuCategories, getMenuCategories, isMenuCategoryLoading } = useMenuStore();
+  const { storeDetail } = useStoreStore()
 
   // function
   const handleChangePrinterMenuCat = async (_id, event) => {
+    const storeId = storeDetail?._id
     const idPinter = event?.target?.value;
     const data = await updateCategory({ printer: idPinter }, _id);
-    getMenuCategorysState();
+    getMenuCategories(storeId);
     return;
   };
 
   return (
     <>
-      {isMenuCategoryLoadings ? <Loading /> : ""}
+      {isMenuCategoryLoading ? <Loading /> : ""}
       <div style={{ padding: 10 }}>
         <div
           style={{
@@ -43,7 +47,7 @@ export default function PrinterMenuType() {
             marginBottom: 10,
           }}
         >
-          <div>ປະເພດເມນູທັງໝົດ ({menuCategorys?.length}) ປະເພດ</div>
+          <div>ປະເພດເມນູທັງໝົດ ({menuCategories?.length}) ປະເພດ</div>
         </div>
         <div>
           <TableComponent>
@@ -57,7 +61,7 @@ export default function PrinterMenuType() {
               </tr>
             </thead>
             <tbody>
-              {menuCategorys?.map((e, i) => (
+              {menuCategories?.map((e, i) => (
                 <tr key={i}>
                   <td>{i + 1}</td>
                   <td>

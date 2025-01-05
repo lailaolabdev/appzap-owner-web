@@ -15,6 +15,7 @@ import PopUpOption from "../cart/component/PopUpOption";
 import { t } from "i18next";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { useMenuStore } from "../../zustand/menuStore";
 
 export default function AddOrderPage() {
   const { t } = useTranslation();
@@ -25,10 +26,8 @@ export default function AddOrderPage() {
   const [selectMenu, setSelectMenu] = useState();
   const [searchMenu, setSearchMenu] = useState("");
 
-  // Provider state for menu categories, menus, and cart
-  const { menuCategorys, menus, staffCart, setStaffCart } =
-    useStore();
-
+  
+  const { menus, menuCategories, staffCart, setStaffCart } = useMenuStore();
   const { storeDetail } = useStoreStore()
 
   // Handler to add customized orders to the cart
@@ -90,7 +89,7 @@ export default function AddOrderPage() {
             >
               ALL
             </div>
-            {menuCategorys?.map((e) => (
+            {menuCategories?.map((e) => (
               <div
                 key={e?._id}
                 style={{
@@ -262,7 +261,7 @@ export default function AddOrderPage() {
 }
 
 const NavContainer = ({ onBack, codeId, searchMenu, setSearchMenu }) => {
-  const { staffCart } = useStore();
+  const { staffCart } = useMenuStore();
   const navigate = useNavigate();
   return (
     <div
