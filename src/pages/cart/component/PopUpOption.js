@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Modal } from "react-bootstrap";
-import { useStore } from "../../../store";
 import { t } from "i18next";
 import { moneyCurrency } from "../../../helpers";
 
 import { useStoreStore } from "../../../zustand/storeStore";
+import { useMenuStore } from "../../../zustand/menuStore";
 
 export default function PopUpOption({ open, onClose, data, onAddToCart }) {
   const [quantities, setQuantities] = useState({});
-  const { staffCart, setStaffCart } = useStore();
+  const { staffCart, setStaffCart } = useMenuStore();
   const { storeDetail } = useStoreStore()
   const [globalNote, setGlobalNote] = useState("");
 
