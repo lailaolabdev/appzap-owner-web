@@ -231,7 +231,7 @@ function AddOrder() {
 
   const [search, setSearch] = useState("");
 
-  const { menus, menuCategories, fetchMenus, fetchMenuCategories, setMenus, setMenuCategories } = useMenuStore();
+  const { menus, menuCategories, getMenus, getMenuCategories, setMenus, setMenuCategories } = useMenuStore();
 
   // Get Menus & Categories, and persist it in localstorage. 
   // Only no data in localstorage then fetch, if when to clear data just logout
@@ -244,11 +244,11 @@ function AddOrder() {
         if (!menus.length || !menuCategories.length) {
           // If menus or categories are not found, fetch them
           if (!menus.length) {
-            const fetchedMenus = await fetchMenus(storeId);
+            const fetchedMenus = await getMenus(storeId);
             setMenus(fetchedMenus); // Save to zustand store
           }
           if (!menuCategories.length) {
-            const fetchedCategories = await fetchMenuCategories(storeId);
+            const fetchedCategories = await getMenuCategories(storeId);
             setMenuCategories(fetchedCategories); // Save to zustand store
           }
         }
@@ -256,7 +256,7 @@ function AddOrder() {
     };
 
     fetchData();
-  }, [menus, menuCategories, fetchMenus, fetchMenuCategories, setMenus, setMenuCategories]);
+  }, [menus, menuCategories, getMenus, getMenuCategories, setMenus, setMenuCategories]);
 
   const afterSearch = _.filter(
     menus,

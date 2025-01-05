@@ -2,7 +2,7 @@ import React from "react";
 import { Context } from "./Context";
 import { useTableState } from "./globalState/tableState";
 import { useOrderState } from "./globalState/orderState";
-import { useMenuCategoryState } from "./globalState/menuCategoryState";
+// import { useMenuCategoryState } from "./globalState/menuCategoryState";
 import { useMenuState } from "./globalState/menuState";
 import { useReservationState } from "./globalState/reservationState";
 import { usePrintersState } from "./globalState/printerState";
@@ -21,7 +21,7 @@ export const StateProvider = ({ children }) => {
   const splitBill = useBillState();
   const order = useOrderState();
   const table = useTableState(storeDetail || {});
-  const menuCategory = useMenuCategoryState(storeDetail || {});
+  // const menuCategory = useMenuCategoryState(storeDetail || {});
   const reservation = useReservationState();
   const printer = usePrintersState();
   const sound = useSoundState();
@@ -33,7 +33,7 @@ export const StateProvider = ({ children }) => {
     order,
     table,
     // storeDetail,
-    menuCategory,
+    // menuCategory,
     menu,
     reservation,
     printer,

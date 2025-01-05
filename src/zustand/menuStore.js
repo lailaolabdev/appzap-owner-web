@@ -11,7 +11,9 @@ export const useMenuStore = create(
       menuCategories: [],
       selectedCategory: "All",
       isMenuLoading: false,
+      isMenuCategoryLoading: false,
       staffCart: [],
+
 
       // Action to set loading state
       setMenuLoading: (isLoading) => set({ isMenuLoading: isLoading }),
@@ -29,7 +31,7 @@ export const useMenuStore = create(
       setStaffCart: (cart) => set({ staffCart: cart }),
 
       // Action to fetch menus by store ID
-      fetchMenus: async (storeId) => {
+      getMenus: async (storeId) => {
         console.log({storeId})
         set({ isMenuLoading: true });
         try {
@@ -43,15 +45,15 @@ export const useMenuStore = create(
       },
 
       // Action to fetch menu categories for a store
-      fetchMenuCategories: async (storeId) => {
-        set({ isMenuLoading: true });
+      getMenuCategories: async (storeId) => {
+        set({ isMenuCategoryLoading: true });
         try {
           const data = await getCategories(storeId);
-          set({ menuCategories: data, isMenuLoading: false });
+          set({ menuCategories: data, isMenuCategoryLoading: false });
           return data;
         } catch (error) {
           console.error("Fetch menu categories error:", error.message);
-          set({ isMenuLoading: false });
+          set({ isMenuCategoryLoading: false });
         }
       },
 

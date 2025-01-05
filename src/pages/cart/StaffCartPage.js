@@ -14,6 +14,9 @@ import PopUpSignalDisconnect from "../../components/popup/PopUpSignalDisconnect"
 import PopUpOption from "./component/PopUpOption";
 import { moneyCurrency } from "../../helpers";
 import { t } from "i18next";
+
+import { useMenuStore } from "../../zustand/menuStore";
+
 function StaffCartPage() {
   const navigate = useNavigate();
   const { codeId } = useParams();
@@ -23,8 +26,7 @@ function StaffCartPage() {
   const [codeData, setCodeData] = useState();
   const [popup, setPopup] = useState();
 
-  // provider
-  const { menuCategorys, menus, staffCart, setStaffCart } = useStore();
+  const { menus, menuCategories, staffCart, setStaffCart } = useMenuStore();
   // useEffect
   useEffect(() => {
     FetchCodeData();
