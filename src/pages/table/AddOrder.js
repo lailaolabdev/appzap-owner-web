@@ -221,8 +221,8 @@ function AddOrder() {
   // Only no data in localstorage then fetch, if when to clear data just logout
   useEffect(() => {
     const fetchData = async () => {
-      if (storeDetail._id) {
-        const storeId = storeDetail._id;
+      if (storeDetail?._id) {
+        const storeId = storeDetail?._id;
 
         // Check if menus and categories are already in the zustand store
         if (!menus.length || !menuCategories.length) {
