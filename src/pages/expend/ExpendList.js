@@ -54,6 +54,7 @@ import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndD
 import { BsFillCalendarWeekFill } from "react-icons/bs";
 import { cn } from "../../utils/cn";
 import { fontMap } from "../../utils/font-map";
+import theme from "../../theme";
 
 export default function ExpendList() {
   const {
@@ -427,7 +428,7 @@ export default function ExpendList() {
               </span>
             }
             icon={faPlusCircle}
-            colorbg={"#f97316"}
+            colorbg={theme.primaryColor}
             // hoverbg={"orange"}
             width={"150px"}
             handleClick={() => navigate("/add-expend")}
@@ -440,7 +441,7 @@ export default function ExpendList() {
           <div className="rounded-[10px] w-full bg-white shadow-card flex items-center gap-3 p-3">
             <div
               className={cn(
-                "p-2 text-lg md:text-xl bg-orange-500 text-white flex justify-center items-center rounded-md",
+                "p-2 text-lg md:text-xl bg-color-app text-white flex justify-center items-center rounded-md",
                 "w-10 md:w-11 h-10 md:h-11 min-w-10 md:min-w-11 min-h-10 md:min-h-11"
               )}
             >
@@ -474,7 +475,7 @@ export default function ExpendList() {
       ) : (
         <Table responsive="xl" className="mt-3 table-hover table-bordered">
           <thead>
-            <tr style={{ backgroundColor: "#fb6e3b", color: "white" }}>
+            <tr style={{ backgroundColor: theme.primaryColor, color: "white" }}>
               <th>#</th>
               <th className={fontMap[language]}>{t("date")}</th>
               <th

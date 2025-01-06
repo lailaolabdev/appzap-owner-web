@@ -6,20 +6,20 @@ import moment from "moment";
 import { fontMap } from "../../utils/font-map";
 import styled from "styled-components"; // Import styled-components
 
-const OrderList = ({ 
-  onTabStatusName, 
-  orders, 
-  handleCheckbox, 
-  handleCheckAll, 
-  language, 
-  t, 
-  hideCheckbox = false // Add hideCheckbox prop with default value of false
+const OrderList = ({
+  onTabStatusName,
+  orders,
+  handleCheckbox,
+  handleCheckAll,
+  language,
+  t,
+  hideCheckbox = false, // Add hideCheckbox prop with default value of false
 }) => {
   const allChecked = orders?.every((order) => order.isChecked); // Check if all items are checked
 
   // Handle row click to toggle checkbox
   const handleRowClick = (order, e) => {
-    if (e.target.type !== 'checkbox') {
+    if (e.target.type !== "checkbox") {
       // Toggle checkbox if the user clicks anywhere in the row except on the checkbox itself
       handleCheckbox(order, onTabStatusName);
     }
@@ -36,10 +36,16 @@ const OrderList = ({
                   control={
                     <Checkbox
                       checked={allChecked} // Check if all items are checked
-                      onChange={(e) => handleCheckAll(e.target.checked, onTabStatusName)} // Handle "check all" toggle
+                      color="primary"
+                      onChange={(e) =>
+                        handleCheckAll(e.target.checked, onTabStatusName)
+                      } // Handle "check all" toggle
                     />
                   }
-                  style={{ marginLeft: 2, visibility: hideCheckbox ? 'hidden' : 'visible' }} // Make checkbox invisible but keep space
+                  style={{
+                    marginLeft: 2,
+                    visibility: hideCheckbox ? "hidden" : "visible",
+                  }} // Make checkbox invisible but keep space
                 />
               </th>
               <th className={fontMap[language]}>{t("no")}</th>
@@ -54,13 +60,15 @@ const OrderList = ({
           </thead>
           <tbody>
             {orders?.map((order, index) => (
-              <tr key={index} onClick={(e) => handleRowClick(order, e)}> {/* Handle row click */}
+              <tr key={index} onClick={(e) => handleRowClick(order, e)}>
+                {" "}
+                {/* Handle row click */}
                 <td>
                   <Checkbox
                     checked={order?.isChecked || false}
                     onChange={() => handleCheckbox(order, onTabStatusName)} // Handle checkbox toggle
                     color="primary"
-                    style={{ visibility: hideCheckbox ? 'hidden' : 'visible' }} // Make checkbox invisible but keep space
+                    style={{ visibility: hideCheckbox ? "hidden" : "visible" }} // Make checkbox invisible but keep space
                   />
                 </td>
                 <td>{index + 1}</td>
@@ -73,7 +81,11 @@ const OrderList = ({
                 <td style={{ color: "red", fontWeight: "bold" }}>
                   {order?.status ? orderStatus(order?.status) : "-"}
                 </td>
-                <td>{order?.createdAt ? moment(order?.createdAt).format("HH:mm") : "-"}</td>
+                <td>
+                  {order?.createdAt
+                    ? moment(order?.createdAt).format("HH:mm")
+                    : "-"}
+                </td>
                 <td>{order?.note ?? "-"}</td>
               </tr>
             ))}
@@ -100,10 +112,10 @@ const TableCustom = styled("table")({
     width: 40,
   },
   ["tr:nth-child(2n+0)"]: {
-    backgroundColor: "#ffe9d8",
+    backgroundColor: "#f3f4f6",
   },
   thead: {
-    backgroundColor: "#ffd6b8",
+    backgroundColor: "#f3f4f6",
   },
 });
 

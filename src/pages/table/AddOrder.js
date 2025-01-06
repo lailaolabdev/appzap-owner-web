@@ -58,7 +58,8 @@ import { cn } from "../../utils/cn";
 import { fontMap } from "../../utils/font-map";
 
 import { useStoreStore } from "../../zustand/storeStore";
-import { useMenuStore } from "../../zustand/menuStore"; 
+import { useMenuStore } from "../../zustand/menuStore";
+import theme from "../../theme";
 
 function AddOrder() {
   const { state } = useLocation();
@@ -98,7 +99,7 @@ function AddOrder() {
 
   const sliderRef = useRef();
 
-  console.log({code})
+  console.log({ code });
 
   // Make the Category draggable
   useEffect(() => {
@@ -160,7 +161,6 @@ function AddOrder() {
     setShow(false);
   };
 
-
   const handleChangeConnectMenu = (e) => {
     setConnectMenuId(e.target.value);
   };
@@ -212,15 +212,22 @@ function AddOrder() {
     tableOrderItems,
   } = useStore();
 
-  console.log({selectedTable})
+  console.log({ selectedTable });
 
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
 
   const [search, setSearch] = useState("");
 
-  const { menus, menuCategories, getMenus, getMenuCategories, setMenus, setMenuCategories } = useMenuStore();
+  const {
+    menus,
+    menuCategories,
+    getMenus,
+    getMenuCategories,
+    setMenus,
+    setMenuCategories,
+  } = useMenuStore();
 
-  // Get Menus & Categories, and persist it in localstorage. 
+  // Get Menus & Categories, and persist it in localstorage.
   // Only no data in localstorage then fetch, if when to clear data just logout
   useEffect(() => {
     const fetchData = async () => {
@@ -243,7 +250,14 @@ function AddOrder() {
     };
 
     fetchData();
-  }, [menus, menuCategories, getMenus, getMenuCategories, setMenus, setMenuCategories]);
+  }, [
+    menus,
+    menuCategories,
+    getMenus,
+    getMenuCategories,
+    setMenus,
+    setMenuCategories,
+  ]);
 
   const afterSearch = _.filter(
     menus,
@@ -591,7 +605,6 @@ function AddOrder() {
     }, {});
   };
 
-
   const handleAddOption = (menuId, option) => {
     setSelectedOptionsArray((prevOptions) => {
       const menuOptions = prevOptions[menuId] || [];
@@ -716,7 +729,6 @@ function AddOrder() {
 
     handleClose();
   };
-
 
   const _checkMenuOption = (menu) => {
     try {
@@ -856,7 +868,7 @@ function AddOrder() {
     try {
       const _storeId = storeDetail._id;
       const _billId = selectedTable?.billId;
-  
+
       if (!_billId) {
         Swal.fire({
           icon: "error",
@@ -867,12 +879,12 @@ function AddOrder() {
         setDisabledButton(false);
         return;
       }
-  
+
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
-  
+
       const _body = {
         orders: data,
         storeId: _storeId,
@@ -880,11 +892,15 @@ function AddOrder() {
         code: code,
         billId: _billId,
       };
-  
+
       const localZone = localStorage.getItem("selectedZone");
-  
-      const response = await axios.post(END_POINT_SEVER_TABLE_MENU + "/v3/admin/bill/create", _body, { headers });
-  
+
+      const response = await axios.post(
+        END_POINT_SEVER_TABLE_MENU + "/v3/admin/bill/create",
+        _body,
+        { headers }
+      );
+
       if (response?.data) {
         Swal.fire({
           icon: "success",
@@ -892,29 +908,45 @@ function AddOrder() {
           showConfirmButton: false,
           timer: 1800,
         });
-  
+
         if (isPrinted) {
           const selectedPrinterIds = selectedMenu.map((e) => e.printer);
           const pickedUpPrinters = printers.filter((printer) =>
             selectedPrinterIds.includes(printer._id)
           );
-  
-          const hasNoCut = pickedUpPrinters.some((printer) => printer.cutPaper === "not_cut");
-  
+
+          const hasNoCut = pickedUpPrinters.some(
+            (printer) => printer.cutPaper === "not_cut"
+          );
+
           if (hasNoCut) {
-            printItems(groupedItems, combinedBillRefs, printers, selectedTable).then(() => {
+            printItems(
+              groupedItems,
+              combinedBillRefs,
+              printers,
+              selectedTable
+            ).then(() => {
               onSelectTable(selectedTable);
-              navigate(`/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`, { state: { zoneId: localZone } });
+              navigate(
+                `/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`,
+                { state: { zoneId: localZone } }
+              );
             });
           } else {
             onPrintForCher().then(() => {
               onSelectTable(selectedTable);
-              navigate(`/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`, { state: { zoneId: localZone } });
+              navigate(
+                `/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`,
+                { state: { zoneId: localZone } }
+              );
             });
           }
         } else {
           onSelectTable(selectedTable);
-          navigate(`/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`, { state: { zoneId: localZone } });
+          navigate(
+            `/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`,
+            { state: { zoneId: localZone } }
+          );
         }
       }
     } catch (error) {
@@ -928,7 +960,6 @@ function AddOrder() {
       setDisabledButton(false);
     }
   };
-  
 
   const validateBeforePrint = () => {
     for (const order of selectedMenu) {
@@ -1102,7 +1133,7 @@ function AddOrder() {
                 className={cn(
                   `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
                   selectedCategory === "All"
-                    ? "text-orange-500"
+                    ? "text-color-app"
                     : "text-gray-700",
                   fontMap[language]
                 )}
@@ -1119,7 +1150,7 @@ function AddOrder() {
                       className={cn(
                         `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
                         selectedCategory === data?._id
-                          ? "text-orange-500"
+                          ? "text-color-app"
                           : "text-gray-700",
                         fontMap[language]
                       )}
@@ -1161,7 +1192,7 @@ function AddOrder() {
                       <div className="bg-white h-full text-gray-700 relative px-2 py-1">
                         <span className="text-sm">{data?.name}</span>
                         <br />
-                        <span className="text-orange-600 font-medium text-base font-inter">
+                        <span className="text-color-app font-medium text-base font-inter">
                           {moneyCurrency(data?.price)}{" "}
                           {storeDetail?.firstCurrency}
                           {/* {currency?.map(
@@ -1357,7 +1388,7 @@ function AddOrder() {
                                   style={{
                                     cursor: "pointer",
                                     fontSize: 25,
-                                    color: "#FB6E3B",
+                                    color: theme.primaryColor,
                                   }}
                                   onClick={() =>
                                     onConfirmRemoveItem(data, index)
@@ -1380,8 +1411,8 @@ function AddOrder() {
                     disabled={selectedMenu.length === 0}
                     style={{
                       marginRight: 15,
-                      border: "solid 1px #FB6E3B",
-                      color: "#FB6E3B",
+                      border: `solid 1px ${theme.primaryColor}`,
+                      color: theme.primaryColor,
                       fontWeight: "bold",
                     }}
                     className={fontMap[language]}
@@ -1400,7 +1431,7 @@ function AddOrder() {
                     className={cn("hover-me", fontMap[language])}
                     style={{
                       marginRight: 15,
-                      backgroundColor: "#FB6E3B",
+                      backgroundColor: theme.primaryColor,
                       color: "#ffffff",
                       fontWeight: "bold",
                       flex: 1,
@@ -1418,7 +1449,7 @@ function AddOrder() {
                     className="hover-me"
                     style={{
                       marginRight: 15,
-                      backgroundColor: "#FB6E3B",
+                      backgroundColor: theme.primaryColor,
                       color: "#ffffff",
                       fontWeight: "bold",
                       flex: 1,
@@ -1437,7 +1468,7 @@ function AddOrder() {
                     className={cn("hover-me", fontMap[language])}
                     style={{
                       marginRight: 15,
-                      backgroundColor: "#FB6E3B",
+                      backgroundColor: theme.primaryColor,
                       color: "#ffffff",
                       fontWeight: "bold",
                       flex: 1,
@@ -1462,7 +1493,7 @@ function AddOrder() {
                     style={{
                       height: 54,
                       marginRight: 15,
-                      backgroundColor: "#FB6E3B",
+                      backgroundColor: theme.primaryColor,
                       color: "#ffffff",
                       fontWeight: "bold",
                       flex: 1,
@@ -1487,7 +1518,7 @@ function AddOrder() {
                     style={{
                       height: 54,
                       marginRight: 15,
-                      backgroundColor: "#FB6E3B",
+                      backgroundColor: theme.primaryColor,
                       color: "#ffffff",
                       fontWeight: "bold",
                       flex: 1,

@@ -1,4 +1,5 @@
 import React from "react";
+import theme from "../../theme";
 
 export default function ButtonPrimary({
   text,
@@ -11,9 +12,7 @@ export default function ButtonPrimary({
   return (
     <div
       style={{
-        backgroundColor: disabled
-          ? "rgba(251, 110, 59,0.3)"
-          : "rgb(251, 110, 59)",
+        backgroundColor: disabled ? theme.mutedColor : theme.primaryColor,
         borderRadius: 8,
         padding: 10,
         display: "flex",

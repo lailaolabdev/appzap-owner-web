@@ -60,6 +60,7 @@ import { fontMap } from "../../utils/font-map";
 
 import { useStoreStore } from "../../zustand/storeStore";
 import { useMenuStore } from "../../zustand/menuStore";
+import theme from "../../theme";
 
 function Homecafe() {
   const params = useParams();
@@ -192,12 +193,19 @@ function Homecafe() {
     setSelectedTable,
     getTableDataStore,
   } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const [search, setSearch] = useState("");
 
-  const { menus, menuCategories, getMenus, getMenuCategories, setMenus, setMenuCategories } = useMenuStore();
+  const {
+    menus,
+    menuCategories,
+    getMenus,
+    getMenuCategories,
+    setMenus,
+    setMenuCategories,
+  } = useMenuStore();
 
-  // Get Menus & Categories, and persist it in localstorage. 
+  // Get Menus & Categories, and persist it in localstorage.
   // Only no data in localstorage then fetch, if when to clear data just logout
   useEffect(() => {
     const fetchData = async () => {
@@ -220,7 +228,14 @@ function Homecafe() {
     };
 
     fetchData();
-  }, [menus, menuCategories, getMenus, getMenuCategories, setMenus, setMenuCategories]);
+  }, [
+    menus,
+    menuCategories,
+    getMenus,
+    getMenuCategories,
+    setMenus,
+    setMenuCategories,
+  ]);
 
   const afterSearch = _.filter(
     menus,
@@ -228,7 +243,7 @@ function Homecafe() {
       (e?.name?.indexOf(search) > -1 && selectedCategory === "All") ||
       e?.categoryId?._id === selectedCategory
   );
-  
+
   const arrLength = selectedMenu?.length;
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
@@ -808,7 +823,7 @@ function Homecafe() {
                 className={cn(
                   `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
                   selectedCategory === "All"
-                    ? "text-orange-500"
+                    ? "text-color-app"
                     : "text-gray-700",
                   fontMap[language]
                 )}
@@ -825,7 +840,7 @@ function Homecafe() {
                       className={cn(
                         `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
                         selectedCategory === data?._id
-                          ? "text-orange-500"
+                          ? "text-color-app"
                           : "text-gray-700",
                         fontMap[language]
                       )}
@@ -877,7 +892,7 @@ function Homecafe() {
                       <div className="bg-white h-full text-gray-700 relative px-2 py-1">
                         <span className="text-sm">{data?.name}</span>
                         <br />
-                        <span className="text-orange-600 font-medium text-base font-inter">
+                        <span className="text-color-app font-medium text-base font-inter">
                           {moneyCurrency(data?.price)}{" "}
                           {storeDetail?.firstCurrency}
                           {/* {currency?.map(
@@ -1005,7 +1020,7 @@ function Homecafe() {
                                     style={{
                                       width: "60px",
                                       textAlign: "center",
-                                      border: "2px solid #fb6e3b",
+                                      border: `2px solid ${theme.primaryColor}`,
                                       borderRadius: "5px",
                                       padding: "2px",
                                       outline: "none",
@@ -1020,7 +1035,7 @@ function Homecafe() {
                                       gap: 10,
                                       margin: "0px 5px",
                                       cursor: "pointer",
-                                      border: "2px solid #fb6e3b",
+                                      border: `2px solid ${theme.primaryColor}`,
                                       borderRadius: "5px",
                                       padding: "2px",
                                     }}
@@ -1072,7 +1087,7 @@ function Homecafe() {
                                     style={{
                                       cursor: "pointer",
                                       fontSize: 25,
-                                      color: "#FB6E3B",
+                                      color: theme.primaryColor,
                                     }}
                                     onClick={() => onConfirmRemoveItem(data)}
                                   >
@@ -1117,9 +1132,9 @@ function Homecafe() {
                           className={cn("hover-me", fontMap[language])}
                           style={{
                             marginRight: 15,
-                            border: "solid 1px #FB6E3B",
+                            border: `solid 1px ${theme.primaryColor}`,
                             fontWeight: "bold",
-                            backgroundColor: "#FB6E3B",
+                            backgroundColor: theme.primaryColor,
                             color: "#ffffff",
                           }}
                           onClick={() => setSelectedMenu([])}
@@ -1131,7 +1146,7 @@ function Homecafe() {
                           className={cn("hover-me", fontMap[language])}
                           style={{
                             marginRight: 15,
-                            backgroundColor: "#FB6E3B",
+                            backgroundColor: theme.primaryColor,
                             color: "#ffffff",
                             fontWeight: "bold",
                             flex: 1,
@@ -1154,7 +1169,7 @@ function Homecafe() {
                       className={cn("hover-me", fontMap[language])}
                       style={{
                         marginRight: 15,
-                        backgroundColor: "#FB6E3B",
+                        backgroundColor: theme.primaryColor,
                         color: "#ffffff",
                         fontWeight: "bold",
                         flex: 1,
@@ -1181,7 +1196,7 @@ function Homecafe() {
             bottom: "5%",
             display: "fixed",
             right: "5%",
-            backgroundColor: "#FB6E3B",
+            backgroundColor: theme.primaryColor,
             color: "#ffffff",
             fontWeight: "bold",
             border: "none",
@@ -1314,7 +1329,7 @@ function Homecafe() {
                                   padding: "2px",
                                   margin: "0px 5px",
                                   cursor: "pointer",
-                                  border: "2px solid #fb6e3b",
+                                  border: `2px solid ${theme.primaryColor}`,
                                   borderRadius: "5px",
                                   fontSize: 14,
                                 }}
@@ -1328,7 +1343,7 @@ function Homecafe() {
                                   gap: 10,
                                   margin: "0px 5px",
                                   cursor: "pointer",
-                                  border: "2px solid #fb6e3b",
+                                  border: `2px solid ${theme.primaryColor}`,
                                   borderRadius: "5px",
                                   fontSize: 14,
                                 }}
@@ -1379,7 +1394,7 @@ function Homecafe() {
                                 style={{
                                   cursor: "pointer",
                                   fontSize: 25,
-                                  color: "#FB6E3B",
+                                  color: theme.primaryColor,
                                 }}
                                 onClick={() => onConfirmRemoveItem(data)}
                               >
@@ -1420,9 +1435,9 @@ function Homecafe() {
                         className="hover-me"
                         style={{
                           marginRight: 15,
-                          border: "solid 1px #FB6E3B",
+                          border: `solid 1px ${theme.primaryColor}`,
                           fontWeight: "bold",
-                          backgroundColor: "#FB6E3B",
+                          backgroundColor: theme.primaryColor,
                           color: "#ffffff",
                         }}
                         onClick={() => setSelectedMenu([])}
@@ -1434,7 +1449,7 @@ function Homecafe() {
                         className="hover-me"
                         style={{
                           marginRight: 15,
-                          backgroundColor: "#FB6E3B",
+                          backgroundColor: theme.primaryColor,
                           color: "#ffffff",
                           fontWeight: "bold",
                           flex: 1,
@@ -1457,7 +1472,7 @@ function Homecafe() {
                     className="hover-me"
                     style={{
                       marginRight: 15,
-                      backgroundColor: "#FB6E3B",
+                      backgroundColor: theme.primaryColor,
                       color: "#ffffff",
                       fontWeight: "bold",
                       flex: 1,

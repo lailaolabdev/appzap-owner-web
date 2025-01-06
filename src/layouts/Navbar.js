@@ -31,13 +31,12 @@ export default function NavBar() {
   const [notifyFilterToggle, setNotifyFilterToggle] = useState(0);
 
   // provider
-  const { 
-    setProfile } = useStore();
+  const { setProfile } = useStore();
 
   // ref
   const soundPlayer = useRef();
 
-  const { clearStoreDetail } = useStoreStore()
+  const { clearStoreDetail } = useStoreStore();
 
   useEffect(() => {
     const getData = () => {
@@ -62,11 +61,10 @@ export default function NavBar() {
   const _onLogout = () => {
     // Clear all data from localStorage
     localStorage.clear();
-  
+
     // Redirect the user to the home page or login page
     navigate(`/`);
   };
-  
 
   const switchLanguage = (language) => {
     // localStorage.setItem("i18nextLng", language);
@@ -132,7 +130,7 @@ export default function NavBar() {
               target="_blank"
               rel="noreferrer"
             >
-              <div className="flex items-center border-[1px] border-[#E97777] rounded-[4px] px-2 py-1 bg-[#ffd8d8] text-xs text-[E97777] gap-1">
+              <div className="flex items-center border-[1px] border-[#E97777] rounded-[4px] px-2 py-1 bg-[#ffd8d8] text-xs text-[#E97777] gap-1">
                 <MdPrintDisabled /> {t("unconnect_pinter")} !
               </div>
             </a>
