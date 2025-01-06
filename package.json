@@ -152,7 +152,7 @@
     "zustand": "^5.0.2"
   },
   "scripts": {
-    "start": "node scripts/start.js",
+    "start": "REACT_APP_THEME=thai node scripts/start.js",
     "build": "GENERATE_SOURCEMAP=false node scripts/build.js",
     "build-thai": "GENERATE_SOURCEMAP=false REACT_APP_THEME=thai node scripts/build.js",
     "winBuild": "set \"GENERATE_SOURCEMAP=false\" && node scripts/build.js",
