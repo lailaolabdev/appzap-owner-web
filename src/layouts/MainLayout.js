@@ -30,22 +30,16 @@ export default function MainLayout({ children }) {
   const [selectId, setSelectId] = useState(null);
   const [hasUpdatedForNone, setHasUpdatedForNone] = useState(false);
   const [daysCounter, setDaysCounter] = useState(0);
+  const [hasUpdatedViews, setHasUpdatedViews] = useState(false);
 
   const storeId = storeDetail?._id;
   const allIdOfSelectStore = salesData?.selectedStores?.map(id => id._id);
-
-  
 
   const fetchData = async () => {
     setIsLoading(true);
     try {
       const data = await fetchSalesData();
-      if (data) {
-        setSalesData(data);
-      } else {
-        setSalesData(null);
-        setPopup({ PopUpShowSales: false });
-      }
+      setSalesData(data || null);
     } catch (error) {
       console.error("Error fetching sales data:", error);
       setPopup({ PopUpShowSales: false });
@@ -56,7 +50,7 @@ export default function MainLayout({ children }) {
 
   const handleaddStoreId = async (id, isAvailable) => {
     try {
-      const updatedData = await addStoreId( isAvailable, salesData?._id, storeId);
+      const updatedData = await addStoreId(id, isAvailable, salesData?._id, storeId);
       if (updatedData) {
         setSalesData(updatedData);
         const isUpdateSuccessful = updatedData.selectedStores?.some(
@@ -101,16 +95,16 @@ export default function MainLayout({ children }) {
 
   useEffect(() => {
     let updateIntervalId = null;
-
+  
     if (!isLoading && salesData && storeDetail) {
       const targetStore = salesData.selectedStores?.find(
         store => store.storeId === storeId || store.storeId === null
       );
-
+  
       const isUnavailableStore = salesData.selectedStores?.some(
         store => store.storeId === storeId && store.isAvailable === false
       );
-
+  
       if (targetStore && !isUnavailableStore) {
         const { shouldShow, updateInterval } = handleTimeShowSales({
           salesData,
@@ -124,19 +118,29 @@ export default function MainLayout({ children }) {
         
         updateIntervalId = updateInterval;
         setSelectId(targetStore._id);
+  
+        // เช็คว่าควรแสดง popup และยังไม่เคย update views
+        if (shouldShow && !hasUpdatedViews) {
+          updateViews(salesData._id);
+          setHasUpdatedViews(true); // mark ว่า update แล้ว
+        }
+  
         setPopup({ PopUpShowSales: targetStore.isAvailable && shouldShow });
-        updateViews(salesData._id);
       } else {
         setPopup({ PopUpShowSales: false });
       }
     }
-
+  
     return () => {
       if (updateIntervalId) {
         clearTimeout(updateIntervalId);
       }
     };
   }, [salesData, storeDetail, isLoading]);
+
+  useEffect(() => {
+    setHasUpdatedViews(false);
+  }, [salesData?.selectedStores.map(id => id.isAvailable)]);
 
   useEffect(() => {
     setDaysCounter(0);

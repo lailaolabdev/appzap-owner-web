@@ -15,9 +15,9 @@ export const fetchSalesData = async () => {
   }
 };
 
-export const addStoreId = async ( isAvailable, salesId, storeId) => {
+export const addStoreId = async (id, isAvailable, salesId, storeId) => {
   try {
-    const response = await axios.put(`${END_POINT_SEVER}/v6/show-sales/add-available-store-id`
+    const response = await axios.put(`${END_POINT_SEVER}/v6/show-sales/add-store-id/${id}`
       ,
       {
         isAvailable,
