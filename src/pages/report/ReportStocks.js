@@ -23,6 +23,7 @@ import {
   faMinus,
   faTruck,
   faTrash,
+  faEdit,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   deleteStock,
@@ -48,6 +49,7 @@ import PopUpChooseCategoryTypeComponent from "../../components/popup/PopUpChoose
 import { getCategories } from "../../services/menuCategory";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import PopUpEditStock from "../stock/components/popup/PopUpEditStock";
 
 export default function ReportStocks() {
   const navigate = useNavigate();
@@ -105,7 +107,13 @@ export default function ReportStocks() {
       }
     };
     fetchData();
-  }, [_localData?.DATA?.storeId, startDate, endDate, pageTotal]);
+  }, [
+    _localData?.DATA?.storeId,
+    startDate,
+    endDate,
+    pageTotal,
+    historiesExport,
+  ]);
 
   // ເອື້ນໃຊ້​ function ດືງຂໍ້ມູນສະຕ໋ອກ ແລະ ປະຫວັດສະຕ໋ອກ
   useEffect(() => {
@@ -404,8 +412,14 @@ export default function ReportStocks() {
             {t("Print")}
           </button>
           <button
-            class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md"
+            class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md mr-2"
             onClick={() => setPopup({ PopupSelectStock: true })}
+          >
+            {t("create_stock_menu")}
+          </button>
+          <button
+            class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md"
+            onClick={() => navigate("/settingStore/stock/add")}
           >
             {t("create_stock")}
           </button>
@@ -494,7 +508,8 @@ export default function ReportStocks() {
                           {item?.stockCategoryId?.name ?? "-"}
                         </td>
                         <td style={{ textAlign: "left" }}>
-                          {moneyCurrency(item?.buyPrice) ?? "-"}
+                          {moneyCurrency(item?.buyPrice) ?? 0}{" "}
+                          {storeDetail?.firstCurrency}
                         </td>
                         {/* <td style={{ textAlign: "center", minWidth: "10em" }}>
                           <ProgressBar
@@ -560,6 +575,19 @@ export default function ReportStocks() {
                             >
                               <FontAwesomeIcon
                                 icon={faTrash}
+                                style={{
+                                  color: "white",
+                                }}
+                              />
+                            </ButtonPrimary>{" "}
+                            <ButtonPrimary
+                              onClick={() => {
+                                setSelect(item);
+                                setPopup({ PopUpEditStock: true });
+                              }}
+                            >
+                              <FontAwesomeIcon
+                                icon={faEdit}
                                 style={{
                                   color: "white",
                                 }}
@@ -717,6 +745,13 @@ export default function ReportStocks() {
         data={select}
         onClose={() => setPopup()}
         callback={() => getStocks()}
+      />
+
+      <PopUpEditStock
+        open={popup?.PopUpEditStock}
+        data={select}
+        stockCategory={stockCategory}
+        onClose={() => setPopup()}
       />
 
       <PopUpPreViewsPage

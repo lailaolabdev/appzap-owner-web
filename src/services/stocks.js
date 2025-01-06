@@ -1,4 +1,4 @@
-import { END_POINT_APP } from "../constants/api";
+import { END_POINT_APP, END_POINT_SEVER_TABLE_MENU } from "../constants/api";
 import axios from "axios";
 import { getHeaders } from "./auth";
 
@@ -45,14 +45,14 @@ export const getStocksCategory = async (storeId) => {
 
 export const createStockeCategoryAll = async (data) => {
   try {
-    const url = `${END_POINT_APP}/v3/stock-category/create`;
+    const url = `${END_POINT_APP}/v6/stock-category/create`;
     const res = await axios.post(url, data, {
       headers: await getHeaders(),
     });
 
     return res;
   } catch (error) {
-    return error;
+    return error.response || error;
   }
 };
 export const createStockeAll = async (data) => {
@@ -64,13 +64,39 @@ export const createStockeAll = async (data) => {
 
     return res;
   } catch (error) {
-    return error;
+    return error.response || error;
   }
 };
 
 export const deleteStock = async (id) => {
   try {
     const url = `${END_POINT_APP}/v3/stock/delete/${id}`;
+    const res = await axios.delete(url, {
+      headers: await getHeaders(),
+    });
+
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const createStockCategory = async (data) => {
+  try {
+    const url = `${END_POINT_APP}/v3/stock-category/create`;
+    const res = await axios.post(url, data, {
+      headers: await getHeaders(),
+    });
+
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const deleteStockMenu = async (id) => {
+  try {
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu-stock/delete/${id}`;
     const res = await axios.delete(url, {
       headers: await getHeaders(),
     });

@@ -60,12 +60,21 @@ export default function StockCreateCategory() {
       if (res.status === 200) {
         await Swal.fire({
           icon: "success",
-          title: "ປິນສຳເລັດ",
+          title: `${t("success")}`,
           showConfirmButton: false,
           timer: 1500,
         });
         localStorage.removeItem("stockAdd");
         navigate("/stockCategory");
+      } else {
+        console.log("res:", res);
+        await Swal.fire({
+          icon: "error",
+          title: `ຊື້ສະຕອ໋ກມີຢູ່ແລ້ວ`,
+          text: `${res?.data?.existNames}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
     } catch (error) {
       console.log("err:", error);

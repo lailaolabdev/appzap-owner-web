@@ -73,3 +73,26 @@ export const getCategoryType = async (storeId) => {
     return error;
   }
 };
+
+export const updateMenuStockAmount = async (id, data) => {
+  try {
+    console.log("id:", id);
+    console.log("data:", data);
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu-and-menu-stock/update`;
+    const res = await axios.put(
+      url,
+      {
+        id: id,
+        data: data,
+      },
+      {
+        headers: await getHeaders(),
+      }
+    );
+
+    console.log("RES:", res);
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
