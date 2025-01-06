@@ -56,7 +56,7 @@ export default function MainLayout({ children }) {
 
   const handleaddStoreId = async (id, isAvailable) => {
     try {
-      const updatedData = await addStoreId(id, isAvailable, salesData?._id, storeId);
+      const updatedData = await addStoreId( isAvailable, salesData?._id, storeId);
       if (updatedData) {
         setSalesData(updatedData);
         const isUpdateSuccessful = updatedData.selectedStores?.some(
