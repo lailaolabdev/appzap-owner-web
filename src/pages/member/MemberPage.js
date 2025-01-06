@@ -76,6 +76,7 @@ import PopUpSetStartAndEndDateMember from "../../components/popup/PopUpSetStartA
 import { GetRedeemPoint, GetEarnPoint } from "../../services/point";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import theme from "../../theme";
 
 let limitData = 10;
 
@@ -156,10 +157,7 @@ export default function MemberPage() {
   const [EarnList, setEarnList] = useState([]);
   const [EarnCount, setEarnCount] = useState(0);
 
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
 
   // useEffect
   useEffect(() => {
@@ -690,9 +688,11 @@ export default function MemberPage() {
             <Nav.Link
               eventKey="/listMember"
               style={{
-                color: "#FB6E3B",
+                color: theme.primaryColor,
                 backgroundColor:
-                  storeDetail.changeUi === "LIST_MEMBER" ? "#FFDBD0" : "",
+                  storeDetail.changeUi === "LIST_MEMBER"
+                    ? theme.mutedColor
+                    : "",
                 border: "none",
                 height: 60,
                 display: "flex",
@@ -719,9 +719,11 @@ export default function MemberPage() {
             <Nav.Link
               eventKey="/listRedeem/Point"
               style={{
-                color: "#FB6E3B",
+                color: theme.primaryColor,
                 backgroundColor:
-                  storeDetail.changeUi === "LIST_REDEEMPOINT" ? "#FFDBD0" : "",
+                  storeDetail.changeUi === "LIST_REDEEMPOINT"
+                    ? theme.mutedColor
+                    : "",
                 border: "none",
                 height: 60,
                 display: "flex",
@@ -744,9 +746,11 @@ export default function MemberPage() {
             <Nav.Link
               eventKey="/listEearn/Point"
               style={{
-                color: "#FB6E3B",
+                color: theme.primaryColor,
                 backgroundColor:
-                  storeDetail.changeUi === "LIST_EARNPOINT" ? "#FFDBD0" : "",
+                  storeDetail.changeUi === "LIST_EARNPOINT"
+                    ? theme.mutedColor
+                    : "",
                 border: "none",
                 height: 60,
                 display: "flex",
@@ -769,9 +773,9 @@ export default function MemberPage() {
             <Nav.Link
               eventKey="/listTop"
               style={{
-                color: "#FB6E3B",
+                color: theme.primaryColor,
                 backgroundColor:
-                  storeDetail.changeUi === "LIST_TOP" ? "#FFDBD0" : "",
+                  storeDetail.changeUi === "LIST_TOP" ? theme.mutedColor : "",
                 border: "none",
                 height: 60,
                 display: "flex",
@@ -796,9 +800,11 @@ export default function MemberPage() {
             <Nav.Link
               eventKey="/listeBirthday"
               style={{
-                color: "#FB6E3B",
+                color: theme.primaryColor,
                 backgroundColor:
-                  storeDetail.changeUi === "LIST_BIRTHDAY" ? "#FFDBD0" : "",
+                  storeDetail.changeUi === "LIST_BIRTHDAY"
+                    ? theme.mutedColor
+                    : "",
                 border: "none",
                 height: 60,
                 display: "flex",
@@ -807,7 +813,7 @@ export default function MemberPage() {
               }}
               onClick={() => {
                 getMemberListBirthday();
-                setStoreDetail({changeUi: "LIST_BIRTHDAY" });
+                setStoreDetail({ changeUi: "LIST_BIRTHDAY" });
                 setValueTopList("");
               }}
             >

@@ -1,5 +1,6 @@
 import { END_POINT_SEVER } from "./api";
 import packageJson from "../../package.json";
+import theme from "../theme";
 export const USER_KEY = "@userKey";
 export const VERSION = packageJson?.version;
 export const URL_PHOTO_AW3 =
@@ -23,7 +24,7 @@ export const ALL_STATUS = [
   { value: "DOING", label: "ກໍາລັງຄົວ" },
   { value: "SERVED", label: "	ເສີບແລ້ວ" },
 ];
-export const COLOR_APP = "#FF6700";
+export const COLOR_APP = theme.primaryColor;
 export const COLOR_GRAY = "#3D3C3A";
 export const COLOR_APP_CANCEL = "red";
 export const TITLE_HEADER = {

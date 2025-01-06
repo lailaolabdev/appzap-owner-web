@@ -10,7 +10,7 @@ import {
   END_POINT_SERVER_BUNSI,
   getLocalData,
   END_POINT_SEVER,
-  PERMISSIONS_COUNTER
+  PERMISSIONS_COUNTER,
 } from "../../constants/api";
 import { useStore } from "../../store";
 import PaginationComponent from "../../components/PaginationComponent";
@@ -30,9 +30,10 @@ import queryString from "query-string";
 import { useTranslation } from "react-i18next";
 import useWindowDimensions2 from "../../helpers/useWindowDimension2";
 import PopUpManageCounter from "../../components/popup/PopUpManageCounter";
-import {manageCounterService} from "../../services/manageCounterService"
+import { manageCounterService } from "../../services/manageCounterService";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import theme from "../../theme";
 
 export default function IncomeExpendExport() {
   const { t } = useTranslation();
@@ -48,7 +49,7 @@ export default function IncomeExpendExport() {
   const [dateStart, setDateStart] = useState(null);
   const [dateEnd, setDateEnd] = useState(null);
   const { width, height } = useWindowDimensions2();
- //filter
+  //filter
   const [filterByYear, setFilterByYear] = useState(
     !parsed?.filterByYear ? currentYear : parsed?.filterByYear
   );
@@ -63,12 +64,11 @@ export default function IncomeExpendExport() {
   const [graphData, setGraphData] = useState();
   const [incomeExpendData, setIncomeExpendData] = useState([]);
   const { profile } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const [openGetDate, setOpenGetDate] = useState(false);
   const storeId = storeDetail?._id;
   const user_role = profile.data?.role;
-  const [days , setDays] = useState(null)
-
+  const [days, setDays] = useState(null);
 
   const User_store = "APPZAP_COUNTER";
   //const User_store = "APPZAP_ADMIN";
@@ -76,8 +76,8 @@ export default function IncomeExpendExport() {
   useEffect(() => {
     if (user_role === User_store) {
       // If user is store admin, set to current day only
-      const startOfDay = moment(today).startOf('day').toDate();
-      const endOfDay = moment(today).endOf('day').toDate();
+      const startOfDay = moment(today).startOf("day").toDate();
+      const endOfDay = moment(today).endOf("day").toDate();
       setDateStart(startOfDay);
       setDateEnd(endOfDay);
     } else {
@@ -95,7 +95,10 @@ export default function IncomeExpendExport() {
       const response = await manageCounterService.getManageCounter(storeId);
       setDays(response?.data[0]?.manageCounter || null);
     } catch (error) {
-      console.error('Error fetching manage counter:', error.response?.data || error.message);
+      console.error(
+        "Error fetching manage counter:",
+        error.response?.data || error.message
+      );
     }
   };
 
@@ -104,14 +107,12 @@ export default function IncomeExpendExport() {
   }, [storeId]);
 
   //console.log("days:", days)
-  
+
   useEffect(() => {
     if (dateStart && dateEnd) {
       getIncomeExpendData();
     }
   }, [dateStart, dateEnd]);
-
-
 
   const OPTION = {
     chart: {
@@ -212,11 +213,9 @@ export default function IncomeExpendExport() {
     // modifyData()
   }, [series, options]);
 
-  
-
   const getIncomeExpendData = async () => {
     if (!dateStart || !dateEnd) return;
-    
+
     try {
       const _localData = await getLocalData();
       let findby = `accountId=${
@@ -325,8 +324,6 @@ export default function IncomeExpendExport() {
     setIncomeExpendData(_incomeExpendData);
   };
 
-
-
   const calculateSummaryIncome = (type) => {
     let _summaryAmount = 0;
     incomeExpendData.map((x) => {
@@ -358,8 +355,6 @@ export default function IncomeExpendExport() {
     }
   };
 
-  
-
   return (
     <div>
       <div
@@ -384,7 +379,7 @@ export default function IncomeExpendExport() {
           }}
         >
           {user_role === User_store ? (
-            <Form.Group style={{ width: "100%"}}>
+            <Form.Group style={{ width: "100%" }}>
               <Form.Label>{t("date_time")}</Form.Label>
               <Button
                 variant="outline-primary"
@@ -398,24 +393,26 @@ export default function IncomeExpendExport() {
                 onClick={() => setOpenGetDate({ popupfiltter: true })}
               >
                 <BsFillCalendarWeekFill />
-                <div>{dateStart ? moment(dateStart).format("YYYY-MM-DD") : ''}</div>
+                <div>
+                  {dateStart ? moment(dateStart).format("YYYY-MM-DD") : ""}
+                </div>
                 {" ~ "}
-                <div>{dateEnd ? moment(dateEnd).format("YYYY-MM-DD") : ''}</div>
+                <div>{dateEnd ? moment(dateEnd).format("YYYY-MM-DD") : ""}</div>
               </Button>
             </Form.Group>
           ) : (
-            <div style={{display:"flex", alignItems:'center'}}>
+            <div style={{ display: "flex", alignItems: "center" }}>
               <Form.Label>{t("date")}</Form.Label>
               <Form.Control
                 type="date"
-                value={dateStart ? moment(dateStart).format("YYYY-MM-DD") : ''}
+                value={dateStart ? moment(dateStart).format("YYYY-MM-DD") : ""}
                 onChange={(e) => setDateStart(new Date(e.target.value))}
-                style={{ width: 150,marginLeft:"3px" }}
+                style={{ width: 150, marginLeft: "3px" }}
               />
               <span>~</span>
               <Form.Control
                 type="date"
-                value={dateEnd ? moment(dateEnd).format("YYYY-MM-DD") : ''}
+                value={dateEnd ? moment(dateEnd).format("YYYY-MM-DD") : ""}
                 onChange={(e) => setDateEnd(new Date(e.target.value))}
                 style={{ width: 150 }}
               />
@@ -452,7 +449,7 @@ export default function IncomeExpendExport() {
           <div
             className="p-2 hover-me"
             style={{
-              backgroundColor: "#fb6e3b",
+              backgroundColor: theme.primaryColor,
               width: width > 900 ? "25vw" : "100%",
               height: 80,
               borderRadius: 8,
@@ -471,7 +468,7 @@ export default function IncomeExpendExport() {
               }}
             >
               <FontAwesomeIcon
-                style={{ fontSize: "1.2rem", color: "#fb6e3b" }}
+                style={{ fontSize: "1.2rem", color: theme.primaryColor }}
                 icon={faMoneyBillWave}
               />
             </div>
@@ -502,7 +499,7 @@ export default function IncomeExpendExport() {
           <div
             className="p-2 hover-me"
             style={{
-              backgroundColor: "#fb6e3b",
+              backgroundColor: theme.primaryColor,
               width: width > 900 ? "25vw" : "100%",
               height: 80,
               borderRadius: 8,
@@ -521,7 +518,7 @@ export default function IncomeExpendExport() {
               }}
             >
               <FontAwesomeIcon
-                style={{ fontSize: "1.2rem", color: "#fb6e3b" }}
+                style={{ fontSize: "1.2rem", color: theme.primaryColor }}
                 icon={faFunnelDollar}
               />
             </div>
@@ -545,7 +542,7 @@ export default function IncomeExpendExport() {
           <div
             className="p-2 hover-me"
             style={{
-              backgroundColor: "#fb6e3b",
+              backgroundColor: theme.primaryColor,
               width: width > 900 ? "25vw" : "100%",
               height: 80,
               borderRadius: 8,
@@ -564,7 +561,7 @@ export default function IncomeExpendExport() {
               }}
             >
               <FontAwesomeIcon
-                style={{ fontSize: "1.2rem", color: "#fb6e3b" }}
+                style={{ fontSize: "1.2rem", color: theme.primaryColor }}
                 icon={faBalanceScaleRight}
               />
             </div>

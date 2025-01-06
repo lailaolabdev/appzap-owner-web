@@ -6,9 +6,15 @@ import { BrowserRouter } from "react-router-dom";
 // import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
-import "./index.scss";
+
 import "react-time-picker/dist/TimePicker.css";
 import "react-clock/dist/Clock.css";
+
+if (process.env.REACT_APP_THEME === "thai") {
+  import("./index-thai.scss");
+} else {
+  import("./index.scss");
+}
 
 ReactDOM.render(
   <BrowserRouter>

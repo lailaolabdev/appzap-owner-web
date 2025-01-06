@@ -51,7 +51,7 @@ import { useStoreStore } from "../../zustand/storeStore";
 
 export default function ReportStocks() {
   const navigate = useNavigate();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const [popup, setPopup] = useState();
   const { t } = useTranslation();
   const { height, width } = useWindowDimension2();
@@ -398,13 +398,13 @@ export default function ReportStocks() {
           style={{ marginLeft: "auto", paddingTop: "32px", display: "flex" }}
         >
           <button
-            class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md mr-2"
+            class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md mr-2"
             onClick={() => setPopup({ PopUpPreViewsPage: true })}
           >
             {t("Print")}
           </button>
           <button
-            class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md"
+            class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md"
             onClick={() => setPopup({ PopupSelectStock: true })}
           >
             {t("create_stock")}

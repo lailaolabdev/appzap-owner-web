@@ -2502,7 +2502,7 @@ export default function TableList() {
                               ? "bg-[#CECE5A] text-gray-500"
                               : table?.statusBill === "CALL_TO_CHECKOUT"
                               ? "bg-[#FFE17B] text-gray-500"
-                              : "bg-primary-gradient text-white"
+                              : "bg-color-app text-white"
                             : "text-gray-500"
                         )}
                         onClick={() => {

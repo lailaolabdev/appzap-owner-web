@@ -134,7 +134,7 @@ export default function NavBar() {
               target="_blank"
               rel="noreferrer"
             >
-              <div className="flex items-center border-[1px] border-[#E97777] rounded-[4px] px-2 py-1 bg-[#ffd8d8] text-xs text-[E97777] gap-1">
+              <div className="flex items-center border-[1px] border-[#E97777] rounded-[4px] px-2 py-1 bg-[#ffd8d8] text-xs text-[#E97777] gap-1">
                 <MdPrintDisabled /> {t("unconnect_pinter")} !
               </div>
             </a>

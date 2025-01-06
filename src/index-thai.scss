@@ -1,0 +1,189 @@
+// change the theme
+:root {
+  --primary: #fb6e3b;
+  --danger-color: #ff4136;
+}
+// $input-border-color: #fb6e3b !default;
+// Import Bootstrap and its default variables
+@import "~bootstrap/scss/bootstrap.scss";
+
+* {
+  box-sizing: "border-box";
+}
+// css for menu setting
+.menuSttingShow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 10px;
+  // border-bottom: 1px solid lightgray;
+  // border-bottom-style: dotted;
+
+  label {
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+.menuSetting {
+  border: 1px solid var(--primary);
+  outline: none;
+  background-color: #fff;
+  border-radius: 3px;
+  width: 80px;
+  padding: 5px 0px 5px 0px;
+  border-style: dotted;
+}
+
+.website-file-upload {
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+
+  .show-img-upload {
+    width: 100%;
+    border: 1.5px solid #bdbdbd;
+    border-radius: 2px;
+
+    img {
+      width: 100%;
+      height: 170px;
+      object-fit: cover;
+      border-radius: 2px;
+    }
+  }
+
+  .box-upload-img {
+    margin-top: 10px;
+    width: 100%;
+    background: #ffffff;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    height: 52px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: #1059bf;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+}
+.show-img-upload {
+  width: 100%;
+  // border: 1.5px solid #BDBDBD;
+  border-radius: 2px;
+  height: 150px;
+  position: relative;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+
+  .delete-img {
+    position: absolute;
+    z-index: 1;
+    right: 0%;
+    padding: 10px;
+    color: red;
+    cursor: pointer;
+  }
+
+  img {
+    width: 100%;
+    height: 150px;
+    object-fit: contain;
+    border-radius: 2px;
+    position: absolute;
+  }
+}
+
+.box-upload-img {
+  // margin-top: 10px;
+  width: 100%;
+  background: #ffffff;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+  height: 150px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: #1059bf;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.showFromMonth {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: start;
+  width: 100%;
+  overflow-y: scroll;
+
+  div {
+    // border: 1px solid lightgray;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+    background: #f5f5f5;
+    color: var(--primary-color);
+    padding: 10px 10px;
+    width: 100px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  div:hover {
+    background: var(--primary-color);
+    color: #ffffff;
+  }
+
+  .active {
+    background: var(--primary-color);
+    color: #ffffff;
+  }
+}
+
+.inputMoney[type="text"] {
+  height: 50px;
+  font-size: 2rem;
+  border: 0;
+  padding: 20px;
+  outline-style: none;
+  outline-color: none;
+  background-color: #efefef;
+}
+
+blockquote {
+  background: rgba(251, 110, 59, 0.2);
+  border-left: 4px solid var(--primary-color);
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+  .blockquote-footer {
+    font-size: 12px;
+  }
+  p {
+    display: inline;
+    font-size: 12px;
+  }
+}
+blockquote:before {
+  color: var(--primary-color);
+  content: open-quote;
+  font-size: 2em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+iframe {
+  height: 100%;
+  width: 100%;
+  border: none;
+  overflow: hidden;
+}

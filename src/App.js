@@ -16,7 +16,6 @@ const theme = {
 };
 
 function App() {
-
   const { i18n } = useTranslation();
 
   useEffect(() => {
@@ -28,11 +27,11 @@ function App() {
     changeMomentLocale(i18n.language);
 
     // Listen for language changes
-    i18n.on('languageChanged', changeMomentLocale);
+    i18n.on("languageChanged", changeMomentLocale);
 
     // Cleanup on component unmount
     return () => {
-      i18n.off('languageChanged', changeMomentLocale);
+      i18n.off("languageChanged", changeMomentLocale);
     };
   }, [i18n]);
   //   useMemo(() => {

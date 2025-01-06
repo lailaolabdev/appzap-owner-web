@@ -40,6 +40,7 @@ import convertNumber from "../../helpers/convertNumber";
 import { fontMap } from "../../utils/font-map";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import theme from "../../theme";
 
 export default function Dashboard() {
   const { accessToken } = useQuery();
@@ -157,8 +158,8 @@ export default function Dashboard() {
           <Nav.Link
             eventKey="/home"
             style={{
-              color: "#FB6E3B",
-              backgroundColor: changeUi === "CHECKBILL" ? "#FFDBD0" : "",
+              color: COLOR_APP,
+              backgroundColor: changeUi === "CHECKBILL" ? theme.mutedColor : "",
               border: "none",
               height: 60,
               display: "flex",
