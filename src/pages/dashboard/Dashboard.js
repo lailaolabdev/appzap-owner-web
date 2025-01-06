@@ -67,7 +67,7 @@ export default function Dashboard() {
   const [changeUi, setChangeUi] = useState("CHECKBILL");
   const [changeText, setChangeText] = useState("CLICK1");
 
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
 
   // useEffect
   useEffect(() => {
@@ -289,12 +289,7 @@ export default function Dashboard() {
               <div className={fontMap[language]}>
                 {t("totalBalance")}
                 {" : "}
-                {convertNumber(
-                  (moneyReport?.successAmount?.payByCash || 0) +
-                    (moneyReport?.successAmount?.transferPayment || 0) +
-                    (moneyReport?.successAmount?.point || 0)
-                )}
-                {/* {convertNumber(moneyReport?.successAmount?.totalBalance)} */}
+                {convertNumber(moneyReport?.successAmount?.totalBalance)}
               </div>
               <div className={fontMap[language]}>
                 {t("payBycash")}
