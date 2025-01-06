@@ -15,6 +15,7 @@ import i18n from "../i18n";
 import { useTranslation } from "react-i18next";
 import { NotifyButton } from "../components/NotifyButton";
 import { useStoreStore } from "../zustand/storeStore";
+import { useMenuStore } from "../zustand/menuStore";
 
 // sound
 import messageSound from "../sound/message.mp3";
@@ -31,13 +32,13 @@ export default function NavBar() {
   const [notifyFilterToggle, setNotifyFilterToggle] = useState(0);
 
   // provider
-  const { 
-    setProfile } = useStore();
+  const { setProfile } = useStore();
 
   // ref
   const soundPlayer = useRef();
 
-  const { clearStoreDetail } = useStoreStore()
+  const { clearStoreDetail } = useStoreStore();
+  const { clearMenus } = useMenuStore();
 
   useEffect(() => {
     const getData = () => {
@@ -60,13 +61,14 @@ export default function NavBar() {
   }, []);
 
   const _onLogout = () => {
+    //
+    clearMenus();
     // Clear all data from localStorage
     localStorage.clear();
-  
+
     // Redirect the user to the home page or login page
     navigate(`/`);
   };
-  
 
   const switchLanguage = (language) => {
     // localStorage.setItem("i18nextLng", language);
