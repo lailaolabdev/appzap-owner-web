@@ -76,8 +76,6 @@ export const getCategoryType = async (storeId) => {
 
 export const updateMenuStockAmount = async (id, data) => {
   try {
-    console.log("id:", id);
-    console.log("data:", data);
     const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu-and-menu-stock/update`;
     const res = await axios.put(
       url,

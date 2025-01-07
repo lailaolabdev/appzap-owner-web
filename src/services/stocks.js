@@ -106,3 +106,22 @@ export const deleteStockMenu = async (id) => {
     return error;
   }
 };
+
+export const updateStock = async (id, data) => {
+  try {
+    const url = `${END_POINT_APP}/v3/stock/update`;
+    const res = await axios.put(
+      url,
+      {
+        id: id,
+        data: data,
+      },
+      {
+        headers: await getHeaders(),
+      }
+    );
+    return res;
+  } catch (error) {
+    return error.response || error;
+  }
+};

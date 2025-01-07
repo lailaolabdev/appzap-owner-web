@@ -82,7 +82,7 @@ export default function ReportStocks() {
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
 
-  const rowsPerPage = 10;
+  const rowsPerPage = 15;
   const [page, setPage] = useState(0);
   const pageAll = totalStock > 0 ? Math.ceil(totalStock / rowsPerPage) : 1;
 
@@ -752,6 +752,7 @@ export default function ReportStocks() {
         data={select}
         stockCategory={stockCategory}
         onClose={() => setPopup()}
+        callback={() => getStocks()}
       />
 
       <PopUpPreViewsPage
