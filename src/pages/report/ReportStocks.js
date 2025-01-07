@@ -107,13 +107,7 @@ export default function ReportStocks() {
       }
     };
     fetchData();
-  }, [
-    _localData?.DATA?.storeId,
-    startDate,
-    endDate,
-    pageTotal,
-    historiesExport,
-  ]);
+  }, [_localData?.DATA?.storeId, startDate, endDate, pageTotal]);
 
   // ເອື້ນໃຊ້​ function ດືງຂໍ້ມູນສະຕ໋ອກ ແລະ ປະຫວັດສະຕ໋ອກ
   useEffect(() => {
@@ -737,14 +731,20 @@ export default function ReportStocks() {
         open={popup?.PopUpAddStock}
         onClose={() => setPopup()}
         data={select}
-        callback={() => getStocks()}
+        callback={() => {
+          getStocks();
+          getStockHistories();
+        }}
       />
 
       <PopUpMinusStock
         open={popup?.PopUpMinusStock}
         data={select}
         onClose={() => setPopup()}
-        callback={() => getStocks()}
+        callback={() => {
+          getStocks();
+          getStockHistories();
+        }}
       />
 
       <PopUpEditStock
