@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Spinner } from "react-bootstrap";
+import { Button, Form, Spinner } from "react-bootstrap";
 import axios from "axios";
 import { PRESIGNED_URL } from "../../../constants/api";
-import { getLocalData, END_POINT_SEVER_TABLE_MENU } from "../../../constants/api";
+import {
+  getLocalData,
+  END_POINT_SEVER_TABLE_MENU,
+} from "../../../constants/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleDoubleRight,
@@ -14,18 +17,31 @@ import PopUpEditMenuStocks from "../components/popup/PopUpEditMenuStocks";
 import { getHeaders } from "../../../services/auth";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { get, update } from "lodash";
+import { updateMenuStockAmount } from "../../../services/menu";
+import { moneyCurrency } from "../../../helpers";
+import { useStoreStore } from "../../../zustand/storeStore";
+import Swal from "sweetalert2";
+import {
+  deleteStockMenu,
+  getStocksAll,
+  getStocksCategory,
+} from "../../../services/stocks";
+import PopUpChooseCategoryTypeComponent from "../../../components/popup/PopUpChooseCategoryTypeComponent";
 
 // ---------------------------------------------- //
 export default function FormAddMenuStock() {
   const { t } = useTranslation();
+  const { storeDetail } = useStoreStore();
   const { id } = useParams();
   const navigate = useNavigate();
   // state
   const [popAddMenuStocks, setPopAddMenuStocks] = useState(false);
   const [popEditMenuStocks, setPopEditMenuStocks] = useState(false);
+  const [popup, setPopup] = useState(false);
   const [stocks, setStocks] = useState([]);
   const [menuOne, setMenuOne] = useState({});
-  const [Categorys, setCategorys] = useState();
+  const [categorys, setCategorys] = useState();
   const [namePhoto, setNamePhoto] = useState("");
   const [select, setSelect] = useState();
   const [editSelect, setEditSelect] = useState();
@@ -36,6 +52,7 @@ export default function FormAddMenuStock() {
   const [isSubmit, setIsSubmit] = useState(false);
   const [file, setFile] = useState();
   const [imageLoading, setImageLoading] = useState("");
+  const [selectCategories, setSelectCategories] = useState("");
 
   const handleUpload = async (event) => {
     // setImageLoading("");
@@ -118,30 +135,45 @@ export default function FormAddMenuStock() {
     setIsSubmit(false);
   };
 
+  const updateAmount = async (index, value) => {
+    const data = {
+      menuStock: [
+        {
+          stockId: menuStocks[index]?.stockId?._id,
+          amount: value,
+        },
+      ],
+      storeId: menuStocks[index]?.stockId?.storeId,
+    };
+    const res = await updateMenuStockAmount(id, data);
+    console.log("res", res);
+  };
+
+  const getStocksCategoryData = async (storeId) => {
+    try {
+      const res = await getStocksCategory(storeId);
+      if (res.status === 200) {
+        setCategorys(res?.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleAddMenuStock = async (val) => {
     try {
-      const headers = await getHeaders();
-      const _localData = await getLocalData();
-      if (headers) {
-        const res = await axios.put(
-          `${END_POINT_SEVER_TABLE_MENU}/v3/menu-and-menu-stock/update`,
+      const data = {
+        menuStock: [
           {
-            id: id,
-            data: {
-              menuStock: [
-                {
-                  stockId: val?._id,
-                  amount: val?.quantity,
-                },
-              ],
-              storeId: _localData?.DATA?.storeId,
-            },
+            stockId: val?._id,
+            amount: 1,
           },
-          { headers }
-        );
-        if (res.status < 300) {
-          getMenuStock(id);
-        }
+        ],
+        storeId: storeDetail?._id,
+      };
+      const res = await updateMenuStockAmount(id, data);
+      if (res.status === 200) {
+        getMenuStock(id);
       }
     } catch (error) {
       console.log(error);
@@ -150,33 +182,39 @@ export default function FormAddMenuStock() {
 
   const handleDeleteMenuStock = async (id) => {
     try {
-      const headers = await getHeaders();
-      const _localData = await getLocalData();
-      if (headers) {
-        const res = await axios.delete(
-          `${END_POINT_SEVER_TABLE_MENU}/v3/menu-stock/delete/${id}`,
-          { headers }
-        );
+      const res = await deleteStockMenu(id);
+      if (res.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: `${t("delete_success")}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const getStock = async () => {
+  const getStock = async (storeId) => {
     try {
-      const _localData = await getLocalData();
-      if (_localData) {
-        setIsLoading(true);
-        const data = await axios.get(
-          `${END_POINT_SEVER_TABLE_MENU}/v3/stocks?storeId=${_localData?.DATA?.storeId}&isDeleted=false&limit=1000`
-        );
-        if (data.status < 300) {
-          setLoadStatus("SUCCESS");
-          setStocks(data?.data);
-        }
-        setIsLoading(false);
+      let findby = "?";
+      findby += `storeId=${storeId}&`;
+      findby += `stockCategoryId=${selectCategories}&`;
+      const res = await getStocksAll(findby);
+      if (res.status === 200) {
+        setLoadStatus("SUCCESS");
+        setStocks(res?.data?.stockData);
       }
+      setIsLoading(false);
+      // const _localData = await getLocalData();
+      // if (_localData) {
+      //   setIsLoading(true);
+      //   const data = await axios.get(
+      //     `${END_POINT_SEVER_TABLE_MENU}/v3/stocks?storeId=${_localData?.DATA?.storeId}&isDeleted=false&limit=1000`
+      //   );
+
+      // }
     } catch (err) {
       setLoadStatus("ERROR!!");
       setIsLoading(false);
@@ -213,12 +251,32 @@ export default function FormAddMenuStock() {
     }
   };
 
+  const handleAmountChange = (index, event) => {
+    const { name, value } = event.target;
+    setMenuStocks((prevData) => {
+      const updatedData = [...prevData];
+      updatedData[index] = {
+        ...updatedData[index],
+        [name]: value,
+      };
+      return updatedData;
+    });
+  };
+
+  const calculateTotalCostPrice = () => {
+    return menuStocks.reduce((total, data) => {
+      return total + (data?.amount * data?.stockId?.buyPrice || 0);
+    }, 0);
+  };
+
   const getMenuOne = async (id) => {
     try {
       const _localData = await getLocalData();
       if (_localData) {
         setIsLoading(true);
-        const data = await axios.get(`${END_POINT_SEVER_TABLE_MENU}/v3/menu/${id}`);
+        const data = await axios.get(
+          `${END_POINT_SEVER_TABLE_MENU}/v3/menu/${id}`
+        );
         if (data.status < 300) {
           setLoadStatus("SUCCESS");
           setMenuOne(data.data);
@@ -237,13 +295,15 @@ export default function FormAddMenuStock() {
     const getData = async () => {
       // getCategory();
       await getMenuOne(id);
-      await getStock();
+      await getStock(storeDetail?._id);
+      await getStocksCategoryData(storeDetail?._id);
     };
     getData();
-  }, []);
+  }, [selectCategories]);
   useEffect(() => {
     const getData = async () => {
       getMenuStock(id);
+      // getStock(storeDetail?._id);
     };
     getData();
   }, [stocks]);
@@ -251,7 +311,18 @@ export default function FormAddMenuStock() {
 
   return (
     <div style={{ padding: 10 }}>
-      <h2>{menuOne?.name}</h2>
+      <h2 className="mx-3 flex flex-row justify-between text-color-app ">
+        {t("menu_name")}
+        {" : "}
+        {menuOne?.name}
+        <Button
+          style={{ textWrap: "nowrap", marginTop: "1em" }}
+          variant="outline-primary"
+          onClick={() => setPopup({ PopUpChooseCategoryTypeComponent: true })}
+        >
+          {t("chose_type")}
+        </Button>
+      </h2>
       <div
         style={{
           display: "grid",
@@ -260,17 +331,17 @@ export default function FormAddMenuStock() {
         }}
       >
         <div>
-          <div style={{ textAlign: "center" }}>{t('all_stoke')}</div>
+          <div style={{ textAlign: "center" }}>{t("all_stoke")}</div>
           <div className="col-sm-12">
             <table className="table table-hover">
               <thead className="thead-light">
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">{t('prod_name')}</th>
-                  <th scope="col">{t('prod_mode')}</th>
+                  <th scope="col">{t("prod_name")}</th>
+                  <th scope="col">{t("prod_mode")}</th>
                   {/* <th scope='col'>ສະຖານະ</th> */}
-                  <th scope="col">{t('stoke_amount')}</th>
-                  <th scope="col">{t('manage_data')}</th>
+                  <th scope="col">{t("stoke_amount")}</th>
+                  <th scope="col">{t("manage_data")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -302,8 +373,10 @@ export default function FormAddMenuStock() {
                             cursor: "pointer",
                           }}
                           onClick={() => {
+                            console.log("data", data);
                             setSelect(data);
-                            setPopAddMenuStocks(true);
+                            handleAddMenuStock(data);
+                            // setPopAddMenuStocks(true);
                           }}
                         />
                       </td>
@@ -318,57 +391,77 @@ export default function FormAddMenuStock() {
           </div>
         </div>
         <div>
-          <div style={{ textAlign: "center" }}>{t('stoke_needed')}</div>
+          <div style={{ textAlign: "center" }}>{t("stoke_needed")}</div>
           <div className="col-sm-12">
             <table className="table table-hover">
               <thead className="thead-light">
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">{t('prod_name')}</th>
-                  <th scope="col">{t('prod_mode')}</th>
-                  {/* <th scope='col'>ສະຖານະ</th> */}
-                  <th scope="col">{t('stoke_amount')}</th>
-                  <th scope="col">{t('manage_data')}</th>
+                  <th scope="col">{t("prod_name")}</th>
+                  <th scope="col">{t("buy_price")}</th>
+                  <th scope="col">{t("amount")}</th>
+                  <th scope="col">{t("cost_price")}</th>
+                  <th scope="col">{t("unit")}</th>
+                  <th scope="col">{t("manage_data")}</th>
                 </tr>
               </thead>
               <tbody>
-                {menuStocks?.map((data, index) => {
-                  return (
-                    <tr>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan="5" className="text-center justify-center">
+                      <Spinner animation="border" />
+                    </td>
+                  </tr>
+                ) : (
+                  menuStocks?.map((data, index) => (
+                    <tr key={index}>
                       <td>{index + 1}</td>
                       <td>{data?.name}</td>
-                      <td>{data?.stockCategoryId?.name}</td>
+                      <td>
+                        {moneyCurrency(data?.stockId?.buyPrice)}{" "}
+                        {storeDetail?.firstCurrency}
+                      </td>
                       {/* <td
-                              style={{
-                                color: data?.isOpened ? "green" : "red",
-                              }}>
-                              {STATUS_MENU(data?.isOpened)}
-                            </td> */}
-                      <td
                         style={{
                           color: data?.amount < 10 ? "red" : "green",
                         }}
                       >
                         {data?.amount}
+                      </td> */}
+                      <td style={{ width: 100 }}>
+                        <Form.Control
+                          type="number"
+                          name="amount"
+                          onBlur={(e) => updateAmount(index, e.target.value)}
+                          onChange={(e) => handleAmountChange(index, e)}
+                          value={data?.amount}
+                          placeholder="0"
+                          className="form-control"
+                        />
                       </td>
                       <td>
+                        {moneyCurrency(data?.amount * data?.stockId?.buyPrice)}{" "}
+                        {storeDetail?.firstCurrency}
+                      </td>
+                      <td>{data?.stockId?.unit}</td>
+                      <td className="justify-center text-center">
                         <FontAwesomeIcon
                           icon={faTrash}
                           style={{
-                            marginLeft: 20,
+                            justifyItems: "center",
                             color: "red",
                             cursor: "pointer",
                           }}
                           onClick={() => {
                             setMenuStocks((prev) => [
-                              ...prev.filter((e, i) => i != index),
+                              ...prev.filter((e, i) => i !== index),
                             ]);
                             if (data?._id) {
                               handleDeleteMenuStock(data?._id);
                             }
                           }}
                         />
-                        <FontAwesomeIcon
+                        {/* <FontAwesomeIcon
                           icon={faPen}
                           style={{
                             marginLeft: 20,
@@ -384,13 +477,20 @@ export default function FormAddMenuStock() {
                             });
                             setPopEditMenuStocks(true);
                           }}
-                        />
+                        /> */}
                       </td>
                     </tr>
-                  );
-                })}
+                  ))
+                )}
               </tbody>
             </table>
+          </div>
+          <hr className="mx-3"></hr>
+          <div className="mx-3 text-right flex flex-row justify-end text-color-app font-bold text-2xl">
+            {t("total_cost_price")}
+            {" : "}
+            {moneyCurrency(calculateTotalCostPrice())}{" "}
+            {storeDetail?.firstCurrency}
           </div>
         </div>
       </div>
@@ -409,6 +509,15 @@ export default function FormAddMenuStock() {
         onClose={() => setPopEditMenuStocks(false)}
         onSubmit={(val) => {
           handleAddMenuStock(val);
+        }}
+      />
+      <PopUpChooseCategoryTypeComponent
+        open={popup?.PopUpChooseCategoryTypeComponent}
+        onClose={() => setPopup()}
+        categoryData={categorys}
+        setSelectedCategory={(_array) => {
+          const data = _array.join("||");
+          setSelectCategories(data);
         }}
       />
       {/* <<<<<<<<<<< popup <<<<<<<<<<<<<<<< */}

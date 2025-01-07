@@ -9,15 +9,13 @@ import {
 } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { getMenus } from "../../../services/menu";
-import { useStore } from "../../../store";
 import { useNavigate } from "react-router-dom";
-
 import { useStoreStore } from "../../../zustand/storeStore";
-
+import { createStockCategory } from "../../../services/stocks";
 export default function PopupMenuStock({ open, onClose, categoryId }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const [stock, setStock] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isSelectAll, setIsSelectAll] = useState(false);
@@ -25,11 +23,11 @@ export default function PopupMenuStock({ open, onClose, categoryId }) {
 
   const confirm = () => {
     navigate("/settingStore/stock/add");
-    const selectedStockDetails = selectedStocks.map((stock) => ({
-      name: stock.name,
-      quantity: stock.quantity,
-      categoryName: stock.categoryId.name,
-      categoryId: stock.categoryId._id,
+    const selectedStockDetails = selectedStocks?.map((stock) => ({
+      name: stock?.name,
+      quantity: stock?.quantity,
+      storeId: storeDetail?._id,
+      createdBy: storeDetail?.createdBy,
     }));
     localStorage.setItem("StockName", JSON.stringify(selectedStockDetails));
   };

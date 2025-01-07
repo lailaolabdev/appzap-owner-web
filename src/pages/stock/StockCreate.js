@@ -25,19 +25,17 @@ export default function StockCreate() {
   const [units, setUnits] = useState("");
   const [stockCategory, setStockCategory] = useState("");
 
-  // const [data, setData] = useState({
-  //   stockName: "",
-  //   buyPrice: 0,
-  //   wastes: 0,
-  //   stockQuality: 0,
-  //   note: "",
-  //   stockCategory: "",
-  //   unit: "",
-  // });
+  const [stockOnec, setStockOnec] = useState({
+    stockName: "",
+    buyPrice: 0,
+    wastes: 0,
+    stockQuality: 0,
+    note: "",
+    stockCategory: "",
+    unit: "",
+  });
 
   const [data, setData] = useState([]);
-
-  console.log("data", data);
 
   const getIndex = () => {
     const indexData = stock.length;
@@ -48,11 +46,12 @@ export default function StockCreate() {
     const res = await getStocksCategory(profile.data.storeId);
     setCategorysStock(res?.data);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validate name already exists
-    const nameExists = stock.some((item) => item.name === data[0]?.stockName);
+    const nameExists = stock.some((item) => item.name === data?.stockName);
 
     if (nameExists) {
       await Swal.fire({
@@ -64,37 +63,31 @@ export default function StockCreate() {
       return; // Stop further execution
     }
 
-    console.log("data[0]", data[0]);
-
     const newStock = {
-      name: data[0]?.stockName,
-      buyPrice: data[0]?.buyPrice,
-      wastes: data[0]?.wastes,
-      quantity: data[0]?.stockQuality,
-      detail: data[0]?.detail,
-      stockCategoryId: data[0]?.stockCategory,
-      unit: data[0]?.unit,
+      name: stockOnec?.stockName,
+      buyPrice: stockOnec?.buyPrice,
+      wastes: stockOnec?.wastes,
+      quantity: stockOnec?.stockQuality,
+      detail: stockOnec?.detail,
+      stockCategoryId: stockOnec?.stockCategory,
+      unit: stockOnec?.unit,
       storeId: profile.data.storeId,
       createdBy: profile.data._id,
     };
 
-    console.log("newStock", newStock);
-
-    localStorage.setItem("StockName", JSON.stringify([...stock, newStock]));
     setStock([...stock, newStock]);
+    localStorage.setItem("StockName", JSON.stringify([...stock, newStock]));
+    // setStock([...stock, newStock]);
 
-    // Reset form data
-    // setData([
-    //   {
-    //     stockName: "",
-    //     buyPrice: 0,
-    //     wastes: 0,
-    //     stockQuality: 0,
-    //     note: "",
-    //     stockCategory: "",
-    //     unit: "",
-    //   },
-    // ]);
+    setStockOnec({
+      stockName: "",
+      buyPrice: 0,
+      wastes: 0,
+      stockQuality: 0,
+      note: "",
+      stockCategory: "",
+      unit: "",
+    });
   };
 
   const createStock = async () => {
@@ -103,44 +96,69 @@ export default function StockCreate() {
       if (res.status === 200) {
         await Swal.fire({
           icon: "success",
-          title: "ປິນສຳເລັດ",
+          title: `${t("success")}`,
           showConfirmButton: false,
           timer: 1500,
         });
         localStorage.removeItem("Stock");
         navigate("/stock");
+      } else {
+        await Swal.fire({
+          icon: "error",
+          title: `ຊື້ສະຕອ໋ກມີຢູ່ແລ້ວ`,
+          text: `${res?.data?.existNames}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
     } catch (error) {
       console.log("err:", error);
+      await Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: `Message: ${error.message}, Code: ${
+          error.code || "INTERNAL_SERVER_ERROR"
+        }`,
+        showConfirmButton: true,
+      });
     }
+  };
+
+  const handleChangeOnce = (e) => {
+    const { name, value } = e.target;
+    setStockOnec((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleChange = (index, event) => {
     const { name, value } = event.target;
-    console.log("index", index);
-    console.log("name", name);
-    console.log("value", value);
-    const updatedData = [...data];
-    updatedData[index] = {
-      ...updatedData[index],
-      [name]: value,
-    };
 
-    console.log("data1234", updatedData);
+    // Update data for the specific index
+    setStock((prevData) => {
+      const updatedData = [...prevData];
+      updatedData[index] = {
+        ...updatedData[index],
+        [name]: value,
+      };
 
-    const createStock = stock.map((stockItem, index) => ({
-      name: stockItem.name,
-      buyPrice: data[index]?.buyPrice,
-      wastes: data[index]?.wastes,
-      quantity: data[index]?.quantity,
-      detail: stockItem.detail,
-      stockCategoryId: stockItem.categoryId,
-      unit: data[index]?.unit,
-      storeId: profile.data.storeId,
-      createdBy: profile.data._id,
-    }));
+      // Create updated stock structure
+      const createStock = stock.map((stockItem, idx) => ({
+        name: stockItem.name,
+        buyPrice: updatedData[idx]?.buyPrice || "",
+        wastes: updatedData[idx]?.wastes || "",
+        quantity: updatedData[idx]?.quantity || "",
+        detail: stockItem?.detail || "",
+        stockCategoryId: updatedData[idx]?.stockCategoryId || "",
+        unit: updatedData[idx]?.unit || "",
+        unit1: updatedData[idx]?.unit1 || "",
+        storeId: profile.data?.storeId || "",
+        createdBy: profile.data?._id || "",
+      }));
 
-    setData(createStock);
+      return createStock; // Update state with the new structure
+    });
   };
 
   const handleRemove = (index) => {
@@ -153,6 +171,8 @@ export default function StockCreate() {
       localStorage.setItem("StockName", JSON.stringify(updatedStockList));
     }
   };
+
+  console.log("stock", stock);
 
   useEffect(() => {
     getCategoryStock();
@@ -186,8 +206,8 @@ export default function StockCreate() {
                   placeholder={t("product_name")}
                   type="text"
                   required
-                  value={data.stockName}
-                  onChange={(e) => handleChange(stockIndex + 1, e)}
+                  value={stockOnec.stockName}
+                  onChange={handleChangeOnce}
                   autoComplete="given-name"
                   className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-orange-100 sm:text-sm/6"
                 />
@@ -201,8 +221,8 @@ export default function StockCreate() {
                 <input
                   name="buyPrice"
                   placeholder={t("buy_price")}
-                  value={data.buyPrice}
-                  onChange={(e) => handleChange(stockIndex + 1, e)}
+                  value={stockOnec.buyPrice}
+                  onChange={handleChangeOnce}
                   type="number"
                   autoComplete="family-name"
                   className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-orange-100 sm:text-sm/6"
@@ -219,8 +239,8 @@ export default function StockCreate() {
                 <input
                   name="stockQuality"
                   type="number"
-                  value={data.stockQuality}
-                  onChange={(e) => handleChange(stockIndex + 1, e)}
+                  value={stockOnec.stockQuality}
+                  onChange={handleChangeOnce}
                   placeholder={t("stock_amount")}
                   autoComplete="given-name"
                   className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-orange-100 sm:text-sm/6"
@@ -234,9 +254,9 @@ export default function StockCreate() {
               <div className="mt-2">
                 <input
                   name="wastes"
-                  value={data.wastes}
+                  value={stockOnec.wastes}
                   setWastes
-                  onChange={(e) => handleChange(stockIndex + 1, e)}
+                  onChange={handleChangeOnce}
                   placeholder={`${t("wastes")} %`}
                   type="number"
                   autoComplete="family-name"
@@ -249,8 +269,8 @@ export default function StockCreate() {
             <div className="relative col-span-3">
               <select
                 name="stockCategory"
-                value={data.stockCategory}
-                onChange={(e) => handleChange(stockIndex + 1, e)}
+                value={stockOnec.stockCategory}
+                onChange={handleChangeOnce}
                 className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer"
               >
                 <option selected={true} disabled={true} value="">
@@ -280,8 +300,8 @@ export default function StockCreate() {
             <div className="relative col-span-3">
               <select
                 name="unit"
-                value={data.unit}
-                onChange={(e) => handleChange(stockIndex + 1, e)}
+                value={stockOnec.unit}
+                onChange={handleChangeOnce}
                 className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer"
               >
                 <option selected={true} disabled={true} value="">
@@ -319,8 +339,8 @@ export default function StockCreate() {
             <div className="mt-2">
               <textarea
                 name="detail"
-                value={data.detail}
-                onChange={(e) => handleChange(stockIndex + 1, e)}
+                value={stockOnec.detail}
+                onChange={handleChangeOnce}
                 placeholder={t("note")}
                 rows={3}
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-orange-100 sm:text-sm/6"
@@ -372,7 +392,11 @@ export default function StockCreate() {
                           <input
                             name="buyPrice"
                             type="number"
-                            value={data.stockQuality}
+                            value={
+                              stock?.buyPrice
+                                ? stock?.buyPrice
+                                : data.stockQuality || 0
+                            }
                             onChange={(e) => handleChange(index, e)}
                             placeholder={t("buy_price")}
                             autoComplete="given-name"
@@ -385,7 +409,11 @@ export default function StockCreate() {
                           <input
                             name="quantity"
                             type="number"
-                            value={data?.quantity}
+                            value={
+                              stock?.quantity
+                                ? stock?.quantity
+                                : data?.quantity || 0
+                            }
                             onChange={(e) => handleChange(index, e)}
                             placeholder={t("stock_amount")}
                             autoComplete="given-name"
@@ -398,7 +426,9 @@ export default function StockCreate() {
                           <input
                             name="wastes"
                             type="number"
-                            value={data?.wastes}
+                            value={
+                              stock?.wastes ? stock?.wastes : data?.wastes || 0
+                            }
                             onChange={(e) => handleChange(index, e)}
                             placeholder={t("wastes")}
                             autoComplete="given-name"
@@ -409,13 +439,45 @@ export default function StockCreate() {
                       </td>
                       {/* Display category name instead of ID */}
                       <td className="px-4 py-2 text-center">
-                        {stock.categoryName}
+                        <div className="relative col-span-3">
+                          <select
+                            name="stockCategoryId"
+                            value={
+                              stock?.stockCategoryId
+                                ? stock?.stockCategoryId
+                                : data.stockCategoryId || ""
+                            }
+                            onChange={(e) => handleChange(index, e)}
+                            className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer"
+                          >
+                            <option selected={true} disabled={true} value="">
+                              -- {t("chose_stock_type")} --
+                            </option>
+                            {categoryStock?.map((e) => {
+                              return <option value={e?._id}>{e?.name}</option>;
+                            })}
+                          </select>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="1.2"
+                            stroke="currentColor"
+                            className="h-5 w-5 ml-1 absolute top-2.5 right-2.5 text-slate-700"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+                            />
+                          </svg>
+                        </div>
                       </td>
                       <td>
                         <div className="relative col-span-3">
                           <select
                             name="unit"
-                            value={data.unit}
+                            value={stock?.unit ? stock?.unit : data.unit || ""}
                             onChange={(e) => handleChange(index, e)}
                             className="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-3 pr-8 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-400 shadow-sm focus:shadow-md appearance-none cursor-pointer justify-center"
                           >
