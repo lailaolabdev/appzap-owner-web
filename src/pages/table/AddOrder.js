@@ -1235,7 +1235,7 @@ function AddOrder() {
                         style={{ border: "none", textAlign: "left" }}
                         className={fontMap[language]}
                       >
-                        {t("menu_name")} YO
+                        {t("menu_name")}
                       </th>
                       <th
                         style={{ border: "none", textAlign: "center" }}
