@@ -67,7 +67,7 @@ export default function MainLayout({ children }) {
 
   const handleUpdateStoreAvailability = async () => {
     try {
-      await updateStoreAvailability(salesData._id, allIdOfSelectStore, true);
+      await updateStoreAvailability(salesData?._id, allIdOfSelectStore, true);
     } catch (error) {
       console.error("Error updateStoreAvailability:", error);
     }
@@ -97,11 +97,11 @@ export default function MainLayout({ children }) {
     let updateIntervalId = null;
   
     if (!isLoading && salesData && storeDetail) {
-      const targetStore = salesData.selectedStores?.find(
+      const targetStore = salesData?.selectedStores?.find(
         store => store.storeId === storeId || store.storeId === null
       );
   
-      const isUnavailableStore = salesData.selectedStores?.some(
+      const isUnavailableStore = salesData?.selectedStores?.some(
         store => store.storeId === storeId && store.isAvailable === false
       );
   
@@ -121,7 +121,7 @@ export default function MainLayout({ children }) {
   
         // เช็คว่าควรแสดง popup และยังไม่เคย update views
         if (shouldShow && !hasUpdatedViews) {
-          updateViews(salesData._id);
+          updateViews(salesData?._id);
           setHasUpdatedViews(true); // mark ว่า update แล้ว
         }
   
@@ -140,7 +140,7 @@ export default function MainLayout({ children }) {
 
   useEffect(() => {
     setHasUpdatedViews(false);
-  }, [salesData?.selectedStores.map(id => id.isAvailable)]);
+  }, [salesData?.selectedStores?.map(id => id.isAvailable)]);
 
   useEffect(() => {
     setDaysCounter(0);
