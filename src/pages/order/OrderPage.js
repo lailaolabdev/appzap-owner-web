@@ -26,11 +26,15 @@ import moment, { lang } from "moment";
 import { printItems } from "../table/printItems";
 import { fontMap } from "../../utils/font-map";
 
-import { groupItemsByPrinter, convertHtmlToBase64, runPrint } from "./orderHelpers";
+import {
+  groupItemsByPrinter,
+  convertHtmlToBase64,
+  runPrint,
+} from "./orderHelpers";
 
 // zustand
-import { useStoreStore } from "../../zustand/storeStore"
-import { useOrderStore } from "../../zustand/orderStore"
+import { useStoreStore } from "../../zustand/storeStore";
+import { useOrderStore } from "../../zustand/orderStore";
 
 export default function OrderPage() {
   const {
@@ -63,27 +67,23 @@ export default function OrderPage() {
     setPrintBackground,
   } = useStore();
 
-
   // zustand state store
-  const {
-    storeDetail, 
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, updateStoreDetail } = useStoreStore();
 
-    
   const {
-    orderItems, 
+    orderItems,
     fetchOrdersByStatus,
     waitingOrders,
     doingOrders,
     servedOrders,
-    canceledOrders, 
+    canceledOrders,
     handleNewOrderItems,
     handleUpdateOrderItems,
-    handleCheckbox
-  } = useOrderStore()
+    handleCheckbox,
+  } = useOrderStore();
 
-  const [ordersUpdating, setOrdersUpdating] = useState(false)
-  const [canceledfromStatus, setCanceledfromStatus] = useState(WAITING_STATUS)
+  const [ordersUpdating, setOrdersUpdating] = useState(false);
+  const [canceledfromStatus, setCanceledfromStatus] = useState(WAITING_STATUS);
 
   useEffect(() => {
     const fetchAllOrders = async () => {
@@ -99,18 +99,17 @@ export default function OrderPage() {
     fetchAllOrders();
   }, [fetchOrdersByStatus]);
 
-
-  const handleUpdateOrderStatus = async ({fromStatus, toStatus}) => {
+  const handleUpdateOrderStatus = async ({ fromStatus, toStatus }) => {
     try {
       // If `fromStatus` is not provided, use the status of the first updated order
       if (!fromStatus || !toStatus) {
-        console.log("No fromStatus or toStatus provided!")
+        console.log("No fromStatus or toStatus provided!");
         Swal.fire({
           icon: "error",
           title: "Oop!", // Error
           text: "No update status provided!", // Failed to update status
         });
-        return
+        return;
       }
 
       if (fromStatus === toStatus) {
@@ -123,15 +122,17 @@ export default function OrderPage() {
         return; // Return early if no orders to update or invalid toStatus
       }
 
-      setOrdersUpdating(true)
+      setOrdersUpdating(true);
       // Get the orders based on the `fromStatus`
-      const ordersToUpdate = getOrdersByStatus(fromStatus).filter((item) => item.isChecked);
-  
+      const ordersToUpdate = getOrdersByStatus(fromStatus).filter(
+        (item) => item.isChecked
+      );
+
       console.log("Before update:", ordersToUpdate);
-  
+
       if (ordersToUpdate.length === 0) {
         console.log(`No checked items with the status ${fromStatus}`);
-        setOrdersUpdating(false)
+        setOrdersUpdating(false);
         Swal.fire({
           icon: "error",
           title: "Oop!", // Error
@@ -139,21 +140,20 @@ export default function OrderPage() {
         });
         return;
       }
-  
+
       // Prepare the orders to update (with the new `toStatus`)
       const _updateItems = ordersToUpdate.map((item) => ({
         ...item, // Spread the existing fields to keep them unchanged
         status: toStatus, // Update only the `status` field to `toStatus`
       }));
 
-  
       // Update order status in the backend
       const response = await updateOrderItem(_updateItems, storeDetail?._id);
-  
+
       console.log({ response });
-  
+
       if (response?.data?.message === "UPADTE_ORDER_SECCESS") {
-        setOrdersUpdating(false)
+        setOrdersUpdating(false);
         // Show success message
         Swal.fire({
           icon: "success",
@@ -161,14 +161,17 @@ export default function OrderPage() {
           showConfirmButton: false,
           timer: 2000,
         });
-        
-        console.log({_updateItems})
+
+        console.log({ _updateItems });
         // Update the relevant orders in the store (UI re-render)
-        handleUpdateOrderItems({updatedOrders: _updateItems, fromStatus, toStatus})
+        handleUpdateOrderItems({
+          updatedOrders: _updateItems,
+          fromStatus,
+          toStatus,
+        });
       }
 
-      setOrdersUpdating(false)
-  
+      setOrdersUpdating(false);
     } catch (err) {
       console.error("Error updating order status:", err);
       Swal.fire({
@@ -178,7 +181,7 @@ export default function OrderPage() {
       });
     }
   };
-  
+
   // Helper function to get the orders based on the status
   const getOrdersByStatus = (status) => {
     switch (status) {
@@ -198,8 +201,6 @@ export default function OrderPage() {
         return []; // Return empty array if no match
     }
   };
-  
-  
 
   useEffect(() => {
     const orderSelect = orderItems?.filter((e) => e?.isChecked);
@@ -215,19 +216,26 @@ export default function OrderPage() {
   }, [orderItems]);
 
   const [onPrinting, setOnPrinting] = useState(false);
-  const onPrintForCher = async ({fromStatus}) => {
+  const onPrintForCher = async ({ fromStatus }) => {
     try {
       if (!fromStatus) {
-        return
+        return;
       }
 
       setOnPrinting(true);
       setCountError("");
-      const orderSelect = getOrdersByStatus(fromStatus).filter((item) => item.isChecked);
+      const orderSelect = getOrdersByStatus(fromStatus).filter(
+        (item) => item.isChecked
+      );
 
-      
-      console.log({orderSelect})
-      const base64ArrayAndPrinter = convertHtmlToBase64(orderSelect, printers, storeDetail, t("total"), t(storeDetail?.firstCurrency));
+      console.log({ orderSelect });
+      const base64ArrayAndPrinter = convertHtmlToBase64(
+        orderSelect,
+        printers,
+        storeDetail,
+        t("total"),
+        t(storeDetail?.firstCurrency)
+      );
 
       let arrayPrint = [];
       for (var index = 0; index < base64ArrayAndPrinter.length; index++) {
@@ -241,7 +249,7 @@ export default function OrderPage() {
       }
 
       // TODO: uncheck the selected orders
-      orderSelect.map(order => handleCheckbox(order, fromStatus))
+      orderSelect.map((order) => handleCheckbox(order, fromStatus));
 
       if (countError == "ERR") {
         setIsLoading(false);
@@ -262,7 +270,7 @@ export default function OrderPage() {
       setOnPrinting(false);
       setPrintBackground((prev) => [...prev, ...arrayPrint]);
     } catch (err) {
-      console.log("printing err: ", err)
+      console.log("printing err: ", err);
       setIsLoading(false);
       setOnPrinting(false);
     }
@@ -273,8 +281,11 @@ export default function OrderPage() {
       if (!pinStatus) return;
       setPinStatus(false);
       if (workAfterPin == "cancle_order") {
-        console.log("update to canceled")
-        await handleUpdateOrderStatus({fromStatus: canceledfromStatus,toStatus: CANCEL_STATUS});
+        console.log("update to canceled");
+        await handleUpdateOrderStatus({
+          fromStatus: canceledfromStatus,
+          toStatus: CANCEL_STATUS,
+        });
         // getOrderWaitingAndDoingByStore();
       }
       setWorkAfterPin("");
@@ -320,12 +331,12 @@ export default function OrderPage() {
     const updatedData = {
       ...storeDetail,
       isStaffAutoPrint: !storeDetail?.isStaffAutoPrint,
-      isUserAutoPrint: !storeDetail?.isUserAutoPrint
+      isUserAutoPrint: !storeDetail?.isUserAutoPrint,
     };
     await updateStoreDetail(updatedData, storeDetail?._id);
   };
 
-  const Tool = ({fromStatus}) => {
+  const Tool = ({ fromStatus }) => {
     return (
       <div
         style={{
@@ -345,7 +356,7 @@ export default function OrderPage() {
           <Button
             className="text-white !bg-gray-500 border-0"
             onClick={async () => {
-              onPrintForCher({fromStatus});
+              onPrintForCher({ fromStatus });
               // await handleUpdateOrderStatus(DOING_STATUS);
             }}
             disabled={onPrinting}
@@ -358,7 +369,10 @@ export default function OrderPage() {
             className="text-white !bg-orange-500 border-0"
             disabled={ordersUpdating}
             onClick={async () => {
-              await handleUpdateOrderStatus({fromStatus, toStatus: DOING_STATUS});
+              await handleUpdateOrderStatus({
+                fromStatus,
+                toStatus: DOING_STATUS,
+              });
               // getOrderWaitingAndDoingByStore();
             }}
           >
@@ -370,7 +384,10 @@ export default function OrderPage() {
             className="text-white !bg-green-500 border-0"
             disabled={ordersUpdating}
             onClick={async () => {
-              await handleUpdateOrderStatus({fromStatus, toStatus: SERVE_STATUS});
+              await handleUpdateOrderStatus({
+                fromStatus,
+                toStatus: SERVE_STATUS,
+              });
               // getOrderWaitingAndDoingByStore();
             }}
           >
@@ -382,7 +399,7 @@ export default function OrderPage() {
             className="text-white !bg-red-500 border-0"
             disabled={ordersUpdating}
             onClick={async () => {
-              setCanceledfromStatus(fromStatus)
+              setCanceledfromStatus(fromStatus);
               setWorkAfterPin("cancle_order");
               setPopup({ PopUpPin: true });
             }}
@@ -393,7 +410,7 @@ export default function OrderPage() {
         </div>
 
         {/* <div className={fontMap[language]}>{t("auto_print")}YO</div> */}
-        <div>
+        {/* <div>
           <label className={fontMap[language]}>
             {t("auto_print")}
           </label>
@@ -402,8 +419,7 @@ export default function OrderPage() {
             checked={storeDetail?.isStaffAutoPrint}
             onChange={() => handleToggleAutoPrint()}
           />
-        </div>
-
+        </div> */}
       </div>
     );
   };
@@ -484,15 +500,14 @@ export default function OrderPage() {
             );
           })}
       </div>
-        <PopUpPin
-          open={popup?.PopUpPin}
-          onClose={() => setPopup()}
-          setPinStatus={(e) => {
-            setPinStatus(e);
-            setPopup();
-          }}
-        />
-
+      <PopUpPin
+        open={popup?.PopUpPin}
+        onClose={() => setPopup()}
+        setPinStatus={(e) => {
+          setPinStatus(e);
+          setPopup();
+        }}
+      />
     </RootStyle>
   );
 }
