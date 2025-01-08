@@ -55,7 +55,7 @@ export default function DashboardFinance({
 
   const handleClose = () => setShow(false);
   const { profile } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
 
   // console.log("data", data);
 
@@ -350,12 +350,13 @@ export default function DashboardFinance({
       baseTotal +
       (dataModal?.taxAmount ?? 0) +
       (dataModal?.serviceChargeAmount ?? 0) +
-      dataModal?.change;
+      (dataModal?.discount ?? 0);
   } else if (dataModal?.paymentMethod === "TRANSFER") {
     TotalCalculate =
       baseTotal +
       (dataModal?.taxAmount ?? 0) +
-      (dataModal?.serviceChargeAmount ?? 0);
+      (dataModal?.serviceChargeAmount ?? 0) +
+      (dataModal?.discount ?? 0);
   } else if (dataModal?.paymentMethod === "TRANSFER_CASH") {
     TotalCalculate = baseTotal ?? 0 - dataModal?.change ?? 0;
   } else if (dataModal?.paymentMethod === "CASH_TRANSFER_POINT") {
@@ -825,14 +826,24 @@ export default function DashboardFinance({
                     </span>
 
                     <span>
-                      {moneyCurrency(TotalAmount)} {storeDetail?.firstCurrency}
+                      {moneyCurrency(
+                        dataModal?.discount > 0
+                          ? (dataModal?.discount ?? 0) + TotalAmount
+                          : TotalAmount
+                      )}{" "}
+                      {storeDetail?.firstCurrency}
                     </span>
                     <span>
                       {moneyCurrency(dataModal?.change)}{" "}
                       {storeDetail?.firstCurrency}{" "}
                     </span>
                     <span>
-                      {moneyCurrency(totalAfter)} {storeDetail?.firstCurrency}
+                      {moneyCurrency(
+                        dataModal?.discount > 0
+                          ? (dataModal?.discount ?? 0) + totalAfter
+                          : totalAfter
+                      )}{" "}
+                      {storeDetail?.firstCurrency}
                     </span>
                   </div>
                 </div>
