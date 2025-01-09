@@ -215,7 +215,10 @@ export default function OrderPage() {
     setGroupedItems(grouped);
   }, [orderItems]);
 
+  const [orders, setOrders] = useState([]);
+
   const [onPrinting, setOnPrinting] = useState(false);
+
   const onPrintForCher = async ({ fromStatus }) => {
     try {
       if (!fromStatus) {
@@ -224,11 +227,24 @@ export default function OrderPage() {
 
       setOnPrinting(true);
       setCountError("");
+
       const orderSelect = getOrdersByStatus(fromStatus).filter(
         (item) => item.isChecked
       );
 
+      if (orderSelect.length === 0) {
+        Swal.fire({
+          icon: "warning",
+          title: "Please select orders to print",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        setOnPrinting(false);
+        return;
+      }
+
       console.log({ orderSelect });
+
       const base64ArrayAndPrinter = convertHtmlToBase64(
         orderSelect,
         printers,
@@ -238,7 +254,7 @@ export default function OrderPage() {
       );
 
       let arrayPrint = [];
-      for (var index = 0; index < base64ArrayAndPrinter.length; index++) {
+      for (let index = 0; index < base64ArrayAndPrinter.length; index++) {
         arrayPrint.push(
           runPrint(
             base64ArrayAndPrinter[index].dataUrl,
@@ -248,31 +264,41 @@ export default function OrderPage() {
         );
       }
 
-      // TODO: uncheck the selected orders
-      orderSelect.map((order) => handleCheckbox(order, fromStatus));
-
-      if (countError == "ERR") {
-        setIsLoading(false);
+      if (countError === "ERR") {
         Swal.fire({
           icon: "error",
-          title: "ປິ້ນບໍ່ສຳເລັດ",
+          title: "Printing failed",
           showConfirmButton: false,
           timer: 1500,
         });
       } else {
         await Swal.fire({
           icon: "success",
-          title: "ປິ້ນສຳເລັດ",
+          title: "Printed successfully",
           showConfirmButton: false,
           timer: 1500,
         });
       }
+
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          orderSelect.find((o) => o._id === order._id)
+            ? { ...order, isChecked: true } // ຄົງສະຖານະ isChecked
+            : order
+        )
+      );
+
       setOnPrinting(false);
       setPrintBackground((prev) => [...prev, ...arrayPrint]);
     } catch (err) {
-      console.log("printing err: ", err);
+      console.error("Error printing orders:", err);
       setIsLoading(false);
       setOnPrinting(false);
+      Swal.fire({
+        icon: "error",
+        title: "An error occurred",
+        text: "Printing failed",
+      });
     }
   };
 
