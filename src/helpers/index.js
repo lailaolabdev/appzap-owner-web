@@ -257,3 +257,19 @@ export const convertImageToBase64 = async (imageUrl) => {
     return null;
   }
 };
+
+// Function to get the exchange rate (sell rate) for a given currency
+export function getExchangeRate(currency, exchangeRate) {
+  const rate = exchangeRate?.find((item) => item?.currencyCode === currency);
+  return rate ? rate?.sell : 1; // Default to 1 if the currency is not found
+}
+
+// Function to calculate total sum in LAK based on prices and exchange rates
+export function calculateTotalSumInLAK(prices, exchangeRate) {
+  return (
+    prices?.priceLAK +
+    prices?.priceTHB * getExchangeRate("THB", exchangeRate) +
+    prices?.priceUSD * getExchangeRate("USD", exchangeRate) +
+    prices?.priceCNY * getExchangeRate("CNY", exchangeRate)
+  );
+}

@@ -8,6 +8,7 @@ import { getHeaders } from "../../services/auth";
 import { getPrinters } from "../../services/printer";
 import { useStore } from "../../store/useStore";
 import { useTranslation } from "react-i18next";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 import { useStoreStore } from "../../zustand/storeStore";
 
@@ -20,7 +21,7 @@ export default function PrinterCounter() {
   const [printsData, setPrintsData] = useState();
 
   const { getPrinterCounterState } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
 
   useEffect(() => {
     if (selectPrinterCounter?.prints) {
@@ -128,11 +129,11 @@ export default function PrinterCounter() {
         }}
         onClick={() => navigate(-1)}
       >
-        {t('previous')}
+        {t("previous")}
       </div>
       <Form.Group style={{ padding: "0 5px" }}>
         <Form.Label>
-          {t('print_table_bill')} <span style={{ color: "red" }}>*</span>
+          {t("print_table_bill")} <span style={{ color: "red" }}>*</span>
         </Form.Label>
         <Form.Control
           as="select"
@@ -140,7 +141,7 @@ export default function PrinterCounter() {
           value={printsData?.BILL}
           onChange={(e) => handleChangePrinterCounter(e)}
         >
-          <option value="">{t('chose_printer')}</option>
+          <option value="">{t("chose_printer")}</option>
           {printers?.map((e, i) => (
             <option value={e?._id} key={i}>
               {e?.name} ({e?.ip})
@@ -151,7 +152,7 @@ export default function PrinterCounter() {
       <br />
       <Form.Group style={{ padding: "0 5px" }}>
         <Form.Label>
-          {t('print_bill_history')} <span style={{ color: "red" }}>*</span>
+          {t("print_bill_history")} <span style={{ color: "red" }}>*</span>
         </Form.Label>
         <Form.Control
           as="select"
@@ -159,7 +160,7 @@ export default function PrinterCounter() {
           value={printsData?.BILL_HISTORY}
           onChange={(e) => handleChangePrinterHistory(e)}
         >
-          <option value="">{t('chose_printer')}</option>
+          <option value="">{t("chose_printer")}</option>
           {printers?.map((e, i) => (
             <option value={e?._id} key={i}>
               {e?.name} ({e?.ip})
