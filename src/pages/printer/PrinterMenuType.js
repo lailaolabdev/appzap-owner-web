@@ -7,13 +7,12 @@ import { COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
 import { addPrinter } from "../../services/printer";
 import { useStore } from "../../store/useStore";
 import Loading from "../../components/Loading";
-import { Form } from "react-bootstrap";
-import { updateCategory } from "../../services/menuCategory";
+import { Form, Spinner } from "react-bootstrap";
+import { getCategories, updateCategory } from "../../services/menuCategory";
 import { useTranslation } from "react-i18next";
 
 import { useMenuStore } from "../../zustand/menuStore";
 import { useStoreStore } from "../../zustand/storeStore";
-
 
 export default function PrinterMenuType() {
   const { t } = useTranslation();
@@ -22,25 +21,47 @@ export default function PrinterMenuType() {
   // state
   const [popup, setPopup] = useState({ add: false });
 
-  const {
-    printers,
-  } = useStore();
+  const { printers } = useStore();
 
-  const { menuCategories, isMenuCategoryLoading, getMenuCategories } = useMenuStore();
-  const { storeDetail } = useStoreStore()
+  const { menuCategories, isMenuCategoryLoading, getMenuCategories } =
+    useMenuStore();
+  const { storeDetail } = useStoreStore();
+  const [categories, setCategories] = useState([]);
 
   // function
   const handleChangePrinterMenuCat = async (_id, event) => {
-    const storeId = storeDetail?._id
+    const storeId = storeDetail?._id;
     const idPinter = event?.target?.value;
     const data = await updateCategory({ printer: idPinter }, _id);
     getMenuCategories(storeId);
     return;
   };
 
+  const fetchCategory = async () => {
+    try {
+      const data = await getCategories(storeDetail?._id);
+      setCategories(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategory();
+  }, []);
+
   return (
     <>
-      <div style={{ textDecoration: "underline", textAlign: "center", color: "blue" }} onClick={() => navigate(-1)}>ກັບຄືນ</div>
+      <div
+        style={{
+          textDecoration: "underline",
+          textAlign: "center",
+          color: "blue",
+        }}
+        onClick={() => navigate(-1)}
+      >
+        ກັບຄືນ
+      </div>
       {isMenuCategoryLoading ? <Loading /> : ""}
       <div style={{ padding: 10 }}>
         <div
@@ -51,21 +72,23 @@ export default function PrinterMenuType() {
             marginBottom: 10,
           }}
         >
-          <div>{t('all_menu_type')} ({menuCategories?.length}) {t('type')}</div>
+          <div>
+            {t("all_menu_type")} ({categories?.length}) {t("type")}
+          </div>
         </div>
         <div>
           <TableComponent>
             <thead>
               <tr>
                 <th>#</th>
-                <th>{t('image')}</th>
-                <th>{t('menu_type_name')}</th>
-                <th>{t('note')}</th>
-                <th>{t('chose_printer_')}</th>
+                <th>{t("image")}</th>
+                <th>{t("menu_type_name")}</th>
+                <th>{t("note")}</th>
+                <th>{t("chose_printer_")}</th>
               </tr>
             </thead>
             <tbody>
-              {menuCategories?.map((e, i) => (
+              {categories?.map((e, i) => (
                 <tr key={i}>
                   <td>{i + 1}</td>
                   <td>
@@ -90,7 +113,7 @@ export default function PrinterMenuType() {
                         handleChangePrinterMenuCat(e?._id, event)
                       }
                     >
-                      <option value="">{t('chose_printer')}</option>
+                      <option value="">{t("chose_printer")}</option>
                       {printers?.map((e, i) => (
                         <option value={e?._id} key={i}>
                           {e?.name} ({e?.ip})
