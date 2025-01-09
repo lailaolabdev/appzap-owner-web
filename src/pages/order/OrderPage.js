@@ -264,6 +264,8 @@ export default function OrderPage() {
         );
       }
 
+      console.log("1", arrayPrint);
+
       if (countError === "ERR") {
         Swal.fire({
           icon: "error",
@@ -294,11 +296,13 @@ export default function OrderPage() {
       console.error("Error printing orders:", err);
       setIsLoading(false);
       setOnPrinting(false);
-      Swal.fire({
+      await Swal.fire({
         icon: "error",
-        title: "An error occurred",
-        text: "Printing failed",
+        title: `${t("print_fial")}`,
+        showConfirmButton: false,
+        timer: 1500,
       });
+      return err;
     }
   };
 
