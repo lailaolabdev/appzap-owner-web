@@ -53,7 +53,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
   // provider
   const { printers, printerCounter } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   // useEffect
   useEffect(() => {
     // console.log("printers: ", billRef.current);
@@ -340,10 +340,12 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                     type: storeDetail?.firstCurrency,
                   }))
                 : []),
-              {
-                name: `${t("point")}:`,
-                value: moneyReport?.successAmount?.point || 0,
-              },
+              moneyReport?.successAmount?.point > 0
+                ? {
+                    name: `${t("point")}:`,
+                    value: moneyReport?.successAmount?.point || 0,
+                  }
+                : null,
               {
                 name: `${t("discount_bill")}:`,
                 value: reportBill?.discountBills,
@@ -372,19 +374,21 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
               //   value: reportBill["ເງິນຄ້າງ"],
               //   type: storeDetail?.firstCurrency,
               // },
-            ].map((e) => (
-              <div
-                key={e?.name}
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <span style={{ textAlign: "left", fontWeight: "bold" }}>
-                  {e?.name}
-                </span>
-                <span style={{ textAlign: "right", fontWeight: "bold" }}>
-                  {moneyCurrency(e?.value)} {e?.type}
-                </span>
-              </div>
-            ))}
+            ]
+              .filter(Boolean)
+              .map((e) => (
+                <div
+                  key={e?.name}
+                  style={{ display: "flex", justifyContent: "space-between" }}
+                >
+                  <span style={{ textAlign: "left", fontWeight: "bold" }}>
+                    {e?.name}
+                  </span>
+                  <span style={{ textAlign: "right", fontWeight: "bold" }}>
+                    {moneyCurrency(e?.value)} {e?.type}
+                  </span>
+                </div>
+              ))}
             {bank?.data?.length > 0 && (
               <>
                 <hr style={{ borderBottom: "1px dotted #000" }} />

@@ -70,10 +70,7 @@ export default function DashboardPage() {
   const [deliveryReport, setDeliveryReport] = useState([]);
 
   // provider
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
 
   // useEffect
   useEffect(() => {
@@ -483,7 +480,7 @@ export default function DashboardPage() {
                       : []),
                     // Insert the point section after the "total_tsf"
 
-                    {
+                    moneyReport?.successAmount?.point > 0 && {
                       method: (
                         <div style={{ fontWeight: 700 }}>{t("point")}</div>
                       ),

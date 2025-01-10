@@ -398,32 +398,34 @@ export default function DashboardFinance({
               >
                 {t("tableDiscount")}
               </th>
-
-              <th
-                style={{
-                  textWrap: "nowrap",
-                }}
-              >
-                {t("point")}
-              </th>
-
-              <>
+              {storeDetail?.isCRM && (
                 <th
                   style={{
                     textWrap: "nowrap",
                   }}
                 >
-                  delivery
+                  {t("point")}
                 </th>
-                <th
-                  style={{
-                    textWrap: "nowrap",
-                  }}
-                >
-                  {t("name")} platform
-                </th>
-              </>
+              )}
 
+              {storeDetail?.isDelivery && (
+                <>
+                  <th
+                    style={{
+                      textWrap: "nowrap",
+                    }}
+                  >
+                    delivery
+                  </th>
+                  <th
+                    style={{
+                      textWrap: "nowrap",
+                    }}
+                  >
+                    {t("name")} platform
+                  </th>
+                </>
+              )}
               <th
                 style={{
                   textWrap: "nowrap",
@@ -497,30 +499,33 @@ export default function DashboardFinance({
                       }).format(item?.discount) + t("lak")
                     : `${item?.discount}%`}
                 </td>
-                <td>{item?.point ? moneyCurrency(item?.point) : 0}</td>
+                {storeDetail?.isCRM && (
+                  <td>{item?.point ? moneyCurrency(item?.point) : 0}</td>
+                )}
 
-                <>
-                  <td>
-                    {item?.orderId[0]?.deliveryCode
-                      ? ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-                        ? new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(_countAmount(item?.orderId))
-                        : new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(item?.deliveryAmount)
-                      : 0}{" "}
-                    {storeDetail?.firstCurrency}
-                  </td>
-                  <td>
-                    {item?.deliveryName
-                      ? item?.deliveryName
-                      : item?.orderId[0]?.platform
-                      ? item?.orderId[0]?.platform
-                      : "-"}
-                  </td>
-                </>
-
+                {storeDetail?.isDelivery && (
+                  <>
+                    <td>
+                      {item?.orderId[0]?.deliveryCode
+                        ? ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                          ? new Intl.NumberFormat("ja-JP", {
+                              currency: "JPY",
+                            }).format(_countAmount(item?.orderId))
+                          : new Intl.NumberFormat("ja-JP", {
+                              currency: "JPY",
+                            }).format(item?.deliveryAmount)
+                        : 0}{" "}
+                      {storeDetail?.firstCurrency}
+                    </td>
+                    <td>
+                      {item?.deliveryName
+                        ? item?.deliveryName
+                        : item?.orderId[0]?.platform
+                        ? item?.orderId[0]?.platform
+                        : "-"}
+                    </td>
+                  </>
+                )}
                 <td>
                   {item?.orderId[0]?.deliveryCode
                     ? 0

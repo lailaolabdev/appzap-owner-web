@@ -302,19 +302,23 @@ export default function Dashboard() {
                 {" : "}
                 {convertNumber(moneyReport?.successAmount?.transferPayment)}
               </div>
+              {moneyReport?.delivery[0]?.totalRevenue[0]?.totalRevenue > 0 && (
+                <div>
+                  {"Delivery"}
+                  {" : "}
+                  {convertNumber(
+                    moneyReport?.delivery[0]?.totalRevenue[0]?.totalRevenue || 0
+                  )}
+                </div>
+              )}
 
-              <div>
-                {"Delivery"}
-                {" : "}
-                {convertNumber(
-                  moneyReport?.delivery[0]?.totalRevenue[0]?.totalRevenue || 0
-                )}
-              </div>
-              <div>
-                {t("point")}
-                {" : "}
-                {convertNumber(moneyReport?.successAmount?.point || 0)}
-              </div>
+              {moneyReport?.successAmount?.point > 0 && (
+                <div>
+                  {t("point")}
+                  {" : "}
+                  {convertNumber(moneyReport?.successAmount?.point || 0)}
+                </div>
+              )}
 
               <div>
                 {t("cashDiscount")}
