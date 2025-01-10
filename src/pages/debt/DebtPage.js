@@ -189,7 +189,7 @@ export default function DebtPage() {
                   // fontWeight: 700
                 }}
               >
-                {showData?.length - 1 || 0}
+                {showData?.length  || 0}
               </div>
             </Card.Body>
           </Card>
