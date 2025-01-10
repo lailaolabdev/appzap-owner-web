@@ -127,7 +127,7 @@ export const updatePointStore = async (data) => {
 
 export const getAllPoints = async (TOKEN) => {
   try {
-    const url = `${END_POINT_SEVER}/v6/member/all-point`;
+    const url = `${END_POINT_SEVER}/v7/member/all-point`;
     const response = await axios.get(url, { headers: TOKEN });
     return response?.data;
   } catch (error) {

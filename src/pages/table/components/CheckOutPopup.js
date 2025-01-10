@@ -83,10 +83,7 @@ export default function CheckOutPopup({
     profile,
   } = useStore();
 
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
 
   //select Bank
 
@@ -151,7 +148,7 @@ export default function CheckOutPopup({
         memberPhone: _res.data?.phone,
         memberName: _res.data?.name,
         Name: _res.data?.name,
-        Point: _res.data?.pointId?.availablePoint,
+        Point: _res.data?.point,
       }));
     } catch (err) {
       console.log(err);
@@ -416,57 +413,104 @@ export default function CheckOutPopup({
 
   // console.log("SERVICE", storeDetail?.serviceChargePer);
 
+  // const handleSubmit = async () => {
+  //   saveServiceChargeDetails();
+
+  //   if (storeDetail?.isCRM && tab === "cash_transfer_point") {
+  //     await RedeemPointUser()
+  //       .then((res) => {
+  //         // if (res) {
+  //         //   Swal.fire({
+  //         //     icon: "success",
+  //         //     title: "ການຊຳລະດ້ວຍພ໋ອຍສຳເລັດ",
+  //         //     showConfirmButton: false,
+  //         //     timer: 1800,
+  //         //   });
+  //         // }
+  //       })
+  //       .catch((err) => {
+  //         if (err) {
+  //           Swal.fire({
+  //             icon: "error",
+  //             title: "ການຊຳລະດ້ວຍພ໋ອຍບໍ່ສຳເລັດ",
+  //             showConfirmButton: false,
+  //             timer: 1800,
+  //           });
+  //           return;
+  //         }
+  //       });
+  //   }
+  //   await _checkBill(selectCurrency?.id, selectCurrency?.name);
+
+  //   if (storeDetail?.isCRM && hasCRM) {
+  //     await PointUsers()
+  //       .then((res) => {
+  //         // if (res) {
+  //         //   Swal.fire({
+  //         //     icon: "success",
+  //         //     title: "success",
+  //         //     showConfirmButton: false,
+  //         //     timer: 1800,
+  //         //   });
+  //         // }
+  //       })
+  //       .catch((err) => {
+  //         if (err) {
+  //           Swal.fire({
+  //             icon: "error",
+  //             title: "ບໍ່ສາມາດຮັບ point ຈາກການຊຳລະຄັ້ງນີ້",
+  //             showConfirmButton: false,
+  //             timer: 1800,
+  //           });
+  //         }
+  //       });
+  //   }
+  // };
+
   const handleSubmit = async () => {
-    saveServiceChargeDetails();
+    const showAlert = (icon, title, text, timer = 1800) => {
+      Swal.fire({
+        icon,
+        title,
+        text,
+        showConfirmButton: false,
+        timer,
+      });
+    };
 
-    if (storeDetail?.isCRM && tab === "cash_transfer_point") {
-      await RedeemPointUser()
-        .then((res) => {
-          // if (res) {
-          //   Swal.fire({
-          //     icon: "success",
-          //     title: "ການຊຳລະດ້ວຍພ໋ອຍສຳເລັດ",
-          //     showConfirmButton: false,
-          //     timer: 1800,
-          //   });
-          // }
-        })
-        .catch((err) => {
-          if (err) {
-            Swal.fire({
-              icon: "error",
-              title: "ການຊຳລະດ້ວຍພ໋ອຍບໍ່ສຳເລັດ",
-              showConfirmButton: false,
-              timer: 1800,
-            });
-            return;
-          }
-        });
-    }
-    await _checkBill(selectCurrency?.id, selectCurrency?.name);
+    try {
+      saveServiceChargeDetails();
 
-    if (storeDetail?.isCRM && hasCRM) {
-      await PointUsers()
-        .then((res) => {
-          // if (res) {
-          //   Swal.fire({
-          //     icon: "success",
-          //     title: "success",
-          //     showConfirmButton: false,
-          //     timer: 1800,
-          //   });
-          // }
-        })
-        .catch((err) => {
-          if (err) {
-            Swal.fire({
-              icon: "error",
-              title: "ບໍ່ສາມາດຮັບ point ຈາກການຊຳລະຄັ້ງນີ້",
-              showConfirmButton: false,
-              timer: 1800,
-            });
-          }
-        });
+      if (storeDetail?.isCRM && tab === "cash_transfer_point") {
+        try {
+          await RedeemPointUser();
+        } catch {
+          showAlert(
+            "error",
+            "ເກີດຂໍ້ຜິດພາດ",
+            "ການຊຳລະດ້ວຍພ໋ອຍບໍ່ສຳເລັດ ກະລຸນາເລຶອກສະມາຊິກດ້ວຍ"
+          );
+          return; // Stop further execution if RedeemPointUser fails
+        }
+      }
+
+      try {
+        await _checkBill(selectCurrency?.id, selectCurrency?.name);
+      } catch {
+        showAlert("error", "ການເຊັກບິນບໍ່ສຳເລັດ"); // Add your localized error message
+        return; // Stop further execution if _checkBill fails
+      }
+
+      if (storeDetail?.isCRM && hasCRM) {
+        try {
+          await PointUsers();
+        } catch {
+          showAlert("error", "ບໍ່ສາມາດຮັບ point ຈາກການຊຳລະຄັ້ງນີ້");
+        }
+      }
+    } catch (error) {
+      console.error("Unexpected error in handleSubmit:", error);
+      showAlert("error", "An unexpected error occurred");
     }
   };
 
