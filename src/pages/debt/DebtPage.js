@@ -64,7 +64,7 @@ export default function DebtPage() {
   useEffect(() => {
     getData();
     getDataHistory();
-  }, [pagination]);
+  }, [pagination,startDate, endDate, startTime, endTime]);
 
   // Function to fetch data
   const getData = async () => {
@@ -73,6 +73,13 @@ export default function DebtPage() {
       const { TOKEN } = await getLocalData();
       let findby = `?skip=${(pagination - 1) * limitData
         }&limit=${limitData}&storeId=${storeDetail?._id}`;
+
+      // เพิ่มการกรองตามวันที่โดยใช้ MongoDB query syntax
+      if (startDate && endDate) {
+        const startDateTime = `${startDate}T${startTime || '00:00:00'}`;
+        const endDateTime = `${endDate}T${endTime || '23:59:59'}`;
+        findby += `&createdAt[$gte]=${startDateTime}&createdAt[$lte]=${endDateTime}`;
+      }
 
       if (searchCode) {
         const isPhoneNumber = /^\d+$/.test(searchCode);
@@ -94,7 +101,8 @@ export default function DebtPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+};
+  
 
 
   useEffect(() => {
