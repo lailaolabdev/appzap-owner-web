@@ -33,6 +33,7 @@ export default function StockCreate() {
     note: "",
     stockCategory: "",
     unit: "",
+    lowStock: 0,
   });
 
   const [data, setData] = useState([]);
@@ -69,11 +70,14 @@ export default function StockCreate() {
       wastes: stockOnec?.wastes,
       quantity: stockOnec?.stockQuality,
       detail: stockOnec?.detail,
-      stockCategoryId: stockOnec?.stockCategory,
       unit: stockOnec?.unit,
-      storeId: profile.data.storeId,
-      createdBy: profile.data._id,
+      storeId: profile?.data?.storeId,
+      createdBy: profile?.data?._id,
+      statusLevel: stockOnec?.lowStock,
     };
+    if (stockOnec?.stockCategory) {
+      newStock.stockCategoryId = stockOnec?.stockCategory;
+    }
 
     setStock([...stock, newStock]);
     localStorage.setItem("StockName", JSON.stringify([...stock, newStock]));
@@ -87,6 +91,7 @@ export default function StockCreate() {
       note: "",
       stockCategory: "",
       unit: "",
+      lowStock: 0,
     });
   };
 
@@ -100,7 +105,7 @@ export default function StockCreate() {
           showConfirmButton: false,
           timer: 1500,
         });
-        localStorage.removeItem("Stock");
+        localStorage.removeItem("StockName");
         navigate("/stock");
       } else {
         await Swal.fire({
@@ -332,6 +337,23 @@ export default function StockCreate() {
               </svg>
             </div>
           </div>
+          <div className="mt-2 sm:col-span-3">
+            <label className="block text-md font-medium text-gray-900">
+              {t("low_stock")}
+            </label>
+            <div className="mt-2">
+              <input
+                name="lowStock"
+                value={stockOnec.lowStock}
+                setWastes
+                onChange={handleChangeOnce}
+                placeholder={`${t("low_stock")}`}
+                type="number"
+                autoComplete="family-name"
+                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-orange-100 sm:text-sm/6"
+              />
+            </div>
+          </div>
           <div className="mt-2 col-span-full">
             <label className="block text-md font-medium text-gray-900">
               {t("note")}
@@ -376,6 +398,7 @@ export default function StockCreate() {
                   <th className="px-4 py-2 text-center">{t("wastes")}</th>
                   <th className="px-4 py-2 text-center">{t("stock_type")}</th>
                   <th className="px-4 py-2 text-center">{t("unit")}</th>
+                  <th className="px-4 py-2 text-center">{t("low_stock")}</th>
                   <th className="px-4 py-2 text-center">{t("note")}</th>
                   <th className="px-4 py-2 text-center">{t("manage")}</th>
                 </tr>
@@ -492,6 +515,10 @@ export default function StockCreate() {
                             <option value="ມິລລິລິດ">{t("millilitre")}</option>
                             <option value="ລັງເເກັດ">{t("box")}</option>
                             <option value="ແພັກ">{t("pack")}</option>
+                            <option value="ຖົງ">{t("pack")}</option>
+                            <option value="ປ໋ອງ">{t("pack")}</option>
+                            <option value="ອັນ">{t("pack")}</option>
+                            <option value="ຕຸກ">{t("pack")}</option>
                           </select>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -509,7 +536,9 @@ export default function StockCreate() {
                           </svg>
                         </div>
                       </td>
-                      {/* <td className="px-4 py-2 text-center">{stock.unit}</td> */}
+                      <td className="px-4 py-2 text-center">
+                        {stock.statusLevel}
+                      </td>
                       <td className="px-4 py-2 text-center">{stock.detail}</td>
                       <td className="px-4 py-2 text-center">
                         <button

@@ -50,6 +50,7 @@ import { getCategories } from "../../services/menuCategory";
 
 import { useStoreStore } from "../../zustand/storeStore";
 import PopUpEditStock from "../stock/components/popup/PopUpEditStock";
+import StockExport from "../stock/components/StockExport";
 
 export default function ReportStocks() {
   const navigate = useNavigate();
@@ -200,12 +201,12 @@ export default function ReportStocks() {
 
   const remove = async (stock) => {
     try {
-      const deleteData = await deleteStock(stock?._id).then((res) => {
-        if (res.status === 200) {
-          successAdd(`ລົບ ${stock?.name} ສຳເລັດ`);
-          getStocks();
-        }
-      });
+      const deleteData = await deleteStock(stock?._id);
+      if (deleteData.status === 200) {
+        successAdd(`ລົບ ${stock?.name} ສຳເລັດ`);
+        getStocks();
+        setPopup();
+      }
     } catch (error) {
       console.log("err:", error);
       errorAdd(`${t("delete_fail")}`);
@@ -399,8 +400,9 @@ export default function ReportStocks() {
         <div
           style={{ marginLeft: "auto", paddingTop: "32px", display: "flex" }}
         >
+          <StockExport stock={stocks} storeName={storeDetail?.name} />
           <button
-            class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md mr-2"
+            class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md mx-2"
             onClick={() => setPopup({ PopUpPreViewsPage: true })}
           >
             {t("Print")}
@@ -423,7 +425,8 @@ export default function ReportStocks() {
       <div className="py-2">
         <Card
           border="primary"
-          style={{ margin: 0, maxWidth: "95vw", overflowX: "auto" }}
+          className="m-0, w-100 overflow-x-auto"
+          // style={{ margin: 0, maxWidth: "95vw", overflowX: "auto" }}
         >
           <Card.Header
             style={{
@@ -431,7 +434,9 @@ export default function ReportStocks() {
               color: "#fff",
               fontSize: 18,
               fontWeight: "bold",
+              width: "100%",
             }}
+            // className="bg-color-app font-semibold text-xl "
           >
             {t("current_stock")}
           </Card.Header>
@@ -461,6 +466,7 @@ export default function ReportStocks() {
                       <th style={{ textAlign: "left" }}>{t("out_amount")}</th>
                       <th style={{ textAlign: "left" }}>{t("in_amount")}</th>
                       <th style={{ textAlign: "left" }}>{t("wastes")}</th>
+                      <th style={{ textAlign: "left" }}>{t("low_stock")}</th>
                       <th style={{ textAlign: "left", width: 40 }}>
                         {t("unit")}
                       </th>
@@ -527,6 +533,9 @@ export default function ReportStocks() {
                         <td style={{ textAlign: "left" }}>{item?.import}</td>
                         <td style={{ textAlign: "left" }}>
                           {item?.wastes ?? "-"} %
+                        </td>
+                        <td style={{ textAlign: "left" }}>
+                          {item?.statusLevel}
                         </td>
                         <td style={{ textAlign: "left" }}>{item?.unit}</td>
                         <td style={{ textAlign: "center" }}>
@@ -773,10 +782,7 @@ export default function ReportStocks() {
         text={select?.name}
         onClose={() => setPopup()}
         onSubmit={async () => {
-          remove(select).then(() => {
-            getStocks();
-            setPopup();
-          });
+          await remove(select);
         }}
       />
 
