@@ -2,19 +2,20 @@
 
 import { base64ToBlob, moneyCurrency } from "../../helpers"; // assuming moneyCurrency and base64ToBlob are helpers you already have
 import moment from "moment";
-import  printFlutter  from "../../helpers/printFlutter";
+import printFlutter from "../../helpers/printFlutter";
 import axios from "axios";
-import { ETHERNET_PRINTER_PORT, BLUETOOTH_PRINTER_PORT, USB_PRINTER_PORT } from "../../constants/index";
+import {
+  ETHERNET_PRINTER_PORT,
+  BLUETOOTH_PRINTER_PORT,
+  USB_PRINTER_PORT,
+} from "../../constants/index";
 
 export const renderOptions = (options) => {
-    return options && options.length > 0
-      ? options.map((option, index) => (
-          <span key={index}>[{option.name}]</span>
-        ))
-      : null;
-  };
+  return options && options.length > 0
+    ? options.map((option, index) => <span key={index}>[{option.name}]</span>)
+    : null;
+};
 
-  
 export const groupItemsByPrinter = (items, printers) => {
   if (!items || !Array.isArray(items) || items.length === 0) return {};
   if (!Array.isArray(printers) || printers.length === 0) return {};
@@ -50,8 +51,14 @@ export const groupItemsByPrinter = (items, printers) => {
   }, {});
 };
 
-export const convertHtmlToBase64 = (orderSelect, printers, storeDetail, totalText, currencyLabel) => {
-  console.log({orderSelect, printers, storeDetail, totalText, currencyLabel})
+export const convertHtmlToBase64 = (
+  orderSelect,
+  printers,
+  storeDetail,
+  totalText,
+  currencyLabel
+) => {
+  console.log({ orderSelect, printers, storeDetail, totalText, currencyLabel });
   const base64ArrayAndPrinter = [];
   orderSelect.forEach((data, index) => {
     if (data) {
@@ -251,7 +258,7 @@ export const runPrint = async (dataUrl, index, printer) => {
     if (printer?.type === "ETHERNET") urlForPrinter = ETHERNET_PRINTER_PORT;
     if (printer?.type === "BLUETOOTH") urlForPrinter = BLUETOOTH_PRINTER_PORT;
     if (printer?.type === "USB") urlForPrinter = USB_PRINTER_PORT;
-
+    console.log("urlForPrinter", urlForPrinter);
     await printFlutter(
       {
         imageBuffer: dataUrl,
@@ -270,7 +277,8 @@ export const runPrint = async (dataUrl, index, printer) => {
       }
     );
     return true;
-  } catch {
-    return false;
+  } catch (error) {
+    console.error("Printing error:", error);
+    return { success: false, message: error.message };
   }
 };

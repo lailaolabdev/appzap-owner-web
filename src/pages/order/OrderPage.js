@@ -235,7 +235,7 @@ export default function OrderPage() {
       if (orderSelect.length === 0) {
         Swal.fire({
           icon: "warning",
-          title: "Please select orders to print",
+          title: "Please select order to print",
           showConfirmButton: false,
           timer: 1500,
         });
@@ -260,25 +260,29 @@ export default function OrderPage() {
             base64ArrayAndPrinter[index].dataUrl,
             index,
             base64ArrayAndPrinter[index].printer
-          )
+          ).catch((error) => {
+            console.error(`Error printing index ${index}:`, error);
+            return { success: false, message: error.message };
+          })
         );
       }
 
-      console.log("1", arrayPrint);
+      const results = await Promise.all(arrayPrint);
+      const hasError = results.some((result) => !result.success);
 
-      if (countError === "ERR") {
+      if (hasError) {
         Swal.fire({
           icon: "error",
           title: "Printing failed",
           showConfirmButton: false,
-          timer: 1500,
+          timer: 3000,
         });
       } else {
         await Swal.fire({
           icon: "success",
           title: "Printed successfully",
-          showConfirmButton: false,
-          timer: 1500,
+          showConfirmButton: true,
+          timer: 3000,
         });
       }
 

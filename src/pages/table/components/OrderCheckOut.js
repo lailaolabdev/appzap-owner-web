@@ -43,10 +43,7 @@ const OrderCheckOut = ({
     setAudioSetting,
   } = useStore();
 
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
 
   const [total, setTotal] = useState(0); // Initialize total to 0
   const [isServiceChargeEnabled, setIsServiceChargeEnabled] = useState(false);
