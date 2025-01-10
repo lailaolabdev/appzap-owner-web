@@ -59,7 +59,7 @@ export default function DebtPage() {
   const [endTime, setEndTime] = useState("23:59:59");
 
   const limitData = 50;
-  
+
   // useEffect
   useEffect(() => {
     getData();
@@ -87,7 +87,7 @@ export default function DebtPage() {
       const data = await getBilldebts(findby, TOKEN);
       setBillDebtData(data?.data || []);
 
-      //console.log("setBillDebtData =-=-=>", billDebtData);
+      console.log("setBillDebtData =-=-=>", billDebtData);
       setTotalPagination(Math.ceil(data?.totalCount / limitData));
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -95,6 +95,7 @@ export default function DebtPage() {
       setIsLoading(false);
     }
   };
+
 
   useEffect(() => {
     getAllDataDebts();
@@ -133,12 +134,17 @@ export default function DebtPage() {
     setIsLoading(true);
     try {
       const { TOKEN } = await getLocalData();
-      let findby = `?skip=${(pagination - 1) * limitData
-        }&limit=${limitData}&storeId=${storeDetail?._id}`;
+      let findby = `?skip=${(pagination - 1) * limitData}&limit=${limitData}&storeId=${storeDetail?._id}`;
+
+      // Add date range filtering
+      if (startDate && endDate) {
+        const formattedStartDate = `${startDate}T${startTime || '00:00:00'}`;
+        const formattedEndDate = `${endDate}T${endTime || '23:59:59'}`;
+        findby += `&startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
+      }
 
       if (searchCode) {
         const isPhoneNumber = /^\d+$/.test(searchCode);
-
         if (isPhoneNumber) {
           findby += `&customerPhone=${searchCode}`;
         } else {
@@ -147,8 +153,17 @@ export default function DebtPage() {
       }
 
       const data = await getdebtHistory(findby, TOKEN);
-      setDebtHistoryData(data);
-      setTotalPagination(Math.ceil(data?.totalCount / limitData));
+
+      // Filter history data based on date range
+      const filteredData = data?.filter(item => {
+        const itemDate = new Date(item.updatedAt || item.createdAt);
+        const start = new Date(`${startDate}T${startTime || '00:00:00'}`);
+        const end = new Date(`${endDate}T${endTime || '23:59:59'}`);
+        return itemDate >= start && itemDate <= end;
+      });
+
+      setDebtHistoryData(filteredData || []);
+      setTotalPagination(Math.ceil((filteredData?.length || 0) / limitData));
     } catch (err) {
       console.error("Error fetching data:", err);
     } finally {
@@ -156,10 +171,17 @@ export default function DebtPage() {
     }
   };
 
+  // Add effect to refetch data when date range changes
+  useEffect(() => {
+    getData();
+    getDataHistory();
+  }, [startDate, endDate, startTime, endTime]);
+
+
   return (
     <>
       <div style={{ padding: 20 }}>
-      <Box
+        <Box
           sx={{
             display: "grid",
             gridTemplateColumns: { md: "0.5fr 0.5fr 0.5fr 0.5fr", xs: "1fr" },
@@ -189,7 +211,7 @@ export default function DebtPage() {
                   // fontWeight: 700
                 }}
               >
-                {showData?.length  || 0}
+                {showData?.length || 0}
               </div>
             </Card.Body>
           </Card>
@@ -285,8 +307,8 @@ export default function DebtPage() {
             title={t("debt_list_all")}
             style={{ paddingTop: 20, color: "red" }}
           >
-            <div style={{ display: "flex", gap: 10, padding: "10px 0", justifyContent:'space-between', alignItems:'center' }}>
-              <div style={{ display: "flex", gap: 10, padding: "10px 0", alignItems:'center' }}>
+            <div style={{ display: "flex", gap: 10, padding: "10px 0", justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: "flex", gap: 10, padding: "10px 0", alignItems: 'center' }}>
                 <Form.Control
                   style={{ maxWidth: 220 }}
                   placeholder={t("search_bill_code")}
@@ -450,8 +472,8 @@ export default function DebtPage() {
             title={t("PayDebt_list_history")}
             style={{ paddingTop: 20 }}
           >
-            <div style={{ display: "flex", gap: 10, padding: "10px 0", justifyContent:'space-between', alignItems:'center' }}>
-              <div style={{ display: "flex", gap: 10, padding: "10px 0", alignItems:'center' }}>
+            <div style={{ display: "flex", gap: 10, padding: "10px 0", justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: "flex", gap: 10, padding: "10px 0", alignItems: 'center' }}>
                 <Form.Control
                   style={{ maxWidth: 220 }}
                   placeholder={t("search_bill_code")}
@@ -555,8 +577,8 @@ export default function DebtPage() {
                             <td>
                               {e?.updatedAt
                                 ? moment(e?.updatedAt).format(
-                                    "DD/MM/YYYY - HH:mm:SS : a"
-                                  )
+                                  "DD/MM/YYYY - HH:mm:SS : a"
+                                )
                                 : ""}
                             </td>
                           </tr>
@@ -591,8 +613,8 @@ export default function DebtPage() {
             title={t("IncressDebt_list_history")}
             style={{ paddingTop: 20 }}
           >
-            <div style={{ display: "flex", gap: 10, padding: "10px 0", justifyContent:'space-between', alignItems:'center' }}>
-              <div style={{ display: "flex", gap: 10, padding: "10px 0", alignItems:'center' }}>
+            <div style={{ display: "flex", gap: 10, padding: "10px 0", justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: "flex", gap: 10, padding: "10px 0", alignItems: 'center' }}>
                 <Form.Control
                   style={{ maxWidth: 220 }}
                   placeholder={t("search_bill_code")}
@@ -696,8 +718,8 @@ export default function DebtPage() {
                             <td>
                               {e?.updatedAt
                                 ? moment(e?.updatedAt).format(
-                                    "DD/MM/YYYY - HH:mm:SS : a"
-                                  )
+                                  "DD/MM/YYYY - HH:mm:SS : a"
+                                )
                                 : ""}
                             </td>
                           </tr>
@@ -760,18 +782,22 @@ export default function DebtPage() {
           />
         )}
         <PopUpSetStartAndEndDateDebt
-        open={popup?.popupfiltter}
-        onClose={() => setPopup()}
-        startDate={startDate}
-        setStartDate={setStartDate}
-        setStartTime={setStartTime}
-        startTime={startTime}
-        setEndDate={setEndDate}
-        setEndTime={setEndTime}
-        endTime={endTime}
-        endDate={endDate}
+          open={popup?.popupfiltter}
+          onClose={() => {
+            setPopup();
+            getData(); // เพิ่มการเรียก getData เมื่อปิด popup
+          }}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          setStartTime={setStartTime}
+          startTime={startTime}
+          setEndDate={setEndDate}
+          setEndTime={setEndTime}
+          endTime={endTime}
+          endDate={endDate}
         />
       </div>
     </>
   );
 }
+
