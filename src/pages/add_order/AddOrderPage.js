@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Form } from "react-bootstrap";
 import { BsFillCaretLeftFill } from "react-icons/bs";
 import { FaShoppingCart } from "react-icons/fa";
@@ -26,16 +26,50 @@ export default function AddOrderPage() {
   const [selectMenu, setSelectMenu] = useState();
   const [searchMenu, setSearchMenu] = useState("");
 
-  
-  const { menus, menuCategories, staffCart, setStaffCart } = useMenuStore();
   const { storeDetail } = useStoreStore()
 
-  // Handler to add customized orders to the cart
-  const handleAddToCart = (order) => {
-    setStaffCart((prevCart) => [...prevCart, order]);
-    setSelectMenu(); // Clear the selected menu
-    setPopup(); // Close the popup
-  };
+  const {
+    menus,
+    menuCategories,
+    getMenus,
+    getMenuCategories,
+    setMenus,
+    setMenuCategories,
+    staffCart, 
+    setStaffCart
+  } = useMenuStore();
+
+  // Get Menus & Categories, and persist it in localstorage.
+  // Only no data in localstorage then fetch, if when to clear data just logout
+  useEffect(() => {
+    const fetchData = async () => {
+      if (storeDetail?._id) {
+        const storeId = storeDetail?._id;
+
+        // Check if menus and categories are already in the zustand store
+        if (!menus.length || !menuCategories.length) {
+          // If menus or categories are not found, fetch them
+          if (!menus.length) {
+            const fetchedMenus = await getMenus(storeId);
+            setMenus(fetchedMenus); // Save to zustand store
+          }
+          if (!menuCategories.length) {
+            const fetchedCategories = await getMenuCategories(storeId);
+            setMenuCategories(fetchedCategories); // Save to zustand store
+          }
+        }
+      }
+    };
+
+    fetchData();
+  }, [
+    menus,
+    menuCategories,
+    getMenus,
+    getMenuCategories,
+    setMenus,
+    setMenuCategories,
+  ]);
 
   const filteredMenus = menus?.filter((menu) => {
     const matchesCategory = selectCategory
@@ -46,6 +80,13 @@ export default function AddOrderPage() {
       : true;
     return matchesCategory && matchesSearch;
   });
+
+  // Handler to add customized orders to the cart
+  const handleAddToCart = (order) => {
+    setStaffCart((prevCart) => [...prevCart, order]);
+    setSelectMenu(); // Clear the selected menu
+    setPopup(); // Close the popup
+  };
 
   return (
     <>
