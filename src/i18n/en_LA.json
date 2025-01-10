@@ -1090,5 +1090,15 @@
   "point_g": "ຄະແນນທີ່ໄດ້ຮັບ",
   "exchange_point": "ອັດຕາແລກປ່ຽນຄະແນນ",
   "wastes": "ສິ່ງສູນເສຍ",
-  "order_": "ສັ່ງຊື້"
+  "order_": "ສັ່ງຊື້",
+  "shift": "ກະ",
+  "shift_name": "ຊື່ກະ",
+  "period": "ໄລຍະເວລາ",
+  "shift_list": "ລາຍການກະ",
+  "shift_open": "ເວລາເປີດ",
+  "shift_close": "ເວລາປິດ",
+  "shift_list_add": "ເພີ່ມລາຍການກະ",
+  "shift_list_edit": "ແກ້ລາຍການກະ",
+  "enter_shift": "ກະລຸປ້ອນຊື່ກະ",
+  "delete_shift": "ລົບລາຍການກະ"
 }

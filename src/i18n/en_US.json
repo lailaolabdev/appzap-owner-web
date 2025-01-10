@@ -971,6 +971,14 @@
   "point_r": "points Received",
   "point_g": "points Given",
   "exchange_point": "Exchange points",
-  "wastes":"Wastes",
-  "order_": "Order"
+  "wastes": "Wastes",
+  "order_": "Order",
+  "shif": "Shif",
+  "period": "Period",
+  "shift_name": "Shift name",
+  "shif_list": "Shif list",
+  "shif_list_add": "Shif list add",
+  "shift_list_edit": "Shift list edit",
+  "enter_shift": "Enter shift",
+  "delete_shift": "Delete shift"
 }
