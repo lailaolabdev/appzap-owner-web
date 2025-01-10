@@ -1092,13 +1092,16 @@
   "wastes": "ສິ່ງສູນເສຍ",
   "order_": "ສັ່ງຊື້",
   "shift": "ກະ",
+  "shift_open": "ເປີດກະ",
   "shift_name": "ຊື່ກະ",
   "period": "ໄລຍະເວລາ",
   "shift_list": "ລາຍການກະ",
-  "shift_open": "ເວລາເປີດ",
-  "shift_close": "ເວລາປິດ",
+  "shift_time_open": "ເວລາເປີດ",
+  "shift_time_close": "ເວລາປິດ",
   "shift_list_add": "ເພີ່ມລາຍການກະ",
   "shift_list_edit": "ແກ້ລາຍການກະ",
   "enter_shift": "ກະລຸປ້ອນຊື່ກະ",
-  "delete_shift": "ລົບລາຍການກະ"
+  "delete_shift": "ລົບລາຍການກະ",
+  "error_add_shift": "ມີກະນີ້ຢູ່ໃນລະບົບແລ້ວ",
+  "enter_amount_to_start": "ລະບຸຈໍານວນເງິນໃນລິ້ນຊັກເກັບເງິນເພື່ອເລີ່ມກະໃຫມ່"
 }

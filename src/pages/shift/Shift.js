@@ -27,6 +27,7 @@ import Swal from "sweetalert2";
 import { useStoreStore } from "../../zustand/storeStore";
 import TimeShift from "../../components/TimeShift";
 import { values } from "lodash";
+import ButtonPrimary from "../../components/button/ButtonPrimary";
 
 export default function ShiftList() {
   const { t } = useTranslation();
@@ -109,7 +110,7 @@ export default function ShiftList() {
           if (err) {
             Swal.fire({
               icon: "error",
-              title: t("error"),
+              title: t("error_add_shift"),
               showConfirmButton: false,
               timer: 1500,
             });
@@ -247,7 +248,7 @@ export default function ShiftList() {
                       <th style={{ textWrap: "nowrap" }}>{t("shift_name")}</th>
                       <th style={{ textWrap: "nowrap" }}>{t("period")}</th>
                       <th style={{ textWrap: "nowrap" }}>{t("status")}</th>
-                      <th style={{ textWrap: "nowrap" }}>{t("manage_data")}</th>
+                      <th className="text-center">{t("manage_data")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -270,21 +271,21 @@ export default function ShiftList() {
                               </span>
                             )}
                           </td>
-                          <td className="text-left" disabled>
-                            <FontAwesomeIcon
-                              icon={faEdit}
-                              style={{ color: COLOR_APP, cursor: "pointer" }}
+                          <td className="flex gap-2 justify-center">
+                            <ButtonPrimary
                               onClick={() => handleShowEdit(data)}
-                            />
-                            <FontAwesomeIcon
-                              icon={faTrashAlt}
-                              style={{
-                                marginLeft: 20,
-                                color: "red",
-                                cursor: "pointer",
-                              }}
+                              disabled={data?.status === "OPEN"}
+                              className="w-20 text-white"
+                            >
+                              <FontAwesomeIcon icon={faEdit} />
+                            </ButtonPrimary>
+                            <ButtonPrimary
                               onClick={() => handleShowDelete(data)}
-                            />
+                              disabled={data?.status === "OPEN"}
+                              className="w-20 text-white"
+                            >
+                              <FontAwesomeIcon icon={faTrashAlt} />
+                            </ButtonPrimary>
                           </td>
                         </tr>
                       ))}
@@ -360,7 +361,8 @@ export default function ShiftList() {
                   </Form.Group>
                   <Form.Group>
                     <Form.Label style={{ fontWeight: "bold" }}>
-                      {t("shift_open")} <span style={{ color: "red" }}>*</span>
+                      {t("shift_time_open")}{" "}
+                      <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <TimeShift
                       name="startTime"
@@ -376,7 +378,8 @@ export default function ShiftList() {
                   </Form.Group>
                   <Form.Group>
                     <Form.Label style={{ fontWeight: "bold" }}>
-                      {t("shift_close")} <span style={{ color: "red" }}>*</span>
+                      {t("shift_time_close")}{" "}
+                      <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <TimeShift
                       name="endTime"
@@ -481,7 +484,8 @@ export default function ShiftList() {
                   </Form.Group>
                   <Form.Group>
                     <Form.Label style={{ fontWeight: "bold" }}>
-                      {t("shift_open")} <span style={{ color: "red" }}>*</span>
+                      {t("shift_time_open")}{" "}
+                      <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <TimeShift
                       name="startTime"
@@ -497,7 +501,8 @@ export default function ShiftList() {
                   </Form.Group>
                   <Form.Group>
                     <Form.Label style={{ fontWeight: "bold" }}>
-                      {t("shift_close")} <span style={{ color: "red" }}>*</span>
+                      {t("shift_time_close")}{" "}
+                      <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <TimeShift
                       name="endTime"

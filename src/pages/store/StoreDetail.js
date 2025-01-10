@@ -9,6 +9,7 @@ import { END_POINT } from "../../constants";
 import { COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
 import "./index.css";
 import PopUpStoreEdit from "../../components/popup/PopUpStoreEdit";
+import { useShiftStore } from "../../zustand/ShiftStore";
 import Loading from "../../components/Loading";
 import { updateStore } from "../../services/store";
 import { useParams } from "react-router-dom";
@@ -18,6 +19,7 @@ import { useTranslation } from "react-i18next";
 export default function StoreDetail() {
   const params = useParams();
   const { t } = useTranslation();
+  const { getShift } = useShiftStore();
 
   // State
   const [isLoading, setIsLoading] = useState(false);
@@ -39,6 +41,9 @@ export default function StoreDetail() {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const GetOpenShift = () => {};
+
   const getData = async (storeId) => {
     setIsLoading(true);
     await fetch(STORE + `/?id=${params?.id}`, {
