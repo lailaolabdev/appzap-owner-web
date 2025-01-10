@@ -36,7 +36,7 @@ export default function CheckPopupDebt({
   onPrintBill,
   open,
   onClose,
-  onSubmit = () => {},
+  onSubmit = () => { },
   dataBill,
   tableData,
   setDataBill,
@@ -219,11 +219,10 @@ export default function CheckPopupDebt({
     const transferAmount = Number.parseFloat(transfer) || 0;
     const totalReceived = cashAmount + transferAmount;
 
-    moneyReceived = `${
-      selectCurrency === "LAK"
-        ? moneyCurrency(totalReceived)
-        : moneyCurrency(Number.parseFloat(cashCurrency) || 0)
-    } ${selectCurrency}`;
+    moneyReceived = `${selectCurrency === "LAK"
+      ? moneyCurrency(totalReceived)
+      : moneyCurrency(Number.parseFloat(cashCurrency) || 0)
+      } ${selectCurrency}`;
 
     const remainingAmountValue = discountedTotalBill - totalReceived;
     remainingAmount = `${moneyCurrency(
@@ -450,21 +449,21 @@ export default function CheckPopupDebt({
         ? totalBill - dataBill?.discount
         : 0
       : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-      ? (totalBill * dataBill?.discount) / 100
-      : 0;
+        ? (totalBill * dataBill?.discount) / 100
+        : 0;
 
   const totalBillMoney =
     dataBill && dataBill?.discountType === "LAK"
       ? Number.parseFloat(
-          totalBill - dataBill?.discount > 0
-            ? totalBill - dataBill?.discount
-            : 0
-        )
+        totalBill - dataBill?.discount > 0
+          ? totalBill - dataBill?.discount
+          : 0
+      )
       : Number.parseFloat(
-          totalBill - (totalBill * dataBill?.discount) / 100 > 0
-            ? totalBill - (totalBill * dataBill?.discount) / 100
-            : 0
-        );
+        totalBill - (totalBill * dataBill?.discount) / 100 > 0
+          ? totalBill - (totalBill * dataBill?.discount) / 100
+          : 0
+      );
 
   const _selectDataOption = (option) => {
     setSelectDataOpption(option);
@@ -608,15 +607,15 @@ export default function CheckPopupDebt({
               >
                 {dataBill && dataBill?.discountType === "LAK"
                   ? moneyCurrency(
-                      totalBill - dataBill?.discount > 0
-                        ? totalBill - dataBill?.discount
-                        : 0
-                    )
+                    totalBill - dataBill?.discount > 0
+                      ? totalBill - dataBill?.discount
+                      : 0
+                  )
                   : moneyCurrency(
-                      totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0
-                    )}{" "}
+                    totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
+                      : 0
+                  )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
               <span hidden={selectCurrency === "LAK"}>
@@ -633,8 +632,8 @@ export default function CheckPopupDebt({
                       ? totalBill - dataBill?.discount
                       : 0
                     : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                    ? totalBill - (totalBill * dataBill?.discount) / 100
-                    : 0) / rateCurrency
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
+                      : 0) / rateCurrency
                 )}{" "}
                 {selectCurrency}
               </span>
@@ -669,7 +668,7 @@ export default function CheckPopupDebt({
                 <InputGroup.Text>{selectCurrency}</InputGroup.Text>
               </InputGroup>
 
-              
+
 
               <InputGroup>
                 <InputGroup.Text>{t("debt_paymentbefore")}</InputGroup.Text>
@@ -689,7 +688,33 @@ export default function CheckPopupDebt({
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
 
-              <h>fuck</h>
+              <Form hidden={tab !== "cash_transfer"}>
+                {['radio'].map((type) => (
+                  <div key={`inline-${type}`} className="mb-3">
+                    <CustomCheck
+                      inline
+                      label="ເງິນສົດ"
+                      name="paymentMethod"
+                      type={type}
+                      id={`inline-${type}-1`}
+                    />
+                    <CustomCheck
+                      inline
+                      label="ເງິນສົດ + ໂອນ"
+                      name="paymentMethod"
+                      type={type}
+                      id={`inline-${type}-2`}
+                    />
+                    <CustomCheck
+                      inline
+                      label="ເງິນໂອນ"
+                      name="paymentMethod"
+                      type={type}
+                      id={`inline-${type}-3`}
+                    />
+                  </div>
+                ))}
+              </Form>
 
               <InputGroup>
                 <InputGroup.Text>{t("debt_notpay")}</InputGroup.Text>
@@ -796,19 +821,19 @@ export default function CheckPopupDebt({
                       ? totalBill - dataBill?.discount
                       : 0
                     : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                    ? totalBill - (totalBill * dataBill?.discount) / 100
-                    : 0) <=
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
+                      : 0) <=
                   0
                   ? 0
                   : (Number.parseInt(cash) || 0) +
-                      (Number.parseInt(transfer) || 0) -
-                      (dataBill && dataBill?.discountType === "LAK"
-                        ? totalBill - dataBill?.discount > 0
-                          ? totalBill - dataBill?.discount
-                          : 0
-                        : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0)
+                  (Number.parseInt(transfer) || 0) -
+                  (dataBill && dataBill?.discountType === "LAK"
+                    ? totalBill - dataBill?.discount > 0
+                      ? totalBill - dataBill?.discount
+                      : 0
+                    : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
+                      : 0)
               )}{" "}
               {storeDetail?.firstCurrency}
             </div>
@@ -939,6 +964,12 @@ export default function CheckPopupDebt({
     </Modal>
   );
 }
+const CustomCheck = styled(Form.Check)`
+  .form-check-input:checked {
+    background-color: red;
+    border-color: red;
+  }
+`;
 
 const BoxInput = styled.div`
   display: flex;

@@ -138,7 +138,7 @@
     "socket.io-client": "^2.3.0",
     "source-map-loader": "^3.0.0",
     "style-loader": "^3.3.1",
-    "styled-components": "^5.2.0",
+    "styled-components": "^5.3.11",
     "sweetalert": "^2.1.2",
     "sweetalert2": "10.16.6",
     "tailwind-merge": "^2.5.5",
