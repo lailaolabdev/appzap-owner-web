@@ -980,5 +980,7 @@
   "shif_list_add": "Shif list add",
   "shift_list_edit": "Shift list edit",
   "enter_shift": "Enter shift",
-  "delete_shift": "Delete shift"
+  "delete_shift": "Delete shift",
+  "error_add_shift": "Shift time overlaps with an existing shift",
+  "enter_amount_to_start": "Enter the amount in the cash drawer to start a new transaction."
 }

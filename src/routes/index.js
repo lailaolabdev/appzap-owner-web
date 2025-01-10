@@ -84,6 +84,7 @@ import StockCreate from "../pages/stock/StockCreate";
 import StockCreateCategory from "../pages/stock/StockCreateCategory";
 import ReportStocks from "../pages/report/ReportStocks";
 import ShiftList from "../pages/shift/Shift";
+import ShiftOpenPages from "../pages/shift/ShiftOpenPages";
 
 function Router() {
   return useRoutes([
@@ -233,6 +234,10 @@ function Router() {
         {
           path: "/shift-setting",
           element: <ShiftList />,
+        },
+        {
+          path: "/shift-open-pages",
+          element: <ShiftOpenPages />,
         },
         {
           path: "/food-setting/food-type/limit/:limit/page/:page",

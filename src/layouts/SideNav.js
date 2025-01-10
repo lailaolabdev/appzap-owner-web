@@ -61,10 +61,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
     location.pathname.split("/")[1].split("-")[0]
   );
 
-  const handleOpenPopUp = () => {
-    setOpenPopUpShift(true);
-  };
-
   const isPathInclude = (condition) =>
     _.includes(condition, selected.split("/page")[0]);
 
@@ -95,7 +91,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const itemList = [
     {
       title: `${t("table_status")}`,
-      key: status ? "shift" : "tables",
+      key: status ? "shift-open-pages" : "tables",
       icon: faHome,
       typeStore: "",
       hidden: !storeDetail?.hasPOS,
@@ -120,7 +116,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
     },
     {
       title: `${t("isCafe")}`,
-      key: status ? "shift" : "cafe",
+      key: status ? "shift-open-pages" : "cafe",
       icon: faStoreAlt,
       typeStore: storeDetail?.isRestuarant,
       hidden: !storeDetail?.hasPOS,
@@ -627,12 +623,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
           </NavItem>
         </SideNav.Nav>
       </SideNav>
-
-      <PopUpOpenShift
-        open={openPopUpShift}
-        onClose={() => setOpenPopUpShift(false)}
-        // onSubmit={(code, platform) => handleAddDeliveryCode(code, platform)}
-      />
     </>
   );
 }
