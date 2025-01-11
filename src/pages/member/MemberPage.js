@@ -893,9 +893,9 @@ export default function MemberPage() {
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
                   <th style={{ textAlign: "center" }}>{"ພ໋ອຍທັງໝົດ"}</th>
-                  <th style={{ textAlign: "center" }}>
+                  {/* <th style={{ textAlign: "center" }}>
                     {"ພ໋ອຍທີ່ສາມາດໃຊ້ໄດ້"}
-                  </th>
+                  </th> */}
                   <th style={{ textAlign: "center" }}>{t("use_service")}</th>
                   <th style={{ textAlign: "center" }}>{t("regis_date")}</th>
                   <th style={{ textAlign: "right" }}>{t("manage")}</th>
@@ -910,11 +910,11 @@ export default function MemberPage() {
                       <td style={{ textAlign: "left" }}>{e?.name}</td>
                       <td style={{ textAlign: "center" }}>{e?.phone}</td>
                       <td style={{ textAlign: "center" }}>
-                        {moneyCurrency(e?.pointId?.totalPoint ?? 0)}
+                        {moneyCurrency(e?.point ?? 0)}
                       </td>
-                      <td style={{ textAlign: "center" }}>
-                        {moneyCurrency(e?.pointId?.availablePoint ?? 0)}
-                      </td>
+                      {/* <td style={{ textAlign: "center" }}>
+                        {moneyCurrency(e?.availablePoint ?? 0)}
+                      </td> */}
                       <td style={{ textAlign: "center" }}>{e?.bill}</td>
                       <td style={{ textAlign: "center" }}>
                         {moment(e?.createdAt).format("DD/MM/YYYY")}
