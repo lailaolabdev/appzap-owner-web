@@ -273,16 +273,16 @@ export default function OrderPage() {
       if (hasError) {
         Swal.fire({
           icon: "error",
-          title: "Printing failed",
+          title: `${t("print_fial")}`,
           showConfirmButton: false,
-          timer: 3000,
+          timer: 1500,
         });
       } else {
         await Swal.fire({
           icon: "success",
-          title: "Printed successfully",
+          title: `${t("print_success")}`,
           showConfirmButton: true,
-          timer: 3000,
+          timer: 1500,
         });
       }
 
@@ -426,7 +426,7 @@ export default function OrderPage() {
             }}
           >
             {/* ເສີບແລ້ວ */}
-            <span className={fontMap[language]}>{t(SERVE_STATUS)}</span>
+            <span className={fontMap[language]}>{t("served")}</span>
           </Button>
 
           <Button
@@ -497,7 +497,7 @@ export default function OrderPage() {
           <Tab
             eventKey={SERVE_STATUS}
             title={
-              <span className={fontMap[language]}>{`${t(SERVE_STATUS)}(${
+              <span className={fontMap[language]}>{`${t("served")}(${
                 servedOrders?.length
               })`}</span>
             }
