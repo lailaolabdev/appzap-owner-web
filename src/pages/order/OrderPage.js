@@ -235,7 +235,7 @@ export default function OrderPage() {
       if (orderSelect.length === 0) {
         Swal.fire({
           icon: "warning",
-          title: "Please select orders to print",
+          title: "Please select order to print",
           showConfirmButton: false,
           timer: 1500,
         });
@@ -260,24 +260,28 @@ export default function OrderPage() {
             base64ArrayAndPrinter[index].dataUrl,
             index,
             base64ArrayAndPrinter[index].printer
-          )
+          ).catch((error) => {
+            console.error(`Error printing index ${index}:`, error);
+            return { success: false, message: error.message };
+          })
         );
       }
 
-      console.log("1", arrayPrint);
+      const results = await Promise.all(arrayPrint);
+      const hasError = results.some((result) => !result.success);
 
-      if (countError === "ERR") {
+      if (hasError) {
         Swal.fire({
           icon: "error",
-          title: "Printing failed",
+          title: `${t("print_fial")}`,
           showConfirmButton: false,
           timer: 1500,
         });
       } else {
         await Swal.fire({
           icon: "success",
-          title: "Printed successfully",
-          showConfirmButton: false,
+          title: `${t("print_success")}`,
+          showConfirmButton: true,
           timer: 1500,
         });
       }
@@ -422,7 +426,7 @@ export default function OrderPage() {
             }}
           >
             {/* ເສີບແລ້ວ */}
-            <span className={fontMap[language]}>{t(SERVE_STATUS)}</span>
+            <span className={fontMap[language]}>{t("served")}</span>
           </Button>
 
           <Button
@@ -493,7 +497,7 @@ export default function OrderPage() {
           <Tab
             eventKey={SERVE_STATUS}
             title={
-              <span className={fontMap[language]}>{`${t(SERVE_STATUS)}(${
+              <span className={fontMap[language]}>{`${t("served")}(${
                 servedOrders?.length
               })`}</span>
             }

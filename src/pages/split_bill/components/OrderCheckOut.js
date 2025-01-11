@@ -28,10 +28,7 @@ const OrderCheckOut = ({
   staffData,
 }) => {
   const { t } = useTranslation();
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const [total, setTotal] = useState(0); // Initialize total to 0
   const [isBill, setIsBill] = useState(false);
   const [isConfirmStaff, setIsConFirmStaff] = useState(false);
