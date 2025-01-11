@@ -258,7 +258,7 @@ export const runPrint = async (dataUrl, index, printer) => {
     if (printer?.type === "ETHERNET") urlForPrinter = ETHERNET_PRINTER_PORT;
     if (printer?.type === "BLUETOOTH") urlForPrinter = BLUETOOTH_PRINTER_PORT;
     if (printer?.type === "USB") urlForPrinter = USB_PRINTER_PORT;
-    console.log("urlForPrinter", urlForPrinter);
+
     await printFlutter(
       {
         imageBuffer: dataUrl,
@@ -276,7 +276,7 @@ export const runPrint = async (dataUrl, index, printer) => {
         });
       }
     );
-    return true;
+    return { success: true };
   } catch (error) {
     console.error("Printing error:", error);
     return { success: false, message: error.message };
