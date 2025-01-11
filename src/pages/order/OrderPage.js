@@ -281,7 +281,7 @@ export default function OrderPage() {
         await Swal.fire({
           icon: "success",
           title: `${t("print_success")}`,
-          showConfirmButton: true,
+          showConfirmButton: false,
           timer: 1500,
         });
       }
