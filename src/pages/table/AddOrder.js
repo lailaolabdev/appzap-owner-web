@@ -99,8 +99,6 @@ function AddOrder() {
 
   const sliderRef = useRef();
 
-  console.log({ code });
-
   // Make the Category draggable
   useEffect(() => {
     const slider = sliderRef.current;
@@ -211,8 +209,6 @@ function AddOrder() {
     selectedBill,
     tableOrderItems,
   } = useStore();
-
-  console.log({ selectedTable });
 
   const { storeDetail } = useStoreStore();
 
@@ -550,7 +546,7 @@ function AddOrder() {
         // Draw "Created By" text at the bottom-left
         context.textAlign = "left"; // Align text to the left
         context.fillText(
-          data?.createdBy?.firstname || data?.updatedBy?.firstname || "", // Footer text
+          data?.createdBy?.data?.firstname || "", // Footer text
           10, // 10px from the left edge
           dynamicHeight - 20 // Position Y: 20px above the bottom
         );
@@ -762,6 +758,7 @@ function AddOrder() {
         categoryId: menu?.categoryId,
         printer: menu?.categoryId?.printer,
         note: "",
+        createdBy: profile,
         deliveryCode: "", // Add delivery code field
         platform: "", // Add platform field
       };
@@ -1108,8 +1105,6 @@ function AddOrder() {
     t,
     i18n: { language },
   } = useTranslation();
-
-  console.log({ tableOrderItems });
 
   return (
     <div className="w-full h-screen">
