@@ -12,10 +12,8 @@ const PopUpDebtExportUserId = ({
     callback,
     billDebtData,
 }) => {
-    // สร้างข้อมูลเป็น array ที่มีข้อมูลเดียว
     const debtDataArray = billDebtData ? [billDebtData] : [];
     const { t } = useTranslation();
-    console.log("debtDataArray:",debtDataArray)
 
     return (
         <Modal show={open} onHide={onClose} size="xl">
@@ -23,7 +21,7 @@ const PopUpDebtExportUserId = ({
                 closeButton
                 style={{ display: "flex", alignItems: "center", gap: 10 }}
             >
-               {t("debt_Export")}
+                {t("debt_Export")}
             </Modal.Header>
             <Card border="none" style={{ margin: 0 }}>
                 <Card.Header
@@ -101,8 +99,8 @@ const PopUpDebtExportUserId = ({
                                             {moneyCurrency(item?.totalPayment)}
                                         </td>
                                         <td>
-                                            {item?.updatedAt
-                                                ? moment(item?.updatedAt).format("DD/MM/YYYY - HH:mm:SS : a")
+                                            {item?.outStockDate
+                                                ? moment(item?.outStockDate).format("DD/MM/YYYY - HH:mm:SS : a")
                                                 : ""}
                                         </td>
                                     </tr>

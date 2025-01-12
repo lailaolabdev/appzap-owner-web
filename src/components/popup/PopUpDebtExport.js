@@ -14,11 +14,12 @@ export default function PopUpDebtExport({
   open,
   onClose,
   callback,
-  billDebtData,
+  debtHistoryData,
+  billDebtData
 }) {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
-  const [debtHistoryData, setDebtHistoryData] = useState([]);
+  // const [billDebtData, setbillDebtData] = useState([]);
   const [pagination, setPagination] = useState(1);
   const [totalPagination, setTotalPagination] = useState(0);
   const [selectedDebt, setSelectedDebt] = useState(null);
@@ -32,24 +33,24 @@ export default function PopUpDebtExport({
     setShowMainModal(open);
   }, [open]);
 
-  const getDataHistory = async () => {
-    setIsLoading(true);
-    try {
-      const { TOKEN } = await getLocalData();
-      let findby = `?skip=${(pagination - 1) * limitData}&limit=${limitData}&storeId=${storeDetail?._id}`;
-      const data = await getdebtHistory(findby, TOKEN);
-      setDebtHistoryData(data);
-      setTotalPagination(Math.ceil(data?.totalCount / limitData));
-    } catch (err) {
-      console.error("Error fetching data:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const getDataHistory = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const { TOKEN } = await getLocalData();
+  //     let findby = `?skip=${(pagination - 1) * limitData}&limit=${limitData}&storeId=${storeDetail?._id}`;
+  //     const data = await getdebtHistory(findby, TOKEN);
+  //     setbillDebtData(data);
+  //     setTotalPagination(Math.ceil(data?.totalCount / limitData));
+  //   } catch (err) {
+  //     console.error("Error fetching data:", err);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     if (open) {
-      getDataHistory();
+      //getDataHistory();
     }
   }, [open, pagination]);
 
@@ -132,13 +133,13 @@ export default function PopUpDebtExport({
                       <Spinner animation="border" variant="warning" />
                     </td>
                   </tr>
-                ) : debtHistoryData && debtHistoryData.length > 0 ? (
-                  debtHistoryData
-                    .filter((e) => e?.totalPayment > 0)
+                ) : billDebtData && billDebtData.length > 0 ? (
+                  billDebtData
+                    .filter((e) => e?.remainingAmount > 0)
                     .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
                     .map((e, i) => (
-                      <tr 
-                        key={i} 
+                      <tr
+                        key={i}
                         onClick={() => handleRowClick(e)}
                         style={{ cursor: 'pointer' }}
                       >
@@ -146,7 +147,11 @@ export default function PopUpDebtExport({
                         <td>{e.code}</td>
                         <td>{moneyCurrency(e?.remainingAmount)}</td>
                         <td style={{ color: "MediumSeaGreen" }}>{moneyCurrency(e?.totalPayment)}</td>
-                        <td>{e?.updatedAt ? moment(e?.updatedAt).format("DD/MM/YYYY - HH:mm:SS : a") : ""}</td>
+                        <td>
+                          {e?.outStockDate
+                            ? moment(e?.outStockDate).format("DD/MM/YYYY - HH:mm:SS : a")
+                            : ""}
+                        </td>
                       </tr>
                     ))
                 ) : (

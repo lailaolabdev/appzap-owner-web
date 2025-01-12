@@ -76,7 +76,7 @@ export default function CheckPopupDebt({
   const [hasCRM, setHasCRM] = useState(false);
   const [memberData, setMemberData] = useState();
   const [textSearchMember, setTextSearchMember] = useState("");
-
+  
   const [currencyList, setCurrencyList] = useState([]);
   const [membersData, setMembersData] = useState([]);
 
@@ -91,6 +91,7 @@ export default function CheckPopupDebt({
     moment(moment()).add(7, "days").format("YYYY-MM-DD")
   );
 
+  //console.log("profile: ",profile)
   // useEffect(() => {
   //   setMemberData();
   //   if (textSearchMember.length > 0) {
@@ -149,7 +150,8 @@ export default function CheckPopupDebt({
       const { DATA, TOKEN } = await getLocalData();
       const _body = {
         amount: totalBill,
-        amountBefore: amountBefore,
+        payAmount: Number(amountBefore),
+        transferAmount:  Number(transfer),
         remainingAmount: remainingAmount,
         customerName: customerName,
         customerPhone: customerPhone,
@@ -160,7 +162,7 @@ export default function CheckPopupDebt({
         storeId: DATA?.storeId,
       };
       // return;
-
+      console.log("_body: ",_body)
       const data = await createBilldebt(_body, TOKEN);
       if (data.error) {
         errorAdd(`${t("debt_fail")}`);
@@ -287,11 +289,13 @@ export default function CheckPopupDebt({
       console.log("err:", err);
     }
   };
+
+
+  
   const _checkBill = async () => {
     const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
-    const validPayAmount = cash && !Number.isNaN(cash) ? cash : amountBefore;
-    const validTransferAmount =
-      transfer && !Number.isNaN(transfer) ? transfer : remainingAmount;
+
+
 
     await axios
       .put(
@@ -301,8 +305,9 @@ export default function CheckPopupDebt({
           data: {
             isCheckout: "true",
             status: "CHECKOUT",
-            payAmount: validPayAmount,
-            transferAmount: validTransferAmount,
+            payAmount: Number(amountBefore),
+            transferAmount: Number(transfer),
+            remainingAmount:remainingAmount,
             paymentMethod: forcus,
             taxAmount: taxAmount,
             taxPercent: taxPercent,
@@ -316,7 +321,7 @@ export default function CheckPopupDebt({
             tableName: tableData?.tableName,
             tableCode: tableData?.code,
             fullnameStaffCheckOut:
-              `${staffConfirm?.firstname} ${staffConfirm?.lastname}` ?? "-",
+              `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-",
             staffCheckOutId: staffConfirm?.id,
           },
         },
@@ -381,6 +386,7 @@ export default function CheckPopupDebt({
   useEffect(() => {
     getDataCurrency();
   }, []);
+
   useEffect(() => {
     if (!open) return;
     if (forcus === "CASH") {
@@ -406,42 +412,45 @@ export default function CheckPopupDebt({
         }
       }
     } else if (forcus === "TRANSFER") {
-      if (dataBill?.discount) {
-        if (dataBill?.discountType === "PERCENT") {
-          setTransfer(totalBill - (totalBill * dataBill?.discount) / 100);
-        } else {
-          setTransfer(totalBill - dataBill?.discount);
-        }
-      } else {
-        setTransfer(totalBill);
-      }
-      setCanCheckOut(true);
+      // เปลี่ยนเงื่อนไขให้เหมือนกับ CASH
+      const transferAmount = Number(transfer || 0);
+      const discountedTotal = dataBill?.discountType === "PERCENT"
+        ? totalBill - (totalBill * dataBill?.discount) / 100
+        : totalBill - dataBill?.discount;
+      
+      setCanCheckOut(transferAmount > 0);  // อนุญาตให้จ่ายบางส่วนได้
     } else if (forcus === "TRANSFER_CASH") {
-      const _sum =
-        (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
-      if (dataBill?.discount) {
-        if (dataBill?.discountType === "PERCENT") {
-          if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
-        } else {
-          if (_sum >= totalBill - dataBill?.discount) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
-        }
+      const totalPaid = Number(cash || 0) + Number(transfer || 0);
+      const discountedTotal = dataBill?.discountType === "PERCENT"
+        ? totalBill - (totalBill * dataBill?.discount) / 100
+        : totalBill - (dataBill?.discount || 0);
+      
+      if (totalPaid >= discountedTotal) {
+        setCanCheckOut(true);
       } else {
-        if (_sum >= totalBill) {
-          setCanCheckOut(true);
-        } else {
-          setCanCheckOut(false);
-        }
+        setCanCheckOut(false);
       }
     }
   }, [cash, transfer, totalBill, forcus]);
+
+  const handlePaymentMethodChange = (method) => {
+    setForcus(method);
+
+    if (method === "TRANSFER") {
+
+      setTransfer();
+      setAmountBefore();
+      setRemainingAmount(totalBill); // เพราะจ่ายครบ
+    } else if (method === "TRANSFER_CASH") {
+      setTransfer();
+      setAmountBefore();
+      setRemainingAmount(totalBill);
+    } else if (method === "CASH") {
+      setTransfer();
+      setAmountBefore();
+      setRemainingAmount(totalBill);
+    }
+  };
 
   const transferCal =
     dataBill?.discountType === "PERCENT"
@@ -518,6 +527,7 @@ export default function CheckPopupDebt({
     });
   };
 
+
   const onChangeRemainingAmountInput = (inputData) => {
     // Ton update
     console.log({ inputData });
@@ -560,17 +570,19 @@ export default function CheckPopupDebt({
   });
 
   useEffect(() => {
-    //update
-    const remainingCalculate = totalBill - (amountBefore || 0);
+    if (!open) return;
+    const totalPaidBefore = Number(amountBefore || 0) + Number(transfer || 0);
+    const remainingCalculate = totalBill - totalPaidBefore;
+  
     setRemainingShow(remainingCalculate);
     setRemainingAmount(remainingCalculate);
-  }, [totalBill, amountBefore]);
+  }, [totalBill, amountBefore, transfer, forcus, open]);
 
   return (
     <Modal
       show={open}
       onHide={() => {
-        setAmountBefore(0);
+        setAmountBefore();
         setCash();
         setTransfer();
         onClose();
@@ -670,8 +682,8 @@ export default function CheckPopupDebt({
 
 
 
-              <InputGroup>
-                <InputGroup.Text>{t("debt_paymentbefore")}</InputGroup.Text>
+              <InputGroup hidden={forcus !== "CASH" && forcus !== "TRANSFER_CASH"}>
+                <InputGroup.Text>{ "ຈຳນວນເງິນສົດທີຈ່າຍກ່ອນ"}</InputGroup.Text>
                 <Form.Control
                   disabled={tab !== "cash_transfer"}
                   type="text"
@@ -688,22 +700,34 @@ export default function CheckPopupDebt({
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
 
+              <InputGroup hidden={forcus !== "TRANSFER" && forcus !== "TRANSFER_CASH"}>
+                <InputGroup.Text>{t("ຈຳນວນເງິນໂອນທີຈ່າຍກ່ອນ")}</InputGroup.Text>
+                <Form.Control
+                  type="text"
+                  placeholder="0"
+                  value={convertNumber(transfer )}
+                  onClick={() => {
+                    setSelectInput("inputTransfer");
+                  }}
+                  onChange={(e) => {
+                    onChangeTransferInput(e.target.value);
+                  }}
+                  size="lg"
+                />
+                <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
+              </InputGroup>
+
               <Form hidden={tab !== "cash_transfer"}>
                 {['radio'].map((type) => (
                   <div key={`inline-${type}`} className="mb-3">
                     <CustomCheck
                       inline
+                      defaultChecked
                       label="ເງິນສົດ"
                       name="paymentMethod"
                       type={type}
                       id={`inline-${type}-1`}
-                    />
-                    <CustomCheck
-                      inline
-                      label="ເງິນສົດ + ໂອນ"
-                      name="paymentMethod"
-                      type={type}
-                      id={`inline-${type}-2`}
+                      onChange={() => handlePaymentMethodChange("CASH")}
                     />
                     <CustomCheck
                       inline
@@ -711,6 +735,15 @@ export default function CheckPopupDebt({
                       name="paymentMethod"
                       type={type}
                       id={`inline-${type}-3`}
+                      onChange={() => handlePaymentMethodChange("TRANSFER")}
+                    />
+                    <CustomCheck
+                      inline
+                      label="ເງິນສົດ + ໂອນ"
+                      name="paymentMethod"
+                      type={type}
+                      id={`inline-${type}-2`}
+                      onChange={() => handlePaymentMethodChange("TRANSFER_CASH")}
                     />
                   </div>
                 ))}
@@ -854,7 +887,7 @@ export default function CheckPopupDebt({
                   setTab("cash");
                   setSelectInput("inputAmount");
                   setForcus("CASH");
-                  setAmountBefore(0);
+                  setAmountBefore();
                   setRemainingAmount(remainingAmount);
                 }}
               >
@@ -872,8 +905,8 @@ export default function CheckPopupDebt({
                   setTransfer();
                   setTab("cash_transfer");
                   setSelectInput("inputCash");
-                  setForcus("TRANSFER_CASH");
-                  setAmountBefore("");
+                  // setForcus("TRANSFER_CASH");
+                  setAmountBefore();
                 }}
               >
                 {t("debt_and_pay")}

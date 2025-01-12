@@ -104,35 +104,19 @@ export default function DebtPage() {
 };
   
 
-
-  useEffect(() => {
-    getAllDataDebts();
-  }, [billDebtData])
-
-
-  const getAllDataDebts = async () => {
-    try {
-      const data = await getAllDebts();
-      setShowData(data);
-    } catch (error) {
-      console.log("error getAlldata", error)
-    }
-  }
-
-
   // ຈຳນວນເງິນທັງຫມົດ
-  const amount = showData.reduce((total, item) => {
+  const amount = billDebtData.reduce((total, item) => {
     return total + (item.amount || 0);
   }, 0);
 
 
   //ເງິນທີຍັງຕິດ
-  const remainingAmount = showData.reduce((total, item) => {
+  const remainingAmount = billDebtData.reduce((total, item) => {
     return total + (item.remainingAmount || 0);
   }, 0);
 
   //ເງິນທີຈ່າຍໄປແລ້ວ
-  const totalPayment = showData.reduce((total, item) => {
+  const totalPayment = billDebtData.reduce((total, item) => {
     return total + (item.totalPayment || 0);
   }, 0);
 
@@ -219,7 +203,7 @@ export default function DebtPage() {
                   // fontWeight: 700
                 }}
               >
-                {showData?.length || 0}
+                {billDebtData?.length || 0}
               </div>
             </Card.Body>
           </Card>
@@ -375,7 +359,7 @@ export default function DebtPage() {
                   onMouseEnter={() => setIsHovered(true)}
                   onMouseLeave={() => setIsHovered(false)}
                   onClick={() => {
-                    setBillDebtData(searchCode);
+                    // setBillDebtData(searchCode);
                     setPopup({
                       PopUpDebtExport: true,
                     });
@@ -780,7 +764,8 @@ export default function DebtPage() {
               setPopup();
               setSelectDebtData();
             }}
-            billDebtData={selectDebtData}
+            billDebtData={billDebtData}
+            debtHistoryData={debtHistoryData}
             callback={async () => {
               setPopup();
               setSelectDebtData();
