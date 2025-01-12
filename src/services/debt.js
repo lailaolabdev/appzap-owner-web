@@ -85,14 +85,6 @@ export const getMenuDebt = async (findby, token) => {
   }
 };
 
-export const getAllDebts = async ()=>{
-  try {
-    const url = `${END_POINT_APP}/v4/debt-all`;
-    const res = await axios.get(url)
-    return res.data;
-  } catch (error) {
-    return { error: true };
-  }
-}
+
 
 
