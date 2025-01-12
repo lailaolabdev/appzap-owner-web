@@ -2,6 +2,7 @@ import { END_POINT_SEVER, END_POINT_SEVER_TABLE_MENU } from "../constants/api";
 import axios from "axios";
 import { getHeaders } from "./auth";
 import { Store } from "@material-ui/icons";
+import { data } from "browserslist";
 
 export const getMenus = async (findby) => {
   try {
@@ -33,7 +34,7 @@ export const getMenu = async (categoryId) => {
   }
 };
 
-export const updateMenu = async (data, id) => {
+export const updateCategoryMenu = async (data, id) => {
   try {
     const url = `${END_POINT_SEVER_TABLE_MENU}/v3/category/update`;
     const _category = await axios.put(
@@ -47,6 +48,37 @@ export const updateMenu = async (data, id) => {
       }
     );
     return _category;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const updateMenu = async (data, id) => {
+  try {
+    const url = `${END_POINT_SEVER}/v3/menu/update`;
+    const res = await axios.put(
+      url,
+      {
+        id: id,
+        data: data,
+      },
+      {
+        headers: await getHeaders(),
+      }
+    );
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const createMenu = async (menuData) => {
+  try {
+    const url = `${END_POINT_SEVER}/v3/menu/create`;
+    const res = await axios.post(url, menuData, {
+      headers: await getHeaders(),
+    });
+    return res;
   } catch (error) {
     return error;
   }

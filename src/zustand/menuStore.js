@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { getMenusByStoreId } from "../services/menu"; // Import necessary API helpers
+import { createMenu, getMenusByStoreId, updateMenu } from "../services/menu"; // Import necessary API helpers
 import { getCategories } from "../services/menuCategory";
 
 export const useMenuStore = create(
@@ -14,7 +14,6 @@ export const useMenuStore = create(
       isMenuCategoryLoading: false,
       staffCart: [],
 
-
       // Action to set loading state
       setMenuLoading: (isLoading) => set({ isMenuLoading: isLoading }),
 
@@ -22,27 +21,28 @@ export const useMenuStore = create(
       setMenus: (menusData) => set({ menus: menusData }),
 
       // Action to set menu categories
-      setMenuCategories: (categoriesData) => set({ menuCategories: categoriesData }),
+      setMenuCategories: (categoriesData) =>
+        set({ menuCategories: categoriesData }),
 
       // Action to set the selected category
       setSelectedCategory: (category) => set({ selectedCategory: category }),
 
       // Action to set staff cart
-      setStaffCart: (updateCart) => 
+      setStaffCart: (updateCart) =>
         set((state) => ({
-        staffCart: updateCart(state.staffCart), // Call the function with previous state (staffCart)
-      })),
+          staffCart: updateCart(state.staffCart), // Call the function with previous state (staffCart)
+        })),
 
       // Action to reset staff cart to an empty array
       resetStaffCart: () => set({ staffCart: [] }),
-  
 
       // Action to fetch menus by store ID
       getMenus: async (storeId) => {
-        console.log({storeId})
+        console.log({ storeId });
         set({ isMenuLoading: true });
         try {
           const data = await getMenusByStoreId(storeId);
+          console.log("DATA", data);
           set({ menus: data, isMenuLoading: false });
           return data;
         } catch (error) {
@@ -64,26 +64,60 @@ export const useMenuStore = create(
         }
       },
 
-    //   // Action to update a menu item by ID
-    //   updateMenuItem: async (menuData, menuId) => {
-    //     set({ isMenuLoading: true });
-    //     try {
-    //       const updatedMenu = await updateMenu(menuData, menuId);
-    //       set((state) => ({
-    //         menus: state.menus.map((menu) =>
-    //           menu._id === menuId ? updatedMenu.data : menu
-    //         ),
-    //         isMenuLoading: false,
-    //       }));
-    //       return updatedMenu;
-    //     } catch (error) {
-    //       console.error("Update menu item error:", error.message);
-    //       set({ isMenuLoading: false });
-    //     }
-    //   },
+      //TODO: Action to update a menu item by ID
+      updateMenuItem: async (menuData, menuId) => {
+        set({ isMenuLoading: true }); // Set loading state
+
+        try {
+          //TODO: CALL API UPDATE MENU
+          const updatedMenu = await updateMenu(menuData, menuId);
+
+          //TODO: Update the local menus state
+          set({ menus: updatedMenu?.data, isMenuLoading: false });
+          // set((state) => ({
+          //   menus: state.menus.map((menu) =>
+          //     menu._id === menuId ? { ...menu, ...updatedMenu.data } : menu
+          //   ),
+          //   isMenuLoading: false, // Reset loading state
+          // }));
+
+          return updatedMenu;
+        } catch (error) {
+          // Log the error with more details
+          console.error("Failed to update menu item:", {
+            error: error.message,
+            menuData,
+            menuId,
+          });
+
+          set({ isMenuLoading: false });
+
+          throw new Error(`Error updating menu item: ${error.message}`);
+        }
+      },
+
+      createMenuItem: async (data) => {
+        set({ isMenuLoading: true });
+        console.log("DATA: ", data);
+        try {
+          const res = await createMenu(data);
+          console.log("RES", res);
+          set({ menus: res, isMenuLoading: false });
+          return res;
+        } catch (error) {
+          set({ isMenuLoading: false });
+          throw new Error(`Error updating menu item: ${error.message}`);
+        }
+      },
 
       // Action to clear menu data
-      clearMenus: () => set({ menus: [], menuCategories: [], staffCart: [], isMenuLoading: false }),
+      clearMenus: () =>
+        set({
+          menus: [],
+          menuCategories: [],
+          staffCart: [],
+          isMenuLoading: false,
+        }),
     }),
     {
       name: "menuStore", // Name of the key in localStorage

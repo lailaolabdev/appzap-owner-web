@@ -36,6 +36,9 @@ import PopUpCaution from "../../components/popup/PopUpCaution";
 import PopUpAddMenus from "../../components/popup/PopUpAddMenus";
 import { fontMap } from "../../utils/font-map";
 import { cn } from "../../utils/cn";
+import { useMenuStore } from "../../zustand/menuStore";
+import { useStoreStore } from "../../zustand/storeStore";
+import { createMenu } from "../../services/menu";
 
 export default function MenuList() {
   const {
@@ -91,6 +94,8 @@ export default function MenuList() {
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState();
+  const { updateMenuItem, createMenuItem } = useMenuStore();
+  const { storeDetail } = useStoreStore();
 
   const location = useLocation();
   const pathParts = location.pathname.split("/");
@@ -242,7 +247,7 @@ export default function MenuList() {
   const [menuOptions, setMenuOptions] = useState([]);
   // lung jak upload leo pic ja ma so u nee
 
-  // ======> create menu
+  //TODO: ======> create menu
   const _createMenu = async (values) => {
     const header = await getHeaders();
     const headers = {
@@ -270,6 +275,7 @@ export default function MenuList() {
         sort: values?.sort,
         menuOption: dataMenuOption,
       };
+
       if (connectMenuId && connectMenuId !== "" && menuType === "MENUOPTION")
         createData = { ...createData, menuId: connectMenuId };
       const resData = await axios({
@@ -299,6 +305,57 @@ export default function MenuList() {
         values.unit = "";
       }
     } catch (err) {
+      errorAdd(`${t("add_fail")}`);
+    }
+  };
+  //TODO: CREATE MENU FORM ZUSTAND
+  const createMenuData = async (values) => {
+    try {
+      const body = {
+        recommended: values?.recommended,
+        isWeightMenu: values?.isWeightMenu,
+        name: values?.name,
+        name_en: values?.name_en,
+        name_cn: values?.name_cn,
+        name_kr: values?.name_kr,
+        quantity: values?.quantity,
+        categoryId: values?.categoryId,
+        menuOptionId: menuOptions,
+        price: values?.price,
+        detail: values?.detail,
+        unit: values?.unit,
+        isOpened: isOpened,
+        images: [...values?.images],
+        storeId: getTokken?.DATA?.storeId,
+        type: menuType,
+        sort: values?.sort,
+        menuOption: dataMenuOption,
+      };
+      if (connectMenuId && connectMenuId !== "" && menuType === "MENUOPTION")
+        body = { ...body, menuId: connectMenuId };
+      const resData = await createMenuItem(body);
+      const _localData = await getLocalData();
+      if (resData?.data) {
+        setMenus(resData?.data);
+        handleClose();
+        // handleShow();
+        setgetTokken(_localData);
+        getMenu(_localData?.DATA?.storeId);
+        setMenuType("MENU");
+        setConnectMenuId("");
+        successAdd(`${t("add_success")}`);
+        values.name = "";
+        values.name_en = "";
+        values.name_cn = "";
+        values.name_kr = "";
+        values.quantity = "";
+        values.categoryId = "";
+        values.price = "";
+        values.detail = "";
+        values.unit = "";
+      }
+    } catch (error) {
+      console.error("Create menu error:", error.message);
       errorAdd(`${t("add_fail")}`);
     }
   };
@@ -345,6 +402,41 @@ export default function MenuList() {
     setDataUpdateMenuOption(item?.menuOption);
     setShow2(true);
   };
+  //TODO: UPDATE MENU FORM ZUSTAND
+
+  const _updateMenu = async (values) => {
+    try {
+      const menuData = {
+        recommended: values?.recommended,
+        isWeightMenu: values?.isWeightMenu,
+        name: values?.name,
+        name_en: values?.name_en,
+        name_cn: values?.name_cn,
+        name_kr: values?.name_kr,
+        quantity: values?.quantity,
+        categoryId: values?.categoryId,
+        menuOptionId: menuOptions,
+        price: values?.price,
+        detail: values?.detail,
+        unit: values?.unit,
+        isOpened: isOpened,
+        images: [...values?.images],
+        type: values?.type,
+        sort: values?.sort,
+        menuOption: dataUpdateMenuOption,
+        storeId: storeDetail?._id,
+      };
+      const updatedMenu = await updateMenuItem(menuData, dataUpdate?._id);
+      if (updatedMenu?.data) {
+        handleClose2();
+        successAdd(`${t("edit_success")}`);
+      }
+    } catch (error) {
+      console.error("Update menu item error:", error.message);
+      errorAdd(`${t("edit_fail")}`);
+    }
+  };
+
   const _updateCategory = async (values) => {
     const header = await getHeaders();
     const headers = {
@@ -374,15 +466,18 @@ export default function MenuList() {
           type: values?.type,
           sort: values?.sort,
           menuOption: dataUpdateMenuOption,
+          storeId: storeDetail?._id,
         },
       },
       headers: headers,
     });
+    console.log("resData", resData);
     if (resData?.data) {
       handleClose2();
       successAdd(`${t("edit_success")}`);
     }
   };
+
   const _updateQtyCategory = async (values) => {
     await axios({
       method: "PUT",
@@ -1004,7 +1099,7 @@ export default function MenuList() {
               return errors;
             }}
             onSubmit={(values, { setSubmitting }) => {
-              _createMenu(values);
+              createMenuData(values);
             }}
           >
             {({
@@ -1463,7 +1558,7 @@ export default function MenuList() {
             }}
             onSubmit={(values, { setSubmitting }) => {
               const getData = async () => {
-                await _updateCategory(values);
+                await _updateMenu(values);
                 const _localData = await getLocalData();
                 if (_localData) {
                   setgetTokken(_localData);
