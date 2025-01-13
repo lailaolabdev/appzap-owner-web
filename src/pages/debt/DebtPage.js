@@ -203,7 +203,7 @@ export default function DebtPage() {
                   // fontWeight: 700
                 }}
               >
-                {billDebtData?.length || 0}
+                {billDebtData?.length || 0} ລາຍການ
               </div>
             </Card.Body>
           </Card>
