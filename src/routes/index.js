@@ -247,7 +247,7 @@ function Router() {
         },
         {
           path: "/settingStore/stock/limit/:limit/page/:page/:id",
-          element: <StockList />,
+          element: <ReportStocks />,
         },
         {
           path: "/stock",
