@@ -28,6 +28,7 @@ import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
 import PopUpPin from "../../components/popup/PopUpPin";
 import printFlutter from "../../helpers/printFlutter";
+import flutterDrawer from "../../helpers/flutterDrawer";
 
 /**
  * const
@@ -760,7 +761,7 @@ export default function TableList() {
 
       await printFlutter(
         {
-          drawer: false,
+          drawer: true,
           paper: printerBillData?.width === "58mm" ? 400 : 500,
           imageBuffer: dataImageForPrint.toDataURL(),
           ip: printerBillData?.ip,
@@ -956,10 +957,28 @@ export default function TableList() {
       bodyFormData.append("ip", printerBillData?.ip);
       bodyFormData.append("port", "9100");
 
-      await axios.post(urlForPrinter, {
-        ip: printerBillData?.ip,
-        port: 9100,
-      });
+      await flutterDrawer(
+        {
+          drawer: true,
+          // paper: printerBillData?.width === "58mm" ? 400 : 500,
+          // imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          // type: printerBillData?.type,
+          port: "9100",
+          // width: printerBillData?.width === "58mm" ? 400 : 580,
+        },
+        async () => {
+          await axios.post(urlForPrinter, {
+            ip: printerBillData?.ip,
+            port: 9100,
+          });
+        }
+      );
+
+      // await axios.post(urlForPrinter, {
+      //   ip: printerBillData?.ip,
+      //   port: 9100,
+      // });
     } catch (err) {
       console.log(err);
       await Swal.fire({

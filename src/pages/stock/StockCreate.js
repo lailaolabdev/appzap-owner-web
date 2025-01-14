@@ -515,10 +515,10 @@ export default function StockCreate() {
                             <option value="ມິລລິລິດ">{t("millilitre")}</option>
                             <option value="ລັງເເກັດ">{t("box")}</option>
                             <option value="ແພັກ">{t("pack")}</option>
-                            <option value="ຖົງ">{t("pack")}</option>
-                            <option value="ປ໋ອງ">{t("pack")}</option>
-                            <option value="ອັນ">{t("pack")}</option>
-                            <option value="ຕຸກ">{t("pack")}</option>
+                            <option value="ຖົງ">{t("bag")}</option>
+                            <option value="ປ໋ອງ">{t("can")}</option>
+                            <option value="ອັນ">{t("item")}</option>
+                            <option value="ຕຸກ">{t("boxed")}</option>
                           </select>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
