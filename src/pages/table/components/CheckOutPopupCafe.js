@@ -33,7 +33,9 @@ import { useStoreStore } from "../../../zustand/storeStore";
 
 export default function CheckOutPopupCafe({
   onPrintDrawer,
+
   onPrintBill,
+  onPrintForCher,
   open,
   onClose,
   dataBill,
@@ -46,7 +48,7 @@ export default function CheckOutPopupCafe({
   const inputCashRef = useRef(null);
   const inputTransferRef = useRef(null);
   const { profile } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const navigate = useNavigate();
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
@@ -301,6 +303,7 @@ export default function CheckOutPopupCafe({
           showConfirmButton: false,
           timer: 1800,
         });
+        await onPrintForCher();
         // navigate("/history-cafe-sale")
       })
       .catch(function (error) {
@@ -478,8 +481,10 @@ export default function CheckOutPopupCafe({
               <span>ລາຄາລວມ: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
                 {dataBill
-                  ? moneyCurrency(totalBill ? totalBill : 0)
-                  : moneyCurrency(totalBill > 0 ? totalBill : 0)}{" "}
+                  ? moneyCurrency(totalBill ? matchRoundNumber(totalBill) : 0)
+                  : moneyCurrency(
+                      totalBill > 0 ? matchRoundNumber(totalBill) : 0
+                    )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
               <span hidden={selectCurrency === "LAK"}>
@@ -553,7 +558,7 @@ export default function CheckOutPopupCafe({
                   disabled={tab !== "cash_transfer"}
                   type="text"
                   placeholder="0"
-                  value={convertNumber(transfer)}
+                  value={convertNumber(matchRoundNumber(transfer || 0))}
                   onClick={() => {
                     setSelectInput("inputTransfer");
                   }}
@@ -733,29 +738,40 @@ export default function CheckOutPopupCafe({
         </Box>
       </Modal.Body>
       <Modal.Footer>
-        <div style={{ flex: 1 }}>
-          <p>
-            {t("cashier")}:{" "}
-            <b>
-              {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
-            </b>
-          </p>
+        <div className="flex flex-wrap items-start w-full justify-center">
+          <div className="flex flex-1 h-full whitespace-nowrap mb-2">
+            <p>
+              {t("cashier")}:{" "}
+              <b>
+                {profile?.data?.firstname ?? "-"}{" "}
+                {profile?.data?.lastname ?? "-"}
+              </b>
+            </p>
+          </div>
+          <div className="flex flex-col dmd:flex-row gap-2 items-end">
+            <Button
+              onClick={async () => {
+                await onPrintBill().then(() => {
+                  handleSubmit();
+                });
+
+                // await onPrintForCher();
+              }}
+              style={{ display: "flex", gap: "10px", alignItems: "center" }}
+              disabled={!canCheckOut}
+            >
+              <BiSolidPrinter />
+              {t("print_checkbill")}
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              className="dmd:w-fit w-full"
+              disabled={!canCheckOut}
+            >
+              {t("calculate")}
+            </Button>
+          </div>
         </div>
-        <Button
-          onClick={() => {
-            onPrintBill().then(() => {
-              handleSubmit();
-            });
-          }}
-          disabled={!canCheckOut}
-        >
-          <BiSolidPrinter />
-          {t("print_checkbill")}
-        </Button>
-        <div style={{ width: "20%" }}></div>
-        <Button onClick={handleSubmit} disabled={!canCheckOut}>
-          {t("calculate")}
-        </Button>
       </Modal.Footer>
     </Modal>
   );
