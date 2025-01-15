@@ -16,12 +16,12 @@ export default function PopUpDebtExport({
   open,
   onClose,
   callback,
-  debtHistoryData,
-  billDebtData
+  billDebtData,
+  debtHistoryData
 }) {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
-  // const [billDebtData, setbillDebtData] = useState([]);
+  // const [debtHistoryData, setdebtHistoryData] = useState([]);
   const [pagination, setPagination] = useState(1);
   const [totalPagination, setTotalPagination] = useState(0);
   const [selectedDebt, setSelectedDebt] = useState(null);
@@ -41,7 +41,7 @@ export default function PopUpDebtExport({
   //     const { TOKEN } = await getLocalData();
   //     let findby = `?skip=${(pagination - 1) * limitData}&limit=${limitData}&storeId=${storeDetail?._id}`;
   //     const data = await getdebtHistory(findby, TOKEN);
-  //     setbillDebtData(data);
+  //     setdebtHistoryData(data);
   //     setTotalPagination(Math.ceil(data?.totalCount / limitData));
   //   } catch (err) {
   //     console.error("Error fetching data:", err);
@@ -72,7 +72,7 @@ export default function PopUpDebtExport({
     headerRow.alignment = { horizontal: 'center' };
 
     // add data
-    const filteredData = billDebtData
+    const filteredData = debtHistoryData
       .filter(e => e?.remainingAmount > 0)
       .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
@@ -131,7 +131,7 @@ export default function PopUpDebtExport({
     onClose();
   };
 
-  console.log("billDebtData: ",billDebtData)
+  console.log("debtHistoryData: ",debtHistoryData)
 
   return (
     <>
@@ -151,7 +151,7 @@ export default function PopUpDebtExport({
           >
             <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
               <span>
-                {t("customer_name")}: {billDebtData?.customerName}
+                {t("customer_name")}: {debtHistoryData?.customerName}
               </span>
               <Button
                 onClick={exportToExcel}
@@ -168,7 +168,7 @@ export default function PopUpDebtExport({
 
             <div style={{ marginTop: 10 }}>
               <span>
-                {t("phoneNumber")}: {billDebtData?.customerPhone}
+                {t("phoneNumber")}: {debtHistoryData?.customerPhone}
               </span>
             </div>
           </Card.Header>
@@ -197,8 +197,8 @@ export default function PopUpDebtExport({
                       <Spinner animation="border" variant="warning" />
                     </td>
                   </tr>
-                ) : billDebtData && billDebtData.length > 0 ? (
-                  billDebtData
+                ) : debtHistoryData && debtHistoryData.length > 0 ? (
+                  debtHistoryData
                     .filter((e) => e?.remainingAmount > 0)
                     .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
                     .map((e, i) => (
@@ -236,7 +236,7 @@ export default function PopUpDebtExport({
       <PopUpDebtExportUserId
         open={showUserModal}
         onClose={handleUserModalClose}
-        billDebtData={selectedDebt}
+        debtHistoryData={selectedDebt}
       />
     </>
   );

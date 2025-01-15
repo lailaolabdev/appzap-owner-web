@@ -365,6 +365,11 @@ export default function DashboardFinance({
     TotalCalculate = baseTotal ?? 0 - dataModal?.change ?? 0;
   }
 
+  // วิธีที่ 2: เขียนแบบละเอียด
+  // วิธีที่ 1: ใช้ filter() โดยตรง
+  const filteredData = data?.checkOut?.filter(item => !item.isDebt);
+  console.log("filteredData: ",filteredData)
+
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <Loading />}
@@ -471,7 +476,7 @@ export default function DashboardFinance({
             </tr>
           </thead>
           <tbody>
-            {data?.checkOut?.map((item, index) => (
+            {filteredData?.map((item, index) => (
               <tr
                 key={item?._id}
                 onClick={() => {
@@ -538,7 +543,7 @@ export default function DashboardFinance({
                         : new Intl.NumberFormat("ja-JP", {
                           currency: "JPY",
                         }).format(
-                          isNaN(
+                          item?.isDebtAndPay ? item?.payAmount + item?.transferAmount : isNaN(
                             item?.billAmount +
                             item?.taxAmount +
                             item?.serviceChargeAmount -
