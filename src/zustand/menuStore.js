@@ -38,11 +38,9 @@ export const useMenuStore = create(
 
       // Action to fetch menus by store ID
       getMenus: async (storeId) => {
-        console.log({ storeId });
         set({ isMenuLoading: true });
         try {
           const data = await getMenusByStoreId(storeId);
-          console.log("DATA", data);
           set({ menus: data, isMenuLoading: false });
           return data;
         } catch (error) {
@@ -73,7 +71,7 @@ export const useMenuStore = create(
           const updatedMenu = await updateMenu(menuData, menuId);
 
           //TODO: Update the local menus state
-          set({ menus: updatedMenu?.data, isMenuLoading: false });
+          set({ menus: updatedMenu, isMenuLoading: false });
           // set((state) => ({
           //   menus: state.menus.map((menu) =>
           //     menu._id === menuId ? { ...menu, ...updatedMenu.data } : menu
@@ -98,10 +96,8 @@ export const useMenuStore = create(
 
       createMenuItem: async (data) => {
         set({ isMenuLoading: true });
-        console.log("DATA: ", data);
         try {
           const res = await createMenu(data);
-          console.log("RES", res);
           set({ menus: res, isMenuLoading: false });
           return res;
         } catch (error) {
