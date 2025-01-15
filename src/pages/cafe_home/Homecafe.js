@@ -61,6 +61,7 @@ import { fontMap } from "../../utils/font-map";
 import { useStoreStore } from "../../zustand/storeStore";
 import { useMenuStore } from "../../zustand/menuStore";
 import theme from "../../theme";
+import moment from "moment";
 
 function Homecafe() {
   const params = useParams();
@@ -77,7 +78,6 @@ function Homecafe() {
   const [allSelectedMenu, setAllSelectedMenu] = useState([]);
   const [show, setShow] = useState(false);
   const [menuOptions, setMenuOptions] = useState([]);
-  const { profile } = useStore();
   const [isPopup, setIsPupup] = useState(false);
   const [noteItems, setNoteItems] = useState();
   const [addComments, setAddComments] = useState();
@@ -192,6 +192,7 @@ function Homecafe() {
     selectedTable,
     setSelectedTable,
     getTableDataStore,
+    profile,
   } = useStore();
   const { storeDetail } = useStoreStore();
   const [search, setSearch] = useState("");
@@ -635,6 +636,268 @@ function Homecafe() {
       }
     } catch (err) {
       console.log({ err });
+    }
+  };
+
+  const convertHtmlToBase64 = (orderSelect) => {
+    const base64ArrayAndPrinter = [];
+    orderSelect.forEach((data, index) => {
+      if (data) {
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        // Define base dimensions
+        const baseHeight = 250;
+        const extraHeightPerOption = 30;
+        const extraHeightForNote = data?.note ? 40 : 0;
+        const dynamicHeight =
+          baseHeight +
+          (data.options?.length || 0) * extraHeightPerOption +
+          extraHeightForNote;
+        const width = 510;
+
+        canvas.width = width;
+        canvas.height = dynamicHeight;
+
+        // Set white background
+        context.fillStyle = "#fff";
+        context.fillRect(0, 0, width, dynamicHeight);
+
+        // Helper function for text wrapping
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+          const words = text.split(" ");
+          let line = "";
+          for (let n = 0; n < words.length; n++) {
+            let testLine = line + words[n] + " ";
+            let metrics = context.measureText(testLine);
+            let testWidth = metrics.width;
+            if (testWidth > maxWidth && n > 0) {
+              context.fillText(line, x, y);
+              line = words[n] + " ";
+              y += lineHeight;
+            } else {
+              line = testLine;
+            }
+          }
+          context.fillText(line, x, y);
+          return y + lineHeight;
+        }
+
+        // Content: Item Name and Quantity
+        context.fillStyle = "#000";
+        context.font = "bold 32px NotoSansLao, Arial, sans-serif";
+        let yPosition = 30;
+        yPosition = wrapText(
+          context,
+          `${data?.name} (${data?.quantity})`,
+          10,
+          yPosition,
+          width - 20,
+          36
+        );
+
+        // Content: Item Note
+        if (data?.note) {
+          const noteLabel = "note: ";
+          const noteText = data.note;
+
+          // Draw "Note:" label in bold
+          context.fillStyle = "#666";
+          context.font = "bold italic 24px Arial, sans-serif";
+          context.fillText(noteLabel, 10, yPosition);
+
+          // Measure width of the "Note:" label
+          const noteLabelWidth = context.measureText(noteLabel).width;
+
+          // Wrap the note text, starting after the "Note:" label
+          context.font = "italic 24px Arial, sans-serif";
+          yPosition = wrapText(
+            context,
+            noteText,
+            10 + noteLabelWidth, // Start after the label width
+            yPosition,
+            width - 20 - noteLabelWidth, // Adjust wrapping width
+            30
+          );
+
+          // Add spacing after the note
+          yPosition += 10;
+        }
+
+        // Options
+        if (data.options && data.options.length > 0) {
+          context.fillStyle = "#000";
+          context.font = "24px NotoSansLao, Arial, sans-serif";
+          data.options.forEach((option, idx) => {
+            const optionPriceText = option?.price
+              ? ` - ${moneyCurrency(option?.price)}`
+              : "";
+            const optionText = `- ${option?.name}${optionPriceText} x ${
+              option?.quantity || 1
+            }`;
+            yPosition = wrapText(
+              context,
+              optionText,
+              10,
+              yPosition,
+              width - 20,
+              30
+            );
+          });
+
+          // Divider below options
+          context.strokeStyle = "#ccc";
+          context.setLineDash([4, 2]);
+          context.beginPath();
+          context.moveTo(0, yPosition);
+          context.lineTo(width, yPosition);
+          context.stroke();
+          context.setLineDash([]);
+          yPosition += 20;
+        }
+
+        context.fillStyle = "#000";
+        context.font = "24px NotoSansLao, Arial, sans-serif";
+        yPosition = wrapText(
+          context,
+          `${t("total")} ${moneyCurrency(
+            data?.price + (data?.totalOptionPrice ?? 0)
+          )} ${t(storeDetail?.firstCurrency)}`,
+          10,
+          yPosition,
+          width - 20,
+          46
+        );
+
+        // Set text properties
+        context.fillStyle = "#000"; // Black text color
+        context.font = "28px NotoSansLao, Arial, sans-serif"; // Font style and size
+        context.textAlign = "right"; // Align text to the right
+        context.textBaseline = "bottom"; // Align text baseline to bottom
+
+        // Add a dotted line above the footer
+        context.strokeStyle = "#000"; // Black dotted line
+        context.setLineDash([4, 2]); // Dotted line style
+        context.beginPath();
+        context.moveTo(0, yPosition - 25); // Position 70px above footer
+        context.lineTo(width, yPosition - 25); // Full-width dotted line
+        context.stroke();
+        context.setLineDash([]); // Reset line dash style
+
+        // Footer Section
+        context.font = "bold 24px NotoSansLao, Arial, sans-serif";
+        context.fillStyle = "#000";
+
+        // Draw "Created By" text at the bottom-left
+        context.textAlign = "left"; // Align text to the left
+        context.fillText(
+          data?.createdBy?.data?.firstname || profile?.data?.firstname, // Footer text
+          10, // 10px from the left edge
+          yPosition + 10 // Position Y: 20px above the bottom
+        );
+
+        // Draw date and time at the bottom-right
+        context.textAlign = "right"; // Align text to the right
+        context.fillStyle = "#6e6e6e"; // Gray color
+        context.font = "22px NotoSansLao, Arial, sans-serif"; // Smaller font size
+        context.fillText(
+          `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
+            data?.createdAt
+          ).format("LT")}`, // Date and time
+          width - 10, // 10px from the right edge
+          yPosition + 10 // Position Y: 20px above the bottom
+        );
+
+        // Convert canvas to base64
+        const dataUrl = canvas.toDataURL("image/png");
+        const printer = printers.find((e) => e?._id === data?.printer);
+        if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
+      }
+    });
+
+    return base64ArrayAndPrinter;
+  };
+
+  const runPrint = async (dataUrl, index, printer) => {
+    try {
+      const printFile = base64ToBlob(dataUrl);
+      var bodyFormData = new FormData();
+
+      bodyFormData.append("ip", printer?.ip);
+      if (index === 0) {
+        bodyFormData.append("beep1", 1);
+        bodyFormData.append("beep2", 9);
+      }
+      bodyFormData.append("isdrawer", false);
+      bodyFormData.append("port", "9100");
+      bodyFormData.append("image", printFile);
+      bodyFormData.append("paper", printer?.width === "58mm" ? 58 : 80);
+
+      let urlForPrinter = "";
+      if (printer?.type === "ETHERNET") urlForPrinter = ETHERNET_PRINTER_PORT;
+      if (printer?.type === "BLUETOOTH") urlForPrinter = BLUETOOTH_PRINTER_PORT;
+      if (printer?.type === "USB") urlForPrinter = USB_PRINTER_PORT;
+
+      await printFlutter(
+        {
+          imageBuffer: dataUrl,
+          ip: printer?.ip,
+          type: printer?.type,
+          port: "9100",
+          width: printer?.width === "58mm" ? 400 : 580,
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const onPrintForCher = async () => {
+    console.log("selectedMenu", selectedMenu);
+    try {
+      const base64ArrayAndPrinter = convertHtmlToBase64(selectedMenu);
+
+      let arrayPrint = [];
+      for (var index = 0; index < base64ArrayAndPrinter.length; index++) {
+        arrayPrint.push(
+          runPrint(
+            base64ArrayAndPrinter[index].dataUrl,
+            index,
+            base64ArrayAndPrinter[index].printer
+          )
+        );
+      }
+
+      const result = await Promise.all(arrayPrint);
+      const hasError = result.some((result) => !result.success);
+
+      if (hasError) {
+        Swal.fire({
+          icon: "success",
+          title: t("print_success"),
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: t("print_fail"),
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    } catch (error) {
+      console.log("error", error);
+      return error;
     }
   };
 
@@ -1115,7 +1378,8 @@ function Homecafe() {
                           {t("pricesTotal")} :{" "}
                         </span>
                         <span className={fontMap[language]}>
-                          {moneyCurrency(total)} {t("nameCurrency")}
+                          {moneyCurrency(matchRoundNumber(total))}{" "}
+                          {t("nameCurrency")}
                         </span>
                       </div>
                     </div>
@@ -1160,25 +1424,41 @@ function Homecafe() {
                           {/* {t("print_bill")} */}
                           CheckOut
                         </Button>
+                        <Button
+                          variant="light"
+                          className={cn("hover-me", fontMap[language])}
+                          style={{
+                            marginRight: 15,
+                            backgroundColor: theme.primaryColor,
+                            color: "#ffffff",
+                            fontWeight: "bold",
+                            flex: 1,
+                          }}
+                          disabled={disabledButton}
+                          onClick={() => {
+                            onPrintForCher();
+                          }}
+                        >
+                          {t("print_bill")}
+                        </Button>
+                        {/* <Button
+                          variant="outline-warning"
+                          className={cn("hover-me", fontMap[language])}
+                          style={{
+                            marginRight: 15,
+                            border: `solid 1px ${theme.primaryColor}`,
+                            fontWeight: "bold",
+                            backgroundColor: theme.primaryColor,
+                            color: "#ffffff",
+                          }}
+                          
+                        >
+                          {t("print_bill")}
+                        </Button> */}
                       </>
                     ) : (
                       ""
                     )}
-                    <Button
-                      variant="light"
-                      className={cn("hover-me", fontMap[language])}
-                      style={{
-                        marginRight: 15,
-                        backgroundColor: theme.primaryColor,
-                        color: "#ffffff",
-                        fontWeight: "bold",
-                        flex: 1,
-                      }}
-                      disabled={disabledButton}
-                      onClick={() => navigate(`/history-cafe-sale`)}
-                    >
-                      {t("history_sales")}
-                    </Button>
                   </div>
                 </div>
               </div>
@@ -1467,7 +1747,7 @@ function Homecafe() {
                   ) : (
                     ""
                   )}
-                  <Button
+                  {/* <Button
                     variant="light"
                     className="hover-me"
                     style={{
@@ -1481,7 +1761,7 @@ function Homecafe() {
                     onClick={() => navigate(`/history-cafe-sale`)}
                   >
                     {t("history_sales")}
-                  </Button>
+                  </Button> */}
                 </div>
               </div>
             </div>
@@ -1652,6 +1932,7 @@ function Homecafe() {
         onSubmit={async () => onRemoveFromCart(itemDeleting.id)}
       />
       <CheckOutPopupCafe
+        onPrintForCher={onPrintForCher}
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}
         dataBill={selectedMenu}
