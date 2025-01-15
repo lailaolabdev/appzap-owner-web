@@ -90,6 +90,9 @@ export default function CheckPopupDebt({
   const [expirtDate, setExpirtDate] = useState(
     moment(moment()).add(7, "days").format("YYYY-MM-DD")
   );
+  const [debtTotal , setDebtTotal] = useState(true)
+  const [debtAndPay , setDebtAndPay] = useState(false)
+
 
   //console.log("profile: ",profile)
   // useEffect(() => {
@@ -102,6 +105,7 @@ export default function CheckPopupDebt({
   useEffect(() => {
     getMembersData();
   }, []);
+
 
   // useEffect(() => {
   //   getData();
@@ -145,37 +149,7 @@ export default function CheckPopupDebt({
   // };
 
   // button_create_debt
-  const handleClickCreateDebt = async () => {
-    try {
-      const { DATA, TOKEN } = await getLocalData();
-      const _body = {
-        amount: totalBill,
-        payAmount: Number(amountBefore),
-        transferAmount:  Number(transfer),
-        remainingAmount: remainingAmount,
-        customerName: customerName,
-        customerPhone: customerPhone,
-        billId: tableData._id,
-        status: "DEBT",
-        startDate: startDate,
-        endDate: expirtDate,
-        storeId: DATA?.storeId,
-      };
-      // return;
-      console.log("_body: ",_body)
-      const data = await createBilldebt(_body, TOKEN);
-      if (data.error) {
-        errorAdd(`${t("debt_fail")}`);
-        return;
-      }
-      setPrintCode(data.code);
-      navigate("/debt");
-      handleSubmit();
-      successAdd(`${t("debt_success")}`);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  
 
   const getMembersData = async () => {
     setIsLoading(true);
@@ -291,11 +265,48 @@ export default function CheckPopupDebt({
   };
 
 
+
+  const handleClickCreateDebt = async () => {
+    try {
+      const { DATA, TOKEN } = await getLocalData();
+  
+      const _body = {
+        amount: totalBill,
+        payAmount: Number(amountBefore),
+        transferAmount: Number(transfer),
+        remainingAmount: remainingAmount,
+        customerName: customerName,
+        customerPhone: customerPhone,
+        billId: tableData?._id, // ตรวจสอบว่ามีค่า
+        status: "DEBT",
+        startDate: startDate,
+        endDate: expirtDate, // แก้ชื่อเป็น expireDate
+        storeId: DATA?.storeId,
+        debtTotal: debtTotal
+      };
+  
+      const data = await createBilldebt(_body, TOKEN);
+  
+      if (data?.error) {
+        errorAdd(`${t("debt_fail")}`);
+        return;
+      }
+  
+      setPrintCode(data.code);
+      navigate("/debt");
+      handleSubmit();
+      successAdd(`${t("debt_success")}`);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  
+
+console.log("debtTotal: ",debtTotal)
+console.log("debtAndPay: ",debtAndPay)
   
   const _checkBill = async () => {
     const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
-
-
 
     await axios
       .put(
@@ -303,14 +314,16 @@ export default function CheckPopupDebt({
         {
           id: dataBill?._id,
           data: {
+            isDebt:debtTotal,
+            isDebtAndPay : debtAndPay,
             isCheckout: "true",
             status: "CHECKOUT",
-            payAmount: Number(amountBefore),
-            transferAmount: Number(transfer),
-            remainingAmount:remainingAmount,
+            payAmount:  Number(amountBefore),
+            transferAmount:   Number(transfer) ,
+            remainingAmount: remainingAmount ,
             paymentMethod: forcus,
-            taxAmount: taxAmount,
-            taxPercent: taxPercent,
+            taxAmount: taxAmount ,
+            taxPercent:taxPercent ,
             customerId: selectDataOpption?._id,
             userNanme: selectDataOpption?.username,
             phone: selectDataOpption?.phone,
@@ -358,9 +371,9 @@ export default function CheckPopupDebt({
   };
 
   const handleSubmit = () => {
-    _checkBill();
+    // Only execute _checkBill if debtTotal is true
+      _checkBill();
     onSubmit();
-    // console.log("valueConfirm:------>", valueConfirm)
   };
 
   // const options = membersData?.map((data) => {
@@ -889,6 +902,8 @@ export default function CheckPopupDebt({
                   setForcus("CASH");
                   setAmountBefore();
                   setRemainingAmount(remainingAmount);
+                  setDebtTotal(true);
+                  setDebtAndPay(false)
                 }}
               >
                 {t("debt_total")}
@@ -907,6 +922,8 @@ export default function CheckPopupDebt({
                   setSelectInput("inputCash");
                   // setForcus("TRANSFER_CASH");
                   setAmountBefore();
+                  setDebtTotal(false)
+                  setDebtAndPay(true)
                 }}
               >
                 {t("debt_and_pay")}
