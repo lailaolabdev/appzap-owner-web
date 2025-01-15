@@ -47,13 +47,10 @@ export default function CheckOutPopup({
   newId,
   oldId,
 }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   // ref
-  const { profile } = useStore()
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { profile } = useStore();
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
   // state
