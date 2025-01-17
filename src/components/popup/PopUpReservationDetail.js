@@ -17,7 +17,7 @@ const PopUpReservationDetail = ({
   const { t } = useTranslation();
   return (
     <Modal show={open} onHide={onClose}>
-      <Modal.Header closeButton>{t('bookingDetail')}</Modal.Header>
+      <Modal.Header closeButton>{t("bookingDetail")}</Modal.Header>
       <Modal.Body>
         <div
           style={{
@@ -27,26 +27,6 @@ const PopUpReservationDetail = ({
             gap: 10,
           }}
         >
-            <Button
-            onClick={buttonSuccess}
-            style={{
-              backgroundColor: "white",
-              color: COLOR_APP,
-              borderColor: COLOR_APP,
-            }}
-          >
-            {t('bookingSuccess')}
-          </Button>
-          <Button
-            onClick={buttonEdit}
-            style={{
-              backgroundColor: "white",
-              color: COLOR_APP,
-              borderColor: COLOR_APP,
-            }}
-          >
-            {t('edit')}
-          </Button>
           <Button
             onClick={buttonConfirm}
             style={{
@@ -55,7 +35,7 @@ const PopUpReservationDetail = ({
               borderColor: COLOR_APP,
             }}
           >
-            {t('bookingConfirm')}
+            {t("bookingConfirm")}
           </Button>
           <Button
             onClick={buttonCancel}
@@ -65,52 +45,72 @@ const PopUpReservationDetail = ({
               borderColor: COLOR_APP,
             }}
           >
-            {t('cancel')}
+            {t("cancel")}
+          </Button>
+          <Button
+            onClick={buttonEdit}
+            style={{
+              backgroundColor: "white",
+              color: COLOR_APP,
+              borderColor: COLOR_APP,
+            }}
+          >
+            {t("edit")}
           </Button>
         </div>
         <CustomCart>
-          <span style={{ textAlign: "right" }}>{t('bookedBy')} :</span>
+          <span style={{ textAlign: "right" }}>{t("bookedBy")} :</span>
           <span>{data?.clientNames?.[0]}</span>
         </CustomCart>
         <CustomCart>
-          <span style={{ textAlign: "right" }}>{t('phoneNumberOfBooked')} :</span>
+          <span style={{ textAlign: "right" }}>
+            {t("phoneNumberOfBooked")} :
+          </span>
           <span>{data?.clientPhone}</span>
         </CustomCart>
         <CustomCart>
-          <span style={{ textAlign: "right" }}>{t('date&&timeBooking')} :</span>
-          <span style={{ display: "flex", justifyContent: "space-between" }}>
+          <span style={{ textAlign: "right", whiteSpace: "nowrap" }}>
+            {t("dateAndTime")} :
+          </span>
+          <span style={{ display: "flex", gap: "4px" }}>
             <span>
-              {data?.startTime &&
-                moment(data?.startTime).format("DD / MM / YYYY")}
+              {data?.startTime && moment(data?.startTime).format("DD/MM/YYYY")}
             </span>
+            <span>-</span>
             <span>
-              {data?.startTime &&
-                moment(data?.startTime).format("LT")}
+              {data?.startTime && moment(data?.startTime).format("LT")}
             </span>
           </span>
         </CustomCart>
         <CustomCart>
-          <span style={{ textAlign: "right" }}>{t('numberOfPeopleBooking')} :</span>
-          <span>{data?.clientNumber}</span>
+          <span style={{ textAlign: "right" }}>
+            {t("numberOfPeopleBooking")} :
+          </span>
+          <span>{data?.partySize}</span>
         </CustomCart>
         <CustomCart>
-          <span style={{ textAlign: "right" }}>{t('moreDetail')} :</span>
+          <span style={{ textAlign: "right" }}>{t("moreDetail")} :</span>
           <span>{data?.clientComment}</span>
         </CustomCart>
         <CustomCart>
-          <span style={{ textAlign: "right" }}>{t('place')} :</span>
+          <span style={{ textAlign: "right" }}>{t("place")} :</span>
           <span>{data?.note}</span>
         </CustomCart>
+        {data?.cancelReason && (
+          <CustomCart>
+            <span style={{ textAlign: "right" }}>{"ສາເຫດທີ່ປະຕິເສດ"} :</span>
+            <span className="text-red-400">{data?.cancelReason}</span>
+          </CustomCart>
+        )}
         <CustomCart>
-          <span style={{ textAlign: "right" }}>{t('createdAndUpdatedDate')} :</span>
+          <span style={{ textAlign: "right" }}>
+            {t("createdAndUpdatedDate")} :
+          </span>
           <span>
-            {data?.createdAt &&
-              moment
-                (data?.createdAt)
-                .format("DD / MM / YYYY LT")}{" "}
-            -{" "}
-            {data?.updatedAt &&
-              moment(data?.updatedAt).format("DD / MM / YYYY LT")}
+            <span>
+              {data?.updatedAt &&
+                moment(data?.updatedAt).format("DD/MM/YYYY - LT")}
+            </span>
           </span>
         </CustomCart>
       </Modal.Body>

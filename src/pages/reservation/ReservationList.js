@@ -12,6 +12,7 @@ import {
   addReservation,
   getReservations,
 } from "../../services/reservation";
+import { updateStore } from "../../services/store";
 import Box from "../../components/Box";
 // popup
 import PopUpConfirm from "../../components/popup/PopUpConfirm";
@@ -25,8 +26,11 @@ import { useStore } from "../../store";
 import Loading from "../../components/Loading";
 import { useTranslation } from "react-i18next";
 import { fontMap } from "../../utils/font-map";
+import { BsFillCalendarWeekFill } from "react-icons/bs";
+import PopUpSetStartAndEndDateRefine from "../../components/popup/PopUpSetStartAndEndDateRefine";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { useBookingStore } from "../../zustand/bookingStore";
 
 // ---------------------------------------------------------------------------------------------------------- //
 export default function ReservationList() {
@@ -39,8 +43,10 @@ export default function ReservationList() {
     setNewOreservationTransaction,
     setProfile,
   } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail, fetchStoreDetail } = useStoreStore();
   const storeId = storeDetail._id;
+  const { allBooking, setBookingItems, fetchBookingByStatus } =
+    useBookingStore();
 
   //   state
   const [isLoading, setIsLoading] = useState(false);
@@ -50,6 +56,13 @@ export default function ReservationList() {
   const [search, setSearch] = useState();
   const [dateFrom, setDateFrom] = useState();
   const [dateTo, setDateTo] = useState();
+  const [startDate, setStartDate] = useState(
+    moment().startOf("year").format("YYYY-MM-DD") + "T00:00:00Z"
+  );
+  const [endDate, setEndDate] = useState(
+    moment().endOf("year").format("YYYY-MM-DD") + "T23:59:59Z"
+  );
+  const [isSetDatePopUpOpen, setIsSetDatePopUpOpen] = useState(false);
   const [popup, setPopup] = useState({
     cancel: false,
     detail: false,
@@ -60,13 +73,19 @@ export default function ReservationList() {
     success: false,
   });
 
+  const [remark, setRemark] = useState(storeDetail?.remark || "");
+  const [isRemarkEditable, setIsRemarkEditable] = useState(false);
+
   // functions
   const handleReject = (select) => {
     setPopup({ delete: true });
     setSelect(select);
   };
-  const onSubmitReject = async () => {
-    updateReservation({ status: "CANCEL" }, select?._id).then(() => {
+  const onSubmitReject = async (value) => {
+    updateReservation(
+      { status: "CANCEL", cancelReason: value },
+      select?._id
+    ).then(() => {
       setPopup();
       getData();
     });
@@ -82,7 +101,10 @@ export default function ReservationList() {
     setSelect(select);
   };
   const onSubmitConfirm = async () => {
-    updateReservation({ status: "STAFF_CONFIRM" }, select?._id).then(() => {
+    updateReservation(
+      { status: "STAFF_CONFIRM", cancelReason: "" },
+      select?._id
+    ).then(() => {
       setPopup();
       getData();
     });
@@ -91,6 +113,19 @@ export default function ReservationList() {
     setPopup((prev) => ({ ...prev, detail: true }));
     setSelect(select);
   };
+
+  const handleSaveRemark = async (value) => {
+    if (value === storeDetail?.remark) return setIsRemarkEditable(false);
+
+    try {
+      updateStore({ remark: value }, storeDetail?._id);
+      fetchStoreDetail(storeDetail?._id);
+      setIsRemarkEditable(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const getData = async (status) => {
     if (tabSelect != "ALL" && tabSelect != "") {
       status = tabSelect;
@@ -99,10 +134,12 @@ export default function ReservationList() {
     let findBy = "";
     if (status) findBy += `&status=${status}`;
     if (search) findBy += `&search=${search}`;
-    if (dateFrom) findBy += `&dateFrom=${dateFrom}`;
-    if (dateTo) findBy += `&dateTo=${dateTo}`;
+    // if (startDate) findBy += `&dateFrom=${startDate}`;
+    // if (endDate) findBy += `&dateTo=${endDate}`;
     const data = await getReservations(findBy, storeId);
     setReservationsData(data);
+    setBookingItems(data);
+    fetchBookingByStatus("WAITING");
     setIsLoading(false);
     return;
   };
@@ -118,13 +155,14 @@ export default function ReservationList() {
       localStorage.setItem(USER_KEY, JSON.stringify({ accessToken: token }));
       // setProfile({ accessToken: token });
     }
-  }, [tabSelect, dateFrom, dateTo]);
+  }, [tabSelect, startDate, endDate]);
   useEffect(() => {
     if (newOreservationTransaction) {
       getData();
       setNewOreservationTransaction(false);
     }
   }, [newOreservationTransaction]);
+
   return (
     <div>
       {isLoading ? (
@@ -162,10 +200,10 @@ export default function ReservationList() {
                 <span className={fontMap[language]}>{t("lists")}</span>
               </ButtonTab>
               <ButtonTab
-                active={tabSelect === "WATTING"}
+                active={tabSelect === "WAITING"}
                 onClick={() => {
                   // getData("WATTING");
-                  setTabSelect("WATTING");
+                  setTabSelect("WAITING");
                 }}
               >
                 <span className={fontMap[language]}>
@@ -177,15 +215,6 @@ export default function ReservationList() {
                 onClick={() => {
                   // getData("STAFF_CONFIRM");
                   setTabSelect("STAFF_CONFIRM");
-                }}
-              >
-                <span className={fontMap[language]}>{t("approve")}</span>
-              </ButtonTab>
-              <ButtonTab
-                active={tabSelect === "SUCCESS"}
-                onClick={() => {
-                  // getData("SUCCESS");
-                  setTabSelect("SUCCESS");
                 }}
               >
                 <span className={fontMap[language]}>{t("approve")}</span>
@@ -216,77 +245,100 @@ export default function ReservationList() {
               </ButtonPrimary>
             </div>
           </div>
-          <div style={{ padding: 20, display: "flex", gap: 10 }}>
-            <FormGroup>
-              <Form.Label className={fontMap[language]}>
-                {t("search")}
-              </Form.Label>
-              <InputGroup>
-                <Form.Control
-                  placeholder={t("ex_phone")}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
+          <div className="p-5 flex w-full flex-col justify-between md:flex-row">
+            <div className="flex gap-3">
+              <FormGroup>
+                <Form.Label className={fontMap[language]}>
+                  {t("search")}
+                </Form.Label>
+                <InputGroup>
+                  <Form.Control
+                    placeholder={t("ex_phone")}
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                  <Button
+                    style={{
+                      borderRadius: 0,
+                      backgroundColor: COLOR_APP,
+                      border: COLOR_APP,
+                    }}
+                    // variant="outline-secondary"
+                    id="button-addon1"
+                    onClick={() => getData()}
+                  >
+                    <span className={fontMap[language]}>{t("search")}</span>
+                  </Button>
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <Form.Label className={fontMap[language]}>
+                  {t("bookingDate")}
+                </Form.Label>
                 <Button
-                  style={{
-                    borderRadius: 0,
-                    backgroundColor: COLOR_APP,
-                    border: COLOR_APP,
-                  }}
-                  // variant="outline-secondary"
-                  id="button-addon1"
-                  onClick={() => getData()}
+                  variant="outline-primary"
+                  size="small"
+                  style={{ display: "flex", gap: 10, alignItems: "center" }}
+                  onClick={() => setIsSetDatePopUpOpen(true)}
                 >
-                  <span className={fontMap[language]}>{t("search")}</span>
+                  <BsFillCalendarWeekFill />
+                  <div>{moment(startDate).format("YYYY-MM-DD")}</div> ~{" "}
+                  <div>{moment(endDate).format("YYYY-MM-DD")}</div>
                 </Button>
-              </InputGroup>
-            </FormGroup>
+              </FormGroup>
+            </div>
             <FormGroup>
-              <Form.Label className={fontMap[language]}>
-                {t("bookingDate")}
-              </Form.Label>
-              <Form.Control
-                type="date"
-                style={{ maxWidth: 100 }}
-                value={dateFrom}
-                onChange={(e) => {
-                  setDateFrom(e.target.value);
-                }}
-              />
-            </FormGroup>
-            <FormGroup>
-              <Form.Label className={fontMap[language]}>{t("toXX")}</Form.Label>
-              <Form.Control
-                type="date"
-                style={{ maxWidth: 100 }}
-                value={dateTo}
-                onChange={(e) => {
-                  setDateTo(e.target.value);
-                }}
-              />
-            </FormGroup>
-            <FormGroup>
-              <Form.Label></Form.Label>
-              <Form.Control
-                type="button"
-                style={{ maxWidth: 100 }}
-                value={t("today")}
-                onClick={() => {
-                  setDateFrom(moment().format("YYYY-MM-DD"));
-                  setDateTo(
-                    moment(moment().add(1, "days")).format("YYYY-MM-DD")
-                  );
-                  // alert(moment(moment().add(1, "days")).format("YYYY-MM-DD"));
-                }}
-              />
+              <Form.Label className={fontMap[language]}>{"ໝາຍເຫດ"}</Form.Label>
+              {!isRemarkEditable ? (
+                <InputGroup>
+                  <Form.Control
+                    placeholder={""}
+                    value={remark}
+                    onChange={(e) => setRemark(e.target.value)}
+                    disabled={!isRemarkEditable}
+                  />
+                  <Button
+                    style={{
+                      borderRadius: 0,
+                      backgroundColor: COLOR_APP,
+                      border: COLOR_APP,
+                    }}
+                    // variant="outline-secondary"
+                    id="button-addon1"
+                    onClick={() => setIsRemarkEditable(true)}
+                  >
+                    <span className={fontMap[language]}>{t("edit")}</span>
+                  </Button>
+                </InputGroup>
+              ) : (
+                <InputGroup>
+                  <Form.Control
+                    placeholder={""}
+                    value={remark}
+                    onChange={(e) => setRemark(e.target.value)}
+                    disabled={!isRemarkEditable}
+                  />
+                  <Button
+                    style={{
+                      borderRadius: 0,
+                      backgroundColor: COLOR_APP,
+                      border: COLOR_APP,
+                    }}
+                    // variant="outline-secondary"
+                    id="button-addon1"
+                    onClick={() => handleSaveRemark(remark)}
+                  >
+                    <span className={fontMap[language]}>{t("save")}</span>
+                  </Button>
+                </InputGroup>
+              )}
             </FormGroup>
           </div>
           <div style={{ padding: 20, paddingTop: 0 }}>
             <div
               style={{
                 borderRadius: 8,
-                boxShadow: "0 0 3px 3px rgba(0,0,0,0.1)",
-                overflow: "hidden",
+                overflowX: "auto",
               }}
             >
               <table
@@ -298,7 +350,7 @@ export default function ReservationList() {
                   style={{
                     backgroundColor: "#F9F9F9",
                     height: 57,
-                    borderBottom: "2px solid #EBEBEB",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   <tr>
@@ -330,6 +382,12 @@ export default function ReservationList() {
                       style={{ color: COLOR_APP }}
                       className={fontMap[language]}
                     >
+                      {t("comment")}
+                    </th>
+                    <th
+                      style={{ color: COLOR_APP }}
+                      className={fontMap[language]}
+                    >
                       {t("tableStatus2")}
                     </th>
                     <th
@@ -338,28 +396,21 @@ export default function ReservationList() {
                     >
                       {t("numberOfPeople")}
                     </th>
-                    <th style={{ color: COLOR_APP, maxWidth: 250, width: 250 }}>
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <Form.Control
-                          type="date"
-                          style={{ maxWidth: 100 }}
-                          disabled
-                        />
-                        <div style={{ paddingLeft: 10, paddingRight: 10 }}>
-                          to
-                        </div>
-                        <Form.Control
-                          type="date"
-                          style={{ maxWidth: 100 }}
-                          disabled
-                        />
-                      </div>
+                    <th
+                      style={{
+                        color: COLOR_APP,
+                        maxWidth: 250,
+                        width: 250,
+                        textAlign: "center",
+                      }}
+                    >
+                      Actions
                     </th>
                     <th style={{ maxWidth: 50, width: 50 }}></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {reservationsData?.map((item, index) => (
+                  {allBooking?.map((item, index) => (
                     <tr
                       key={index}
                       style={{ borderBottom: "1px solid #EBEBEB" }}
@@ -374,17 +425,24 @@ export default function ReservationList() {
                       }}
                     >
                       <td>{index + 1}</td>
-                      <td>{item?.clientNames?.[0]}</td>
-                      <td>{item?.clientPhone}</td>
-                      <td>
+                      <td style={{ whiteSpace: "nowrap" }}>
+                        {item?.clientNames?.[0]}
+                      </td>
+                      <td style={{ whiteSpace: "nowrap" }}>
+                        {item?.clientPhone}
+                      </td>
+                      <td style={{ whiteSpace: "nowrap" }}>
                         {item?.startTime &&
                           moment(item?.startTime).format("DD/MM/YYYY")}{" "}
                         -{" "}
                         {item?.startTime &&
                           moment(item?.startTime).format("LT")}
                       </td>
-                      <td>{item?.note}</td>
-                      <td>{item?.clientNumber}</td>
+                      <td style={{ minWidth: "200px" }}>
+                        {item?.clientComment || "-"}
+                      </td>
+                      <td style={{ minWidth: "200px" }}>{item?.note || "-"}</td>
+                      <td>{item?.partySize}</td>
                       <td>
                         <ButtonManamentReservation
                           status={item?.status}
@@ -417,11 +475,12 @@ export default function ReservationList() {
       )}
       {/* >>>>>>>>>>>>> popup <<<<<<<<<<<<<<< */}
       <PopUpConfirm
-        text1="ທ່ານຕ້ອງການປະຕິເສດບໍ ?"
+        text1="ທ່ານຕ້ອງການປະຕິເສດບໍ?"
         text2={select?.clientPhone}
         open={popup?.delete}
         onClose={() => setPopup((prev) => ({ ...prev, delete: false }))}
         onSubmit={onSubmitReject}
+        isRejected
       />
       <PopUpConfirm
         text1="ຢືນຢັນການຈອງ"
@@ -453,11 +512,12 @@ export default function ReservationList() {
         }}
       />
       <PopUpConfirm
-        text1="ຍົກເລີກບໍ ?"
+        text1="ຍົກເລີກບໍ?"
         text2={select?.clientPhone}
         open={popup?.cancel}
         onClose={() => setPopup((prev) => ({ ...prev, cancel: false }))}
         onSubmit={onSubmitReject}
+        isRejected
       />
       <PopUpConfirm
         text1="ຢືນຢັນການຈອງສຳເລັດແລ້ວ"
@@ -477,11 +537,16 @@ export default function ReservationList() {
         buttonEdit={() => {
           setPopup((prev) => ({ ...prev, detail: false, edit: true }));
         }}
-        buttonSuccess={() => {
-          setPopup((prev) => ({ ...prev, success: true }));
-        }}
         onClose={() => setPopup((prev) => ({ ...prev, detail: false }))}
         data={select}
+      />
+      <PopUpSetStartAndEndDateRefine
+        open={isSetDatePopUpOpen}
+        onClose={() => setIsSetDatePopUpOpen(false)}
+        setStartDate={setStartDate}
+        startDate={startDate}
+        setEndDate={setEndDate}
+        endDate={endDate}
       />
     </div>
   );
