@@ -152,7 +152,7 @@ export default function BillForCheckOutCafe80({
           <div>
             {t("date")}:{" "}
             <span style={{ fontWeight: "bold" }}>
-              {moment(dataBill?.createdAt).format("DD-MM-YYYY")}
+              {moment(dataBill?.createdAt).format("DD-MM-YYYY - HH:mm:ss")}
             </span>
           </div>
           <div>
@@ -254,7 +254,6 @@ export default function BillForCheckOutCafe80({
           </div>
         </div>
       </div>
-
 
       <div
         style={{
