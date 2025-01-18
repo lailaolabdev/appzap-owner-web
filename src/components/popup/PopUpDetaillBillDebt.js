@@ -102,6 +102,9 @@ export default function PopUpDetailBillDebt({
             ຈຳນວນໜີ້ທັງໝົດ: {moneyCurrency(billDebtData?.amount)}
           </div>
           <div style={{ marginBottom: "2px" }}>
+            ຊຳລະໄປແລ້ວ: {moneyCurrency(billDebtData?.amount -billDebtData?.remainingAmount )}
+          </div>
+          <div style={{ marginBottom: "2px" }}>
             ຍັງຄ້າງຊຳລະ: {moneyCurrency(billDebtData?.remainingAmount)}
           </div>
           <Form.Group>

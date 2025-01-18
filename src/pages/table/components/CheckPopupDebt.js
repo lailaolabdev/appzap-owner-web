@@ -62,12 +62,12 @@ export default function CheckPopupDebt({
   const [selectInput, setSelectInput] = useState("inputCash");
   const [selectDataOpption, setSelectDataOpption] = useState();
   const [cash, setCash] = useState();
-  const [transfer, setTransfer] = useState();
-  const [amountBefore, setAmountBefore] = useState(); //update
+  const [transfer, setTransfer] = useState(0);
+  const [amountBefore, setAmountBefore] = useState(0); //update
   const [remainingAmount, setRemainingAmount] = useState(); //update
   const [remainingShow, setRemainingShow] = useState(); //ipdate
   const [tab, setTab] = useState("cash");
-  const [forcus, setForcus] = useState("CASH");
+  const [forcus, setForcus] = useState("IS_DEBT");
   const [canCheckOut, setCanCheckOut] = useState(false);
   const [total, setTotal] = useState();
   const [selectCurrency, setSelectCurrency] = useState("LAK");
@@ -277,10 +277,10 @@ export default function CheckPopupDebt({
         remainingAmount: remainingAmount,
         customerName: customerName,
         customerPhone: customerPhone,
-        billId: tableData?._id, // ตรวจสอบว่ามีค่า
+        billId: tableData?._id,
         status: "DEBT",
         startDate: startDate,
-        endDate: expirtDate, // แก้ชื่อเป็น expireDate
+        endDate: expirtDate,
         storeId: DATA?.storeId,
         debtTotal: debtTotal
       };
@@ -291,39 +291,35 @@ export default function CheckPopupDebt({
         errorAdd(`${t("debt_fail")}`);
         return;
       }
-  
-      setPrintCode(data.code);
+      
+      
       navigate("/debt");
-      handleSubmit();
-      successAdd(`${t("debt_success")}`);
+      await handleSubmit(); 
     } catch (err) {
       console.log(err);
+      errorAdd(`${t("debt_fail")}`);
     }
   };
   
-
-console.log("debtTotal: ",debtTotal)
-console.log("debtAndPay: ",debtAndPay)
-  
   const _checkBill = async () => {
     const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
-
-    await axios
-      .put(
+  
+    try {
+      await axios.put(
         `${END_POINT}/v6/bill-checkout`,
         {
           id: dataBill?._id,
           data: {
-            isDebt:debtTotal,
-            isDebtAndPay : debtAndPay,
+            isDebt: debtTotal,
+            isDebtAndPay: debtAndPay,
             isCheckout: "true",
             status: "CHECKOUT",
-            payAmount:  Number(amountBefore),
-            transferAmount:   Number(transfer) ,
-            remainingAmount: remainingAmount ,
+            payAmount: debtTotal ? 0 : Number(amountBefore),
+            transferAmount: Number(transfer),
+            remainingAmount:debtTotal ? 0 : Number(remainingAmount),
             paymentMethod: forcus,
-            taxAmount: taxAmount ,
-            taxPercent:taxPercent ,
+            taxAmount: taxAmount,
+            taxPercent: taxPercent,
             customerId: selectDataOpption?._id,
             userNanme: selectDataOpption?.username,
             phone: selectDataOpption?.phone,
@@ -341,39 +337,46 @@ console.log("debtAndPay: ",debtAndPay)
         {
           headers: await getHeaders(),
         }
-      )
-      .then(async (response) => {
-        setSelectedTable();
-        getTableDataStore();
-        setCashCurrency();
-        setTab("cash");
-        setSelectCurrency("LAK");
-        setSelectInput("inputCash");
-        setForcus("CASH");
-        setRateCurrency(1);
-        setHasCRM(false);
-        setTextSearchMember("");
-        setCash();
-        setTransfer();
-        localStorage.removeItem("STAFFCONFIRM_DATA");
-
-        onClose();
+      );
+  
+     
+      setSelectedTable();
+      getTableDataStore();
+      setCashCurrency();
+      setTab("cash");
+      setSelectCurrency("LAK");
+      setSelectInput("inputCash");
+      setRateCurrency(1);
+      setHasCRM(false);
+      setTextSearchMember("");
+      setCash();
+      setTransfer();
+      localStorage.removeItem("STAFFCONFIRM_DATA");
+  
+      onClose();
+      return true; 
+    } catch (error) {
+      errorAdd(`${t("checkbill_fial")}`);
+      return false;
+    }
+  };
+  
+  const handleSubmit = async () => {
+    try {
+      const checkBillSuccess = await _checkBill();
+      if (checkBillSuccess) {
+        
         Swal.fire({
           icon: "success",
           title: `${t("checkbill_success")}`,
           showConfirmButton: false,
           timer: 1800,
         });
-      })
-      .catch((error) => {
-        errorAdd(`${t("checkbill_fial")}`);
-      });
-  };
-
-  const handleSubmit = () => {
-    // Only execute _checkBill if debtTotal is true
-      _checkBill();
-    onSubmit();
+        onSubmit();
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   // const options = membersData?.map((data) => {
@@ -899,7 +902,7 @@ console.log("debtAndPay: ",debtAndPay)
                   setTransfer();
                   setTab("cash");
                   setSelectInput("inputAmount");
-                  setForcus("CASH");
+                  setForcus("IS_DEBT");
                   setAmountBefore();
                   setRemainingAmount(remainingAmount);
                   setDebtTotal(true);
@@ -920,7 +923,7 @@ console.log("debtAndPay: ",debtAndPay)
                   setTransfer();
                   setTab("cash_transfer");
                   setSelectInput("inputCash");
-                  // setForcus("TRANSFER_CASH");
+                  setForcus("CASH");
                   setAmountBefore();
                   setDebtTotal(false)
                   setDebtAndPay(true)

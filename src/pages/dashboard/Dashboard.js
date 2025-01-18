@@ -50,6 +50,8 @@ export default function Dashboard() {
   } = useTranslation();
   const newDate = new Date();
 
+
+
   // state
   const [reportData, setReportData] = useState([]); // ຂໍ້ມູນລາຍງານ
   const [salesInformationReport, setSalesInformationReport] = useState();
@@ -67,8 +69,13 @@ export default function Dashboard() {
   const [selectedCurrency, setSelectedCurrency] = useState("LAK");
   const [changeUi, setChangeUi] = useState("CHECKBILL");
   const [changeText, setChangeText] = useState("CLICK1");
+  const [isDebtAndPay, setIsDebtAndPay] = useState(null)
+  const [remainingAmount, setRemainingAmount] = useState(0)
+  const [getDataDashboardFinance, setGetDataDashboardFinance] = useState([])
 
   const { storeDetail } = useStoreStore();
+
+ console.log("getDataDashboardFinance: ",getDataDashboardFinance)
 
   // useEffect
   useEffect(() => {
@@ -132,6 +139,17 @@ export default function Dashboard() {
 
     setTotalBillActiveReport(data);
   };
+
+  useEffect(() => {
+    const totalRemainingAmount = getDataDashboardFinance?.reduce(
+      (sum, item) => sum + (item?.remainingAmount || 0),
+      0
+    );
+    setRemainingAmount(totalRemainingAmount);
+  }, [getDataDashboardFinance]); 
+
+  console.log("remainingAmount: ",remainingAmount)
+  console.log("isDebtAndPay: ", isDebtAndPay)
 
   return (
     <div
@@ -252,9 +270,9 @@ export default function Dashboard() {
                 {t("total_will_get")}
                 {" : "}
                 {convertNumber(
-                  totalBillActiveReport?.total +
-                    salesInformationReport?.totalSales
+                    (totalBillActiveReport?.total + salesInformationReport?.totalSales - remainingAmount)
                 )}
+
               </div>
               <div className={fontMap[language]}>
                 {t("outstandingDebt")}
@@ -290,12 +308,12 @@ export default function Dashboard() {
               <div className={fontMap[language]}>
                 {t("totalBalance")}
                 {" : "}
-                {convertNumber(moneyReport?.successAmount?.totalBalance)}
+                {convertNumber(moneyReport?.successAmount?.totalBalance - remainingAmount)}
               </div>
               <div className={fontMap[language]}>
                 {t("payBycash")}
                 {" : "}
-                {convertNumber(moneyReport?.successAmount?.payByCash)}
+                {convertNumber(moneyReport?.successAmount?.payByCash )}
               </div>
               <div className={fontMap[language]}>
                 {t("transferPayment")}
@@ -361,9 +379,11 @@ export default function Dashboard() {
       {changeUi === "CHECKBILL" && (
         <DashboardFinance
           startDate={startDate}
+          getDataDashboardFinance={getDataDashboardFinance}
+          setGetDataDashboardFinance={setGetDataDashboardFinance}
           endDate={endDate}
           startTime={startTime}
-          endTime={endTime}
+          endTime={endTime}s
           selectedCurrency={selectedCurrency}
         />
       )}
