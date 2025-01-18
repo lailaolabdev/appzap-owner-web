@@ -32,6 +32,8 @@ export default function DashboardFinance({
   startTime,
   endTime,
   selectedCurrency,
+  setGetDataDashboardFinance,
+  getDataDashboardFinance
 }) {
   const [currency, setCurrency] = useState();
   const navigate = useNavigate();
@@ -104,8 +106,6 @@ export default function DashboardFinance({
   const handleShow = (item) => {
     setShow(true);
     setDataModal(item);
-
-    console.log("item", item);
   };
 
   const getCurrency = async () => {
@@ -196,7 +196,7 @@ export default function DashboardFinance({
     setIsLoading(false);
   };
 
-  console.log("data: ", data)
+  //console.log("data: ", data)
 
   useEffect(() => {
     let _disCountDataKib = 0;
@@ -367,8 +367,11 @@ export default function DashboardFinance({
 
   // วิธีที่ 2: เขียนแบบละเอียด
   // วิธีที่ 1: ใช้ filter() โดยตรง
-  const filteredData = data?.checkOut?.filter(item => !item.isDebt);
-  console.log("filteredData: ",filteredData)
+  useEffect(() => {
+    const filteredData = data?.checkOut?.filter(item => !item.isDebt) || [];
+    setGetDataDashboardFinance(filteredData);
+  }, [data]);
+
 
   return (
     <div style={{ padding: 0 }}>
@@ -476,7 +479,7 @@ export default function DashboardFinance({
             </tr>
           </thead>
           <tbody>
-            {filteredData?.map((item, index) => (
+            {getDataDashboardFinance?.map((item, index) => (
               <tr
                 key={item?._id}
                 onClick={() => {
@@ -588,16 +591,16 @@ export default function DashboardFinance({
                 <td
                   style={{
                     color:
-                      item?.status === "CHECKOUT"
-                        ? "green"
-                        : item?.status === "CALLTOCHECKOUT"
-                          ? "red"
-                          : item?.status === "ACTIVE"
-                            ? "#00496e"
-                            : "",
+                     item?.status === "CHECKOUT"
+                      ? "green"
+                      : item?.status === "CALLTOCHECKOUT"
+                        ? "red"
+                        : item?.status === "ACTIVE"
+                          ? "#00496e"
+                          : "",
                   }}
                 >
-                  {_statusCheckBill(item?.status)}
+                  { _statusCheckBill(item?.status)}
                 </td>
                 <td
                   style={{
@@ -615,7 +618,7 @@ export default function DashboardFinance({
                           ? t("point")
                           : item?.paymentMethod === "CASH_TRANSFER_POINT"
                             ? t("transfercashpoint")
-                            : t("transfercash")}
+                            : t("transfercash")} {item?.isDebtAndPay === true ? "(ຕິດໜີ້)" : ""}
                 </td>
                 <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
                 <td>{item?.fullnameStaffCheckOut ?? "-"}</td>
@@ -691,6 +694,7 @@ export default function DashboardFinance({
                       }).format(TotalCalculate)} ${storeDetail?.firstCurrency
                         }`}{" "}
                     </span>
+                    <span>ເງິນທີ່ຍັງຄ້າງຊຳລະ {moneyCurrency(dataModal?.remainingAmount)} ກີບ</span>
                   </div>
                 </div>
               ) : dataModal?.deliveryAmount ? (

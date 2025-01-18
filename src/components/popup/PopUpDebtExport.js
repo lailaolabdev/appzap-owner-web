@@ -1,243 +1,304 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Form, Card, Spinner, Modal } from "react-bootstrap";
-import { getLocalData } from "../../constants/api";
-import { getBilldebts, getdebtHistory } from "../../services/debt";
 import moment from "moment";
-import ExcelJS from 'exceljs';
+import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { moneyCurrency } from "../../helpers";
 import ImageEmpty from "../../image/empty.png";
 import { MdOutlineCloudDownload } from "react-icons/md";
 import { useStoreStore } from "../../zustand/storeStore";
-import PopUpDebtExportUserId from "./PopUpDebtExportUserId";
+import { convertBillDebtStatus } from "../../helpers/convertBillDebtStatus";
+import { COLOR_APP } from "../../constants";
 
 export default function PopUpDebtExport({
   open,
   onClose,
-  callback,
-  billDebtData,
-  debtHistoryData
+  debtHistoryData,
+  exportType,
+  handleTabSelect
 }) {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
-  // const [debtHistoryData, setdebtHistoryData] = useState([]);
   const [pagination, setPagination] = useState(1);
-  const [totalPagination, setTotalPagination] = useState(0);
-  const [selectedDebt, setSelectedDebt] = useState(null);
-  const [showUserModal, setShowUserModal] = useState(false);
   const [showMainModal, setShowMainModal] = useState(open);
+  const [filteredData, setFilteredData] = useState([]);
 
   const limitData = 50;
   const { storeDetail } = useStoreStore();
 
+  // Modal visibility effect
   useEffect(() => {
     setShowMainModal(open);
   }, [open]);
 
-  // const getDataHistory = async () => {
-  //   setIsLoading(true);
-  //   try {
-  //     const { TOKEN } = await getLocalData();
-  //     let findby = `?skip=${(pagination - 1) * limitData}&limit=${limitData}&storeId=${storeDetail?._id}`;
-  //     const data = await getdebtHistory(findby, TOKEN);
-  //     setdebtHistoryData(data);
-  //     setTotalPagination(Math.ceil(data?.totalCount / limitData));
-  //   } catch (err) {
-  //     console.error("Error fetching data:", err);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  const exportToExcel = async () => {
-    // create workbook and worksheet
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('รายงานหนี้');
-
-    // add header
-    worksheet.mergeCells('A1:G1');
-    const titleCell = worksheet.getCell('A1');
-    titleCell.value = 'ລາຍງານຂໍ້ມູນການຕິດຫນີ້';
-    titleCell.font = { size: 16, bold: true };
-    titleCell.alignment = { horizontal: 'center' };
-
-    
-    // add table header
-    worksheet.addRow([`${t("#")}`, `${t("bill_no")}`, `${t("name")}`,`${t("tel")}`,`${t("money_remaining")}`, `${t("debt_pay_remaining")}`, `${t("payment_datetime_debt")}`]);
-    
-    // layout style
-    const headerRow = worksheet.getRow(3);
-    headerRow.font = { bold: true };
-    headerRow.alignment = { horizontal: 'center' };
-
-    // add data
-    const filteredData = debtHistoryData
-      .filter(e => e?.remainingAmount > 0)
-      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-
-    filteredData.forEach((item, index) => {
-      worksheet.addRow([
-        index + 1,
-        item.code,
-        item.customerName,
-        item.customerPhone,
-        item.remainingAmount,
-        item.totalPayment,
-        item.outStockDate ? moment(item.outStockDate).format("DD/MM/YYYY - HH:mm:SS") : ''
-      ]);
-    });
-
-    // layout money money
-    worksheet.getColumn(3).numFmt = '#,##0.00';
-    worksheet.getColumn(4).numFmt = '#,##0.00';
-
-    // size column
-    worksheet.columns.forEach(column => {
-      column.width = 20;
-    });
-
-    // create file
-    const buffer = await workbook.xlsx.writeBuffer();
-    const fileDate = moment().format('YYYYMMDD_HHmmss');
-    saveAs(
-      new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
-      `ລາຍງານຫນີ້${fileDate}.xlsx`
-    );
+  // Filter data effect
+  const filterData = () => {
+    if (debtHistoryData) {
+      const filtered = debtHistoryData
+        .filter(e => {
+          if (exportType === 'increase') {
+            return e?.amountIncrease > 0;
+          } else if (exportType === 'payment') {
+            return e?.totalPayment > 0;
+          }
+          return e?.remainingAmount >= 0;
+        })
+        .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+      setFilteredData(filtered);
+    }
   };
-
 
   useEffect(() => {
-    if (open) {
-      //getDataHistory();
+    filterData();
+  }, [debtHistoryData, exportType]);
+
+  const getModalTitle = () => {
+    switch (exportType) {
+      case 'increase':
+        return t("IncressDebt_list_history");
+      case 'payment':
+        return t("PayDebt_list_history");
+      default:
+        return t("debt_list_all");
     }
-  }, [open, pagination]);
+  };
 
-  const handleRowClick = (debtData) => {
-    setSelectedDebt({
-      ...debtData,
+  const getTotalAmount = () => {
+    if (!filteredData?.length) return 0;
+
+    switch (exportType) {
+      case 'increase':
+        return filteredData.reduce((sum, item) => sum + (item.amountIncrease || 0), 0);
+      case 'payment':
+        return filteredData.reduce((sum, item) => sum + (item.totalPayment || 0), 0);
+      default:
+        return filteredData.reduce((sum, item) => sum + (item.remainingAmount || 0), 0);
+    }
+  };
+
+ const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = 'Your Application';
+    workbook.created = new Date();
+
+    const worksheet = workbook.addWorksheet('ລາຍງານຫນີ້', {
+      properties: { defaultRowHeight: 20 }
     });
-    setShowUserModal(true);
-    setShowMainModal(false); 
-  };
 
-  const handleUserModalClose = () => {
-    setShowUserModal(false);
-    setShowMainModal(true); 
-  };
+    const defaultFont = { name: 'Noto Sans Lao', size: 11, family: 2 };
+    const headerFont = { ...defaultFont, size: 20, bold: true };
 
-  const handleMainModalClose = () => {
-    setShowMainModal(false);
-    onClose();
-  };
+    // Header setup
+    const excelColor = COLOR_APP.replace('#', 'FF');
+    worksheet.mergeCells('A1:G1');
+    const titleCell = worksheet.getCell('A1');
+    titleCell.value = getModalTitle();
+    titleCell.font = headerFont;
+    titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+    titleCell.height = 30;
+    titleCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: excelColor }
+    };
 
-  console.log("debtHistoryData: ",debtHistoryData)
+    // Column headers
+    const headers = [
+      t("#"),
+      t("bill_no"),
+      t("name"),
+      t("tel"),
+      t("money_remaining"),
+      exportType === 'increase' ? t("debt_add_remaining") 
+      : exportType === 'payment' ? t("debt_pay_remaining")
+      : t("status"), 
+      t("payment_datetime_debt")
+    ].filter(Boolean);
+
+    const headerRow = worksheet.addRow(headers);
+    headerRow.font = { ...defaultFont, bold: true };
+    headerRow.height = 25;
+    headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+
+    // Style header row
+    headerRow.eachCell((cell) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFE0E0E0' }
+      };
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' }
+      };
+    });
+
+    // Add data rows with explicit zero handling
+    filteredData.forEach((item, index) => {
+      const remainingAmount = typeof item?.remainingAmount === 'number' ? item.remainingAmount : 0;
+      const amountIncrease = typeof item?.amountIncrease === 'number' ? item.amountIncrease : 0;
+      const totalPayment = typeof item?.totalPayment === 'number' ? item.totalPayment : 0;
+
+      const rowData = [
+        index + 1,
+        item?.code || '',
+        item?.customerName || '',
+        item?.customerPhone || '',
+        remainingAmount,
+        exportType === 'increase' ? amountIncrease
+          : exportType === 'payment' ? totalPayment
+          : (item?.status || ''),
+        item?.outStockDate ? moment(item?.outStockDate).format("DD/MM/YYYY - HH:mm:SS") : ''
+      ];
+
+      const row = worksheet.addRow(rowData);
+      row.font = defaultFont;
+      row.height = 20;
+      row.eachCell((cell, colNumber) => {
+        // If it's a numeric column and the value is undefined/null, set it to 0
+        if ([5, 6].includes(colNumber) && (cell.value === null || cell.value === undefined || cell.value === '')) {
+          cell.value = 0;
+        }
+
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+        cell.alignment = { vertical: 'middle' };
+      });
+    });
+
+    // Format columns
+    [5, 6].forEach(col => {
+      if (worksheet.getColumn(col)) {
+        worksheet.getColumn(col).numFmt = '#,##0.00';
+        // Ensure empty cells in numeric columns show 0
+        worksheet.getColumn(col).eachCell({ includeEmpty: true }, cell => {
+          if (cell.value === null || cell.value === undefined || cell.value === '') {
+            cell.value = 0;
+          }
+        });
+      }
+    });
+
+    // Auto-fit columns
+    worksheet.columns.forEach(column => {
+      let maxLength = 0;
+      column.eachCell({ includeEmpty: true }, cell => {
+        const length = cell.value ? cell.value.toString().length : 0;
+        maxLength = Math.max(maxLength, length);
+      });
+      column.width = Math.min(Math.max(maxLength + 2, 15), 30);
+    });
+
+    // Save file
+    const buffer = await workbook.xlsx.writeBuffer();
+    const fileDate = moment().format('YYYYMMDD_HHmmss');
+    const fileName = `${getModalTitle()}_${fileDate}.xlsx`;
+
+    saveAs(
+      new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      }),
+      fileName
+    );
+};
+
+  console.log("filteredData: ",filteredData)
 
   return (
-    <>
-      <Modal show={showMainModal} onHide={handleMainModalClose} size="xl">
-        <Modal.Header closeButton style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          {t("debt_Export")}
-        </Modal.Header>
-        <Card border="none" style={{ margin: 0 }}>
-          <Card.Header
-            style={{
-              background: "none",
-              fontSize: 16,
-              fontWeight: "bold",
-              alignItems: "center",
-              padding: 10,
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
-              <span>
-                {t("customer_name")}: {debtHistoryData?.customerName}
-              </span>
-              <Button
-                onClick={exportToExcel}
-                style={{
-                  marginLeft: 'auto',
-                  color: "white",
-                  width: "10%",
-                  fontWeight: "bold",
-                }}
-              >
-                <MdOutlineCloudDownload /> Export
-              </Button>
-            </div>
+    <Modal show={showMainModal} onHide={onClose} size="xl">
+      <Modal.Header closeButton style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        {getModalTitle()}
+      </Modal.Header>
+      <Card border="none" style={{ margin: 0 }}>
+        <Card.Header
+          style={{
+            background: "none",
+            fontSize: 16,
+            fontWeight: "bold",
+            padding: 10,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+            <span>
+              {exportType === 'increase' ? `${t("ຍອດລວມການຕິດໜີ້ເພີມທັງຫມົດ")} ${moneyCurrency(getTotalAmount())}`
+                : exportType === 'payment' ? `${t("ຍອດລວມການຊຳລະໜີ້ທັງຫມົດ")} ${moneyCurrency(getTotalAmount())}`
+                : `${t("ຍອດລວມການຕິດໜີ້ທັງຫມົດ")} ${moneyCurrency(getTotalAmount())}`} ກີບ"
 
-            <div style={{ marginTop: 10 }}>
-              <span>
-                {t("phoneNumber")}: {debtHistoryData?.customerPhone}
-              </span>
-            </div>
-          </Card.Header>
-          <div style={{ display: "flex", justifyContent: "center", fontSize: 20, height: "2rem" }}>
-            <tr>
-              <th>{t("total_debt_export")}</th>
-            </tr>
+              
+            </span>
+            <Button
+              onClick={exportToExcel}
+              style={{
+                marginLeft: 'auto',
+                color: "white",
+                width: "10%",
+                fontWeight: "bold",
+                display: 'flex',
+                alignItems: 'center',
+                backgroundColor: COLOR_APP
+              }}
+            >
+              <MdOutlineCloudDownload style={{ marginRight: '10px' }} /> Export
+            </Button>
           </div>
-          <Card.Body>
-            <table style={{ width: "100%" }}>
-              <thead>
+        </Card.Header>
+        <Card.Body>
+          <table style={{ width: "100%" }}>
+            <thead>
+              <tr>
+                <th style={{ paddingRight: "3rem" }}>#</th>
+                <th style={{ paddingRight: "4rem" }}>{t("bill_no")}</th>
+                <th style={{ paddingRight: "4rem" }}>{t("name")}</th>
+                <th style={{ paddingRight: "7rem" }}>{t("tel")}</th>
+                <th style={{ paddingRight: "2rem" }}>{t("money_remaining")}</th>
+                {exportType === '' && (<th>{t("status")}</th>)}
+                {exportType === 'increase' && (<th style={{ paddingRight: "2rem" }}>{t("debt_add_remaining")}</th>)}
+                {exportType === 'payment' && (<th style={{ paddingRight: "2rem" }}>{t("debt_pay_remaining")}</th>)}
+                <th>{t("payment_datetime_debt")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
                 <tr>
-                  <th style={{ paddingRight: "3rem" }}>#</th>
-                  <th style={{ paddingRight: "4rem" }}>{t("bill_no")}</th>
-                  <th style={{ paddingRight: "4rem" }}>{t("name")}</th>
-                  <th style={{ paddingRight: "7rem" }}>{t("tel")}</th>
-                  <th style={{ paddingRight: "2rem" }}>{t("money_remaining")}</th>
-                  <th style={{ paddingRight: "2rem" }}>{t("debt_pay_remaining")}</th>
-                  <th>{t("payment_datetime_debt")}</th>
+                  <td colSpan={exportType === 'increase' ? 8 : 7} style={{ textAlign: "center" }}>
+                    <Spinner animation="border" variant="warning" />
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {isLoading ? (
-                  <tr>
-                    <td colSpan={5} style={{ textAlign: "center" }}>
-                      <Spinner animation="border" variant="warning" />
-                    </td>
+              ) : filteredData.length > 0 ? (
+                filteredData.map((e, i) => (
+                  <tr key={i}>
+                    <td>{(pagination - 1) * limitData + i + 1}</td>
+                    <td>{e.code}</td>
+                    <td>{e?.customerName}</td>
+                    <td>{e?.customerPhone}</td>
+                    <td>{moneyCurrency(e?.remainingAmount)}</td>
+                    {exportType === ''  && ( <td>{t ?convertBillDebtStatus(e?.status, t) : ""}</td>)}
+                    {exportType === 'increase' && (<td style={{ color: "Coral" }}>{moneyCurrency(e?.amountIncrease)}</td> )}
+                    {exportType === 'payment' && (<td style={{ color: "MediumSeaGreen" }}>{moneyCurrency(e?.totalPayment)}</td>)}
+                    {exportType === '' ? <td>
+                      {e?.outStockDate ? moment(e?.outStockDate).format("DD/MM/YYYY - HH:mm:SS : a") : ""} </td>
+                      :
+                      <td>{moment(e?.updatedAt).format("DD/MM/YYYY - HH:mm:SS : a")}</td>}
                   </tr>
-                ) : debtHistoryData && debtHistoryData.length > 0 ? (
-                  debtHistoryData
-                    .filter((e) => e?.remainingAmount > 0)
-                    .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
-                    .map((e, i) => (
-                      <tr
-                        key={i}
-                        onClick={() => handleRowClick(e)}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        <td>{(pagination - 1) * limitData + i + 1}</td>
-                        <td>{e.code}</td>
-                        <td>{(e?.customerName)}</td>
-                        <td>{(e?.customerPhone)}</td>
-                        <td>{moneyCurrency(e?.remainingAmount)}</td>                      
-                        <td style={{ color: "MediumSeaGreen" }}>{moneyCurrency(e?.totalPayment)}</td>
-                        <td>
-                          {e?.outStockDate
-                            ? moment(e?.outStockDate).format("DD/MM/YYYY - HH:mm:SS : a")
-                            : ""}
-                        </td>
-                      </tr>
-                    ))
-                ) : (
-                  <tr>
-                    <td colSpan={5} style={{ textAlign: "center" }}>
-                      <img src={ImageEmpty} alt="" style={{ width: 300, height: 200 }} />
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </Card.Body>
-        </Card>
-      </Modal>
-
-      <PopUpDebtExportUserId
-        open={showUserModal}
-        onClose={handleUserModalClose}
-        debtHistoryData={selectedDebt}
-      />
-    </>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={exportType === 'increase' ? 8 : 7} style={{ textAlign: "center" }}>
+                    <img src={ImageEmpty} alt="" style={{ width: 300, height: 200 }} />
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </Card.Body>
+      </Card>
+    </Modal>
   );
 }
