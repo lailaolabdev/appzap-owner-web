@@ -7,31 +7,28 @@ import { useTranslation } from "react-i18next";
 
 const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
   const { t } = useTranslation();
-  const [startTime, setStartTime] = useState(
-    moment(value?.startTime).format("HH:mm")
-  );
-  const [startDate, setStartDate] = useState(
-    moment(value?.startTime).format("YYYY-MM-DD")
-  );
+  const [startTime, setStartTime] = useState("");
+  const [startDate, setStartDate] = useState("");
+
   const handleClose = () => {
-    setStartTime();
-    setStartDate();
     onClose();
   };
+
   useEffect(() => {
     const _time = moment(value?.startTime).format("HH:mm");
     setStartDate(moment(value?.startTime).format("YYYY-MM-DD"));
     setStartTime(_time === "0:00" ? "12:00" : _time);
   }, [value]);
+
   return (
     //Found them here
     <Modal show={open} onHide={handleClose}>
-      <Modal.Header closeButton>{t('addBooking')}</Modal.Header>
+      <Modal.Header closeButton>{t("addBooking")}</Modal.Header>
       <Formik
         enableReinitialize={true}
         initialValues={{
           ...value,
-          startTime: value?.startTime
+          startTime: value?.startTime,
         }}
         validate={(values) => {
           const errors = {};
@@ -67,7 +64,12 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
             startDate + " " + startTime,
             "YYYY-MM-DD HH:mm"
           ).format();
-          const _value = { ...values, startTime: _startTime };
+          const _value = {
+            ...values,
+            startTime: _startTime,
+            clientPhone: `${values?.clientPhone}`,
+            partySize: values?.clientNumber.toString(),
+          };
           onSubmit(_value).then(() => {
             setStartTime();
             setStartDate();
@@ -91,10 +93,10 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
           <form onSubmit={handleSubmit}>
             <Modal.Body>
               <Form.Group>
-                <Form.Label>{t('bookedBy')}</Form.Label>
+                <Form.Label>{t("bookedBy")}</Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder={t('name')}
+                  placeholder={t("name")}
                   name="clientNames[0]"
                   value={values?.clientNames?.[0]}
                   isInvalid={errors.clientNames}
@@ -103,11 +105,11 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
                 />
               </Form.Group>
               <Form.Group>
-                <Form.Label>{t('phoneNumberOfBooked')}</Form.Label>
+                <Form.Label>{t("phoneNumberOfBooked")}</Form.Label>
                 <Form.Control
                   type="text"
-                  maxlength="8"
-                  placeholder={t('phone')}
+                  placeholder={t("phone")}
+                  maxLength={15}
                   name="clientPhone"
                   value={values?.clientPhone}
                   isInvalid={errors.clientPhone}
@@ -117,10 +119,10 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
               </Form.Group>
 
               <Form.Group>
-                <Form.Label>{t('numberOfPeople')}</Form.Label>
+                <Form.Label>{t("numberOfPeople")}</Form.Label>
                 <Form.Control
                   type="number"
-                  placeholder={t('people')}
+                  placeholder={t("people")}
                   name="clientNumber"
                   value={values?.clientNumber}
                   isInvalid={errors.clientNumber}
@@ -131,7 +133,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
               <Form.Group>
                 <div style={{ display: "flex", gap: 10 }}>
                   <div style={{ flexGrow: 1 }}>
-                    <Form.Label>{t('date')}</Form.Label>
+                    <Form.Label>{t("date")}</Form.Label>
                     <Form.Control
                       type="date"
                       value={startDate}
@@ -143,7 +145,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
                     />
                   </div>
                   <div style={{ flexGrow: 1 }}>
-                    <Form.Label>{t('time')}</Form.Label>
+                    <Form.Label>{t("time")}</Form.Label>
                     <Form.Control
                       type="time"
                       value={startTime}
@@ -157,7 +159,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
                 </div>
               </Form.Group>
               <Form.Group>
-                <Form.Label>{t('comment')}</Form.Label>
+                <Form.Label>{t("comment")}</Form.Label>
                 <Form.Control
                   as="textarea"
                   name="clientComment"
@@ -168,7 +170,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
                 />
               </Form.Group>
               <Form.Group>
-                <Form.Label>{t('tableStatus2')}</Form.Label>
+                <Form.Label>{t("tableStatus2")}</Form.Label>
                 <Form.Control
                   as="textarea"
                   name="note"
@@ -181,7 +183,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
             </Modal.Body>
             <Modal.Footer>
               <Button type="button" variant="secondary" onClick={handleClose}>
-                {t('cancel')}
+                {t("cancel")}
               </Button>
               <Button
                 type="submit"
@@ -192,7 +194,7 @@ const PopUpReservationAdd = ({ value, open, onClose, onSubmit }) => {
                   border: 0,
                 }}
               >
-                {t('apply')}
+                {t("apply")}
               </Button>
             </Modal.Footer>
           </form>

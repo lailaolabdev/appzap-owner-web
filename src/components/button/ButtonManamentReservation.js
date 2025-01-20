@@ -4,21 +4,27 @@ import ButtonPrimary from "./ButtonPrimary";
 import { COLOR_APP } from "../../constants";
 import { useTranslation } from "react-i18next";
 
-const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handleEdit }) => {
+const ButtonManamentReservation = ({
+  status,
+  handleReject,
+  handleConfirm,
+  handleEdit,
+}) => {
   const { t } = useTranslation();
   if (status === "CANCEL") {
     return (
       <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
         <ButtonPrimary
           style={{
-            color: "#ccc",
+            color: "#f87171",
             backgroundColor: "#fff",
-            border: `1px solid #ccc`,
+            border: `1px solid #f87171`,
             height: 31,
             fontSize: 14,
             padding: 4,
             width: "100%",
           }}
+          disabled
         >
           <div
             style={{
@@ -28,21 +34,20 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
             }}
           >
             <IoClose style={{ width: 20, height: 20 }} />
-            <span>{t('bookingDeclined')}</span>
+            <span>{t("bookingDeclined")}</span>
           </div>
         </ButtonPrimary>
         {/* <AiOutlineSetting /> */}
-
       </div>
     );
   }
   if (status === "SUCCESS") {
     return (
-      <div style={{ display: "flex", gap: 10, alignItems:"center" }}>
+      <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
         <ButtonPrimary
           style={{
             color: COLOR_APP,
-            backgroundColor: "#5BFF33",
+            backgroundColor: "#4ade80",
             // border: `1px solid ${COLOR_APP}`,
             height: 31,
             fontSize: 14,
@@ -60,11 +65,12 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
             }}
           >
             <BiCheckDouble style={{ width: 20, height: 20, color: "white" }} />
-            <span style={{ color: "white" }}>{t('successfulBookingConfirm')}</span>
+            <span style={{ color: "white" }}>
+              {t("successfulBookingConfirm")}
+            </span>
           </div>
         </ButtonPrimary>
         {/* <AiOutlineSetting /> */}
-
       </div>
     );
   }
@@ -73,9 +79,9 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
       <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
         <ButtonPrimary
           style={{
-            color: COLOR_APP,
+            color: "#4ade80",
             backgroundColor: "#fff",
-            border: `1px solid ${COLOR_APP}`,
+            border: `1px solid #4ade80`,
             height: 31,
             fontSize: 14,
             padding: 4,
@@ -91,24 +97,23 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
             }}
           >
             <BiCheckDouble style={{ width: 20, height: 20 }} />
-            <span>{t('bookingSuccessful')}</span>
+            <span>{t("bookingSuccessful")}</span>
           </div>
         </ButtonPrimary>
         {/* <AiOutlineSetting /> */}
-
-
       </div>
     );
   }
   return (
-    <div style={{ display: "flex", gap: 10 }}>
+    <div style={{ display: "flex", gap: 10, whiteSpace: "nowrap" }}>
       <ButtonPrimary
         style={{
           color: "white",
           height: 31,
           fontSize: 14,
-          padding: 4,
+          padding: "4px 6px",
           width: "100%",
+          backgroundColor: "#4ade80",
         }}
         onClick={handleConfirm}
       >
@@ -119,17 +124,17 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
             justifyContent: "center",
           }}
         >
-          <span>{t('approveButton')}</span>
+          <span>{t("approveButton")}</span>
         </div>
       </ButtonPrimary>
 
       <ButtonPrimary
         style={{
           color: "white",
-          backgroundColor: "#D9D9D9",
+          backgroundColor: "#f87171",
           height: 31,
           fontSize: 14,
-          padding: 4,
+          padding: "4px 6px",
           width: "100%",
         }}
         onClick={handleReject}
@@ -141,7 +146,7 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
             justifyContent: "center",
           }}
         >
-          <span>{t('cancelButton')}</span>
+          <span>{t("cancelButton")}</span>
         </div>
       </ButtonPrimary>
       <ButtonPrimary
@@ -151,7 +156,7 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
           border: `1px solid orange`,
           height: 31,
           fontSize: 14,
-          padding: 4,
+          padding: "4px 6px",
           width: "100%",
         }}
         onClick={handleEdit}
@@ -163,7 +168,7 @@ const ButtonManamentReservation = ({ status, handleReject, handleConfirm, handle
             justifyContent: "center",
           }}
         >
-          <span>{t('edit')}</span>
+          <span>{t("edit")}</span>
         </div>
       </ButtonPrimary>
     </div>
