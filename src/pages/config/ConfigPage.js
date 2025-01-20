@@ -25,7 +25,7 @@ import PopUpCreateServiceCharge from "../../components/popup/PopUpCreateServiceC
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Axios from "axios";
 import { useTranslation } from "react-i18next";
-import {useStoreStore} from "../../zustand/storeStore"
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function ConfigPage() {
   const { t } = useTranslation();
@@ -36,18 +36,10 @@ export default function ConfigPage() {
   const [tax, setTax] = useState(0);
   const [serviceCharge, setServiceCharge] = useState(0);
   const [popup, setPopup] = useState();
-  const {
-    storeDetail, 
-    fetchStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, fetchStoreDetail, updateStoreDetail } = useStoreStore();
 
   // provider
-  const {
-    audioSetting,
-    setAudioSetting,
-    profile,
-  } = useStore();
-
+  const { audioSetting, setAudioSetting, profile } = useStore();
 
   // useEffect
   useEffect(() => {
@@ -120,14 +112,12 @@ export default function ConfigPage() {
     await updateSettingCafe(profile?.data.storeId, { data: _type });
     // zustand store
     await fetchStoreDetail(storeDetail?._id);
-    
   };
   const changeCRM = async (e) => {
     const isType = e.target.checked;
     await updateSettingCRM(profile?.data.storeId, { data: isType });
     // zustand store
     await fetchStoreDetail(storeDetail?._id);
-
   };
 
   const changeDelivery = async (e) => {
@@ -136,14 +126,24 @@ export default function ConfigPage() {
     await updateSettingDelivery(profile?.data.storeId, { data: isType });
     // zustand store
     await fetchStoreDetail(storeDetail?._id);
-
   };
 
   const BankPayment = async (e) => {
     const isChecked = e.target.checked;
 
     // zustand store
-    await updateStoreDetail({ isBankPaymentAvailable: isChecked }, storeDetail?._id)
+    await updateStoreDetail(
+      { isBankPaymentAvailable: isChecked },
+      storeDetail?._id
+    );
+    await fetchStoreDetail(storeDetail?._id);
+  };
+
+  const changeBooking = async (e) => {
+    const isChecked = e.target.checked;
+
+    // zustand store
+    await updateStoreDetail({ isReservable: isChecked }, storeDetail?._id);
     await fetchStoreDetail(storeDetail?._id);
   };
 
@@ -410,7 +410,7 @@ export default function ConfigPage() {
                 {
                   title: `${t("enable_booking")}`,
                   key: "fer",
-                  disabled: true,
+                  disabled: false,
                 },
               ].map((item, index) => (
                 <div
@@ -432,22 +432,17 @@ export default function ConfigPage() {
                       justifyContent: "center",
                     }}
                   >
-                    <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                      {audioSetting?.[item?.key]
+                    <Form.Label htmlFor={"booking-" + item?.key}>
+                      {storeDetail?.isReservable
                         ? `${t("oppen")}`
                         : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
                       disabled={item?.disabled}
                       type="switch"
-                      checked={audioSetting?.[item?.key]}
-                      id={"switch-audio-" + item?.key}
-                      onChange={(e) =>
-                        setAudioSetting((prev) => ({
-                          ...prev,
-                          [item?.key]: e.target.checked,
-                        }))
-                      }
+                      checked={storeDetail?.isReservable}
+                      id={"booking-" + item?.key}
+                      onChange={changeBooking}
                     />
                   </div>
                 </div>

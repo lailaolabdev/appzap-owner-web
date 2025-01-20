@@ -43,17 +43,14 @@ import { fontMap } from "../utils/font-map";
 
 import { useStoreStore } from "../zustand/storeStore";
 import { useOrderStore } from "../zustand/orderStore";
+import { useBookingStore } from "../zustand/bookingStore";
 
 export default function Sidenav({ location, navigate, onToggle }) {
-  const {
-    openTableData,
-    getTableDataStore,
-  } = useStore();
+  const { openTableData, getTableDataStore } = useStore();
 
-  const { storeDetail } = useStoreStore()
-  const { waitingOrders } = useOrderStore()
-
-  
+  const { storeDetail } = useStoreStore();
+  const { waitingOrders } = useOrderStore();
+  const { bookingWaitingLength, fetchBookingByStatus } = useBookingStore();
 
   const [token, setToken] = useState();
   const [isTitle, setIsTitle] = useState(false);
@@ -72,6 +69,13 @@ export default function Sidenav({ location, navigate, onToggle }) {
     })();
   }, []);
 
+  useEffect(() => {
+    const fetchBooking = async () => {
+      await fetchBookingByStatus("WAITING");
+    };
+
+    fetchBooking();
+  }, [fetchBookingByStatus]);
 
   const UN_SELECTED_TAB_TEXT = "#606060";
   const {
@@ -127,7 +131,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "reservations",
       icon: faList,
       typeStore: "",
-      hidden: !storeDetail?.hasReservation,
+      hidden: !storeDetail?.isReservable,
       system: "reservationManagement",
     },
 
@@ -391,6 +395,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
                 />
                 {e?.key === "orders" && waitingOrders.length > 0 && (
                   <span style={popNoti}>{waitingOrders.length}</span>
+                )}
+                {e?.key === "reservations" && bookingWaitingLength > 0 && (
+                  <span style={popNoti}>{bookingWaitingLength}</span>
                 )}
               </NavIcon>
               <NavText>
