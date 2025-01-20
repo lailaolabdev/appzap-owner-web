@@ -32,8 +32,7 @@ export default function DashboardFinance({
   startTime,
   endTime,
   selectedCurrency,
-  setGetDataDashboardFinance,
-  getDataDashboardFinance
+  setCountIsDebtTrue,
 }) {
   const [currency, setCurrency] = useState();
   const navigate = useNavigate();
@@ -54,6 +53,8 @@ export default function DashboardFinance({
 
   const [pagination, setPagination] = useState(1);
   const [totalPagination, setTotalPagination] = useState();
+  const [getDataDashboardFinance, setGetDataDashboardFinance] = useState([])
+ 
 
   const handleClose = () => setShow(false);
   const { profile } = useStore();
@@ -365,12 +366,18 @@ export default function DashboardFinance({
     TotalCalculate = baseTotal ?? 0 - dataModal?.change ?? 0;
   }
 
-  // วิธีที่ 2: เขียนแบบละเอียด
-  // วิธีที่ 1: ใช้ filter() โดยตรง
   useEffect(() => {
     const filteredData = data?.checkOut?.filter(item => !item.isDebt) || [];
     setGetDataDashboardFinance(filteredData);
   }, [data]);
+
+  useEffect(()=>{
+     setCountIsDebtTrue(data?.checkOut?.filter(item => item?.isDebt === true).length );
+  },[data])
+
+
+
+
 
 
   return (
@@ -672,11 +679,17 @@ export default function DashboardFinance({
                 <div className="flex flex-row items-center text-green-500 gap-2">
                   <FaCircleCheck className="text-green-500 text-5xl" />{" "}
                   <div className="flex flex-col gap-1">
-                    <span>
+                    {/* <span>
                       ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
                       {`${new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
                       }).format(TotalBefore)} ${storeDetail?.firstCurrency}`}
+                    </span> */}
+                    <span>
+                      ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
+                      {`${new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(TotalCalculate + dataModal?.remainingAmount)} ${storeDetail?.firstCurrency}`}
                     </span>
                     <span>
                       ເງິນທີ່ໄດ້ຮັບມາຈານການປ້ອນ (
