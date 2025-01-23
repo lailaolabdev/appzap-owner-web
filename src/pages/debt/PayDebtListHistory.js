@@ -47,10 +47,6 @@ export const PayDebtListHistory = ({
         new Date(b.updatedAt) - new Date(a.updatedAt)
     );
 
-    // Calculate totals for summary cards
-    const totalAmount = filteredData.reduce((sum, item) => sum + (item.amount || 0), 0);
-    const totalRemainingAmount = filteredData.reduce((sum, item) => sum + (item.remainingAmount || 0), 0);
-
     return (
         <>
             <div style={{ display: "flex", gap: 10, padding: "10px 0", justifyContent: 'space-between', alignItems: 'center' }}>
@@ -100,7 +96,7 @@ export const PayDebtListHistory = ({
                     }}
                 >
                     <span>
-                        <IoBeerOutline /> {t("PayDebt_list_history")}
+                        {t("paydebt_list_history")}
                     </span>
                     <Button
                         style={{

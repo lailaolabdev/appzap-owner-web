@@ -5,6 +5,7 @@ import { BsFillCalendarWeekFill } from "react-icons/bs";
 import ReactPaginate from "react-paginate";
 import moment from "moment";
 import { moneyCurrency } from "../../helpers";
+import { COLOR_APP } from "../../constants";
 
 const IncressDebtListHistory = ({
   t,
@@ -22,14 +23,13 @@ const IncressDebtListHistory = ({
   debtHistoryData,
   pagination,
   limitData,
-  COLOR_APP,
   ImageEmpty
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  // กรองข้อมูลตามคำค้นหาและ amountIncrease > 0
+ 
   const filteredData = debtHistoryData
-    .filter(item => item.amountIncrease > 0) // กรองเฉพาะรายการที่มี amountIncrease > 0
+    .filter(item => item.amountIncrease > 0) 
     .filter(item => {
       if (!searchTerm || searchTerm.length < 2) return true;
       return (
@@ -39,7 +39,6 @@ const IncressDebtListHistory = ({
       );
     });
 
-    //console.log("filteredData: ",filteredData)
 
   return (
     <>
@@ -90,7 +89,7 @@ const IncressDebtListHistory = ({
           }}
         >
           <span>
-            <IoBeerOutline /> {t("IncressDebt_list_history")}
+           {t("IncressDebt_list_history")}
           </span>
 
           <Button

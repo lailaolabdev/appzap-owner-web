@@ -58,7 +58,7 @@ export default function PopUpDebtExport({
       case 'increase':
         return t("IncressDebt_list_history");
       case 'payment':
-        return t("PayDebt_list_history");
+        return t("paydebt_list_history");
       default:
         return t("debt_list_all");
     }
@@ -142,6 +142,19 @@ export default function PopUpDebtExport({
       const amountIncrease = typeof item?.amountIncrease === 'number' ? item.amountIncrease : 0;
       const totalPayment = typeof item?.totalPayment === 'number' ? item.totalPayment : 0;
 
+      const getStatusText = (status) => {
+        switch(status) {
+          case 'PAY_DEBT':
+            return 'ຊຳລະແລ້ວ';
+          case 'PARTIAL_PAYMENT':
+            return 'ຍັງຄ້າງຈ່າຍ';
+          case 'DEBT':
+            return 'ຕິດໜີ້';
+          default:
+            return '';
+        }
+      };
+
       const rowData = [
         index + 1,
         item?.code || '',
@@ -150,7 +163,7 @@ export default function PopUpDebtExport({
         remainingAmount,
         exportType === 'increase' ? amountIncrease
           : exportType === 'payment' ? totalPayment
-          : (item?.status || ''),
+          : getStatusText(item?.status || ''),
         item?.outStockDate ? moment(item?.outStockDate).format("DD/MM/YYYY - HH:mm:SS") : ''
       ];
 
@@ -209,7 +222,7 @@ export default function PopUpDebtExport({
     );
 };
 
-  console.log("filteredData: ",filteredData)
+ 
 
   return (
     <Modal show={showMainModal} onHide={onClose} size="xl">

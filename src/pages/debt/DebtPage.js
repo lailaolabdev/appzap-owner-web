@@ -13,7 +13,7 @@ import {
 import { FaCoins } from "react-icons/fa";
 import Box from "../../components/Box";
 import { getLocalData } from "../../constants/api";
-import { getAllDebts, getBilldebts } from "../../services/debt";
+import { debtsRemainingAmount, getBilldebts } from "../../services/debt";
 import { getdebtHistory } from "../../services/debt";
 import moment from "moment";
 import { moneyCurrency } from "../../helpers";
@@ -49,6 +49,7 @@ export default function DebtPage() {
   const [searchCode, setSearchCode] = useState(null);
   const [exportType, setExportType] = useState('');
   const [activeTab, setActiveTab] = useState('billDebt-list');
+  const [remainingAmountData, setRemainingAmountData] = useState([])
   const limitData = 50;
 
  
@@ -78,6 +79,7 @@ export default function DebtPage() {
   useEffect(() => {
     getData();
     getDataHistory();
+    //getDataReminning();
   }, [pagination, startDate, endDate, startTime, endTime]);
 
   // Calculate totals
@@ -198,7 +200,7 @@ export default function DebtPage() {
               fontWeight: "bold",
             }}
           >
-            {t("ຈຳນວນລາຍການທັງຫມົດ")}
+            {t("debt_list_all")}
           </Card.Header>
           <Card.Body>
             <div
@@ -223,7 +225,7 @@ export default function DebtPage() {
               fontWeight: "bold",
             }}
           >
-            {t("ເງິນທັງຫມົດທີລູກຄ້າຕິດຫນີ້")}
+            {t("total_debt")}
           </Card.Header>
           <Card.Body>
             <div
@@ -249,7 +251,7 @@ export default function DebtPage() {
               fontWeight: "bold",
             }}
           >
-            {t("ຈ່າຍໄປແລ້ວ")}
+            {t("paid_already")}
           </Card.Header>
           <Card.Body>
             <div
@@ -279,7 +281,7 @@ export default function DebtPage() {
               padding: 10,
             }}
           >
-            <span>{t("ເງິນທີຍັງຕິດ")}</span>
+            <span>{t("outstanding_money")}</span>
           </Card.Header>
           <Card.Body>
             <div
@@ -336,7 +338,7 @@ export default function DebtPage() {
 
         <Tab
           eventKey="Pay-debt-list"
-          title={t("PayDebt_list_history")}
+          title={t("paydebt_list_history")}
           style={{ paddingTop: 20 }}
         >
           <PayDebtListHistory
