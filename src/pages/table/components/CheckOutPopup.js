@@ -1414,7 +1414,15 @@ export default function CheckOutPopup({
             </b>
           </div>
           <div className="flex flex-col dmd:flex-row gap-2 items-end">
-            <Button onClick={() => onSubmit()}>{t("debt")}</Button> 
+            <Button
+              onClick={() => onSubmit()}
+              disabled={
+                forcus === "DELIVERY" || forcus === "CASH_TRANSFER_POINT"
+              }
+            >
+              {t("debt")}
+            </Button>
+
             <Button
               onClick={() => {
                 setPrintBillLoading(true);
@@ -1446,7 +1454,6 @@ export default function CheckOutPopup({
             </Button>
           </div>
         </div>
-        
       </Modal.Footer>
     </Modal>
   );

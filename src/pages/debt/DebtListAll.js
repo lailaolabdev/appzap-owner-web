@@ -42,12 +42,6 @@ export const DebtListAll = ({
     new Date(b.updatedAt) - new Date(a.updatedAt)
   );
 
-  //console.log("sortedData: ", sortedData)
-
-  // Calculate totals for summary cards
-  // const totalAmount = filteredData.reduce((sum, item) => sum + (item.amount || 0), 0);
-  // const totalRemainingAmount = filteredData.reduce((sum, item) => sum + (item.remainingAmount || 0), 0);
-
   return (
     <>
 
@@ -98,7 +92,7 @@ export const DebtListAll = ({
           }}
         >
           <span>
-            <IoBeerOutline /> {t("debt_list")}
+            {t("debt_list")}
           </span>
           <Button
             style={{

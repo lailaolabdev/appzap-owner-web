@@ -16,6 +16,7 @@ import {
   getCurrencyReport,
   getDeliveryReport,
   getMoneyReport,
+  getDebtReport,
 } from "../../services/report";
 import _ from "lodash";
 import {
@@ -39,6 +40,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const [currency, setcurrency] = useState([]);
   const [delivery, setDelivery] = useState([]);
   const [moneyReport, setMoneyReport] = useState([]);
+  const [debtReport, setDebtReport] = useState(null)
   const [reportBill, setReportBill] = useState({
     totalAmount: 0,
     billCount: 0,
@@ -59,6 +61,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
     // console.log("printers: ", billRef.current);
     getDataBillReport(startDate);
     getMoneyReportData(startDate);
+    getDebtReportData(startDate);
   }, [startDate]);
 
   useEffect(() => {
@@ -157,6 +160,21 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
     const data = await getMoneyReport(storeDetail?._id, findBy);
     setMoneyReport(data);
+  };
+
+  const getDebtReportData = async (startDate) => {
+    try {
+      let findBy = `?storeId=${storeDetail?._id}`;
+      const endDate = startDate; // Same date range for a single day
+      const startTime = "00:00:00";
+      const endTime = "23:59:59";
+      findBy = `${findBy}&startDate=${encodeURIComponent(startDate)}&startTime=${encodeURIComponent(startTime || '00:00:00')}&endDate=${encodeURIComponent(endDate)}&endTime=${encodeURIComponent(endTime || '23:59:59')}`;
+      const data = await getDebtReport(findBy);
+      setDebtReport(data?.data);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setDebtReport(0);
+    }
   };
 
   const getDataBillReport = async (startDate) => {
@@ -260,11 +278,11 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
   const deliveryReports = delivery
     ? delivery?.revenueByPlatform?.map((e) => {
-        return {
-          name: e?._id,
-          amount: e?.totalRevenue,
-        };
-      })
+      return {
+        name: e?._id,
+        amount: e?.totalRevenue,
+      };
+    })
     : [];
 
   return (
@@ -328,17 +346,22 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 value: moneyReport?.successAmount?.transferPayment || 0,
                 type: storeDetail?.firstCurrency,
               },
+              {
+                name: `${t("total_debt")}:`,
+                value: debtReport?.totalRemainingAmount,
+                type: storeDetail?.firstCurrency,
+              },
 
               ...(Array.isArray(deliveryReports) && deliveryReports.length > 0
                 ? deliveryReports.map((e, idx) => ({
-                    name: (
-                      <div
-                        style={{ fontWeight: 700 }}
-                      >{`delivery (${e?.name})`}</div>
-                    ),
-                    value: Math.floor(e?.amount || 0),
-                    type: storeDetail?.firstCurrency,
-                  }))
+                  name: (
+                    <div
+                      style={{ fontWeight: 700 }}
+                    >{`delivery (${e?.name})`}</div>
+                  ),
+                  value: Math.floor(e?.amount || 0),
+                  type: storeDetail?.firstCurrency,
+                }))
                 : []),
               {
                 name: `${t("point")}:`,
@@ -367,6 +390,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 name: `${t("active_bill")}:`,
                 value: reportBill?.pendingBills,
               },
+              
               // {
               //   name: "ເງິນຄ້າງ:",
               //   value: reportBill["ເງິນຄ້າງ"],
