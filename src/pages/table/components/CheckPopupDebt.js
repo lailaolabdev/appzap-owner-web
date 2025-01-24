@@ -229,7 +229,7 @@ export default function CheckPopupDebt({
         remainingAmount: remainingAmount,
         customerName: customerName,
         customerPhone: customerPhone,
-        billId: tableData?._id,
+        billId: dataBill?._id,
         status: "DEBT",
         startDate: startDate,
         endDate: expirtDate,
