@@ -12,8 +12,10 @@ import {
   Spinner,
   Modal,
 } from "react-bootstrap";
+import { FaCoins } from "react-icons/fa";
+import Box from "../../components/Box";
 import { getLocalData } from "../../constants/api";
-import { getBilldebts } from "../../services/debt";
+import { getAllDebts, getBilldebts } from "../../services/debt";
 import { getdebtHistory } from "../../services/debt";
 import { useStore } from "../../store";
 import moment from "moment";
@@ -26,8 +28,12 @@ import { IoBeerOutline } from "react-icons/io5";
 import { MdAssignmentAdd } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { convertBillDebtStatus } from "../../helpers/convertBillDebtStatus";
-
 import { useStoreStore } from "../../zustand/storeStore";
+import {
+  BsFillCalendarWeekFill,
+  BsFillCalendarEventFill,
+} from "react-icons/bs";
+import PopUpSetStartAndEndDateDebt from "../../components/popup/PopUpSetStartAndEndDateDebt";
 
 export default function DebtPage() {
   const { t } = useTranslation();
@@ -46,9 +52,14 @@ export default function DebtPage() {
   const [debtHistoryData, setDebtHistoryData] = useState([]);
   const [searchCode, setSearchCode] = useState("");
   const [showPopup, setShowPopup] = useState(false);
+  const [showData, setShowData] = useState([])
+  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
+  const [startTime, setStartTime] = useState("00:00:00");
+  const [endTime, setEndTime] = useState("23:59:59");
 
   const limitData = 50;
-
+  
   // useEffect
   useEffect(() => {
     getData();
@@ -60,9 +71,8 @@ export default function DebtPage() {
     setIsLoading(true);
     try {
       const { TOKEN } = await getLocalData();
-      let findby = `?skip=${
-        (pagination - 1) * limitData
-      }&limit=${limitData}&storeId=${storeDetail?._id}`;
+      let findby = `?skip=${(pagination - 1) * limitData
+        }&limit=${limitData}&storeId=${storeDetail?._id}`;
 
       if (searchCode) {
         const isPhoneNumber = /^\d+$/.test(searchCode);
@@ -76,7 +86,8 @@ export default function DebtPage() {
 
       const data = await getBilldebts(findby, TOKEN);
       setBillDebtData(data?.data || []);
-      console.log("setBillDebtData =-=-=>", billDebtData);
+
+      //console.log("setBillDebtData =-=-=>", billDebtData);
       setTotalPagination(Math.ceil(data?.totalCount / limitData));
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -85,13 +96,45 @@ export default function DebtPage() {
     }
   };
 
+  useEffect(() => {
+    getAllDataDebts();
+  }, [billDebtData])
+
+
+  const getAllDataDebts = async () => {
+    try {
+      const data = await getAllDebts();
+      setShowData(data);
+    } catch (error) {
+      console.log("error getAlldata", error)
+    }
+  }
+
+
+  // ຈຳນວນເງິນທັງຫມົດ
+  const amount = showData.reduce((total, item) => {
+    return total + (item.amount || 0);
+  }, 0);
+
+
+  //ເງິນທີຍັງຕິດ
+  const remainingAmount = showData.reduce((total, item) => {
+    return total + (item.remainingAmount || 0);
+  }, 0);
+
+  //ເງິນທີຈ່າຍໄປແລ້ວ
+  const totalPayment = showData.reduce((total, item) => {
+    return total + (item.totalPayment || 0);
+  }, 0);
+
+
+
   const getDataHistory = async () => {
     setIsLoading(true);
     try {
       const { TOKEN } = await getLocalData();
-      let findby = `?skip=${
-        (pagination - 1) * limitData
-      }&limit=${limitData}&storeId=${storeDetail?._id}`;
+      let findby = `?skip=${(pagination - 1) * limitData
+        }&limit=${limitData}&storeId=${storeDetail?._id}`;
 
       if (searchCode) {
         const isPhoneNumber = /^\d+$/.test(searchCode);
@@ -116,30 +159,166 @@ export default function DebtPage() {
   return (
     <>
       <div style={{ padding: 20 }}>
-        <Breadcrumb>
+      <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { md: "0.5fr 0.5fr 0.5fr 0.5fr", xs: "1fr" },
+            gap: 20,
+            gridTemplateRows: "masonry",
+            marginBottom: 20,
+          }}
+        >
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("ຈຳນວນລາຍການທັງຫມົດ")}
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 32,
+                  // fontWeight: 700
+                }}
+              >
+                {showData?.length - 1 || 0}
+              </div>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("ເງິນທັງຫມົດທີລູກຄ້າຕິດຫນີ້")}
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 32,
+                  // fontWeight: 700
+                }}
+              >
+
+                {moneyCurrency(amount)} ກີບ
+              </div>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("ຈ່າຍໄປແລ້ວ")}
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 32,
+                  // fontWeight: 700
+                }}
+              >
+                {/* {moneyCurrency(totalPayment)} ກີບ */}
+                {moneyCurrency(amount - remainingAmount)} ກີບ
+              </div>
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: 10,
+              }}
+            >
+              <span>{t("ເງິນທີຍັງຕິດ")}</span>
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: 32,
+                  fontWeight: 400,
+                }}
+              >
+                {moneyCurrency(remainingAmount)} ກີບ
+              </div>
+            </Card.Body>
+          </Card>
+        </Box>
+        {/* <Breadcrumb>
           <Breadcrumb.Item>{t("debt_deposit")}</Breadcrumb.Item>
           <Breadcrumb.Item active>{t("debt_list")}</Breadcrumb.Item>
-        </Breadcrumb>
+        </Breadcrumb> */}
         <Tabs defaultActiveKey="billDebt-list">
           <Tab
             eventKey="billDebt-list"
             title={t("debt_list_all")}
             style={{ paddingTop: 20, color: "red" }}
           >
-            <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
-              <Form.Control
-                style={{ maxWidth: 220 }}
-                placeholder={t("search_bill_code")}
-                onChange={(e) => setSearchCode(e.target.value)}
-              />
+            <div style={{ display: "flex", gap: 10, padding: "10px 0", justifyContent:'space-between', alignItems:'center' }}>
+              <div style={{ display: "flex", gap: 10, padding: "10px 0", alignItems:'center' }}>
+                <Form.Control
+                  style={{ maxWidth: 220 }}
+                  placeholder={t("search_bill_code")}
+                  onChange={(e) => setSearchCode(e.target.value)}
+                />
+                <Button
+                  variant="primary"
+                  onClick={getData}
+                  style={{ color: "white" }}
+                >
+                  {t("search")}
+                </Button>
+              </div>
+
               <Button
-                variant="primary"
-                onClick={getData}
-                style={{ color: "white" }}
+                variant="outline-primary"
+                size="small"
+                style={{ display: "flex", gap: 10, alignItems: "center" }}
+                onClick={() => setPopup({ popupfiltter: true })}
               >
-                {t("search")}
+                <BsFillCalendarWeekFill />
+                <div>
+                  {startDate} {startTime}
+                </div>{" "}
+                ~{" "}
+                <div>
+                  {endDate} {endTime}
+                </div>
               </Button>
+
             </div>
+
             <Card border="primary" style={{ margin: 0 }}>
               <Card.Header
                 style={{
@@ -271,19 +450,38 @@ export default function DebtPage() {
             title={t("PayDebt_list_history")}
             style={{ paddingTop: 20 }}
           >
-            <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
-              <Form.Control
-                style={{ maxWidth: 220 }}
-                placeholder={t("search_bill_code")}
-                onChange={(e) => setSearchCode(e.target.value)}
-              />
+            <div style={{ display: "flex", gap: 10, padding: "10px 0", justifyContent:'space-between', alignItems:'center' }}>
+              <div style={{ display: "flex", gap: 10, padding: "10px 0", alignItems:'center' }}>
+                <Form.Control
+                  style={{ maxWidth: 220 }}
+                  placeholder={t("search_bill_code")}
+                  onChange={(e) => setSearchCode(e.target.value)}
+                />
+                <Button
+                  variant="primary"
+                  onClick={getDataHistory}
+                  style={{ color: "white" }}
+                >
+                  {t("search")}
+                </Button>
+              </div>
+
               <Button
-                variant="primary"
-                onClick={getDataHistory}
-                style={{ color: "white" }}
+                variant="outline-primary"
+                size="small"
+                style={{ display: "flex", gap: 10, alignItems: "center" }}
+                onClick={() => setPopup({ popupfiltter: true })}
               >
-                {t("search")}
+                <BsFillCalendarWeekFill />
+                <div>
+                  {startDate} {startTime}
+                </div>{" "}
+                ~{" "}
+                <div>
+                  {endDate} {endTime}
+                </div>
               </Button>
+
             </div>
             <Card border="primary" style={{ margin: 0 }}>
               <Card.Header
@@ -393,19 +591,38 @@ export default function DebtPage() {
             title={t("IncressDebt_list_history")}
             style={{ paddingTop: 20 }}
           >
-            <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
-              <Form.Control
-                style={{ maxWidth: 220 }}
-                placeholder={t("search_bill_code")}
-                onChange={(e) => setSearchCode(e.target.value)}
-              />
+            <div style={{ display: "flex", gap: 10, padding: "10px 0", justifyContent:'space-between', alignItems:'center' }}>
+              <div style={{ display: "flex", gap: 10, padding: "10px 0", alignItems:'center' }}>
+                <Form.Control
+                  style={{ maxWidth: 220 }}
+                  placeholder={t("search_bill_code")}
+                  onChange={(e) => setSearchCode(e.target.value)}
+                />
+                <Button
+                  variant="primary"
+                  onClick={getDataHistory}
+                  style={{ color: "white" }}
+                >
+                  {t("search")}
+                </Button>
+              </div>
+
               <Button
-                variant="primary"
-                onClick={getDataHistory}
-                style={{ color: "white" }}
+                variant="outline-primary"
+                size="small"
+                style={{ display: "flex", gap: 10, alignItems: "center" }}
+                onClick={() => setPopup({ popupfiltter: true })}
               >
-                {t("search")}
+                <BsFillCalendarWeekFill />
+                <div>
+                  {startDate} {startTime}
+                </div>{" "}
+                ~{" "}
+                <div>
+                  {endDate} {endTime}
+                </div>
               </Button>
+
             </div>
             <Card border="primary" style={{ margin: 0 }}>
               <Card.Header
@@ -530,18 +747,30 @@ export default function DebtPage() {
           <PopUpDebtExport
             open={popup?.PopUpDebtExport}
             onClose={() => {
-              showPopup();
+              setPopup();
               setSelectDebtData();
             }}
             billDebtData={selectDebtData}
             callback={async () => {
-              showPopup();
+              setPopup();
               setSelectDebtData();
               await getData();
               await getDataHistory();
             }}
           />
         )}
+        <PopUpSetStartAndEndDateDebt
+        open={popup?.popupfiltter}
+        onClose={() => setPopup()}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        setStartTime={setStartTime}
+        startTime={startTime}
+        setEndDate={setEndDate}
+        setEndTime={setEndTime}
+        endTime={endTime}
+        endDate={endDate}
+        />
       </div>
     </>
   );

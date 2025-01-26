@@ -669,6 +669,8 @@ export default function CheckPopupDebt({
                 <InputGroup.Text>{selectCurrency}</InputGroup.Text>
               </InputGroup>
 
+              
+
               <InputGroup>
                 <InputGroup.Text>{t("debt_paymentbefore")}</InputGroup.Text>
                 <Form.Control
@@ -686,6 +688,9 @@ export default function CheckPopupDebt({
                 />
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
+
+              <h>fuck</h>
+
               <InputGroup>
                 <InputGroup.Text>{t("debt_notpay")}</InputGroup.Text>
                 <Form.Control
