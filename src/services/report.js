@@ -88,6 +88,20 @@ export const getMoneyReport = async (storeId, findBy, tableIds) => {
   }
 };
 
+
+export const getDebtReport = async (findby, token) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v4/bill-debts-remaining${findby}`;
+    const res = await axios.get(url, {
+      headers: _header,
+    });
+    return res.data;
+  } catch (error) {
+    return { error: true };
+  }
+};
+
 export const getPromotionReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();

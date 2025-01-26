@@ -36,7 +36,7 @@ export default function CheckPopupDebt({
   onPrintBill,
   open,
   onClose,
-  onSubmit = () => {},
+  onSubmit = () => { },
   dataBill,
   tableData,
   setDataBill,
@@ -62,12 +62,12 @@ export default function CheckPopupDebt({
   const [selectInput, setSelectInput] = useState("inputCash");
   const [selectDataOpption, setSelectDataOpption] = useState();
   const [cash, setCash] = useState();
-  const [transfer, setTransfer] = useState();
-  const [amountBefore, setAmountBefore] = useState(); //update
+  const [transfer, setTransfer] = useState(0);
+  const [amountBefore, setAmountBefore] = useState(0); //update
   const [remainingAmount, setRemainingAmount] = useState(); //update
   const [remainingShow, setRemainingShow] = useState(); //ipdate
   const [tab, setTab] = useState("cash");
-  const [forcus, setForcus] = useState("CASH");
+  const [forcus, setForcus] = useState("IS_DEBT");
   const [canCheckOut, setCanCheckOut] = useState(false);
   const [total, setTotal] = useState();
   const [selectCurrency, setSelectCurrency] = useState("LAK");
@@ -90,90 +90,14 @@ export default function CheckPopupDebt({
   const [expirtDate, setExpirtDate] = useState(
     moment(moment()).add(7, "days").format("YYYY-MM-DD")
   );
+  const [debtTotal, setDebtTotal] = useState(true)
+  const [debtAndPay, setDebtAndPay] = useState(false)
 
-  // useEffect(() => {
-  //   setMemberData();
-  //   if (textSearchMember.length > 0) {
-  //     handleSearchOne();
-  //   }
-  // }, [textSearchMember]);
 
   useEffect(() => {
     getMembersData();
   }, []);
 
-  // useEffect(() => {
-  //   getData();
-  // }, [billId]);
-
-  // function
-  // const getData = async () => {
-  //   try {
-  //     const { DATA, TOKEN } = await getLocalData();
-  //     let findby = "?";
-  //     findby += `storeId=${storeDetail?._id}&`;
-  //     findby += `billDebtId=${billId}`;
-  //     const data = await getMenuDebt(findby, TOKEN);
-  //     setMenuDebtData(data);
-  //   } catch (err) {
-  //     console.log("err", err);
-  //   }
-  // };
-
-  // const handleSearchOne = async () => {
-  //   try {
-  //    const url =
-  //       END_POINT_SEVER + "/v4/member/search-one?phone=" + textSearchMember;
-  //     const _header = await getHeaders();
-  //     const _res = await axios.get(url, { headers: _header });
-  //     if (!_res.data) throw new Error("Empty!");
-  //     setMemberData(_res.data);
-  //     setDataBill((prev) => ({
-  //       ...prev,
-  //       memberId: _res.data?._id,
-  //       memberName: _res.data?.name,
-  //       memberPhone: _res.data?.phone,
-  //       status: "DEBT",
-  //       startDate: startDate,
-  //       endDate: expirtDate,
-  //     }));
-  //   } catch (err) {
-  //     console.log(err);
-  //     errorAdd("ບໍ່ພົບສະມາຊິກ");
-  //   }
-  // };
-
-  // button_create_debt
-  const handleClickCreateDebt = async () => {
-    try {
-      const { DATA, TOKEN } = await getLocalData();
-      const _body = {
-        amount: totalBill,
-        amountBefore: amountBefore,
-        remainingAmount: remainingAmount,
-        customerName: customerName,
-        customerPhone: customerPhone,
-        billId: tableData._id,
-        status: "DEBT",
-        startDate: startDate,
-        endDate: expirtDate,
-        storeId: DATA?.storeId,
-      };
-      // return;
-
-      const data = await createBilldebt(_body, TOKEN);
-      if (data.error) {
-        errorAdd(`${t("debt_fail")}`);
-        return;
-      }
-      setPrintCode(data.code);
-      navigate("/debt");
-      handleSubmit();
-      successAdd(`${t("debt_success")}`);
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   const getMembersData = async () => {
     setIsLoading(true);
@@ -193,9 +117,7 @@ export default function CheckPopupDebt({
     }
   };
 
-  // console.log("tableData:=======abc======>", tableData)
 
-  // console.log("membersData", membersData);
 
   const totalBillDefualt = _.sumBy(
     dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
@@ -219,11 +141,10 @@ export default function CheckPopupDebt({
     const transferAmount = Number.parseFloat(transfer) || 0;
     const totalReceived = cashAmount + transferAmount;
 
-    moneyReceived = `${
-      selectCurrency === "LAK"
-        ? moneyCurrency(totalReceived)
-        : moneyCurrency(Number.parseFloat(cashCurrency) || 0)
-    } ${selectCurrency}`;
+    moneyReceived = `${selectCurrency === "LAK"
+      ? moneyCurrency(totalReceived)
+      : moneyCurrency(Number.parseFloat(cashCurrency) || 0)
+      } ${selectCurrency}`;
 
     const remainingAmountValue = discountedTotalBill - totalReceived;
     remainingAmount = `${moneyCurrency(
@@ -288,22 +209,65 @@ export default function CheckPopupDebt({
       console.log("err:", err);
     }
   };
+
+
+
+  const handleClickCreateDebt = async () => {
+    try {
+
+      if (tab === "cash_transfer" && !isValidPayment()) {
+        errorAdd("ກະລຸນາປ້ອນຈຳນວນເງິນ");
+        return;
+      }
+
+      const { DATA, TOKEN } = await getLocalData();
+
+      const _body = {
+        amount: totalBill,
+        payAmount: Number(amountBefore),
+        transferAmount: Number(transfer),
+        remainingAmount: remainingAmount,
+        customerName: customerName,
+        customerPhone: customerPhone,
+        billId: dataBill?._id,
+        status: "DEBT",
+        startDate: startDate,
+        endDate: expirtDate,
+        storeId: DATA?.storeId,
+        debtTotal: debtTotal
+      };
+
+      const data = await createBilldebt(_body, TOKEN);
+
+      if (data?.error) {
+        errorAdd(`${t("debt_fail")}`);
+        return;
+      }
+
+      navigate("/debt");
+      await handleSubmit();
+    } catch (err) {
+      console.log(err);
+      errorAdd(`${t("debt_fail")}`);
+    }
+  };
+
   const _checkBill = async () => {
     const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
-    const validPayAmount = cash && !Number.isNaN(cash) ? cash : amountBefore;
-    const validTransferAmount =
-      transfer && !Number.isNaN(transfer) ? transfer : remainingAmount;
 
-    await axios
-      .put(
+    try {
+      await axios.put(
         `${END_POINT}/v6/bill-checkout`,
         {
           id: dataBill?._id,
           data: {
+            isDebt: debtTotal,
+            isDebtAndPay: debtAndPay,
             isCheckout: "true",
             status: "CHECKOUT",
-            payAmount: validPayAmount,
-            transferAmount: validTransferAmount,
+            payAmount: debtTotal ? 0 : Number(amountBefore),
+            transferAmount: Number(transfer),
+            remainingAmount: debtTotal ? 0 : Number(remainingAmount),
             paymentMethod: forcus,
             taxAmount: taxAmount,
             taxPercent: taxPercent,
@@ -317,56 +281,56 @@ export default function CheckPopupDebt({
             tableName: tableData?.tableName,
             tableCode: tableData?.code,
             fullnameStaffCheckOut:
-              `${staffConfirm?.firstname} ${staffConfirm?.lastname}` ?? "-",
+              `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-",
             staffCheckOutId: staffConfirm?.id,
           },
         },
         {
           headers: await getHeaders(),
         }
-      )
-      .then(async (response) => {
-        setSelectedTable();
-        getTableDataStore();
-        setCashCurrency();
-        setTab("cash");
-        setSelectCurrency("LAK");
-        setSelectInput("inputCash");
-        setForcus("CASH");
-        setRateCurrency(1);
-        setHasCRM(false);
-        setTextSearchMember("");
-        setCash();
-        setTransfer();
-        localStorage.removeItem("STAFFCONFIRM_DATA");
+      );
 
-        onClose();
+
+      setSelectedTable();
+      getTableDataStore();
+      setCashCurrency();
+      setTab("cash");
+      setSelectCurrency("LAK");
+      setSelectInput("inputCash");
+      setRateCurrency(1);
+      setHasCRM(false);
+      setTextSearchMember("");
+      setCash();
+      setTransfer();
+      localStorage.removeItem("STAFFCONFIRM_DATA");
+
+      onClose();
+      return true;
+    } catch (error) {
+      errorAdd(`${t("checkbill_fial")}`);
+      return false;
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const checkBillSuccess = await _checkBill();
+      if (checkBillSuccess) {
+
         Swal.fire({
           icon: "success",
           title: `${t("checkbill_success")}`,
           showConfirmButton: false,
           timer: 1800,
         });
-      })
-      .catch((error) => {
-        errorAdd(`${t("checkbill_fial")}`);
-      });
+        onSubmit();
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleSubmit = () => {
-    _checkBill();
-    onSubmit();
-    // console.log("valueConfirm:------>", valueConfirm)
-  };
 
-  // const options = membersData?.map((data) => {
-  //   return {
-  //     id: data?._id,
-  //     value: data?.name,
-  //     label: data?.phone,
-  //     tel: data?.phone,
-  //   };
-  // });
 
   const _calculateTotal = () => {
     let _total = 0;
@@ -382,6 +346,7 @@ export default function CheckPopupDebt({
   useEffect(() => {
     getDataCurrency();
   }, []);
+
   useEffect(() => {
     if (!open) return;
     if (forcus === "CASH") {
@@ -407,42 +372,45 @@ export default function CheckPopupDebt({
         }
       }
     } else if (forcus === "TRANSFER") {
-      if (dataBill?.discount) {
-        if (dataBill?.discountType === "PERCENT") {
-          setTransfer(totalBill - (totalBill * dataBill?.discount) / 100);
-        } else {
-          setTransfer(totalBill - dataBill?.discount);
-        }
-      } else {
-        setTransfer(totalBill);
-      }
-      setCanCheckOut(true);
+      // เปลี่ยนเงื่อนไขให้เหมือนกับ CASH
+      const transferAmount = Number(transfer || 0);
+      const discountedTotal = dataBill?.discountType === "PERCENT"
+        ? totalBill - (totalBill * dataBill?.discount) / 100
+        : totalBill - dataBill?.discount;
+
+      setCanCheckOut(transferAmount > 0);  // อนุญาตให้จ่ายบางส่วนได้
     } else if (forcus === "TRANSFER_CASH") {
-      const _sum =
-        (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
-      if (dataBill?.discount) {
-        if (dataBill?.discountType === "PERCENT") {
-          if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
-        } else {
-          if (_sum >= totalBill - dataBill?.discount) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
-        }
+      const totalPaid = Number(cash || 0) + Number(transfer || 0);
+      const discountedTotal = dataBill?.discountType === "PERCENT"
+        ? totalBill - (totalBill * dataBill?.discount) / 100
+        : totalBill - (dataBill?.discount || 0);
+
+      if (totalPaid >= discountedTotal) {
+        setCanCheckOut(true);
       } else {
-        if (_sum >= totalBill) {
-          setCanCheckOut(true);
-        } else {
-          setCanCheckOut(false);
-        }
+        setCanCheckOut(false);
       }
     }
   }, [cash, transfer, totalBill, forcus]);
+
+  const handlePaymentMethodChange = (method) => {
+    setForcus(method);
+
+    if (method === "TRANSFER") {
+
+      setTransfer();
+      setAmountBefore();
+      setRemainingAmount(totalBill); // เพราะจ่ายครบ
+    } else if (method === "TRANSFER_CASH") {
+      setTransfer();
+      setAmountBefore();
+      setRemainingAmount(totalBill);
+    } else if (method === "CASH") {
+      setTransfer();
+      setAmountBefore();
+      setRemainingAmount(totalBill);
+    }
+  };
 
   const transferCal =
     dataBill?.discountType === "PERCENT"
@@ -450,21 +418,21 @@ export default function CheckPopupDebt({
         ? totalBill - dataBill?.discount
         : 0
       : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-      ? (totalBill * dataBill?.discount) / 100
-      : 0;
+        ? (totalBill * dataBill?.discount) / 100
+        : 0;
 
   const totalBillMoney =
     dataBill && dataBill?.discountType === "LAK"
       ? Number.parseFloat(
-          totalBill - dataBill?.discount > 0
-            ? totalBill - dataBill?.discount
-            : 0
-        )
+        totalBill - dataBill?.discount > 0
+          ? totalBill - dataBill?.discount
+          : 0
+      )
       : Number.parseFloat(
-          totalBill - (totalBill * dataBill?.discount) / 100 > 0
-            ? totalBill - (totalBill * dataBill?.discount) / 100
-            : 0
-        );
+        totalBill - (totalBill * dataBill?.discount) / 100 > 0
+          ? totalBill - (totalBill * dataBill?.discount) / 100
+          : 0
+      );
 
   const _selectDataOption = (option) => {
     setSelectDataOpption(option);
@@ -519,6 +487,7 @@ export default function CheckPopupDebt({
     });
   };
 
+
   const onChangeRemainingAmountInput = (inputData) => {
     // Ton update
     console.log({ inputData });
@@ -542,14 +511,16 @@ export default function CheckPopupDebt({
     });
   };
 
-  // const optionsData = membersData.map((item) => {
-  //   // console.log(item);
-  //   return {
-  //     value: item.phone,
-  //     label: `${item.name} `, //(${item.phone})
-  //     phoneNumber: item.phone,
-  //   };
-  // });
+  const isValidPayment = () => {
+    if (forcus === "CASH") {
+      return amountBefore > 0;
+    } else if (forcus === "TRANSFER") {
+      return transfer > 0;
+    } else if (forcus === "TRANSFER_CASH") {
+      return amountBefore > 0 || transfer > 0;
+    }
+    return false;
+  };
 
   const optionsData = membersData?.map((data) => {
     return {
@@ -561,17 +532,19 @@ export default function CheckPopupDebt({
   });
 
   useEffect(() => {
-    //update
-    const remainingCalculate = totalBill - (amountBefore || 0);
+    if (!open) return;
+    const totalPaidBefore = Number(amountBefore || 0) + Number(transfer || 0);
+    const remainingCalculate = totalBill - totalPaidBefore;
+
     setRemainingShow(remainingCalculate);
     setRemainingAmount(remainingCalculate);
-  }, [totalBill, amountBefore]);
+  }, [totalBill, amountBefore, transfer, forcus, open]);
 
   return (
     <Modal
       show={open}
       onHide={() => {
-        setAmountBefore(0);
+        setAmountBefore();
         setCash();
         setTransfer();
         onClose();
@@ -608,15 +581,15 @@ export default function CheckPopupDebt({
               >
                 {dataBill && dataBill?.discountType === "LAK"
                   ? moneyCurrency(
-                      totalBill - dataBill?.discount > 0
-                        ? totalBill - dataBill?.discount
-                        : 0
-                    )
+                    totalBill - dataBill?.discount > 0
+                      ? totalBill - dataBill?.discount
+                      : 0
+                  )
                   : moneyCurrency(
-                      totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0
-                    )}{" "}
+                    totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
+                      : 0
+                  )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
               <span hidden={selectCurrency === "LAK"}>
@@ -633,8 +606,8 @@ export default function CheckPopupDebt({
                       ? totalBill - dataBill?.discount
                       : 0
                     : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                    ? totalBill - (totalBill * dataBill?.discount) / 100
-                    : 0) / rateCurrency
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
+                      : 0) / rateCurrency
                 )}{" "}
                 {selectCurrency}
               </span>
@@ -669,8 +642,10 @@ export default function CheckPopupDebt({
                 <InputGroup.Text>{selectCurrency}</InputGroup.Text>
               </InputGroup>
 
-              <InputGroup>
-                <InputGroup.Text>{t("debt_paymentbefore")}</InputGroup.Text>
+
+
+              <InputGroup hidden={forcus !== "CASH" && forcus !== "TRANSFER_CASH"}>
+                <InputGroup.Text>{"ຈຳນວນເງິນສົດທີຈ່າຍກ່ອນ"}</InputGroup.Text>
                 <Form.Control
                   disabled={tab !== "cash_transfer"}
                   type="text"
@@ -686,6 +661,56 @@ export default function CheckPopupDebt({
                 />
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
+
+              <InputGroup hidden={forcus !== "TRANSFER" && forcus !== "TRANSFER_CASH"}>
+                <InputGroup.Text>{t("ຈຳນວນເງິນໂອນທີຈ່າຍກ່ອນ")}</InputGroup.Text>
+                <Form.Control
+                  type="text"
+                  placeholder="0"
+                  value={convertNumber(transfer)}
+                  onClick={() => {
+                    setSelectInput("inputTransfer");
+                  }}
+                  onChange={(e) => {
+                    onChangeTransferInput(e.target.value);
+                  }}
+                  size="lg"
+                />
+                <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
+              </InputGroup>
+
+              <Form hidden={tab !== "cash_transfer"}>
+                {['radio'].map((type) => (
+                  <div key={`inline-${type}`} className="mb-3">
+                    <CustomCheck
+                      inline
+                      defaultChecked
+                      label="ເງິນສົດ"
+                      name="paymentMethod"
+                      type={type}
+                      id={`inline-${type}-1`}
+                      onChange={() => handlePaymentMethodChange("CASH")}
+                    />
+                    <CustomCheck
+                      inline
+                      label="ເງິນໂອນ"
+                      name="paymentMethod"
+                      type={type}
+                      id={`inline-${type}-3`}
+                      onChange={() => handlePaymentMethodChange("TRANSFER")}
+                    />
+                    <CustomCheck
+                      inline
+                      label="ເງິນສົດ + ໂອນ"
+                      name="paymentMethod"
+                      type={type}
+                      id={`inline-${type}-2`}
+                      onChange={() => handlePaymentMethodChange("TRANSFER_CASH")}
+                    />
+                  </div>
+                ))}
+              </Form>
+
               <InputGroup>
                 <InputGroup.Text>{t("debt_notpay")}</InputGroup.Text>
                 <Form.Control
@@ -791,19 +816,19 @@ export default function CheckPopupDebt({
                       ? totalBill - dataBill?.discount
                       : 0
                     : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                    ? totalBill - (totalBill * dataBill?.discount) / 100
-                    : 0) <=
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
+                      : 0) <=
                   0
                   ? 0
                   : (Number.parseInt(cash) || 0) +
-                      (Number.parseInt(transfer) || 0) -
-                      (dataBill && dataBill?.discountType === "LAK"
-                        ? totalBill - dataBill?.discount > 0
-                          ? totalBill - dataBill?.discount
-                          : 0
-                        : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                        ? totalBill - (totalBill * dataBill?.discount) / 100
-                        : 0)
+                  (Number.parseInt(transfer) || 0) -
+                  (dataBill && dataBill?.discountType === "LAK"
+                    ? totalBill - dataBill?.discount > 0
+                      ? totalBill - dataBill?.discount
+                      : 0
+                    : totalBill - (totalBill * dataBill?.discount) / 100 > 0
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
+                      : 0)
               )}{" "}
               {storeDetail?.firstCurrency}
             </div>
@@ -823,9 +848,11 @@ export default function CheckPopupDebt({
                   setTransfer();
                   setTab("cash");
                   setSelectInput("inputAmount");
-                  setForcus("CASH");
-                  setAmountBefore(0);
+                  setForcus("IS_DEBT");
+                  setAmountBefore();
                   setRemainingAmount(remainingAmount);
+                  setDebtTotal(true);
+                  setDebtAndPay(false)
                 }}
               >
                 {t("debt_total")}
@@ -842,8 +869,10 @@ export default function CheckPopupDebt({
                   setTransfer();
                   setTab("cash_transfer");
                   setSelectInput("inputCash");
-                  setForcus("TRANSFER_CASH");
-                  setAmountBefore("");
+                  setForcus("CASH");
+                  setAmountBefore();
+                  setDebtTotal(false)
+                  setDebtAndPay(true)
                 }}
               >
                 {t("debt_and_pay")}
@@ -917,23 +946,23 @@ export default function CheckPopupDebt({
             </b>
           </p>
         </div>
-        {/* <Button
-          onClick={() => {
-            onPrintBill().then(() => {
-              handleSubmit();
-            });
-          }}
-          disabled={!canCheckOut}
-        >
-          <BiSolidPrinter />
-          {t("debt_create")}
-        </Button> */}
         <div style={{ width: "20%" }} />
-        <Button onClick={handleClickCreateDebt}>{t("debt_create")}</Button>
+        <Button
+          onClick={handleClickCreateDebt}
+          disabled={tab === "cash_transfer" && !isValidPayment()}
+        >
+          {t("debt_create")}
+        </Button>
       </Modal.Footer>
     </Modal>
   );
 }
+const CustomCheck = styled(Form.Check)`
+  .form-check-input:checked {
+    background-color: red;
+    border-color: red;
+  }
+`;
 
 const BoxInput = styled.div`
   display: flex;

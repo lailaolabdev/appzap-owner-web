@@ -6,33 +6,31 @@ import {
   Form,
   Card,
   Pagination,
-  Breadcrumb,
   Tab,
   Tabs,
   Spinner,
-  Modal,
 } from "react-bootstrap";
+import { FaCoins } from "react-icons/fa";
+import Box from "../../components/Box";
 import { getLocalData } from "../../constants/api";
-import { getBilldebts } from "../../services/debt";
+import { debtsRemainingAmount, getBilldebts } from "../../services/debt";
 import { getdebtHistory } from "../../services/debt";
-import { useStore } from "../../store";
 import moment from "moment";
-import ReactPaginate from "react-paginate";
+import { moneyCurrency } from "../../helpers";
 import PopUpDetaillBillDebt from "../../components/popup/PopUpDetaillBillDebt";
 import PopUpDebtExport from "../../components/popup/PopUpDebtExport";
-import { moneyCurrency } from "../../helpers";
-import ImageEmpty from "../../image/empty.png";
-import { IoBeerOutline } from "react-icons/io5";
-import { MdAssignmentAdd } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
-import { convertBillDebtStatus } from "../../helpers/convertBillDebtStatus";
-
+import PopUpSetStartAndEndDateDebt from "../../components/popup/PopUpSetStartAndEndDateDebt";
 import { useStoreStore } from "../../zustand/storeStore";
+import { DebtListAll } from "./DebtListAll";
+import { PayDebtListHistory } from "./PayDebtListHistory";
+import  IncressDebtListHistory  from "./IncressDebtListHistory";
+
+
+
 
 export default function DebtPage() {
   const { t } = useTranslation();
-  const { storeDetail } = useStoreStore()
-  const navigate = useNavigate(); // Initialize navigate
+  const { storeDetail } = useStoreStore();
   const [isHovered, setIsHovered] = useState(false);
 
   // State
@@ -44,39 +42,70 @@ export default function DebtPage() {
   const [selectDebtData, setSelectDebtData] = useState();
   const [popup, setPopup] = useState();
   const [debtHistoryData, setDebtHistoryData] = useState([]);
-  const [searchCode, setSearchCode] = useState("");
-  const [showPopup, setShowPopup] = useState(false);
-
+  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
+  const [startTime, setStartTime] = useState("00:00:00");
+  const [endTime, setEndTime] = useState("23:59:59");
+  const [searchCode, setSearchCode] = useState(null);
+  const [exportType, setExportType] = useState('');
+  const [activeTab, setActiveTab] = useState('billDebt-list');
+  const [remainingAmountData, setRemainingAmountData] = useState([])
   const limitData = 50;
 
-  // useEffect
+ 
+  useEffect(()=>{
+    console.log("exportType: ",exportType)
+  },[activeTab])
+
+
+  const handleTabSelect = (key) => {
+    setActiveTab(key);
+    switch (key) {
+      case 'billDebt-list':
+        setExportType('');
+        break;
+      case 'Pay-debt-list':
+        setExportType('payment');
+        break;
+      case 'Incress-debt-list':
+        setExportType('increase');
+        break;
+      default:
+        setExportType('');
+    }
+  };
+
+
   useEffect(() => {
     getData();
     getDataHistory();
-  }, [pagination]);
+    //getDataReminning();
+  }, [pagination, startDate, endDate, startTime, endTime]);
 
-  // Function to fetch data
+  // Calculate totals
+  const amount = billDebtData.reduce((total, item) => {
+    return total + (item.amount || 0);
+  }, 0);
+
+  const remainingAmount = billDebtData.reduce((total, item) => {
+    return total + (item.remainingAmount || 0);
+  }, 0);
+
   const getData = async () => {
     setIsLoading(true);
     try {
       const { TOKEN } = await getLocalData();
-      let findby = `?skip=${
-        (pagination - 1) * limitData
-      }&limit=${limitData}&storeId=${storeDetail?._id}`;
+      let findby = `?skip=${(pagination - 1) * limitData}&limit=${limitData}&storeId=${storeDetail?._id}`;
 
-      if (searchCode) {
-        const isPhoneNumber = /^\d+$/.test(searchCode);
-
-        if (isPhoneNumber) {
-          findby += `&customerPhone=${searchCode}`;
-        } else {
-          findby += `&code=${searchCode}`;
-        }
+      if (startDate && endDate) {
+        const startDateTime = `${startDate}T${startTime || '00:00:00'}`;
+        const endDateTime = `${endDate}T${endTime || '23:59:59'}`;
+        findby += `&createdAt[$gte]=${startDateTime}&createdAt[$lte]=${endDateTime}`;
       }
+
 
       const data = await getBilldebts(findby, TOKEN);
       setBillDebtData(data?.data || []);
-      console.log("setBillDebtData =-=-=>", billDebtData);
       setTotalPagination(Math.ceil(data?.totalCount / limitData));
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -89,460 +118,326 @@ export default function DebtPage() {
     setIsLoading(true);
     try {
       const { TOKEN } = await getLocalData();
-      let findby = `?skip=${
-        (pagination - 1) * limitData
-      }&limit=${limitData}&storeId=${storeDetail?._id}`;
 
-      if (searchCode) {
-        const isPhoneNumber = /^\d+$/.test(searchCode);
+      // Build the base query parameters
+      const baseParams = new URLSearchParams({
+        skip: ((pagination - 1) * limitData).toString(),
+        limit: limitData.toString(),
+        storeId: storeDetail?._id || ''
+      });
 
-        if (isPhoneNumber) {
-          findby += `&customerPhone=${searchCode}`;
-        } else {
-          findby += `&code=${searchCode}`;
-        }
+      // Add date range parameters if they exist
+      if (startDate && endDate) {
+        const formattedStartDate = `${startDate}T${startTime || '00:00:00'}`;
+        const formattedEndDate = `${endDate}T${endTime || '23:59:59'}`;
+        baseParams.append('startDate', formattedStartDate);
+        baseParams.append('endDate', formattedEndDate);
       }
 
-      const data = await getdebtHistory(findby, TOKEN);
-      setDebtHistoryData(data);
-      setTotalPagination(Math.ceil(data?.totalCount / limitData));
+
+      // Create the final query string
+      const queryString = `?${baseParams.toString()}`;
+
+      // Fetch data with pagination
+      const response = await getdebtHistory(queryString, TOKEN);
+
+      // Check if response has the expected structure
+      if (response && Array.isArray(response.data)) {
+        // If the API returns paginated data directly
+        setDebtHistoryData(response.data);
+        setTotalPagination(Math.ceil(response.totalCount / limitData));
+      } else if (Array.isArray(response)) {
+        // If the API returns all data, we need to handle pagination on the client side
+        const filteredData = response.filter(item => {
+          // Filter by date range
+          const itemDate = new Date(item.updatedAt || item.createdAt);
+          const start = new Date(`${startDate}T${startTime || '00:00:00'}`);
+          const end = new Date(`${endDate}T${endTime || '23:59:59'}`);
+          return itemDate >= start && itemDate <= end;
+        });
+
+        // Sort data by latest date first
+        const sortedData = filteredData.sort((a, b) => {
+          const dateA = new Date(b.updatedAt || b.createdAt);
+          const dateB = new Date(a.updatedAt || a.createdAt);
+          return dateA - dateB;
+        });
+
+        // Calculate pagination
+        const startIndex = (pagination - 1) * limitData;
+        const paginatedData = sortedData.slice(startIndex, startIndex + limitData);
+
+        setDebtHistoryData(paginatedData);
+        setTotalPagination(Math.ceil(sortedData.length / limitData));
+      }
+
     } catch (err) {
-      console.error("Error fetching data:", err);
+      console.error("Error fetching debt history:", err);
+      setDebtHistoryData([]);
+      setTotalPagination(0);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <>
-      <div style={{ padding: 20 }}>
-        <Breadcrumb>
-          <Breadcrumb.Item>{t("debt_deposit")}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t("debt_list")}</Breadcrumb.Item>
-        </Breadcrumb>
-        <Tabs defaultActiveKey="billDebt-list">
-          <Tab
-            eventKey="billDebt-list"
-            title={t("debt_list_all")}
-            style={{ paddingTop: 20, color: "red" }}
+    <div style={{ padding: 20 }}>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { md: "0.5fr 0.5fr 0.5fr 0.5fr", xs: "1fr" },
+          gap: 20,
+          gridTemplateRows: "masonry",
+          marginBottom: 20,
+        }}
+      >
+        <Card border="primary" style={{ margin: 0 }}>
+          <Card.Header
+            style={{
+              backgroundColor: COLOR_APP,
+              color: "#fff",
+              fontSize: 18,
+              fontWeight: "bold",
+            }}
           >
-            <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
-              <Form.Control
-                style={{ maxWidth: 220 }}
-                placeholder={t("search_bill_code")}
-                onChange={(e) => setSearchCode(e.target.value)}
-              />
-              <Button
-                variant="primary"
-                onClick={getData}
-                style={{ color: "white" }}
-              >
-                {t("search")}
-              </Button>
+            {t("debt_list_all")}
+          </Card.Header>
+          <Card.Body>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                fontSize: 32,
+                // fontWeight: 700
+              }}
+            >
+              {billDebtData?.length || 0} ລາຍການ
             </div>
-            <Card border="primary" style={{ margin: 0 }}>
-              <Card.Header
-                style={{
-                  backgroundColor: COLOR_APP,
-                  color: "#fff",
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: 10,
-                }}
-              >
-                <span>
-                  <IoBeerOutline /> {t("debt_list")}
-                </span>
-                <Button
-                  style={{
-                    background: isHovered ? "Moccasin" : "SandyBrown",
-                    color: isHovered ? "Black" : "White",
-                    fontSize: "17px",
-                  }}
-                  variant="dark"
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                  onClick={() => {
-                    setBillDebtData(searchCode);
-                    setPopup({
-                      PopUpDebtExport: true,
-                    });
-                  }}
-                >
-                  {t("debt_Export")}
-                </Button>
-              </Card.Header>
-              <Card.Body>
-                <table style={{ width: "100%" }}>
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>{t("bill_no")}</th>
-                      <th>{t("name")}</th>
-                      <th>{t("phoneNumber")}</th>
-                      <th>{t("money_remaining")}</th>
-                      <th>{t("status")}</th>
-                      <th>{t("date_add")}</th>
-                      <th>{t("expired")}</th>
-                      <th>{t("payment_date_debt")}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {isLoading ? (
-                      <tr>
-                        <td colSpan={9} style={{ textAlign: "center" }}>
-                          <Spinner animation="border" variant="warning" />
-                        </td>
-                      </tr>
-                    ) : billDebtData.length > 0 ? (
-                      billDebtData.map((e, i) => (
-                        <tr
-                          key={e?._id}
-                          onClick={() => {
-                            setPopup({ PopUpDetaillBillDebt: true });
-                            setSelectBillDebt(e);
-                          }}
-                        >
-                          <td>{(pagination - 1) * limitData + i + 1}</td>
-                          <td>{e?.code}</td>
-                          <td>{e?.customerName}</td>
-                          <td>{e?.customerPhone}</td>
-                          <td>{moneyCurrency(e?.remainingAmount)}</td>
-                          <td>
-                            {t ? convertBillDebtStatus(e?.status, t) : ""}
-                          </td>
-                          <td>{moment(e?.createdAt).format("DD/MM/YYYY")}</td>
-                          <td>{moment(e?.endDate).format("DD/MM/YYYY")}</td>
-                          <td>
-                            {e?.outStockDate
-                              ? moment(e?.outStockDate).format("DD/MM/YYYY")
-                              : ""}
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={9} style={{ textAlign: "center" }}>
-                          <img
-                            src={ImageEmpty}
-                            alt=""
-                            style={{ width: 300, height: 200 }}
-                          />
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </Card.Body>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  width: "100%",
-                  bottom: 20,
-                }}
-              >
-                <ReactPaginate
-                  previousLabel={<span>Previous</span>}
-                  nextLabel={<span>Next</span>}
-                  breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
-                  pageCount={totalPagination}
-                  marginPagesDisplayed={1}
-                  pageRangeDisplayed={3}
-                  onPageChange={(e) => setPagination(e.selected + 1)}
-                  containerClassName={"pagination justify-content-center"}
-                  pageClassName={"page-item"}
-                  pageLinkClassName={"page-link"}
-                  activeClassName={"active"}
-                  previousClassName={"page-item"}
-                  nextClassName={"page-item"}
-                  previousLinkClassName={"page-link"}
-                  nextLinkClassName={"page-link"}
-                />
-              </div>
-            </Card>
-          </Tab>
+          </Card.Body>
+        </Card>
+        <Card border="primary" style={{ margin: 0 }}>
+          <Card.Header
+            style={{
+              backgroundColor: COLOR_APP,
+              color: "#fff",
+              fontSize: 18,
+              fontWeight: "bold",
+            }}
+          >
+            {t("total_debt")}
+          </Card.Header>
+          <Card.Body>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                fontSize: 32,
+                // fontWeight: 700
+              }}
+            >
 
-          <Tab
-            eventKey="Pay-debt-list"
-            title={t("PayDebt_list_history")}
-            style={{ paddingTop: 20 }}
-          >
-            <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
-              <Form.Control
-                style={{ maxWidth: 220 }}
-                placeholder={t("search_bill_code")}
-                onChange={(e) => setSearchCode(e.target.value)}
-              />
-              <Button
-                variant="primary"
-                onClick={getDataHistory}
-                style={{ color: "white" }}
-              >
-                {t("search")}
-              </Button>
+              {moneyCurrency(amount)} ກີບ
             </div>
-            <Card border="primary" style={{ margin: 0 }}>
-              <Card.Header
-                style={{
-                  backgroundColor: COLOR_APP,
-                  color: "#fff",
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: 10,
-                }}
-              >
-                <span>
-                  <IoBeerOutline /> {t("PayDebt_list_history")}
-                </span>
-                <Button
-                  style={{
-                    background: isHovered ? "Moccasin" : "SandyBrown",
-                    color: isHovered ? "Black" : "White",
-                    fontSize: "17px",
-                  }}
-                  variant="dark"
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                  onClick={() => {
-                    setPopup({ PopUpDebtExport: true });
-                  }}
-                >
-                  {t("debt_Export")}
-                </Button>
-              </Card.Header>
-              <Card.Body>
-                <table style={{ width: "100%" }}>
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>{t("bill_no")}</th>
-                      <th>{t("name")}</th>
-                      <th>{t("phoneNumber")}</th>
-                      <th>{t("money_remaining")}</th>
-                      <th>{t("debt_pay_remaining")}</th>
-                      <th>{t("payment_datetime_debt")}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {isLoading ? (
-                      <tr>
-                        <td colSpan={7} style={{ textAlign: "center" }}>
-                          <Spinner animation="border" variant="warning" />
-                        </td>
-                      </tr>
-                    ) : debtHistoryData && debtHistoryData.length > 0 ? (
-                      debtHistoryData
-                        .filter((e) => e?.totalPayment > 0)
-                        .sort(
-                          (a, b) =>
-                            new Date(b.updatedAt) - new Date(a.updatedAt)
-                        )
-                        .map((e, i) => (
-                          <tr key={i}>
-                            <td>{(pagination - 1) * limitData + i + 1}</td>
-                            <td>{e.code}</td>
-                            <td>{e.customerName}</td>
-                            <td>{e.customerPhone}</td>
-                            <td>{moneyCurrency(e?.remainingAmount)}</td>
-                            <td style={{ color: "MediumSeaGreen" }}>
-                              {moneyCurrency(e?.totalPayment)}
-                            </td>
-                            <td>
-                              {e?.updatedAt
-                                ? moment(e?.updatedAt).format(
-                                    "DD/MM/YYYY - HH:mm:SS : a"
-                                  )
-                                : ""}
-                            </td>
-                          </tr>
-                        ))
-                    ) : (
-                      <tr>
-                        <td colSpan={7} style={{ textAlign: "center" }}>
-                          <img
-                            src={ImageEmpty}
-                            alt=""
-                            style={{ width: 300, height: 200 }}
-                          />
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </Card.Body>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  width: "100%",
-                  bottom: 20,
-                }}
-              ></div>
-            </Card>
-          </Tab>
+          </Card.Body>
+        </Card>
+        <Card border="primary" style={{ margin: 0 }}>
+          <Card.Header
+            style={{
+              backgroundColor: COLOR_APP,
+              color: "#fff",
+              fontSize: 18,
+              fontWeight: "bold",
+            }}
+          >
+            {t("paid_already")}
+          </Card.Header>
+          <Card.Body>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                fontSize: 32,
+                // fontWeight: 700
+              }}
+            >
+              {/* {moneyCurrency(totalPayment)} ກີບ */}
+              {moneyCurrency(amount - remainingAmount)} ກີບ
+            </div>
+          </Card.Body>
+        </Card>
+        <Card border="primary" style={{ margin: 0 }}>
+          <Card.Header
+            style={{
+              backgroundColor: COLOR_APP,
+              color: "#fff",
+              fontSize: 18,
+              fontWeight: "bold",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: 10,
+            }}
+          >
+            <span>{t("outstanding_money")}</span>
+          </Card.Header>
+          <Card.Body>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                fontSize: 32,
+                fontWeight: 400,
+              }}
+            >
+              {moneyCurrency(remainingAmount)} ກີບ
+            </div>
+          </Card.Body>
+        </Card>
+      </Box>
 
-          <Tab
-            eventKey="Incress-debt-list"
-            title={t("IncressDebt_list_history")}
-            style={{ paddingTop: 20 }}
-          >
-            <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
-              <Form.Control
-                style={{ maxWidth: 220 }}
-                placeholder={t("search_bill_code")}
-                onChange={(e) => setSearchCode(e.target.value)}
-              />
-              <Button
-                variant="primary"
-                onClick={getDataHistory}
-                style={{ color: "white" }}
-              >
-                {t("search")}
-              </Button>
-            </div>
-            <Card border="primary" style={{ margin: 0 }}>
-              <Card.Header
-                style={{
-                  backgroundColor: COLOR_APP,
-                  color: "#fff",
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: 10,
-                }}
-              >
-                <span>
-                  <IoBeerOutline /> {t("IncressDebt_list_history")}
-                </span>
-                <Button
-                  style={{
-                    background: isHovered ? "Moccasin" : "SandyBrown",
-                    color: isHovered ? "Black" : "White",
-                    fontSize: "17px",
-                  }}
-                  variant="dark"
-                  onMouseEnter={() => setIsHovered(true)}
-                  onMouseLeave={() => setIsHovered(false)}
-                  onClick={() => {
-                    setPopup({ PopUpDebtExport: true });
-                  }}
-                >
-                  {t("debt_Export")}
-                </Button>
-              </Card.Header>
-              <Card.Body>
-                <table style={{ width: "100%" }}>
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>{t("bill_no")}</th>
-                      <th>{t("name")}</th>
-                      <th>{t("phoneNumber")}</th>
-                      <th>{t("money_remaining")}</th>
-                      <th>{t("debt_add_remaining")}</th>
-                      <th>{t("payment_datetime_debt")}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {isLoading ? (
-                      <tr>
-                        <td colSpan={7} style={{ textAlign: "center" }}>
-                          <Spinner animation="border" variant="warning" />
-                        </td>
-                      </tr>
-                    ) : debtHistoryData && debtHistoryData.length > 0 ? (
-                      debtHistoryData
-                        .filter((e) => e.amountIncrease > 0)
-                        .sort(
-                          (a, b) =>
-                            new Date(b.updatedAt) - new Date(a.updatedAt)
-                        )
-                        .map((e, i) => (
-                          <tr key={i}>
-                            <td>{(pagination - 1) * limitData + i + 1}</td>
-                            <td>{e?.code}</td>
-                            <td>{e?.customerName}</td>
-                            <td>{e?.customerPhone}</td>
-                            <td>{moneyCurrency(e?.remainingAmount)}</td>
-                            <td style={{ color: "Coral" }}>
-                              {moneyCurrency(e?.amountIncrease)}
-                            </td>
-                            <td>
-                              {e?.updatedAt
-                                ? moment(e?.updatedAt).format(
-                                    "DD/MM/YYYY - HH:mm:SS : a"
-                                  )
-                                : ""}
-                            </td>
-                          </tr>
-                        ))
-                    ) : (
-                      <tr>
-                        <td colSpan={7} style={{ textAlign: "center" }}>
-                          <img
-                            src={ImageEmpty}
-                            alt=""
-                            style={{ width: 300, height: 200 }}
-                          />
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </Card.Body>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  width: "100%",
-                  bottom: 20,
-                }}
-              ></div>
-            </Card>
-          </Tab>
-        </Tabs>
-        {popup?.PopUpDetaillBillDebt && (
-          <PopUpDetaillBillDebt
-            open={popup?.PopUpDetaillBillDebt}
-            onClose={() => {
-              setPopup();
-              setSelectBillDebt();
-            }}
-            billDebtData={selectBillDebt}
-            callback={async () => {
-              setPopup();
-              setSelectBillDebt();
-              await getData();
-              await getDataHistory();
-            }}
+      
+
+
+
+
+      <Tabs 
+        defaultActiveKey="billDebt-list"
+        activeKey={activeTab}
+        onSelect={handleTabSelect}
+      >
+        
+        <Tab
+          eventKey="billDebt-list"
+          title={t("debt_list_all")}
+          style={{ paddingTop: 20 }}
+          
+        >
+          <DebtListAll
+            t={t}
+            getData={getData}
+            startDate={startDate}
+            startTime={startTime}
+            endDate={endDate}
+            endTime={endTime}
+            setPopup={setPopup}
+            isHovered={isHovered}
+            setIsHovered={setIsHovered}
+            isLoading={isLoading}
+            billDebtData={billDebtData}
+            pagination={pagination}
+            limitData={limitData}
+            totalPagination={totalPagination}
+            setPagination={setPagination}
+            setSelectBillDebt={setSelectBillDebt}
           />
-        )}
-        {popup?.PopUpDebtExport && (
-          <PopUpDebtExport
-            open={popup?.PopUpDebtExport}
-            onClose={() => {
-              showPopup();
-              setSelectDebtData();
-            }}
-            billDebtData={selectDebtData}
-            callback={async () => {
-              showPopup();
-              setSelectDebtData();
-              await getData();
-              await getDataHistory();
-            }}
+        </Tab>
+
+        <Tab
+          eventKey="Pay-debt-list"
+          title={t("paydebt_list_history")}
+          style={{ paddingTop: 20 }}
+        >
+          <PayDebtListHistory
+            t={t}
+            getDataHistory={getDataHistory}
+            startDate={startDate}
+            startTime={startTime}
+            endDate={endDate}
+            endTime={endTime}
+            setPopup={setPopup}
+            isHovered={isHovered}
+            setIsHovered={setIsHovered}
+            isLoading={isLoading}
+            debtHistoryData={debtHistoryData}
+            pagination={pagination}
+            limitData={limitData}
+            setPagination={setPagination}
+            totalPagination={totalPagination}
           />
-        )}
-      </div>
-    </>
+        </Tab>
+
+        <Tab
+          eventKey="Incress-debt-list"
+          title={t("IncressDebt_list_history")}
+          style={{ paddingTop: 20 }}
+        >
+          <IncressDebtListHistory
+            t={t}
+            getDataHistory={getDataHistory}
+            startDate={startDate}
+            startTime={startTime}
+            endDate={endDate}
+            endTime={endTime}
+            setPopup={setPopup}
+            isHovered={isHovered}
+            setIsHovered={setIsHovered}
+            isLoading={isLoading}
+            debtHistoryData={debtHistoryData}
+            pagination={pagination}
+            limitData={limitData}
+            setPagination={setPagination}
+            totalPagination={totalPagination}
+          />
+        </Tab>
+      </Tabs>
+
+      {popup?.PopUpDetaillBillDebt && (
+        <PopUpDetaillBillDebt
+          open={popup?.PopUpDetaillBillDebt}
+          onClose={() => {
+            setPopup();
+            setSelectBillDebt();
+          }}
+          billDebtData={selectBillDebt}
+          handleTabSelect={handleTabSelect}
+          callback={async () => {
+            setPopup();
+            setSelectBillDebt();
+            await getData();
+            await getDataHistory();
+          }}
+        />
+      )}
+
+      {popup?.PopUpDebtExport && (
+        <PopUpDebtExport
+          open={popup?.PopUpDebtExport}
+          exportType={exportType}
+          onClose={() => {
+            setPopup();
+            setSelectDebtData();
+          }}
+          billDebtData={billDebtData}
+          COLOR_APP={COLOR_APP}
+          debtHistoryData={popup.exportData || debtHistoryData} 
+          callback={async () => {
+            setPopup();
+            setSelectDebtData();
+            await getData();
+            await getDataHistory();
+          }}
+        />
+      )}
+      <PopUpSetStartAndEndDateDebt
+        open={popup?.popupfiltter}
+        onClose={() => {
+          setPopup();
+          getData(); // เพิ่มการเรียก getData เมื่อปิด popup
+        }}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        setStartTime={setStartTime}
+        startTime={startTime}
+        setEndDate={setEndDate}
+        setEndTime={setEndTime}
+        endTime={endTime}
+        endDate={endDate}
+      />
+    </div>
   );
 }
+

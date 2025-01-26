@@ -23,8 +23,8 @@ export default function PopUpDetailBillDebt({
   const [isLoading, setIsLoading] = useState(false);
   const [inputSearch, setInputSearch] = useState("");
   const [menusData, setMenusData] = useState([]);
-  const [totalPayment, setTotalPayment] = useState(""); //update
-  const [amountIncrease, setAmountIncreease] = useState(""); // update
+  const [totalPayment, setTotalPayment] = useState();
+  const [amountIncrease, setAmountIncrease] = useState();
   const [selectInput, setSelectInput] = useState();
   const [remainingAmount, setRemainingAmount] = useState(
     billDebtData?.remainingAmount
@@ -32,12 +32,22 @@ export default function PopUpDetailBillDebt({
   // const [amountBefore, setAmountBefore] = useState(billDebtData?.amountBefore || 0);
 
   useEffect(() => {
-    //update
     if (open) {
-      setTotalPayment("");
-      setAmountIncreease("");
+      setTotalPayment();
+      setAmountIncrease();
     }
   }, [open]);
+  const handleAmountIncreaseChange = (e) => {
+    const value = e.target.valueAsNumber;
+    setAmountIncrease(value || 0);
+  };
+
+  // ตัวจัดการสำหรับช่องชำระเงินทั้งหมดs
+  const handleTotalPaymentChange = (e) => {
+    const value = e.target.valueAsNumber;
+    setTotalPayment(value || 0);
+  };
+  
 
 
   const handleClickConfirmDebt = async () => {
@@ -85,49 +95,54 @@ export default function PopUpDetailBillDebt({
         }}
       >
         <div>
-          <div>ລະຫັດ: {billDebtData?.code}</div>
-          <div>ຊື່: {billDebtData?.customerName}</div>
-          <div>ເບີໂທ: {billDebtData?.customerPhone}</div>
+          <div>{t("table_code")}: {billDebtData?.code}</div>
+          <div>{t("name")}: {billDebtData?.customerName}</div>
+          <div>{t("tel")}: {billDebtData?.customerPhone}</div>
           <div>
-            ສະຖານາະ: {t ? convertBillDebtStatus(billDebtData?.status, t) : ""}
+            {t("status")}: {t ? convertBillDebtStatus(billDebtData?.status, t) : ""}
           </div>
           <div>
-            ວັນທີສ້າງ: {moment(billDebtData?.createdAt).format("DD/MM/YYYY")}
+            {t("create_date")}: {moment(billDebtData?.createdAt).format("DD/MM/YYYY")}
           </div>
           <div>
-            ວັນໝົດກຳນົດ: {moment(billDebtData?.endDate).format("DD/MM/YYYY")}
+            {t("expiration_date")}: {moment(billDebtData?.endDate).format("DD/MM/YYYY")}
           </div>
           {/* update by ton.......................................................................................... */}
           <div style={{ marginTop: "0.5rem" }}>
-            ຈຳນວນໜີ້ທັງໝົດ: {moneyCurrency(billDebtData?.amount)}
+            {t("total_debt")}: {moneyCurrency(billDebtData?.amount)}
           </div>
           <div style={{ marginBottom: "2px" }}>
-            ຍັງຄ້າງຊຳລະ: {moneyCurrency(billDebtData?.remainingAmount)}
+            {t("paid_already")}: {moneyCurrency(billDebtData?.amount -billDebtData?.remainingAmount )}
+          </div>
+          <div style={{ marginBottom: "2px" }}>
+            {t("outstanding_money")}: {moneyCurrency(billDebtData?.remainingAmount)}
           </div>
           <Form.Group>
             <Form.Label style={{ margin: "5px", color: "MidnightBlue" }}>
-              (+) ເພີ່ມໜີ້ຄ້າງຊຳລະ
+              (+) {t("increase_utstanding_debt")}
             </Form.Label>
             <Form.Control
+              type="number"
               value={amountIncrease}
-              onChange={(e) => setAmountIncreease(Number(e.target.value))}
-              placeholder={t("ເພີ່ມຈຳນວນຕິດໜີ້")}
+              onChange={handleAmountIncreaseChange}
+              placeholder={0}
             />
           </Form.Group>
           <Form.Group>
             <Form.Label style={{ margin: "5px", color: "MidnightBlue" }}>
-              (-) ປ້ອນຈຳນວນທີ່ຕ້ອງການຊຳລະ
+              (-) {t("money_has_pay")}
             </Form.Label>
             <Form.Control
+              type="number"
               style={{ marginBottom: "0.5rem" }}
               value={totalPayment}
-              onChange={(e) => setTotalPayment(Number(e.target.value))}
-              placeholder={t("ຈຳນວນທີ່ຕ້ອງການຊຳລະ")}
+              onChange={handleTotalPaymentChange}
+              placeholder={0}
             ></Form.Control>
           </Form.Group>
           {/* update by ton.......................................................................................... */}
           <div>
-            ວັນມາເອົາ:{" "}
+            {t("date_pay")}:{" "}
             {billDebtData?.outStockDate
               ? moment(billDebtData?.outStockDate).format("DD/MM/YYYY")
               : ""}

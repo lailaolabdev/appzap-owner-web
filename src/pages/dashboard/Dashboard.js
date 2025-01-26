@@ -50,6 +50,8 @@ export default function Dashboard() {
   } = useTranslation();
   const newDate = new Date();
 
+
+
   // state
   const [reportData, setReportData] = useState([]); // ຂໍ້ມູນລາຍງານ
   const [salesInformationReport, setSalesInformationReport] = useState();
@@ -67,8 +69,12 @@ export default function Dashboard() {
   const [selectedCurrency, setSelectedCurrency] = useState("LAK");
   const [changeUi, setChangeUi] = useState("CHECKBILL");
   const [changeText, setChangeText] = useState("CLICK1");
+  const [countIsDebtTrue , setCountIsDebtTrue ] =  useState(0);
+ 
 
   const { storeDetail } = useStoreStore();
+
+
 
   // useEffect
   useEffect(() => {
@@ -132,6 +138,9 @@ export default function Dashboard() {
 
     setTotalBillActiveReport(data);
   };
+
+
+ 
 
   return (
     <div
@@ -246,15 +255,15 @@ export default function Dashboard() {
               <div className={fontMap[language]}>
                 {t("numberOfBill")}
                 {" : "}
-                {countAllBillReport?.count} ບິນ
+                {countAllBillReport?.count - countIsDebtTrue ||  0} ບິນ
               </div>
               <div className={fontMap[language]}>
                 {t("total_will_get")}
                 {" : "}
                 {convertNumber(
-                  totalBillActiveReport?.total +
-                    salesInformationReport?.totalSales
+                    (totalBillActiveReport?.total + salesInformationReport?.totalSales )
                 )}
+
               </div>
               <div className={fontMap[language]}>
                 {t("outstandingDebt")}
@@ -290,12 +299,12 @@ export default function Dashboard() {
               <div className={fontMap[language]}>
                 {t("totalBalance")}
                 {" : "}
-                {convertNumber(moneyReport?.successAmount?.totalBalance)}
+                {convertNumber(moneyReport?.successAmount?.totalBalance )}
               </div>
               <div className={fontMap[language]}>
                 {t("payBycash")}
                 {" : "}
-                {convertNumber(moneyReport?.successAmount?.payByCash)}
+                {convertNumber(moneyReport?.successAmount?.payByCash )}
               </div>
               <div className={fontMap[language]}>
                 {t("transferPayment")}
@@ -365,6 +374,8 @@ export default function Dashboard() {
           startTime={startTime}
           endTime={endTime}
           selectedCurrency={selectedCurrency}
+          setCountIsDebtTrue={setCountIsDebtTrue}
+          
         />
       )}
       {changeUi === "MENUS" && (

@@ -253,14 +253,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "farkManagement",
     },
-    // {
-    //   title: `${t("debt")}`,
-    //   key: "debt",
-    //   typeStore: "",
-    //   icon: faMoneyBill,
-    //   hidden: !storeDetail?.hasPOS,
-    //   system: "reportManagement",
-    // },
+    {
+      title: `${t("debt")}`,
+      key: "debt",
+      typeStore: "",
+      icon: faMoneyBill,
+      hidden: !storeDetail?.hasPOS,
+      system: "reportManagement",
+    },
   ]
     .filter((e) => {
       const verify = role(profile?.data?.role, profile?.data);

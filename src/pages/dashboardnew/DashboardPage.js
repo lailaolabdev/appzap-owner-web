@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, Breadcrumb, Button } from "react-bootstrap";
 import { COLOR_APP, END_POINT } from "../../constants";
+import { getLocalData } from "../../constants/api";
 import {
   BsFillCalendarWeekFill,
   BsFillCalendarEventFill,
@@ -15,6 +16,7 @@ import {
   getCurrencyReport,
   getMenuReport,
   getMoneyReport,
+  getDebtReport,
   getPromotionReport,
   getReports,
   getSalesInformationReport,
@@ -38,6 +40,7 @@ import PopUpPrintMenuHistoryComponent from "../../components/popup/PopUpPrintMen
 import PopUpPrintMenuCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuCategoryHistoryComponent";
 import PopUpChooseTableComponent from "../../components/popup/PopUpChooseTableComponent";
 import PopUpPrintMenuAndCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuAndCategoryHistoryComponent";
+import { getBilldebts } from "../../services/debt";
 
 import { errorAdd } from "../../helpers/sweetalert";
 import Axios from "axios";
@@ -68,6 +71,8 @@ export default function DashboardPage() {
   const [selectedTableIds, setSelectedTableIds] = useState([]);
   const [loadingExportCsv, setLoadingExportCsv] = useState(false);
   const [deliveryReport, setDeliveryReport] = useState([]);
+  const [debtReport, setDebtReport]  = useState(null)
+ 
 
   // provider
   const {
@@ -85,6 +90,7 @@ export default function DashboardPage() {
     getUserReportData();
     getMenuReportData();
     getMoneyReportData();
+    getDebtReportData()
     getPromotionReportData();
     getCurrencyName();
     getCategoryReportData();
@@ -157,6 +163,20 @@ export default function DashboardPage() {
       selectedTableIds
     );
     setMoneyReport(data);
+  };
+
+  const getDebtReportData = async () => {
+    try {
+      let findBy = `?storeId=${storeDetail?._id}`;
+      if (startDate && endDate) {
+        findBy = `${findBy}&startDate=${encodeURIComponent(startDate)}&startTime=${encodeURIComponent(startTime || '00:00:00')}&endDate=${encodeURIComponent(endDate)}&endTime=${encodeURIComponent(endTime || '23:59:59')}`;
+      }
+      const data = await getDebtReport(findBy);
+      setDebtReport(data?.data);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setDebtReport(0);
+    } 
   };
 
   const getPromotionReportData = async () => {
@@ -462,6 +482,7 @@ export default function DashboardPage() {
                       qty: moneyReport?.successAmount?.cashCount || 0,
                       amount: moneyReport?.successAmount?.payByCash || 0,
                     },
+                    
                     {
                       method: (
                         <div style={{ fontWeight: 700 }}>{t("total_tsf")}</div>
@@ -469,6 +490,14 @@ export default function DashboardPage() {
                       qty: moneyReport?.successAmount?.transferCount || 0,
                       amount: moneyReport?.successAmount?.transferPayment || 0,
                     },
+                    {
+                      method: (
+                        <div style={{ fontWeight: 700 }}>{t("total_debt")}</div>
+                      ),
+                      qty: debtReport?.count || 0,
+                      amount: debtReport?.totalRemainingAmount || 0,
+                    },
+                   
 
                     ...(deliveryReports?.length > 0
                       ? deliveryReports.map((e, idx) => ({
@@ -515,6 +544,7 @@ export default function DashboardPage() {
                         (Math.floor(moneyReport?.serviceAmount) || 0) +
                         (Math.floor(moneyReport?.taxAmount) || 0),
                     },
+                   
                   ]
                     .filter(Boolean) // Filter out undefined or null values
                     .map((e, idx) => (
@@ -626,6 +656,7 @@ export default function DashboardPage() {
                     <th style={{ textAlign: "center" }}>{t("point")}</th>
                   )}
                   <th style={{ textAlign: "center" }}>{t("discount")}</th>
+                  <th style={{ textAlign: "center" }}>{t("debt")}</th>
                   <th style={{ textAlign: "center" }}>{t("last_amount")}</th>
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
@@ -643,6 +674,10 @@ export default function DashboardPage() {
 
                     <td>
                       {moneyCurrency(e?.discount)}
+                      {storeDetail?.firstCurrency}
+                    </td>
+                    <td>
+                      {moneyCurrency(debtReport?.totalRemainingAmount)}
                       {storeDetail?.firstCurrency}
                     </td>
                     <td>

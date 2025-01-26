@@ -1,7 +1,7 @@
-import theme from './src/theme.js';
+import theme from "./src/theme";
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: ["./src/**/*.{html,js}"],
   theme: {
     screens: {
