@@ -10,54 +10,87 @@ export default function TimeShift({
   const [hour, setHour] = useState("");
   const [minute, setMinute] = useState("");
 
-  // Update `onChange` with formatted time
+  // Update `onChange` with the formatted time
   useEffect(() => {
     if (hour === "" || minute === "") return;
     const formattedTime = `${hour}:${minute}`;
-    onChange(formattedTime); // Ensure `onChange` is called with a formatted value
+    onChange(formattedTime);
   }, [hour, minute]);
 
   // Set initial values when `value` prop changes
   useEffect(() => {
     if (value) {
-      setHour(moment(value, "HH:mm").format("HH")); // Parse and format correctly
-      setMinute(moment(value, "HH:mm").format("mm"));
+      const parsedMoment = moment(value, "HH:mm", true); // Strict parsing
+      if (parsedMoment.isValid()) {
+        setHour(parsedMoment.format("HH"));
+        setMinute(parsedMoment.format("mm"));
+      } else {
+        setHour("");
+        setMinute("");
+      }
     }
   }, [value]);
 
   return (
-    <div style={{ display: "flex", gap: 10 }}>
+    <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
       {/* Hour Dropdown */}
-      <select
-        className="form-control"
-        onChange={(e) => setHour(e.target.value)}
-        value={hour}
-        aria-label="Hour"
-        isInvalid={isInvalid}
-      >
-        <option value="">{hour || "ໂມງ"}</option>
-        {[...Array(24).keys()].map((i) => (
-          <option key={i} value={String(i).padStart(2, "0")}>
-            {String(i).padStart(2, "0")}
+      <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+        <label htmlFor={`${name}-hour`} style={{ fontWeight: "bold" }}>
+          ໂມງ (Hour)
+        </label>
+        <select
+          id={`${name}-hour`}
+          style={{
+            width: "230px",
+          }}
+          className={`form-control ${isInvalid ? "is-invalid" : ""}`}
+          onChange={(e) => setHour(e.target.value)}
+          value={hour}
+        >
+          <option value="" disabled>
+            ໂມງ
           </option>
-        ))}
-      </select>
+          {[...Array(24).keys()].map((i) => (
+            <option key={i} value={String(i).padStart(2, "0")}>
+              {String(i).padStart(2, "0")}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {/* Minute Dropdown */}
-      <select
-        className="form-control"
-        onChange={(e) => setMinute(e.target.value)}
-        value={minute}
-        aria-label="Minute"
-        isInvalid={isInvalid}
-      >
-        <option value="">{minute || "ນາທີ"}</option>
-        {[...Array(60).keys()].map((i) => (
-          <option key={i} value={String(i).padStart(2, "0")}>
-            {String(i).padStart(2, "0")}
+      <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+        <label htmlFor={`${name}-minute`} style={{ fontWeight: "bold" }}>
+          ນາທີ (Minute)
+        </label>
+        <select
+          id={`${name}-minute`}
+          style={{
+            width: "230px",
+          }}
+          className={`form-control ${isInvalid ? "is-invalid" : ""}`}
+          onChange={(e) => setMinute(e.target.value)}
+          value={minute}
+        >
+          <option value="" disabled>
+            ນາທີ
           </option>
-        ))}
-      </select>
+          {[...Array(60).keys()].map((i) => (
+            <option key={i} value={String(i).padStart(2, "0")}>
+              {String(i).padStart(2, "0")}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Error Message
+      {isInvalid && (
+        <div style={{ color: "red", marginTop: "5px", fontSize: "12px" }}>
+          {name === "startTime"
+            ? "ປ້ອນເວລາເປີດ" // "Please enter the start time"
+            : "ປ້ອນເວລາປີດ"}{" "}
+        </div>
+      )} */}
     </div>
   );
 }

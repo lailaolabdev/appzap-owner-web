@@ -5,7 +5,7 @@ import { getHeaders } from "./auth";
 export const getReports = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
-    const url = `${END_POINT_APP}/v4/report-daily/${storeId}${findBy}`;
+    const url = `${END_POINT_APP}/v7/report-daily/${storeId}${findBy}`;
     const res = await axios.post(
       url,
       { tableIds: tableIds },
@@ -20,7 +20,7 @@ export const getReports = async (storeId, findBy, tableIds) => {
 export const getSalesInformationReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
-    const url = `${END_POINT_APP}/v4/sales-information-report/${storeId}${findBy}`;
+    const url = `${END_POINT_APP}/v7/sales-information-report/${storeId}${findBy}`;
     const res = await axios.post(
       url,
       { tableIds },
@@ -47,7 +47,7 @@ export const getTotalBillActiveReport = async (storeId, findBy, tableIds) => {
 export const getUserReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
-    const url = `${END_POINT_APP}/v4/user-report/${storeId}${findBy}`;
+    const url = `${END_POINT_APP}/v7/user-report/${storeId}${findBy}`;
     const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
@@ -58,7 +58,7 @@ export const getUserReport = async (storeId, findBy, tableIds) => {
 export const getMenuReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
-    const url = `${END_POINT_APP}/v4/menu-report/${storeId}${findBy}`;
+    const url = `${END_POINT_APP}/v7/menu-report/${storeId}${findBy}`;
     const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
@@ -69,7 +69,7 @@ export const getMenuReport = async (storeId, findBy, tableIds) => {
 export const getCategoryReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
-    const url = `${END_POINT_APP}/v4/category-report/${storeId}${findBy}`;
+    const url = `${END_POINT_APP}/v7/category-report/${storeId}${findBy}`;
     const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
@@ -80,7 +80,7 @@ export const getCategoryReport = async (storeId, findBy, tableIds) => {
 export const getMoneyReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
-    const url = `${END_POINT_APP}/v4/report-money/${storeId}${findBy}`;
+    const url = `${END_POINT_APP}/v7/report-money/${storeId}${findBy}`;
     const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
@@ -105,7 +105,7 @@ export const getDebtReport = async (findby, token) => {
 export const getPromotionReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
-    const url = `${END_POINT_APP}/v4/report-promotion/${storeId}${findBy}`;
+    const url = `${END_POINT_APP}/v7/report-promotion/${storeId}${findBy}`;
     const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
@@ -115,7 +115,7 @@ export const getPromotionReport = async (storeId, findBy, tableIds) => {
 export const getBillReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
-    const url = `${END_POINT_APP}/v4/bill-report/${storeId}${findBy}`;
+    const url = `${END_POINT_APP}/v7/bill-report/${storeId}${findBy}`;
     const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
@@ -139,7 +139,7 @@ export const getActiveBillReport = async (storeId, findBy, tableIds) => {
 export const getBankReport = async (storeId, findBy) => {
   try {
     const _header = await getHeaders();
-    const url = `${END_POINT_APP}/v3/count-bank${findBy}&storeId=${storeId}`;
+    const url = `${END_POINT_APP}/v7/count-bank${findBy}&storeId=${storeId}`;
     const res = await axios.get(url, { headers: _header });
     return res.data;
   } catch (error) {

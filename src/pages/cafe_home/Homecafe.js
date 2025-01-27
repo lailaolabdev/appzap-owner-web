@@ -60,6 +60,8 @@ import { fontMap } from "../../utils/font-map";
 
 import { useStoreStore } from "../../zustand/storeStore";
 import { useMenuStore } from "../../zustand/menuStore";
+import { useShiftStore } from "../../zustand/ShiftStore";
+
 import theme from "../../theme";
 import moment from "moment";
 
@@ -99,6 +101,8 @@ function Homecafe() {
 
   const [cartModal, setCartModal] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null); // Track the row being edited
+
+  const { shiftCurrent } = useShiftStore();
 
   const sliderRef = useRef();
 
@@ -318,6 +322,7 @@ function Homecafe() {
         price: menu.price,
         categoryId: menu?.categoryId,
         printer: menu?.categoryId?.printer,
+        shiftId: shiftCurrent[0]?._id,
         note: "",
         isWeightMenu: menu?.isWeightMenu,
       };
@@ -433,6 +438,7 @@ function Homecafe() {
       note: addComments,
       menuOptions: selectedItem.menuOptions,
       options: filteredOptions,
+      shiftId: shiftCurrent[0]?._id,
       totalOptionPrice: totalOptionPrice,
       isWeightMenu: selectedItem?.isWeightMenu,
     };

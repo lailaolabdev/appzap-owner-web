@@ -35,6 +35,7 @@ import {
 // zustand
 import { useStoreStore } from "../../zustand/storeStore";
 import { useOrderStore } from "../../zustand/orderStore";
+import { useShiftStore } from "../../zustand/ShiftStore";
 
 export default function OrderPage() {
   const {
@@ -65,10 +66,12 @@ export default function OrderPage() {
     setCountOrderWaiting,
     printBackground,
     setPrintBackground,
+    profile,
   } = useStore();
 
   // zustand state store
   const { storeDetail, updateStoreDetail } = useStoreStore();
+  const { shiftCurrent } = useShiftStore();
 
   const {
     orderItems,
@@ -88,10 +91,10 @@ export default function OrderPage() {
   useEffect(() => {
     const fetchAllOrders = async () => {
       // Fetch orders by status for each tab
-      await fetchOrdersByStatus(WAITING_STATUS);
-      await fetchOrdersByStatus(DOING_STATUS);
-      await fetchOrdersByStatus(SERVE_STATUS);
-      await fetchOrdersByStatus(CANCEL_STATUS);
+      await fetchOrdersByStatus(WAITING_STATUS, shiftCurrent, profile);
+      await fetchOrdersByStatus(DOING_STATUS, shiftCurrent, profile);
+      await fetchOrdersByStatus(SERVE_STATUS, shiftCurrent, profile);
+      await fetchOrdersByStatus(CANCEL_STATUS, shiftCurrent, profile);
 
       // setIsLoading(false); // Set loading to false once the data is fetched
     };

@@ -1,18 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Modal, Button, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { useStore } from "../../store";
 import { FaRegClock } from "react-icons/fa";
 
-export default function PopUpOpenShift({
-  open,
-  onClose,
-  onSubmit,
-  setOpenPopUpShift,
-}) {
+export default function PopUpOpenShift({ open }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   return (
-    <Modal show={open} onHide={onClose} centered>
+    <Modal show={open} centered>
       <Modal.Body>
         <Form.Group className="mt-3">
           <div className="flex flex-col items-center">
@@ -30,9 +27,7 @@ export default function PopUpOpenShift({
         <Button
           type="button"
           variant="primary"
-          onClick={() => {
-            setOpenPopUpShift(false);
-          }}
+          onClick={() => navigate("/shift")}
         >
           {t("shift_open")}
         </Button>

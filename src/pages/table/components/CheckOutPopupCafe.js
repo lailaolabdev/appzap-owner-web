@@ -30,6 +30,7 @@ import { useTranslation } from "react-i18next";
 import Loading from "../../../components/Loading";
 
 import { useStoreStore } from "../../../zustand/storeStore";
+import { useShiftStore } from "../../../zustand/ShiftStore";
 
 export default function CheckOutPopupCafe({
   onPrintDrawer,
@@ -49,6 +50,7 @@ export default function CheckOutPopupCafe({
   const inputTransferRef = useRef(null);
   const { profile } = useStore();
   const { storeDetail } = useStoreStore();
+  const { shiftCurrent } = useShiftStore();
   const navigate = useNavigate();
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
@@ -256,6 +258,7 @@ export default function CheckOutPopupCafe({
       transferAmount: transfer,
       billAmount: totalBill,
       paymentMethod: forcus,
+      shiftId: shiftCurrent[0]?._id,
       taxAmount: null,
       taxPercent: taxPercent,
       customerId: null,

@@ -40,7 +40,7 @@ export const updateBillFark = async (billFarkId, data, token) => {
 };
 export const createBillFark = async (body, token) => {
   try {
-    const url = `${END_POINT_APP}/v4/bill-fark/create`;
+    const url = `${END_POINT_APP}/v7/bill-fark/create`;
     const res = await axios.post(url, body, {
       headers: token,
     });
@@ -52,7 +52,7 @@ export const createBillFark = async (body, token) => {
 export const getBillFarks = async (findby, token) => {
   try {
     // console.log("token", token);
-    const url = `${END_POINT_APP}/v4/bill-farks${findby}`;
+    const url = `${END_POINT_APP}/v7/bill-farks${findby}`;
     const res = await axios.get(url, {
       headers: token,
     });

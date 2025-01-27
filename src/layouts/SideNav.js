@@ -28,8 +28,7 @@ import {
   faLayerGroup,
   faStoreAlt,
   faBuilding,
-  faMoneyBill,
-  faMoneyCheck,
+  faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, COLOR_GRAY, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -45,6 +44,7 @@ import { useStoreStore } from "../zustand/storeStore";
 import { useOrderStore } from "../zustand/orderStore";
 import { useBookingStore } from "../zustand/bookingStore";
 import PopUpOpenShift from "./../components/popup/PopUpOpenShift";
+import { useShiftStore } from "../zustand/ShiftStore";
 
 export default function Sidenav({ location, navigate, onToggle }) {
   const { openTableData, getTableDataStore } = useStore();
@@ -54,6 +54,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const { bookingWaitingLength, fetchBookingByStatus } = useBookingStore();
 
   const [openPopUpShift, setOpenPopUpShift] = useState(false);
+  const { shiftCurrent } = useShiftStore();
   const [status, setStatus] = useState(true);
   const [token, setToken] = useState();
   const [isTitle, setIsTitle] = useState(false);
@@ -91,7 +92,11 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const itemList = [
     {
       title: `${t("table_status")}`,
-      key: status ? "shift-open-pages" : "tables",
+      key: storeDetail?.isShift
+        ? shiftCurrent[0]?.status === "OPEN"
+          ? "tables"
+          : "shift-open-pages"
+        : "tables",
       icon: faHome,
       typeStore: "",
       hidden: !storeDetail?.hasPOS,
@@ -116,7 +121,11 @@ export default function Sidenav({ location, navigate, onToggle }) {
     },
     {
       title: `${t("isCafe")}`,
-      key: status ? "shift-open-pages" : "cafe",
+      key: storeDetail?.isShift
+        ? shiftCurrent[0]?.status === "OPEN"
+          ? "cafe"
+          : "shift-open-pages"
+        : "cafe",
       icon: faStoreAlt,
       typeStore: storeDetail?.isRestuarant,
       hidden: !storeDetail?.hasPOS,
@@ -237,6 +246,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       icon: faBuilding,
       hidden: !storeDetail?.hasPOS,
+      system: "reportManagement",
+    },
+    {
+      title: `${t("shift")}`,
+      key: "shift",
+      typeStore: "",
+      icon: faClock,
+      hidden: !storeDetail?.isShift,
       system: "reportManagement",
     },
     {

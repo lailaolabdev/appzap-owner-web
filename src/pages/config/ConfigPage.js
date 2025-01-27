@@ -18,6 +18,7 @@ import {
   updateSettingCRM,
   getSettingCafe,
   updateSettingDelivery,
+  updateSettingShift,
 } from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
 import PopUpEditServiceCharge from "../../components/popup/PopUpEditServiceCharge";
@@ -127,6 +128,11 @@ export default function ConfigPage() {
     // zustand store
     await fetchStoreDetail(storeDetail?._id);
   };
+  const changeShift = async (e) => {
+    const isType = e.target.checked;
+
+    await updateSettingShift(profile?.data.storeId, { data: isType });
+  };
 
   const BankPayment = async (e) => {
     const isChecked = e.target.checked;
@@ -152,8 +158,6 @@ export default function ConfigPage() {
       <BsExclamationDiamondFill style={{ color: COLOR_APP }} />
     </OverlayTrigger>
   );
-
-  console.log("isDelivery", storeDetail?.isDelivery);
 
   return (
     <>
@@ -654,6 +658,57 @@ export default function ConfigPage() {
                       checked={storeDetail?.isDelivery}
                       id={`switch-delivery-${item?.key}`}
                       onChange={changeDelivery}
+                    />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("shift")}
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: t("open_function_shift"),
+                  key: "shift",
+                },
+              ].map((item) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={item?.key}
+                >
+                  <div>{item?.title}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={`switch-shift-${item?.key}`}>
+                      {storeDetail?.isShift ? `${t("oppen")}` : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.isShift}
+                      id={`switch-shift-${item?.key}`}
+                      onChange={changeShift}
                     />
                   </div>
                 </div>

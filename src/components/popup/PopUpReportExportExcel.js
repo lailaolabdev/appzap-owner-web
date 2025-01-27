@@ -2,7 +2,7 @@ import moment from "moment";
 import React, { useEffect, useState } from "react";
 import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import TimePicker from "react-bootstrap-time-picker";
-import Axios from "axios";
+import axios from "axios";
 import { saveAs } from "file-saver";
 import { BsPrinter } from "react-icons/bs";
 import { MdOutlineCloudDownload } from "react-icons/md";
@@ -11,42 +11,106 @@ import { errorAdd } from "../../helpers/sweetalert";
 import { END_POINT_EXPORT } from "../../constants/api";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { useStore } from "../../store";
 
-export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
+export default function PopUpReportExportExcel({
+  open,
+  onClose,
+  setPopup,
+  shiftId,
+  shiftData,
+}) {
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
+  const { profile } = useStore();
   const { t } = useTranslation();
 
+  const findByData = () => {
+    let findBy = "?";
+    if (profile?.data?.role === "APPZAP_ADMIN") {
+      if (
+        storeDetail?.startDayFilter &&
+        storeDetail?.endDayFilter &&
+        storeDetail?.startTimeFilter &&
+        storeDetail?.endTimeFilter
+      ) {
+        findBy += `startDate=${storeDetail?.startDayFilter}&`;
+        findBy += `endDate=${storeDetail?.endDayFilter}&`;
+        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
+        findBy += `endTime=${storeDetail?.endTimeFilter}`;
+        if (shiftId) {
+          findBy += `shiftId=${shiftId}&`;
+        }
+      } else {
+        findBy += `startDate=${storeDetail?.startDateReportExport}&`;
+        findBy += `endDate=${storeDetail?.endDateReportExport}&`;
+        findBy += `startTime=${storeDetail?.startTimeReportExport}&`;
+        findBy += `endTime=${storeDetail?.endTimeReportExport}`;
+        if (shiftId) {
+          findBy += `shiftId=${shiftId}&`;
+        }
+      }
+    } else {
+      if (
+        storeDetail?.startDayFilter &&
+        storeDetail?.endDayFilter &&
+        storeDetail?.startTimeFilter &&
+        storeDetail?.endTimeFilter
+      ) {
+        findBy += `startDate=${storeDetail?.startDayFilter}&`;
+        findBy += `endDate=${storeDetail?.endDayFilter}&`;
+        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
+        findBy += `endTime=${storeDetail?.endTimeFilter}`;
+        if (shiftData) {
+          findBy += `shiftId=${shiftData?._id}&`;
+        }
+      } else {
+        findBy += `&startDate=${storeDetail?.startDateReportExport}&`;
+        findBy += `endDate=${storeDetail?.endDateReportExport}&`;
+        findBy += `startTime=${storeDetail?.startTimeReportExport}&`;
+        findBy += `endTime=${storeDetail?.endTimeReportExport}&`;
+        if (shiftData) {
+          findBy += `shiftId=${shiftData?._id}&`;
+        }
+      }
+    }
+    return findBy;
+  };
   const downloadExcel = async () => {
     setPopup({ ReportExport: false });
     try {
-      // findBy += `startDate=${storeDetail?.startDayFilter}&`;
-      // findBy += `endDate=${storeDetail?.endDayFilter}&`;
-      // findBy += `startTime=${storeDetail?.startTimeFilter}&`;
-      // findBy += `endTime=${storeDetail?.endTimeFilter}`;
-
-      const findBy = `&dateFrom=${storeDetail?.startDateReportExport}&dateTo=${storeDetail?.endDateReportExport}&timeTo=${storeDetail?.endTimeReportExport}&timeFrom=${storeDetail?.startTimeReportExport}`;
-      // setLoadingExportCsv(true);
-      const url =
-        END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
-      const _res = await Axios.get(url);
-
-      console.log("_res: " + _res?.data?.exportUrl);
+      let findBy = "";
+      if (profile?.data?.role === "APPZAP_ADMIN") {
+        findBy += `&dateFrom=${storeDetail?.startDateReportExport}&`;
+        findBy += `dateTo=${storeDetail?.endDateReportExport}&`;
+        findBy += `timeFrom=${storeDetail?.startTimeReportExport}&`;
+        findBy += `timeTo=${storeDetail?.endTimeReportExport}&`;
+        if (shiftId) {
+          findBy += `shiftId=${shiftId}&`;
+        }
+      } else {
+        findBy += `&dateFrom=${storeDetail?.startDateReportExport}&`;
+        findBy += `dateTo=${storeDetail?.endDateReportExport}&`;
+        findBy += `timeFrom=${storeDetail?.startTimeReportExport}&`;
+        findBy += `timeTo=${storeDetail?.endTimeReportExport}&`;
+        if (shiftData) {
+          findBy += `shiftId=${shiftData?._id}&`;
+        }
+      }
+      const url = `${END_POINT_EXPORT}/export/bill?storeId=${storeDetail?._id}${findBy}`;
+      const _res = await axios.get(url);
 
       if (_res?.data?.exportUrl) {
-        const response = await Axios.get(_res?.data?.exportUrl, {
+        const response = await axios.get(_res?.data?.exportUrl, {
           responseType: "blob", // Important to get the response as a Blob
         });
 
         // Create a Blob from the response data
-        console.log("response", response.data);
         const fileBlob = new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
 
         // Use the file-saver library to save the file with a new name
+        // biome-ignore lint/style/useTemplate: <explanation>
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
       }
 
@@ -60,27 +124,13 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
   const Promotions = async () => {
     setPopup({ ReportExport: false });
     try {
-      let findBy = "?";
-      if (
-        storeDetail?.startDayFilter &&
-        storeDetail?.endDayFilter &&
-        storeDetail?.startTimeFilter &&
-        storeDetail?.endTimeFilter
-      ) {
-        findBy += `startDate=${storeDetail?.startDayFilter}&`;
-        findBy += `endDate=${storeDetail?.endDayFilter}&`;
-        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
-        findBy += `endTime=${storeDetail?.endTimeFilter}`;
-      }
-
-      const url =
-        END_POINT_EXPORT +
-        `/export/report-promotion/${storeDetail?._id}` +
-        findBy;
-      const _res = await Axios.post(url);
+      const url = `${END_POINT_EXPORT}/export/report-promotion/${
+        storeDetail?._id
+      }${findByData()}`;
+      const _res = await axios.get(url);
 
       if (_res?.data?.exportUrl) {
-        const response = await Axios.get(_res?.data?.exportUrl, {
+        const response = await axios.get(_res?.data?.exportUrl, {
           responseType: "blob", // Important to get the response as a Blob
         });
 
@@ -93,7 +143,7 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(
           fileBlob,
-          `${storeDetail?.name} ${t("promotion")}` + ".xlsx" || "export.xlsx"
+          `${storeDetail?.name} ${t("promotion")}.xlsx` || "export.xlsx"
         );
       }
     } catch (err) {
@@ -103,33 +153,15 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
   const bankTotalAmount = async () => {
     setPopup({ ReportExport: false });
     try {
-      let findBy = "?";
-      if (
-        storeDetail?.startDayFilter &&
-        storeDetail?.endDayFilter &&
-        storeDetail?.startTimeFilter &&
-        storeDetail?.endTimeFilter
-      ) {
-        findBy += `startDate=${storeDetail?.startDayFilter}&`;
-        findBy += `endDate=${storeDetail?.endDayFilter}&`;
-        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
-        findBy += `endTime=${storeDetail?.endTimeFilter}`;
-      } else {
-        findBy += `startDate=${storeDetail?.startDateReportExport}&`;
-        findBy += `endDate=${storeDetail?.endDateReportExport}&`;
-        findBy += `startTime=${storeDetail?.startTimeReportExport}&`;
-        findBy += `endTime=${storeDetail?.endTimeReportExport}`;
-      }
-
-      const url =
-        END_POINT_EXPORT +
-        `/export/report-bank${findBy}&storeId=${storeDetail?._id}`;
+      const url = `${END_POINT_EXPORT}/export/report-bank${findByData()}&storeId=${
+        storeDetail?._id
+      }`;
       console.log("url: ", url);
-      const _res = await Axios.get(url);
+      const _res = await axios.get(url);
       console.log("_res: ", url);
 
       if (_res?.data?.exportUrl) {
-        const response = await Axios.get(_res?.data?.exportUrl, {
+        const response = await axios.get(_res?.data?.exportUrl, {
           responseType: "blob", // Important to get the response as a Blob
         });
 
@@ -142,7 +174,7 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(
           fileBlob,
-          `${storeDetail?.name} ${t("bank_total")}` + ".xlsx" || "export.xlsx"
+          `${storeDetail?.name} ${t("bank_total")}.xlsx` || "export.xlsx"
         );
       }
     } catch (err) {
@@ -152,30 +184,13 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
   const currencyExport = async () => {
     setPopup({ ReportExport: false });
     try {
-      let findBy = "?";
-      if (
-        storeDetail?.startDayFilter &&
-        storeDetail?.endDayFilter &&
-        storeDetail?.startTimeFilter &&
-        storeDetail?.endTimeFilter
-      ) {
-        findBy += `startDate=${storeDetail?.startDayFilter}&`;
-        findBy += `endDate=${storeDetail?.endDayFilter}&`;
-        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
-        findBy += `endTime=${storeDetail?.endTimeFilter}`;
-      } else {
-        findBy += `startDate=${storeDetail?.startDateReportExport}&`;
-        findBy += `endDate=${storeDetail?.endDateReportExport}&`;
-        findBy += `startTime=${storeDetail?.startTimeReportExport}&`;
-        findBy += `endTime=${storeDetail?.endTimeReportExport}`;
-      }
-      const url =
-        END_POINT_EXPORT +
-        `/export/report-currency${findBy}&storeId=${storeDetail?._id}`;
-      const _res = await Axios.get(url);
+      const url = `${END_POINT_EXPORT}/export/report-currency${findByData()}&storeId=${
+        storeDetail?._id
+      }`;
+      const _res = await axios.get(url);
 
       if (_res?.data?.exportUrl) {
-        const response = await Axios.get(_res?.data?.exportUrl, {
+        const response = await axios.get(_res?.data?.exportUrl, {
           responseType: "blob", // Important to get the response as a Blob
         });
 
@@ -199,25 +214,13 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
   const Billdetail = async () => {
     setPopup({ ReportExport: false });
     try {
-      let findBy = "?";
-      if (
-        storeDetail?.startDayFilter &&
-        storeDetail?.endDayFilter &&
-        storeDetail?.startTimeFilter &&
-        storeDetail?.endTimeFilter
-      ) {
-        findBy += `startDate=${storeDetail?.startDayFilter}&`;
-        findBy += `endDate=${storeDetail?.endDayFilter}&`;
-        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
-        findBy += `endTime=${storeDetail?.endTimeFilter}`;
-      }
-
-      const url =
-        END_POINT_EXPORT + `/export/report-bill/${storeDetail?._id}` + findBy;
-      const _res = await Axios.post(url);
+      const url = `${END_POINT_EXPORT}/export/report-bill/${
+        storeDetail?._id
+      }${findByData()}`;
+      const _res = await axios.post(url);
 
       if (_res?.data?.exportUrl) {
-        const response = await Axios.get(_res?.data?.exportUrl, {
+        const response = await axios.get(_res?.data?.exportUrl, {
           responseType: "blob", // Important to get the response as a Blob
         });
 
@@ -240,25 +243,13 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
   const StaffInfo = async () => {
     setPopup({ ReportExport: false });
     try {
-      let findBy = "?";
-      if (
-        storeDetail?.startDayFilter &&
-        storeDetail?.endDayFilter &&
-        storeDetail?.startTimeFilter &&
-        storeDetail?.endTimeFilter
-      ) {
-        findBy += `startDate=${storeDetail?.startDayFilter}&`;
-        findBy += `endDate=${storeDetail?.endDayFilter}&`;
-        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
-        findBy += `endTime=${storeDetail?.endTimeFilter}`;
-      }
-
-      const url =
-        END_POINT_EXPORT + `/export/report-user/${storeDetail?._id}` + findBy;
-      const _res = await Axios.get(url);
+      const url = `${END_POINT_EXPORT}/export/report-user/${
+        storeDetail?._id
+      }${findByData()}`;
+      const _res = await axios.get(url);
 
       if (_res?.data?.exportUrl) {
-        const response = await Axios.get(_res?.data?.exportUrl, {
+        const response = await axios.get(_res?.data?.exportUrl, {
           responseType: "blob", // Important to get the response as a Blob
         });
 
@@ -271,7 +262,7 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(
           fileBlob,
-          `${storeDetail?.name} ${t("staff_info")}` + ".xlsx" || "export.xlsx"
+          `${storeDetail?.name} ${t("staff_info")}.xlsx` || "export.xlsx"
         );
       }
     } catch (err) {
@@ -281,25 +272,13 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
   const DialySales = async () => {
     setPopup({ ReportExport: false });
     try {
-      let findBy = "?";
-      if (
-        storeDetail?.startDayFilter &&
-        storeDetail?.endDayFilter &&
-        storeDetail?.startTimeFilter &&
-        storeDetail?.endTimeFilter
-      ) {
-        findBy += `startDate=${storeDetail?.startDayFilter}&`;
-        findBy += `endDate=${storeDetail?.endDayFilter}&`;
-        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
-        findBy += `endTime=${storeDetail?.endTimeFilter}`;
-      }
-
-      const url =
-        END_POINT_EXPORT + `/export/report-daily/${storeDetail?._id}` + findBy;
-      const _res = await Axios.get(url);
+      const url = `${END_POINT_EXPORT}/export/report-daily/${
+        storeDetail?._id
+      }${findByData()}`;
+      const _res = await axios.get(url);
 
       if (_res?.data?.exportUrl) {
-        const response = await Axios.get(_res?.data?.exportUrl, {
+        const response = await axios.get(_res?.data?.exportUrl, {
           responseType: "blob", // Important to get the response as a Blob
         });
 
@@ -312,7 +291,7 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(
           fileBlob,
-          `${storeDetail?.name} ${t("dialy_sales")}` + ".xlsx" || "export.xlsx"
+          `${storeDetail?.name} ${t("dialy_sales")}.xlsx` || "export.xlsx"
         );
       }
     } catch (err) {
@@ -322,27 +301,13 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
   const MenuType = async () => {
     setPopup({ ReportExport: false });
     try {
-      let findBy = "?";
-      if (
-        storeDetail?.startDayFilter &&
-        storeDetail?.endDayFilter &&
-        storeDetail?.startTimeFilter &&
-        storeDetail?.endTimeFilter
-      ) {
-        findBy += `startDate=${storeDetail?.startDayFilter}&`;
-        findBy += `endDate=${storeDetail?.endDayFilter}&`;
-        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
-        findBy += `endTime=${storeDetail?.endTimeFilter}`;
-      }
-
-      const url =
-        END_POINT_EXPORT +
-        `/export/report-category/${storeDetail?._id}` +
-        findBy;
-      const _res = await Axios.get(url);
+      const url = `${END_POINT_EXPORT}/export/report-category/${
+        storeDetail?._id
+      }${findByData()}`;
+      const _res = await axios.get(url);
 
       if (_res?.data?.exportUrl) {
-        const response = await Axios.get(_res?.data?.exportUrl, {
+        const response = await axios.get(_res?.data?.exportUrl, {
           responseType: "blob", // Important to get the response as a Blob
         });
 
@@ -355,7 +320,7 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(
           fileBlob,
-          `${storeDetail?.name} ${t("menu_type")}` + ".xlsx" || "export.xlsx"
+          `${storeDetail?.name} ${t("menu_type")}.xlsx` || "export.xlsx"
         );
       }
     } catch (err) {
@@ -365,27 +330,13 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
   const MenuInfo = async () => {
     setPopup({ ReportExport: false });
     try {
-      let findBy = "?";
-      if (
-        storeDetail?.startDayFilter &&
-        storeDetail?.endDayFilter &&
-        storeDetail?.startTimeFilter &&
-        storeDetail?.endTimeFilter
-      ) {
-        findBy += `startDate=${storeDetail?.startDayFilter}&`;
-        findBy += `endDate=${storeDetail?.endDayFilter}&`;
-        findBy += `startTime=${storeDetail?.startTimeFilter}&`;
-        findBy += `endTime=${storeDetail?.endTimeFilter}`;
-      }
-
-      const url =
-        END_POINT_EXPORT +
-        `/export/report-menu-detail/${storeDetail?._id}` +
-        findBy;
-      const _res = await Axios.get(url);
+      const url = `${END_POINT_EXPORT}/export/report-menu-detail/${
+        storeDetail?._id
+      }${findByData()}`;
+      const _res = await axios.get(url);
 
       if (_res?.data?.exportUrl) {
-        const response = await Axios.get(_res?.data?.exportUrl, {
+        const response = await axios.get(_res?.data?.exportUrl, {
           responseType: "blob", // Important to get the response as a Blob
         });
 
@@ -398,40 +349,7 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
         // Use the file-saver library to save the file with a new name
         saveAs(
           fileBlob,
-          `${storeDetail?.name} ${t("menu_info")}` + ".xlsx" || "export.xlsx"
-        );
-      }
-    } catch (err) {
-      errorAdd(`${t("export_fail")}`);
-    }
-  };
-  const Delivery = async () => {
-    setPopup({ ReportExport: false });
-    try {
-      let findBy = "?";
-      if (storeDetail?.startDayFilter && storeDetail?.endDayFilter) {
-        findBy += `startDate=${storeDetail?.startDayFilter}&`;
-        findBy += `endDate=${storeDetail?.endDayFilter}&`;
-      }
-
-      const url = `${END_POINT_EXPORT}/export/delivery/${storeDetail?._id}${findBy}`;
-      const _res = await Axios.get(url);
-
-      if (_res?.data?.exportUrl) {
-        const response = await Axios.get(_res?.data?.exportUrl, {
-          responseType: "blob", // Important to get the response as a Blob
-        });
-
-        // Create a Blob from the response data
-        // console.log("response", response.data);
-        const fileBlob = new Blob([response.data], {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
-
-        // Use the file-saver library to save the file with a new name
-        saveAs(
-          fileBlob,
-          `${storeDetail?.name} ${t("menu_info")}` + ".xlsx" || "export.xlsx"
+          `${storeDetail?.name} ${t("menu_info")}.xlsx` || "export.xlsx"
         );
       }
     } catch (err) {
@@ -522,12 +440,6 @@ export default function PopUpReportExportExcel({ open, onClose, setPopup }) {
             onClick={currencyExport}
           >
             <span>{t("all_curency")}</span>
-          </Button>
-          <Button
-            style={{ height: 100, padding: 20, width: 200 }}
-            onClick={Delivery}
-          >
-            <span>Delivery</span>
           </Button>
         </div>
       </Modal.Body>
