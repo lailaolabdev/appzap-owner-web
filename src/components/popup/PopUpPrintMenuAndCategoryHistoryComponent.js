@@ -1,5 +1,6 @@
 import moment from "moment";
 import styled from "styled-components";
+import Select from "react-select";
 import React, { useEffect, useState, useRef } from "react";
 import { Modal, Button, InputGroup, Form } from "react-bootstrap";
 import { BsPrinter } from "react-icons/bs";
@@ -25,6 +26,8 @@ import { useTranslation } from "react-i18next";
 import printFlutter from "../../helpers/printFlutter";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { getAllShift } from "./../../services/shift";
+import { useShiftStore } from "../../zustand/ShiftStore";
 
 export default function PopUpPrintMenuAndCategoryHistoryComponent({
   open,
@@ -39,9 +42,86 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
   const [menuReport, setMenuReport] = useState([]);
   const [categoryMenu, setCategoryMenu] = useState([]);
 
+  const [shiftData, setShiftData] = useState([]);
+  const [shiftId, setShiftId] = useState(null);
+  const [shiftDate, setShiftDate] = useState(null);
+
   // provider
-  const { printerCounter, printers } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { printerCounter, printers, profile } = useStore();
+  const { storeDetail } = useStoreStore();
+  const { shiftCurrent } = useShiftStore();
+
+  const fetchShift = async () => {
+    await getAllShift()
+      .then((res) => {
+        setShiftData(res?.data?.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  const optionsData = [
+    {
+      value: {
+        shiftID: "ALL",
+      },
+      label: t("all_shifts"),
+    },
+    ...(shiftData ?? []).map((item) => {
+      return {
+        value: {
+          startTime: item.startTime,
+          endTime: item.endTime,
+          shiftID: item._id,
+          name: item.shiftName,
+        },
+        label: item.shiftName,
+      };
+    }),
+  ];
+
+  const handleSearchInput = (option) => {
+    if (option?.value?.shiftID === "ALL") {
+      setShiftId(null);
+      getMenuReportData(startDate);
+      setShiftDate(null);
+    } else {
+      setShiftId(option?.value?.shiftID);
+      setShiftDate(option?.value);
+    }
+  };
+
+  const findByData = () => {
+    const endDate = startDate; // Same date range for a single day
+    const startTime = "00:00:00";
+    const endTime = "23:59:59";
+    let findBy = "?";
+
+    if (profile?.data?.role === "APPZAP_ADMIN") {
+      findBy += `startDate=${startDate}&`;
+      findBy += `endDate=${endDate}&`;
+      findBy += `startTime=${startTime}&`;
+      findBy += `endTime=${endTime}&`;
+
+      if (shiftId) {
+        findBy += `shiftId=${shiftId}&`;
+      }
+    } else {
+      findBy += `startDate=${startDate}&`;
+      findBy += `endDate=${endDate}&`;
+      findBy += `startTime=${startTime}&`;
+      findBy += `endTime=${endTime}&`;
+      if (shiftCurrent[0]) {
+        findBy += `shiftId=${shiftCurrent[0]?._id}&`;
+      }
+    }
+
+    return findBy;
+  };
+
+  useEffect(() => {
+    fetchShift();
+  }, []);
   // useEffect
   useEffect(() => {
     let _objectA = {};
@@ -65,7 +145,7 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
   }, [menuReport]);
   useEffect(() => {
     getMenuReportData(startDate);
-  }, [startDate]);
+  }, [startDate, shiftId]);
 
   useEffect(() => {
     if (open && printers?.length > 0) {
@@ -155,23 +235,9 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
   };
   const getMenuReportData = async (startDate) => {
     try {
-      const endDate = startDate;
-      const startTime = "00:00:00";
-      const endTime = "23:59:59";
-      // const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-      // const data = await getBillReport(storeDetail._id, findBy);
-
-      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-      const data = await getMenuReport(storeDetail?._id, findBy);
+      const data = await getMenuReport(storeDetail?._id, findByData());
 
       setMenuReport(data);
-      // logic
-      // setReportBill({
-      //   ຈຳນວນອໍເດີທັງໝົດ: countBill,
-      //   ຈຳນວນອໍເດີທີ່ສຳເລັດ: totalBill,
-      //   ຈຳນວນອໍເດີຍົກເລີກ: cashTotalBill,
-      //   ຈ່າຍເງິນໂອນ: transferTotalBill,
-      // });
     } catch (err) {}
   };
 
@@ -194,12 +260,26 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
           flexDirection: "column",
         }}
       >
-        <div>
-          <Form.Control
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
+        <div className="flex gap-2 items-center">
+          <div>
+            <Form.Control
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </div>
+          {profile?.data?.role === "APPZAP_ADMIN"
+            ? storeDetail?.isShift && (
+                <div className="flex gap-1 items-center">
+                  <Select
+                    placeholder={t("chose_shift")}
+                    className="w-36 border-orange-500"
+                    options={optionsData}
+                    onChange={handleSearchInput}
+                  />
+                </div>
+              )
+            : ""}
         </div>
         <div
           ref={billRef}
@@ -208,12 +288,15 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
           <Container>
             <div style={{ fontWeight: "bold", fontSize: 24 }}>
               {t("report_sales_by_type")}
+              {shiftDate ? `(${shiftDate?.name})` : ""}
             </div>
             <div style={{ fontWeight: "bold" }}>
-              {t("start")}: {startDate} 00:00:00
+              {t("start")}: {startDate}{" "}
+              {shiftDate ? shiftDate?.startTime : "00:00:00"}
             </div>
             <div style={{ fontWeight: "bold" }}>
-              {t("to")}: {startDate} 23:59:59
+              {t("to")}: {startDate}{" "}
+              {shiftDate ? shiftDate?.endTime : "23:59:59"}
             </div>
             <hr style={{ borderBottom: "1px dotted #000" }} />
             {categoryMenu?.map((item) => (

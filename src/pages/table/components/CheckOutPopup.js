@@ -30,6 +30,7 @@ import {
 import { RedeemPoint, PointUser } from "../../../services/point";
 
 import { useStoreStore } from "../../../zustand/storeStore";
+import { useShiftStore } from "../../../zustand/ShiftStore";
 
 export default function CheckOutPopup({
   onPrintDrawer,
@@ -84,6 +85,8 @@ export default function CheckOutPopup({
   } = useStore();
 
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
+
+  const { shiftCurrent } = useShiftStore();
 
   //select Bank
 
@@ -294,6 +297,7 @@ export default function CheckOutPopup({
     const body = {
       selectedBank: selectedBank.name,
       bankId: selectedBank.id,
+      shiftId: shiftCurrent[0]?._id,
       orderPayBefore: orderItem,
       isCheckout: checkStatus,
       status: checkStatusBill,
@@ -330,7 +334,7 @@ export default function CheckOutPopup({
 
     await axios
       .put(
-        `${END_POINT}/v6/bill-checkout`,
+        `${END_POINT}/v7/bill-checkout`,
         {
           id: dataBill?._id,
           data: body,

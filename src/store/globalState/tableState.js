@@ -17,6 +17,7 @@ import {
 import { getHeaders } from "../../services/auth";
 import { updateOrderItem } from "../../services/order";
 import { getCodes } from "../../services/code";
+import { useShiftStore } from "../../zustand/ShiftStore";
 import Axios from "axios";
 
 export const useTableState = (storeDetail) => {
@@ -33,6 +34,7 @@ export const useTableState = (storeDetail) => {
   const [isWaitingPress, setIsWaitingPress] = useState(false);
   const [dataQR, setDataQR] = useState();
 
+  const { shiftCurrent } = useShiftStore();
   /**
    * Modify Order
    *
@@ -170,12 +172,13 @@ export const useTableState = (storeDetail) => {
       const code = codesData[0];
 
       let resData = await axios.put(
-        END_POINT_SEVER_TABLE_MENU + `/v3/code/update`,
+        END_POINT_SEVER_TABLE_MENU + `/v7/code/update`,
         {
           id: code?._id,
           data: {
             isOpened: true,
             isStaffConfirm: true,
+            shiftId: shiftCurrent ? shiftCurrent[0]?._id : null,
             createdAt: new Date(),
           },
         },
@@ -267,13 +270,14 @@ export const useTableState = (storeDetail) => {
         data: {
           isOpened: true,
           isStaffConfirm: true,
+          shiftId: shiftCurrent ? shiftCurrent[0]?._id : null,
           createdAt: new Date(),
         },
       };
 
       // Update code status
       const updateResponse = await axios.put(
-        `${END_POINT_SEVER_TABLE_MENU}/v3/code/update`,
+        `${END_POINT_SEVER_TABLE_MENU}/v7/code/update`,
         updatePayload,
         { headers: await getHeaders() }
       );

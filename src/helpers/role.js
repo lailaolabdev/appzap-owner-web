@@ -14,7 +14,7 @@ const data = {
  * @param {Object} user
  * @returns {data}
  */
-const role = (role, user) => {
+const role = (role, user, storeDetail, shift) => {
   switch (role) {
     case "APPZAP_ADMIN":
       return {
@@ -102,7 +102,11 @@ const role = (role, user) => {
       };
     case "APPZAP_COUNTER":
       return {
-        defaultPath: "/tables",
+        defaultPath: storeDetail?.isShift
+          ? shiftCurrent[0]?.status === "OPEN"
+            ? "/tables"
+            : "/shift-open-pages"
+          : "/tables",
         reportManagement: true,
         tableManagement: true,
         orderManagement: true,

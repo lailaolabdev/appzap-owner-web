@@ -59,6 +59,7 @@ import { fontMap } from "../../utils/font-map";
 
 import { useStoreStore } from "../../zustand/storeStore";
 import { useMenuStore } from "../../zustand/menuStore";
+import { useShiftStore } from "../../zustand/ShiftStore";
 import theme from "../../theme";
 
 function AddOrder() {
@@ -96,6 +97,8 @@ function AddOrder() {
 
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
+
+  const { shiftCurrent } = useShiftStore();
 
   const sliderRef = useRef();
 
@@ -685,6 +688,7 @@ function AddOrder() {
       printer: selectedItem?.categoryId?.printer,
       note: addComments,
       menuOptions: selectedItem.menuOptions,
+      shiftId: shiftCurrent[0]?._id,
       options: filteredOptions,
       totalOptionPrice: totalOptionPrice,
     };
@@ -757,6 +761,7 @@ function AddOrder() {
         price: menu.price,
         categoryId: menu?.categoryId,
         printer: menu?.categoryId?.printer,
+        shiftId: shiftCurrent[0]?._id,
         note: "",
         createdBy: profile,
         deliveryCode: "", // Add delivery code field

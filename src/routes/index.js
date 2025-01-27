@@ -232,7 +232,7 @@ function Router() {
           element: <FoodList />,
         },
         {
-          path: "/shift-setting",
+          path: "/shift",
           element: <ShiftList />,
         },
         {

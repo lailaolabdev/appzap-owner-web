@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import moment from "moment";
-
+import Select from "react-select";
 import { TitleComponent } from "../../components";
 import { Form, Button } from "react-bootstrap";
 import IncomeExpendatureChart from "./IncomeExpendatureChart";
@@ -33,6 +33,8 @@ import PopUpManageCounter from "../../components/popup/PopUpManageCounter";
 import { manageCounterService } from "../../services/manageCounterService";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { useShiftStore } from "../../zustand/ShiftStore";
+import { getAllShift } from "./../../services/shift";
 import theme from "../../theme";
 
 export default function IncomeExpendExport() {
@@ -46,8 +48,10 @@ export default function IncomeExpendExport() {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
   const today = new Date();
-  const [dateStart, setDateStart] = useState(null);
-  const [dateEnd, setDateEnd] = useState(null);
+  const [dateStart, setDateStart] = useState(moment().format("YYYY/MM/DD"));
+  const [dateEnd, setDateEnd] = useState(moment().format("YYYY/MM/DD"));
+  const [startTime, setStartTime] = useState("00:00:00");
+  const [endTime, setEndTime] = useState("23:59:59");
   const { width, height } = useWindowDimensions2();
   //filter
   const [filterByYear, setFilterByYear] = useState(
@@ -63,30 +67,55 @@ export default function IncomeExpendExport() {
   const [incomeGraphData, setIncomeGraphData] = useState();
   const [graphData, setGraphData] = useState();
   const [incomeExpendData, setIncomeExpendData] = useState([]);
+
+  const [openGetDate, setOpenGetDate] = useState(false);
+
+  const [days, setDays] = useState(null);
+  const [shiftData, setShiftData] = useState([]);
+  const [shiftId, setShiftId] = useState(null);
+
   const { profile } = useStore();
   const { storeDetail } = useStoreStore();
-  const [openGetDate, setOpenGetDate] = useState(false);
+  const { shiftCurrent } = useShiftStore();
   const storeId = storeDetail?._id;
   const user_role = profile.data?.role;
-  const [days, setDays] = useState(null);
 
   const User_store = "APPZAP_COUNTER";
   //const User_store = "APPZAP_ADMIN";
+
+  const fetchShift = async () => {
+    await getAllShift()
+      .then((res) => {
+        setShiftData(res?.data?.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    fetchShift();
+    const time = new Date();
+    const month = time.getMonth();
+    const year = time.getFullYear();
+    setDateStart(moment(new Date(year, month, 1)).format("YYYY-MM-DD"));
+    setDateEnd(moment(new Date(year, month + 1, 0)).format("YYYY-MM-DD"));
+  }, []);
 
   useEffect(() => {
     if (user_role === User_store) {
       // If user is store admin, set to current day only
       const startOfDay = moment(today).startOf("day").toDate();
       const endOfDay = moment(today).endOf("day").toDate();
-      setDateStart(startOfDay);
-      setDateEnd(endOfDay);
+      setDateStart(moment(startOfDay).format("YYYY/MM/DD"));
+      setDateEnd(moment(endOfDay).format("YYYY/MM/DD"));
     } else {
       // For other users, set to current month
       const time = new Date();
       const month = time.getMonth();
       const year = time.getFullYear();
-      setDateStart(new Date(year, month, 1));
-      setDateEnd(new Date(year, month + 1, 0));
+      setDateStart(moment(new Date(year, month, 1)).format("YYYY-MM-DD"));
+      setDateEnd(moment(new Date(year, month + 1, 0)).format("YYYY-MM-DD"));
     }
   }, [user_role]);
 
@@ -109,10 +138,10 @@ export default function IncomeExpendExport() {
   //console.log("days:", days)
 
   useEffect(() => {
-    if (dateStart && dateEnd) {
+    if (dateStart && dateEnd && shiftId) {
       getIncomeExpendData();
     }
-  }, [dateStart, dateEnd]);
+  }, [dateStart, dateEnd, shiftId]);
 
   const OPTION = {
     chart: {
@@ -201,7 +230,7 @@ export default function IncomeExpendExport() {
 
   useEffect(() => {
     getIncomeExpendData();
-  }, [dateStart, dateEnd]);
+  }, [dateStart, dateEnd, shiftId]);
 
   useEffect(() => {
     if (!expendGraphData) return;
@@ -223,9 +252,7 @@ export default function IncomeExpendExport() {
       }&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
 
       if (dateStart && dateEnd)
-        findby += `&date_gte=${moment(dateStart).format(
-          "YYYY/MM/DD"
-        )}&date_lt=${moment(dateEnd).format("YYYY/MM/DD")}`;
+        findby += `&date_gte=${dateStart}&date_lt=${dateEnd}`;
 
       const header = await getHeadersAccount();
       const headers = {
@@ -246,14 +273,30 @@ export default function IncomeExpendExport() {
         });
 
       let findIncomeby = `${_localData?.DATA?.storeId}?`;
-      if (dateStart && dateEnd)
-        findIncomeby += `startDate=${moment(dateStart).format(
-          "YYYY-MM-DD"
-        )}&endDate=${moment(dateEnd).format("YYYY-MM-DD")}`;
-      findIncomeby = findIncomeby + `&endTime=23:59:59&startTime=00:00:00`;
+      if (profile?.data?.role === "APPZAP_ADMIN") {
+        if (dateStart && dateEnd) {
+          findIncomeby += `startDate=${dateStart}&`;
+          findIncomeby += `endDate=${dateEnd}&`;
+          findIncomeby += `startTime=${startTime}&`;
+          findIncomeby += `endTime=${endTime}&`;
+        }
+
+        if (shiftId) {
+          findIncomeby += `shiftId=${shiftId}&`;
+        }
+      } else {
+        findIncomeby += `startDate=${dateStart}&`;
+        findIncomeby += `endDate=${dateEnd}&`;
+        findIncomeby += `startTime=${startTime}&`;
+        findIncomeby += `endTime=${endTime}&`;
+        if (shiftCurrent[0]) {
+          findIncomeby += `shiftId=${shiftCurrent[0]?._id}&`;
+        }
+      }
+
       await axios({
         method: "post",
-        url: `${END_POINT_SEVER}/v4/report-daily/${findIncomeby}`,
+        url: `${END_POINT_SEVER}/v7/report-daily/${findIncomeby}`,
         headers: headers,
       })
         .then((res) => {
@@ -271,7 +314,6 @@ export default function IncomeExpendExport() {
 
   const modifyData = () => {
     if (!incomeGraphData) return;
-
     setSeries([]);
     setOptions(null);
     setGraphData(null);
@@ -355,6 +397,32 @@ export default function IncomeExpendExport() {
     }
   };
 
+  const optionsData = [
+    {
+      value: {
+        shiftID: "ALL",
+      },
+      label: t("all_shifts"),
+    },
+    ...(shiftData ?? []).map((item) => {
+      return {
+        value: {
+          shiftID: item._id,
+        },
+        label: item.shiftName,
+      };
+    }),
+  ];
+
+  const handleSearchInput = (option) => {
+    if (option?.value?.shiftID === "ALL") {
+      setShiftId(null);
+      getIncomeExpendData();
+    } else {
+      setShiftId(option?.value?.shiftID);
+    }
+  };
+
   return (
     <div>
       <div
@@ -393,11 +461,14 @@ export default function IncomeExpendExport() {
                 onClick={() => setOpenGetDate({ popupfiltter: true })}
               >
                 <BsFillCalendarWeekFill />
+                {/* <div>{dateStart ? dateStart : ""}</div> */}
                 <div>
                   {dateStart ? moment(dateStart).format("YYYY-MM-DD") : ""}
                 </div>
+
                 {" ~ "}
                 <div>{dateEnd ? moment(dateEnd).format("YYYY-MM-DD") : ""}</div>
+                {/* <div>{dateEnd ? dateEnd : ""}</div> */}
               </Button>
             </Form.Group>
           ) : (
@@ -405,19 +476,31 @@ export default function IncomeExpendExport() {
               <Form.Label>{t("date")}</Form.Label>
               <Form.Control
                 type="date"
-                value={dateStart ? moment(dateStart).format("YYYY-MM-DD") : ""}
-                onChange={(e) => setDateStart(new Date(e.target.value))}
+                value={dateStart ? dateStart : ""}
+                onChange={(e) => setDateStart(e.target.value)}
                 style={{ width: 150, marginLeft: "3px" }}
               />
               <span>~</span>
               <Form.Control
                 type="date"
-                value={dateEnd ? moment(dateEnd).format("YYYY-MM-DD") : ""}
-                onChange={(e) => setDateEnd(new Date(e.target.value))}
+                value={dateEnd ? dateEnd : ""}
+                onChange={(e) => setDateEnd(e.target.value)}
                 style={{ width: 150 }}
               />
             </div>
           )}
+          {profile?.data?.role === "APPZAP_ADMIN"
+            ? storeDetail?.isShift && (
+                <div className="flex gap-1 items-center">
+                  <Select
+                    placeholder={t("chose_shift")}
+                    className="w-36 border-orange-500"
+                    options={optionsData}
+                    onChange={handleSearchInput}
+                  />
+                </div>
+              )
+            : ""}
         </div>
       </div>
       {/* <Filter

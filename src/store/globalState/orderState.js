@@ -79,26 +79,23 @@ export const useOrderState = () => {
   const getOrderItemsStore = async (status, skip = 0, limit = 50) => {
     // console.log("getOrderItemsStore runnnnn");
     try {
-      // setOrderItems([]);
-      let time = "";
+      const _userData = await getLocalData();
+
+      let findby = "?";
       if (status === "SERVED" || status === "CANCELED") {
-        time = `&startDate=${moment(moment())
-          .add(-1, "days")
-          .format("MM-DD-YYYY")}&endDate=${moment(moment())
-          .add(+1, "days")
-          .format("MM-DD-YYYY")}`;
+        findby += `status=${status}&`;
+        findby += `storeId=${_userData?.DATA?.storeId}&`;
+        findby += `startDate=${moment(moment()).format("YYYY-MM-DD")}&`;
+        findby += `endDate=${moment(moment()).format("YYYY-MM-DD")}&`;
+        findby += `skip=${skip}&`;
+        findby += `limit=${limit}`;
       }
 
       await setOrderLoading(true);
-      let _userData = await getLocalData();
-      await fetch(
-        END_POINT_SEVER_BILL_ORDER +
-          `/v3/orders?status=${status}&storeId=${_userData?.DATA?.storeId}&skip=${skip}&limit=${limit}` +
-          time,
-        {
-          method: "GET",
-        }
-      )
+
+      await fetch(`${END_POINT_SEVER_BILL_ORDER}/v3/orders${findby}`, {
+        method: "GET",
+      })
         .then((response) => response.json())
         .then((json) => {
           setOrderLoading(false);

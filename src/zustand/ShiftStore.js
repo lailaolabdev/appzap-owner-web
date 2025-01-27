@@ -7,15 +7,18 @@ export const useShiftStore = create(
     (set) => ({
       // Action to fetch shift by store ID
       shift: [],
+      shiftList: [],
+      shiftCurrent: [],
+      setShiftList: (Data) => set({ shiftList: Data }),
+      setShiftListCurrent: (Data) => set({ shiftCurrent: Data }),
+
       getShift: async (findby) => {
-        set({ isMenuLoading: true });
         try {
           const data = await getOpenShift(findby);
-          set({ shift: data, isMenuLoading: false });
+          set({ shift: data });
           return data;
         } catch (error) {
           console.error("Fetch shift error:", error.message);
-          set({ isMenuLoading: false });
         }
       },
       // Action to clear menu data

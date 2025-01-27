@@ -60,11 +60,31 @@ export const DeleteShift = async (shiftId) => {
   );
 };
 
-export const OpenShift = async (values, shiftId) => {
+export const OpenShift = async (shiftId) => {
   const { DATA } = await getLocalData();
   return await axios.put(
     `${END_POINT_APP}/v7/shift/open/${shiftId}/${DATA?.storeId}`,
-    values,
+    {},
+    {
+      headers: await getHeaders(),
+    }
+  );
+};
+export const CloseShift = async (shiftId) => {
+  const { DATA } = await getLocalData();
+  return await axios.put(
+    `${END_POINT_APP}/v7/shift/close/${shiftId}/${DATA?.storeId}`,
+    {},
+    {
+      headers: await getHeaders(),
+    }
+  );
+};
+
+export const GetHistoryShift = async (findBy) => {
+  const { DATA } = await getLocalData();
+  return await axios.get(
+    `${END_POINT_APP}/v7/shiftHistory/all?storeId=${DATA?.storeId}&${findBy}`,
     {
       headers: await getHeaders(),
     }

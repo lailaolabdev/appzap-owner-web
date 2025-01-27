@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import moment from "moment";
 import { Button, Image } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
@@ -29,6 +30,7 @@ export default function StoreDetail() {
   const [numBerMenus, setnumBerMenus] = useState(0);
   const [getTokken, setgetTokken] = useState();
   const [popEditStroe, setPopEditStroe] = useState(false);
+  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -39,10 +41,15 @@ export default function StoreDetail() {
       }
     };
     fetchData();
+    // GetOpenShift(startDate);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const GetOpenShift = () => {};
+  // const GetOpenShift = async (startDate) => {
+  //   const endDate = startDate; // Same date range for a single day
+  //   const findBy = `startDate=${startDate}&endDate=${endDate}&status=OPEN`;
+  //   await getShift(findBy);
+  // };
 
   const getData = async (storeId) => {
     setIsLoading(true);
