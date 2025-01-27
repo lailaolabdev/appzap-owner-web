@@ -321,6 +321,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           height: "100vh",
           display: "block",
           position: "fixed",
+          overflow: "auto",
         }}
         onSelect={(selected) => {
           setSelectStatus(selected.split("/")[0].split("-")[0]);
