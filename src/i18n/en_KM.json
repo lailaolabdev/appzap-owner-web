@@ -180,7 +180,7 @@
   "billCut": "កាត់",
   "billNoCut": "មិនកាត់",
   "connect_pinter": "ភ្ជាប់ទៅម៉ាស៊ីនបោះពុម្ព",
-  "unconnect_pinter": "មិនបានភ្ជាប់",
+  "disconnected_pinter": "មិនបានភ្ជាប់",
   "log_out": "ចាកចេញ",
   "table_status": "ស្ថានភាពតុ",
   "order_list": "បញ្ជីការបញ្ជាទិញ",
@@ -405,6 +405,7 @@
   "last_amount": "ចំនួនចុងក្រោយ",
   "order_success": "បញ្ជាទិញបានជោគជ័យ",
   "addition_options": "ជម្រើសបន្ថែម",
+  "additional_options_of": "ជម្រើសបន្ថែមរបស់",
   "options_name": "ឈ្មោះជម្រើស",
   "add_options": "បន្ថែមជម្រើស",
   "price_addjust": "កែតម្លៃ",
@@ -449,6 +450,7 @@
   "member_list": "បញ្ជីសមាជិក",
   "add_member": "បន្ថែមសមាជិក",
   "member_name": "ឈ្មោះសមាជិក",
+  "edit-menu": "កែសម្រួលម៉ឺនុយ",
   "point": "ពិន្ទុ",
   "use_service": "ប្រើប្រាស់សេវាកម្ម",
   "regis_date": "កាលបរិច្ឆេទចុះឈ្មោះ",
@@ -865,6 +867,11 @@
   "zone_setting": "ការកំណត់តំបន់",
   "zone_setting_desc": "បន្ថែមតំបន់, កែសម្រួលតំបន់...",
   "zone_list": "បញ្ជីតំបន់",
+  "fill_zone": "បន្ថែមតំបន់",
+  "zone": "តំបន់",
+  "is_order_split": "បែងចែកការបញ្ជាទិញ",
+  "is_delivery_table": "តារាងដឹកជញ្ជូន",
+  "choose_zone": "ជ្រើសរើសតំបន់",
   "Open": "បើក",
   "Close": "បិទ",
   "notification": "ការជូនដំណឹង",
@@ -874,5 +881,7 @@
   "yesterday": "ម្សិលមិញ",
   "this_month": "ខែនេះ",
   "this_year": "ឆ្នាំនេះ",
-  "last_year": "ឆ្នាំមុន"
+  "last_year": "ឆ្នាំមុន",
+  "deliveryTable": "តារាងដឹកជញ្ជូន"
+
 }

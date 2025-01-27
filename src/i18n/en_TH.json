@@ -185,7 +185,7 @@
   "billCut": "ตัด",
   "billNoCut": "ไม่ตัด",
   "connect_pinter": "เชื่อมต่อกับเครื่องพิมพ์",
-  "unconnect_pinter": "ไม่ได้เชื่อมต่อ",
+  "disconnected_pinter": "ไม่ได้เชื่อมต่อ",
   "log_out": "ออกจากระบบ",
   "table_status": "การจัดการโต๊ะ",
   "order_list": "การจัดการคำสั่งซื้อ",
@@ -411,6 +411,7 @@
   "last_amount": "ยอดสุดท้าย",
   "order_success": "คำสั่งซื้อสำเร็จ",
   "addition_options": "ตัวเลือกเพิ่มเติม",
+  "additional_options_of": "รายการออฟชั่นเพิ่มเติมของ",
   "options_name": "ชื่อตัวเลือก",
   "add_options": "เพิ่มตัวเลือก",
   "price_addjust": "การปรับราคา",
@@ -455,6 +456,7 @@
   "member_list": "รายการสมาชิก",
   "add_member": "เพิ่มสมาชิก",
   "member_name": "ชื่อสมาชิก",
+  "edit-menu": "แก้ไขเมนู",
   "point": "คะแนน",
   "use_service": "รับบริการ",
   "regis_date": "วันที่ลงทะเบียน",
@@ -887,6 +889,11 @@
   "zone_setting": "การตั้งค่าโซน",
   "zone_setting_desc": "เพิ่มโซน, แก้ไขโซน...",
   "zone_list": "รายการโซน",
+  "fill_zone": "เพิ่มโซน",
+  "zone": "โซน",
+  "choose_zone": "เลือกโซน",
+  "is_order_split": "รวมออเดอร์",
+  "is_delivery_table": "เปิดโต๊ะเป็น Delivery",
   "branch": "สาขา",
   "add_branch": "เพิ่มสาขา",
   "branch_name": "ชื่อสาขา",
@@ -914,5 +921,7 @@
   "money_remaining": "หนี้คงเหลือ",
   "money_cash": "จำนวนเงินที่ชำระ",
   "bank_transfer_history": "การโอนเงินผ่านธนาคาร",
-  "order_": "สั่งชื้อ"
+  "order_": "สั่งชื้อ",
+  "deliveryTable": "โต๊ะ Delivery"
+
 }

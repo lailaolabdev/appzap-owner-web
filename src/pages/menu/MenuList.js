@@ -979,13 +979,14 @@ export default function MenuList() {
                               setDetailMenuOption({ data, index });
                             }}
                           >
-                            + ອ໋ອບຊັນເສີມ (
+                            + {t("addition_options")} (
                             {menuOptionsCount[data._id] ||
                               data?.menuOptions?.length ||
                               0}
                             )
                           </button>
                         </td>
+
                         {/* manage icon */}
                         <td
                           // className="manage"
@@ -1263,7 +1264,7 @@ export default function MenuList() {
                     </Col>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>{t("food_name")} (en)</Form.Label>
+                        <Form.Label>{t("food_name")} (EN)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_en"
@@ -1284,7 +1285,7 @@ export default function MenuList() {
                   <Row>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>{t("food_name")} (cn)</Form.Label>
+                        <Form.Label>{t("food_name")} (CN)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_cn"
@@ -1303,7 +1304,7 @@ export default function MenuList() {
                     </Col>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>{t("food_name")} (kr)</Form.Label>
+                        <Form.Label>{t("food_name")} (KR)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_kr"
@@ -1368,7 +1369,7 @@ export default function MenuList() {
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
                                     <Form.Label>
-                                      {t("food_name")} (en)
+                                      {t("food_name")} (EN)
                                     </Form.Label>
                                     <Form.Control
                                       type="text"
@@ -1390,7 +1391,7 @@ export default function MenuList() {
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
                                     <Form.Label>
-                                      {t("food_name")} (cn)
+                                      {t("food_name")} (CN)
                                     </Form.Label>
                                     <Form.Control
                                       type="text"
@@ -1410,7 +1411,7 @@ export default function MenuList() {
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
                                     <Form.Label>
-                                      {t("food_name")} (kr)
+                                      {t("food_name")} (KR)
                                     </Form.Label>
                                     <Form.Control
                                       type="text"
@@ -1522,7 +1523,7 @@ export default function MenuList() {
           size="lg"
         >
           <Modal.Header closeButton>
-            <Modal.Title>{t("update-menu")}</Modal.Title>
+            <Modal.Title>{t("edit-menu")}</Modal.Title>
           </Modal.Header>
           <Formik
             initialValues={{
@@ -1717,7 +1718,7 @@ export default function MenuList() {
                     </Col>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>{t("food_name")} (en)</Form.Label>
+                        <Form.Label>{t("food_name")} (EN)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_en"
@@ -1740,7 +1741,7 @@ export default function MenuList() {
                   <Row>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>{t("food_name")} (cn)</Form.Label>
+                        <Form.Label>{t("food_name")} (CN)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_cn"
@@ -1761,7 +1762,7 @@ export default function MenuList() {
                     </Col>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
-                        <Form.Label>{t("food_name")} (kr)</Form.Label>
+                        <Form.Label>{t("food_name")} (KR)</Form.Label>
                         <Form.Control
                           type="text"
                           name="name_kr"
@@ -1828,7 +1829,7 @@ export default function MenuList() {
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
                                     <Form.Label>
-                                      {t("food_name")} (en)
+                                      {t("food_name")} (EN)
                                     </Form.Label>
                                     <Form.Control
                                       type="text"
@@ -1850,7 +1851,7 @@ export default function MenuList() {
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
                                     <Form.Label>
-                                      {t("food_name")} (cn)
+                                      {t("food_name")} (CN)
                                     </Form.Label>
                                     <Form.Control
                                       type="text"
@@ -1870,7 +1871,7 @@ export default function MenuList() {
                                 <Col>
                                   <Form.Group controlId="exampleForm.ControlInput1">
                                     <Form.Label>
-                                      {t("food_name")} (kr)
+                                      {t("food_name")} (KR)
                                     </Form.Label>
                                     <Form.Control
                                       type="text"
