@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import moment from "moment";
 import { Button, Image } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
@@ -9,6 +10,7 @@ import { END_POINT } from "../../constants";
 import { COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
 import "./index.css";
 import PopUpStoreEdit from "../../components/popup/PopUpStoreEdit";
+import { useShiftStore } from "../../zustand/ShiftStore";
 import Loading from "../../components/Loading";
 import { updateStore } from "../../services/store";
 import { useParams } from "react-router-dom";
@@ -18,6 +20,7 @@ import { useTranslation } from "react-i18next";
 export default function StoreDetail() {
   const params = useParams();
   const { t } = useTranslation();
+  const { getShift } = useShiftStore();
 
   // State
   const [isLoading, setIsLoading] = useState(false);
@@ -27,6 +30,7 @@ export default function StoreDetail() {
   const [numBerMenus, setnumBerMenus] = useState(0);
   const [getTokken, setgetTokken] = useState();
   const [popEditStroe, setPopEditStroe] = useState(false);
+  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,8 +41,16 @@ export default function StoreDetail() {
       }
     };
     fetchData();
+    // GetOpenShift(startDate);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // const GetOpenShift = async (startDate) => {
+  //   const endDate = startDate; // Same date range for a single day
+  //   const findBy = `startDate=${startDate}&endDate=${endDate}&status=OPEN`;
+  //   await getShift(findBy);
+  // };
+
   const getData = async (storeId) => {
     setIsLoading(true);
     await fetch(STORE + `/?id=${params?.id}`, {

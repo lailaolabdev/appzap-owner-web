@@ -5,7 +5,7 @@ import { Nav, Button, Card } from "react-bootstrap";
 import Box from "../../components/Box";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
-
+import Select from "react-select";
 import {
   faCertificate,
   faCoins,
@@ -34,12 +34,14 @@ import {
   getSalesInformationReport,
   getTotalBillActiveReport,
 } from "../../services/report";
-import { getCountBills } from "../../services/bill";
+import { getCountBills, getCountBillsV7 } from "../../services/bill";
+import { getAllShift } from "../../services/shift";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 import convertNumber from "../../helpers/convertNumber";
 import { fontMap } from "../../utils/font-map";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { useShiftStore } from "../../zustand/ShiftStore";
 import theme from "../../theme";
 
 export default function Dashboard() {
@@ -49,8 +51,6 @@ export default function Dashboard() {
     i18n: { language },
   } = useTranslation();
   const newDate = new Date();
-
-
 
   // state
   const [reportData, setReportData] = useState([]); // ຂໍ້ມູນລາຍງານ
@@ -69,14 +69,32 @@ export default function Dashboard() {
   const [selectedCurrency, setSelectedCurrency] = useState("LAK");
   const [changeUi, setChangeUi] = useState("CHECKBILL");
   const [changeText, setChangeText] = useState("CLICK1");
-  const [countIsDebtTrue , setCountIsDebtTrue ] =  useState(0);
- 
+  const [countIsDebtTrue, setCountIsDebtTrue] = useState(0);
+
+  const [shifts, setShift] = useState([]);
+  const [shiftId, setShiftId] = useState(null);
 
   const { storeDetail } = useStoreStore();
+  const { shiftCurrent } = useShiftStore();
+  const { profile } = useStore();
 
+  const fetchShift = async () => {
+    await getAllShift()
+      .then((res) => {
+        setShift(res?.data?.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    fetchShift();
+  }, []);
 
   // useEffect
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     getReportData();
     getSalesInformationReportData();
@@ -85,49 +103,87 @@ export default function Dashboard() {
     getCountAllBillReportData();
     getCountBillActiveReportData();
     getTotalBillActiveReportData();
-  }, [endDate, startDate, endTime, startTime]);
+  }, [endDate, startDate, endTime, startTime, shiftId]);
+
+  const findByData = () => {
+    let findBy = "?";
+
+    if (profile?.data?.role === "APPZAP_ADMIN") {
+      findBy += `startDate=${startDate}&`;
+      findBy += `endDate=${endDate}&`;
+      findBy += `startTime=${startTime}&`;
+      findBy += `endTime=${endTime}&`;
+
+      if (shiftId) {
+        findBy += `shiftId=${shiftId}&`;
+      }
+    } else {
+      findBy += `startDate=${startDate}&`;
+      findBy += `endDate=${endDate}&`;
+      findBy += `startTime=${startTime}&`;
+      findBy += `endTime=${endTime}&`;
+      if (shiftCurrent[0]) {
+        findBy += `shiftId=${shiftCurrent[0]?._id}&`;
+      }
+    }
+
+    return findBy;
+  };
+
+  // console.log("findByData", findByData);
 
   // function
-  const _click1day = () => {
-    setStartDate(moment(moment(newDate).add(-1, "days")).format("YYYY-MM-DD"));
-    setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
-  };
-  const _click7days = () => {
-    setStartDate(moment(moment(newDate).add(-7, "days")).format("YYYY-MM-DD"));
-    setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
-  };
-  const _click30days = () => {
-    setStartDate(moment(moment(newDate).add(-30, "days")).format("YYYY-MM-DD"));
-    setEndDate(moment(moment(newDate)).format("YYYY-MM-DD"));
-  };
   const getReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getReports(storeDetail?._id, findBy);
     setReportData(data);
   };
   const getSalesInformationReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getSalesInformationReport(storeDetail?._id, findBy);
+    const data = await getSalesInformationReport(
+      storeDetail?._id,
+      findByData()
+    );
     setSalesInformationReport(data);
   };
   const getMoneyReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getMoneyReport(storeDetail?._id, findBy);
+    const data = await getMoneyReport(storeDetail?._id, findByData());
     setMoneyReport(data);
   };
   const getPromotionReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getPromotionReport(storeDetail?._id, findBy);
+    // const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getPromotionReport(storeDetail?._id, findByData());
     setPromotionReport(data);
   };
   const getCountAllBillReportData = async () => {
-    const findBy = `?storeId=${storeDetail?._id}&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
-    const data = await getCountBills(findBy);
+    const data = await getCountBillsV7(storeDetail?._id, findByData());
     setCountAllBillReport(data);
   };
 
   const getCountBillActiveReportData = async () => {
-    const findBy = `?storeId=${storeDetail?._id}&isCheckout=false&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
+    let findBy = "?";
+    if (profile?.data?.role === "APPZAP_ADMIN") {
+      findBy += `storeId=${storeDetail?._id}&`;
+      findBy += `isCheckout=${"false"}&`;
+      findBy += `dateFrom=${startDate}&`;
+      findBy += `dateTo=${endDate}&`;
+      findBy += `timeFrom=${startTime}&`;
+      findBy += `timeTo=${endTime}&`;
+
+      if (shiftId) {
+        findBy += `shiftId=${shiftId}&`;
+      }
+    } else {
+      findBy += `storeId=${storeDetail?._id}&`;
+      findBy += `isCheckout=${"false"}&`;
+      findBy += `dateFrom=${startDate}&`;
+      findBy += `dateTo=${endDate}&`;
+      findBy += `timeFrom=${startTime}&`;
+      findBy += `timeTo=${endTime}&`;
+      if (shiftCurrent[0]) {
+        findBy += `shiftId=${shiftCurrent[0]?._id}&`;
+      }
+    }
+
     const data = await getCountBills(findBy);
     setCountBillActiveReport(data);
   };
@@ -139,8 +195,53 @@ export default function Dashboard() {
     setTotalBillActiveReport(data);
   };
 
+  const optionsData = [
+    {
+      value: {
+        shiftID: "ALL",
+      },
+      label: t("all_shifts"),
+    },
+    ...(shifts ?? []).map((item) => {
+      return {
+        value: {
+          shiftID: item._id,
+        },
+        label: item.shiftName,
+      };
+    }),
+  ];
 
- 
+  const handleSearchInput = (option) => {
+    if (option?.value?.shiftID === "ALL") {
+      setShiftId(null);
+      getReportData();
+      getSalesInformationReportData();
+      getMoneyReportData();
+      getPromotionReportData();
+      getCountAllBillReportData();
+      getCountBillActiveReportData();
+      getTotalBillActiveReportData();
+    } else {
+      setShiftId(option?.value?.shiftID);
+    }
+  };
+
+  // const optionsData = shifts?.map((item) => {
+  //   // console.log(item);
+  //   return {
+  //     value: {
+  //       startTime: item.startTime,
+  //       endTime: item.endTime,
+  //       shiftID: item._id,
+  //     },
+  //     label: item.shiftName,
+  //   };
+  // });
+
+  // const handleSearchInput = (option) => {
+  //   setShiftId(option?.value?.shiftID);
+  // };
 
   return (
     <div
@@ -177,33 +278,21 @@ export default function Dashboard() {
             }}
             onClick={() => setChangeUi("CHECKBILL")}
           >
-            <FontAwesomeIcon icon={faTable}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div>
+            <FontAwesomeIcon icon={faTable} /> <div style={{ width: 8 }} />
             <span className={fontMap[language]}>{t("tableStatus")}</span>
           </Nav.Link>
         </Nav.Item>
-        {/* <Nav.Item>
-          <Nav.Link
-            eventKey="/finance"
-            style={{
-              color: "#FB6E3B",
-              backgroundColor: changeUi === "MONEY_CHART" ? "#FFDBD0" : "",
-              border: "none",
-              height: 60,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onClick={() => setChangeUi("MONEY_CHART")}
-          >
-            <FontAwesomeIcon icon={faCoins}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div> {t("financialStatic")}
-          </Nav.Link>
-        </Nav.Item> */}
       </Box>
-      <div style={{ height: 10 }}></div>
+      <div style={{ height: 10 }} />
       <div>
-        <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
+        <div
+          style={{
+            marginBottom: 20,
+            display: "flex",
+            gap: 10,
+            justifyContent: "space-between",
+          }}
+        >
           <Button
             variant="outline-primary"
             size="small"
@@ -219,14 +308,20 @@ export default function Dashboard() {
               {endDate} {endTime}
             </div>
           </Button>
-          {/* <Button
-            variant="outline-primary"
-            style={{ display: "flex", gap: 10, alignItems: "center" }}
-            onClick={() => setPopup({ PopupDaySplitView: true })}
-          >
-            <BsFillCalendarEventFill /> DAY SPLIT VIEW
-          </Button> */}
-          <div style={{ flex: 1 }} />
+          {profile?.data?.role === "APPZAP_ADMIN"
+            ? storeDetail?.isShift && (
+                <div className="flex gap-1 items-center">
+                  <span>{t("chose_shift")} : </span>
+                  <Select
+                    placeholder={t("plachoder_shift")}
+                    className="w-64 border-orange-500"
+                    options={optionsData}
+                    onChange={handleSearchInput}
+                  />
+                </div>
+              )
+            : ""}
+          {/* <div style={{ flex: 1 }} /> */}
         </div>
         <Box
           sx={{
@@ -255,15 +350,15 @@ export default function Dashboard() {
               <div className={fontMap[language]}>
                 {t("numberOfBill")}
                 {" : "}
-                {countAllBillReport?.count - countIsDebtTrue ||  0} ບິນ
+                {countAllBillReport?.count - countIsDebtTrue || 0} ບິນ
               </div>
               <div className={fontMap[language]}>
                 {t("total_will_get")}
                 {" : "}
                 {convertNumber(
-                    (totalBillActiveReport?.total + salesInformationReport?.totalSales )
+                  totalBillActiveReport?.total +
+                    salesInformationReport?.totalSales
                 )}
-
               </div>
               <div className={fontMap[language]}>
                 {t("outstandingDebt")}
@@ -299,12 +394,17 @@ export default function Dashboard() {
               <div className={fontMap[language]}>
                 {t("totalBalance")}
                 {" : "}
-                {convertNumber(moneyReport?.successAmount?.totalBalance )}
+                {convertNumber(
+                  (moneyReport?.successAmount?.payByCash || 0) +
+                    (moneyReport?.successAmount?.transferPayment || 0) +
+                    (moneyReport?.successAmount?.point || 0)
+                )}
+                {/* {convertNumber(moneyReport?.successAmount?.totalBalance)} */}
               </div>
               <div className={fontMap[language]}>
                 {t("payBycash")}
                 {" : "}
-                {convertNumber(moneyReport?.successAmount?.payByCash )}
+                {convertNumber(moneyReport?.successAmount?.payByCash)}
               </div>
               <div className={fontMap[language]}>
                 {t("transferPayment")}
@@ -343,7 +443,7 @@ export default function Dashboard() {
               }}
               className={fontMap[language]}
             >
-              {t("bill_crash")}
+              {t("bill_not_pay")}
             </Card.Header>
             <Card.Body>
               <div className={fontMap[language]}>
@@ -373,9 +473,9 @@ export default function Dashboard() {
           endDate={endDate}
           startTime={startTime}
           endTime={endTime}
+          shiftId={shiftId}
           selectedCurrency={selectedCurrency}
           setCountIsDebtTrue={setCountIsDebtTrue}
-          
         />
       )}
       {changeUi === "MENUS" && (

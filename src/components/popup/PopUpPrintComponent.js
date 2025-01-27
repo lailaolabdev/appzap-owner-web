@@ -1,4 +1,5 @@
 import moment from "moment";
+import Select from "react-select";
 import styled from "styled-components";
 import React, { useEffect, useState, useRef } from "react";
 import { Modal, Button, InputGroup, Form } from "react-bootstrap";
@@ -18,6 +19,7 @@ import {
   getMoneyReport,
   getDebtReport,
 } from "../../services/report";
+
 import _ from "lodash";
 import {
   BLUETOOTH_PRINTER_PORT,
@@ -28,6 +30,8 @@ import { useTranslation } from "react-i18next";
 import printFlutter from "../../helpers/printFlutter";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { getAllShift } from "./../../services/shift";
+import { useShiftStore } from "../../zustand/ShiftStore";
 
 export default function PopUpPrintComponent({ open, onClose, children }) {
   const billRef = useRef(null);
@@ -37,10 +41,13 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
   const [bills, setBill] = useState();
   const [bank, setBank] = useState([]);
+  const [shiftData, setShiftData] = useState([]);
+  const [shiftDate, setShiftDate] = useState(null);
+  const [shiftId, setShiftId] = useState(null);
   const [currency, setcurrency] = useState([]);
   const [delivery, setDelivery] = useState([]);
   const [moneyReport, setMoneyReport] = useState([]);
-  const [debtReport, setDebtReport] = useState(null)
+  const [debtReport, setDebtReport] = useState(null);
   const [reportBill, setReportBill] = useState({
     totalAmount: 0,
     billCount: 0,
@@ -54,21 +61,69 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   });
 
   // provider
-  const { printers, printerCounter } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { printers, printerCounter, profile } = useStore();
+  const { storeDetail } = useStoreStore();
+  const { shiftCurrent } = useShiftStore();
+
   // useEffect
   useEffect(() => {
     // console.log("printers: ", billRef.current);
     getDataBillReport(startDate);
     getMoneyReportData(startDate);
     getDebtReportData(startDate);
-  }, [startDate]);
+  }, [startDate, shiftId]);
+
+  const fetchShift = async () => {
+    await getAllShift()
+      .then((res) => {
+        setShiftData(res?.data?.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    fetchShift();
+  }, []);
 
   useEffect(() => {
     if (open && printers?.length > 0) {
       setSelectPrinter(JSON.stringify(printers[0]));
     }
   }, [open, printers]);
+
+  const optionsData = [
+    {
+      value: {
+        shiftID: "ALL",
+      },
+      label: t("all_shifts"),
+    },
+    ...(shiftData ?? []).map((item) => {
+      return {
+        value: {
+          shiftID: item._id,
+          startTime: item.startTime,
+          endTime: item.endTime,
+          name: item.shiftName,
+        },
+        label: item.shiftName,
+      };
+    }),
+  ];
+
+  const handleSearchInput = (option) => {
+    if (option?.value?.shiftID === "ALL") {
+      setShiftId(null);
+      setShiftDate(null);
+      getDataBillReport(startDate);
+      getMoneyReportData(startDate);
+    } else {
+      setShiftId(option?.value?.shiftID);
+      setShiftDate(option?.value);
+    }
+  };
 
   // function
   const onPrintBill = async () => {
@@ -152,13 +207,36 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
     }
   };
 
-  const getMoneyReportData = async (startDate) => {
+  const findByData = () => {
     const endDate = startDate; // Same date range for a single day
     const startTime = "00:00:00";
     const endTime = "23:59:59";
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    let findBy = "?";
 
-    const data = await getMoneyReport(storeDetail?._id, findBy);
+    if (profile?.data?.role === "APPZAP_ADMIN") {
+      findBy += `startDate=${startDate}&`;
+      findBy += `endDate=${endDate}&`;
+      findBy += `startTime=${startTime}&`;
+      findBy += `endTime=${endTime}&`;
+
+      if (shiftId) {
+        findBy += `shiftId=${shiftId}&`;
+      }
+    } else {
+      findBy += `startDate=${startDate}&`;
+      findBy += `endDate=${endDate}&`;
+      findBy += `startTime=${startTime}&`;
+      findBy += `endTime=${endTime}&`;
+      if (shiftCurrent) {
+        findBy += `shiftId=${shiftCurrent[0]?._id}&`;
+      }
+    }
+
+    return findBy;
+  };
+
+  const getMoneyReportData = async (startDate) => {
+    const data = await getMoneyReport(storeDetail?._id, findByData());
     setMoneyReport(data);
   };
 
@@ -168,7 +246,13 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       const endDate = startDate; // Same date range for a single day
       const startTime = "00:00:00";
       const endTime = "23:59:59";
-      findBy = `${findBy}&startDate=${encodeURIComponent(startDate)}&startTime=${encodeURIComponent(startTime || '00:00:00')}&endDate=${encodeURIComponent(endDate)}&endTime=${encodeURIComponent(endTime || '23:59:59')}`;
+      findBy = `${findBy}&startDate=${encodeURIComponent(
+        startDate
+      )}&startTime=${encodeURIComponent(
+        startTime || "00:00:00"
+      )}&endDate=${encodeURIComponent(endDate)}&endTime=${encodeURIComponent(
+        endTime || "23:59:59"
+      )}`;
       const data = await getDebtReport(findBy);
       setDebtReport(data?.data);
     } catch (err) {
@@ -179,21 +263,18 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
   const getDataBillReport = async (startDate) => {
     try {
-      const endDate = startDate; // Same date range for a single day
-      const startTime = "00:00:00";
-      const endTime = "23:59:59";
-      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-
-      // Fetch bill data and active bill data
-      const data = await getBillReport(storeDetail._id, findBy);
-
-      console.log("data", data);
-
-      const activeBillData = await getActiveBillReport(storeDetail._id, findBy);
-      const bankReport = await getBankReport(storeDetail._id, findBy);
-      const currencyReport = await getCurrencyReport(storeDetail._id, findBy);
-      // const findBy = `?startDate=${startDate}&endDate=${endDate}`;
-      const Delivery = await getDeliveryReport(storeDetail?._id, findBy);
+      const data = await getBillReport(storeDetail._id, findByData());
+      const activeBillData = await getActiveBillReport(
+        storeDetail._id,
+        findByData()
+      );
+      const bankReport = await getBankReport(storeDetail._id, findByData());
+      const currencyReport = await getCurrencyReport(
+        storeDetail._id,
+        findByData()
+      );
+      // const findByData() = `?startDate=${startDate}&endDate=${endDate}`;
+      const Delivery = await getDeliveryReport(storeDetail?._id, findByData());
       setDelivery(Delivery.response);
 
       setBank(bankReport);
@@ -278,11 +359,11 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
   const deliveryReports = delivery
     ? delivery?.revenueByPlatform?.map((e) => {
-      return {
-        name: e?._id,
-        amount: e?.totalRevenue,
-      };
-    })
+        return {
+          name: e?._id,
+          amount: e?.totalRevenue,
+        };
+      })
     : [];
 
   return (
@@ -304,13 +385,28 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           flexDirection: "column",
         }}
       >
-        <div>
-          <Form.Control
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
+        <div className="flex gap-2 items-center">
+          <div>
+            <Form.Control
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </div>
+          {profile?.data?.role === "APPZAP_ADMIN"
+            ? storeDetail?.isShift && (
+                <div className="flex gap-1 items-center">
+                  <Select
+                    placeholder={t("chose_shift")}
+                    className="w-36 border-orange-500"
+                    options={optionsData}
+                    onChange={handleSearchInput}
+                  />
+                </div>
+              )
+            : ""}
         </div>
+
         <div
           ref={billRef}
           style={{ maxWidth: 330, width: "100%", minWidth: 330 }}
@@ -318,12 +414,15 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           <Container>
             <div style={{ fontWeight: "bold", fontSize: 24 }}>
               {t("sale_amount_list")}
+              {shiftDate ? `(${shiftDate?.name})` : ""}
             </div>
             <div style={{ fontWeight: "bold" }}>
-              {t("start")}: {startDate} 00:00:00
+              {t("start")}: {startDate}{" "}
+              {shiftDate ? shiftDate?.startTime : "00:00:00"}
             </div>
             <div style={{ fontWeight: "bold" }}>
-              {t("to")}: {startDate} 23:59:59
+              {t("to")}: {startDate}{" "}
+              {shiftDate ? shiftDate?.endTime : "23:59:59"}
             </div>
             <hr style={{ borderBottom: "1px dotted #000" }} />
             {[
@@ -333,7 +432,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
               },
               {
                 name: `${t("total_amount")}:`,
-                value: moneyReport?.successAmount?.totalBalance || 0,
+                value:
+                  (moneyReport?.successAmount?.payByCash || 0) +
+                  (moneyReport?.successAmount?.transferPayment || 0) +
+                  (moneyReport?.successAmount?.point || 0),
                 type: storeDetail?.firstCurrency,
               },
               {
@@ -354,14 +456,14 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
               ...(Array.isArray(deliveryReports) && deliveryReports.length > 0
                 ? deliveryReports.map((e, idx) => ({
-                  name: (
-                    <div
-                      style={{ fontWeight: 700 }}
-                    >{`delivery (${e?.name})`}</div>
-                  ),
-                  value: Math.floor(e?.amount || 0),
-                  type: storeDetail?.firstCurrency,
-                }))
+                    name: (
+                      <div
+                        style={{ fontWeight: 700 }}
+                      >{`delivery (${e?.name})`}</div>
+                    ),
+                    value: Math.floor(e?.amount || 0),
+                    type: storeDetail?.firstCurrency,
+                  }))
                 : []),
               {
                 name: `${t("point")}:`,
@@ -390,7 +492,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 name: `${t("active_bill")}:`,
                 value: reportBill?.pendingBills,
               },
-              
+
               // {
               //   name: "ເງິນຄ້າງ:",
               //   value: reportBill["ເງິນຄ້າງ"],

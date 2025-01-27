@@ -6,14 +6,20 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import PopUpShowSales from "../components/popup/PopUpShowSales";
 import { END_POINT_SEVER } from "../constants/api";
 import { useStoreStore } from "../zustand/storeStore";
-import { 
+import {
   fetchSalesData,
   addStoreId,
   updateSalesClick,
   updateViews,
-  updateStoreAvailability
-} from '../services/showSales';
-import {handleTimeShowSales} from "../helpers/handleTimeShowSales"
+  updateStoreAvailability,
+} from "../services/showSales";
+import { handleTimeShowSales } from "../helpers/handleTimeShowSales";
+import { useStore } from "../store";
+import { showSalesService } from "../services/showSales";
+import moment from "moment";
+
+// import { useStoreStore } from "../zustand/storeStore";
+import { useShiftStore } from "../zustand/ShiftStore";
 
 export default function MainLayout({ children }) {
   const [expanded, setExpanded] = useState();
@@ -31,9 +37,14 @@ export default function MainLayout({ children }) {
   const [hasUpdatedForNone, setHasUpdatedForNone] = useState(false);
   const [daysCounter, setDaysCounter] = useState(0);
   const [hasUpdatedViews, setHasUpdatedViews] = useState(false);
+  const { profile } = useStore();
+  // const { storeDetail } = useStoreStore();
+  const { getShift } = useShiftStore();
+  // const [selectId, setSelectId] = useState(null);
+  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
 
   const storeId = storeDetail?._id;
-  const allIdOfSelectStore = salesData?.selectedStores?.map(id => id._id);
+  const allIdOfSelectStore = salesData?.selectedStores?.map((id) => id._id);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -50,11 +61,22 @@ export default function MainLayout({ children }) {
 
   const handleaddStoreId = async (id, isAvailable) => {
     try {
-      const updatedData = await addStoreId(id, isAvailable, salesData?._id, storeId);
+      const updatedData = await addStoreId(
+        id,
+        isAvailable,
+        salesData?._id,
+        storeId
+      );
+      // const updatedData = await showSalesService.updateAvailableStoreId(
+      //   id,
+      //   isAvailable,
+      //   salesData?._id,
+      //   storeDetail._id
+      // );
       if (updatedData) {
         setSalesData(updatedData);
         const isUpdateSuccessful = updatedData.selectedStores?.some(
-          store => store._id === id && store.isAvailable === isAvailable
+          (store) => store._id === id && store.isAvailable === isAvailable
         );
         if (!isUpdateSuccessful) {
           console.error("Store addStoreId failed to reflect in data");
@@ -82,6 +104,16 @@ export default function MainLayout({ children }) {
     }
   };
 
+  const GetOpenShift = async (startDate) => {
+    const endDate = startDate; // Same date range for a single day
+    const findBy = `startDate=${startDate}&endDate=${endDate}&status=OPEN`;
+    await getShift(findBy);
+  };
+
+  useEffect(() => {
+    GetOpenShift(startDate);
+  }, []);
+
   useEffect(() => {
     if (storeDetail) {
       fetchData();
@@ -95,16 +127,16 @@ export default function MainLayout({ children }) {
 
   useEffect(() => {
     let updateIntervalId = null;
-  
+
     if (!isLoading && salesData && storeDetail) {
       const targetStore = salesData?.selectedStores?.find(
-        store => store.storeId === storeId || store.storeId === null
+        (store) => store.storeId === storeId || store.storeId === null
       );
-  
+
       const isUnavailableStore = salesData?.selectedStores?.some(
-        store => store.storeId === storeId && store.isAvailable === false
+        (store) => store.storeId === storeId && store.isAvailable === false
       );
-  
+
       if (targetStore && !isUnavailableStore) {
         const { shouldShow, updateInterval } = handleTimeShowSales({
           salesData,
@@ -113,24 +145,24 @@ export default function MainLayout({ children }) {
           daysCounter,
           handleUpdateStoreAvailability,
           setDaysCounter,
-          setHasUpdatedForNone
+          setHasUpdatedForNone,
         });
-        
+
         updateIntervalId = updateInterval;
         setSelectId(targetStore._id);
-  
+
         // เช็คว่าควรแสดง popup และยังไม่เคย update views
         if (shouldShow && !hasUpdatedViews) {
           updateViews(salesData?._id);
           setHasUpdatedViews(true); // mark ว่า update แล้ว
         }
-  
+
         setPopup({ PopUpShowSales: targetStore.isAvailable && shouldShow });
       } else {
         setPopup({ PopUpShowSales: false });
       }
     }
-  
+
     return () => {
       if (updateIntervalId) {
         clearTimeout(updateIntervalId);
@@ -140,7 +172,7 @@ export default function MainLayout({ children }) {
 
   useEffect(() => {
     setHasUpdatedViews(false);
-  }, [salesData?.selectedStores?.map(id => id.isAvailable)]);
+  }, [salesData?.selectedStores?.map((id) => id.isAvailable)]);
 
   useEffect(() => {
     setDaysCounter(0);

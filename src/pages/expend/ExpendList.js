@@ -14,6 +14,7 @@ import queryString from "query-string";
 import { useTranslation } from "react-i18next";
 import ExportExpenses from "../../components/ExportExpenses";
 
+import Select from "react-select";
 /**
  * function
  */
@@ -36,6 +37,11 @@ import {
   QUERY_CURRENCIES,
   QUERY_CURRENCY_HISTORY,
 } from "../../constants/api";
+// import { END_POINT_SERVER_BUNSI, getLocalData } from "../../constants/api";
+import { getAllShift } from "../../services/shift";
+import { useStoreStore } from "../../zustand/storeStore";
+import { useShiftStore } from "../../zustand/ShiftStore";
+import { useStore } from "../../store";
 
 /**
  * css
@@ -96,12 +102,14 @@ export default function ExpendList() {
     !parsed?.filterByMonth ? currentMonth : parsed?.filterByMonth
   );
 
-  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
-  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
+  const [startDate, setStartDate] = useState(moment().format("YYYY/MM/DD"));
+  const [endDate, setEndDate] = useState(moment().format("YYYY/MM/DD"));
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
   const [isFilterDatePopUpOpen, setIsFilterDatePopUpOpen] = useState(false);
   const [exchangerateData, setExchangerateData] = useState([]);
+  const [shifts, setShifts] = useState([]);
+  const [shiftId, setShiftId] = useState(null);
 
   // const startDate = new Date(year, month, 1);
   // const endDate = new Date(year, month + 1, 0);
@@ -118,9 +126,27 @@ export default function ExpendList() {
     new Date(year, month + 1, 0)
   );
 
+  const { storeDetail } = useStoreStore();
+  const { profile } = useStore();
+  const { shiftCurrent } = useShiftStore();
+
   const [filterByPayment, setFilterByPayment] = useState(
     !parsed?.filterByPayment ? "ALL" : parsed?.filterByPayment
   );
+
+  const fetchShift = async () => {
+    await getAllShift()
+      .then((res) => {
+        setShifts(res?.data?.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    fetchShift();
+  }, []);
 
   useEffect(() => {
     fetchExpend(
@@ -146,6 +172,7 @@ export default function ExpendList() {
     endTime,
     filterByPayment,
     parame?.skip,
+    shiftId,
   ]);
 
   const [series, setSeries] = useState([
@@ -237,7 +264,7 @@ export default function ExpendList() {
     endDate,
     filterByPayment
   ) => {
-    console.log("fetchExpend::", dateStart, dateEnd);
+    // console.log("fetchExpend::", dateStart, dateEnd);
     try {
       setIsLoading(true);
       const _localData = await getLocalData();
@@ -246,18 +273,28 @@ export default function ExpendList() {
       }&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
       // if (filterByYear) findby += `&year=${filterByYear}`;
       // if (filterByMonth) findby += `&month=${filterByMonth}`;
-      if (startDate && endDate) {
-        findby += `&date_gte=${moment(startDate).format("YYYY/MM/DD")}`;
-        findby += `&date_lt=${moment(endDate).format("YYYY/MM/DD")}`;
-      }
-      if (startTime && endTime) {
-        findby += `&startTime=${startTime}&endTime=${endTime}`;
-      }
 
-      // if (filterByPayment !== "ALL" && filterByPayment !== undefined)
-      //   findby += `&payment=${filterByPayment}`;
+      if (profile?.data?.role === "APPZAP_ADMIN") {
+        if (startDate && endDate) {
+          findby += `&date_gte=${startDate}`;
+          findby += `&date_lt=${endDate}`;
+        }
+        if (startTime && endTime) {
+          findby += `&startTime=${startTime}&endTime=${endTime}&`;
+        }
 
-      // console.log("findby::", findby);
+        if (shiftId) {
+          findby += `&shiftId=${shiftId}`;
+        }
+      } else {
+        findby += `&date_gte=${startDate}&`;
+        findby += `&date_lt=${endDate}&`;
+        findby += `&startTime=${startTime}&`;
+        findby += `&endTime=${endTime}&`;
+        if (shiftCurrent[0]) {
+          findby += `&shiftId=${shiftCurrent[0]?._id}&`;
+        }
+      }
 
       let header = await getHeadersAccount();
       const headers = {
@@ -411,6 +448,42 @@ export default function ExpendList() {
     },
   ];
 
+  const optionsData = [
+    {
+      value: {
+        shiftID: "ALL",
+      },
+      label: t("all_shifts"),
+    },
+    ...(shifts ?? []).map((item) => {
+      return {
+        value: {
+          shiftID: item._id,
+        },
+        label: item.shiftName,
+      };
+    }),
+  ];
+
+  const handleSearchInput = (option) => {
+    if (option?.value?.shiftID === "ALL") {
+      setShiftId(null);
+      fetchExpend(
+        filterByYear,
+        filterByMonth,
+        dateStart,
+        dateEnd,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+        filterByPayment
+      );
+    } else {
+      setShiftId(option?.value?.shiftID);
+    }
+  };
+
   return (
     <div
       style={{
@@ -449,18 +522,18 @@ export default function ExpendList() {
               {endDate} {endTime}
             </div>
           </Button>
-          {/* <Form.Control
-            as="select"
-            name="payment"
-            value={filterByPayment}
-            onChange={(e) => setFilterByPayment(e?.target?.value)}
-            style={{ width: 150 }}
-          >
-            <option value="ALL">{t("show_shape")}</option>
-            <option value="CASH">{t("real_money")}</option>
-            <option value="TRANSFER">{t("e_money")}</option>
-          </Form.Control> */}
-          {/* Button ລົງບັນຊີປະຈຳວັນ */}
+          {profile?.data?.role === "APPZAP_ADMIN"
+            ? storeDetail?.isShift && (
+                <div className="flex gap-1 items-center">
+                  <Select
+                    placeholder={t("chose_shift")}
+                    className="w-36 border-orange-500"
+                    options={optionsData}
+                    onChange={handleSearchInput}
+                  />
+                </div>
+              )
+            : ""}
           <ButtonComponent
             title={t("daily_account")}
             icon={faPlusCircle}

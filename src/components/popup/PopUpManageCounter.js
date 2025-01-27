@@ -11,7 +11,7 @@ export default function PopUpManageCounter({
   dateEnd,
   setDateStart,
   setDateEnd,
-  days ,
+  days,
 }) {
   const [tempDateStart, setTempDateStart] = useState(dateStart);
   const [tempDateEnd, setTempDateEnd] = useState(dateEnd);
@@ -80,10 +80,12 @@ export default function PopUpManageCounter({
     { label: `${t("l_3days")}`, type: "3days", condition: 3 },
     { label: `${t("l_5days")}`, type: "5days", condition: 5 },
     { label: `${t("l_7days")}`, type: "7days", condition: 7 },
-    { label: `${t("l_30days")}`, type: "30days", condition: 30},
+    { label: `${t("l_30days")}`, type: "30days", condition: 30 },
   ];
 
-  const minDate = moment().subtract(days - 1, "days").format("YYYY-MM-DD");
+  const minDate = moment()
+    .subtract(days - 1, "days")
+    .format("YYYY-MM-DD");
   const maxDate = moment().format("YYYY-MM-DD");
 
   return (
@@ -129,10 +131,12 @@ export default function PopUpManageCounter({
           <InputGroup>
             <Form.Control
               type="date"
-              min={minDate} 
-              max={maxDate} 
+              min={minDate}
+              max={maxDate}
               value={moment(tempDateStart).format("YYYY-MM-DD")}
-              onChange={(e) => handleDateChange("start", moment(e.target.value).toDate())}
+              onChange={(e) =>
+                handleDateChange("start", moment(e.target.value).toDate())
+              }
               className="custom-input"
             />
             <Form.Control
@@ -154,10 +158,12 @@ export default function PopUpManageCounter({
           <InputGroup>
             <Form.Control
               type="date"
-              min={minDate} 
-              max={maxDate} 
+              min={minDate}
+              max={maxDate}
               value={moment(tempDateEnd).format("YYYY-MM-DD")}
-              onChange={(e) => handleDateChange("end", moment(e.target.value).toDate())}
+              onChange={(e) =>
+                handleDateChange("end", moment(e.target.value).toDate())
+              }
               className="custom-input"
             />
             <Form.Control

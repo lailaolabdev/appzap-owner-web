@@ -83,6 +83,8 @@ import ManageCounterList from "../pages/manageCounter/manageCounter";
 import StockCreate from "../pages/stock/StockCreate";
 import StockCreateCategory from "../pages/stock/StockCreateCategory";
 import ReportStocks from "../pages/report/ReportStocks";
+import ShiftList from "../pages/shift/Shift";
+import ShiftOpenPages from "../pages/shift/ShiftOpenPages";
 
 function Router() {
   return useRoutes([
@@ -228,6 +230,14 @@ function Router() {
         {
           path: "/food-setting/limit/:limit/page/:page",
           element: <FoodList />,
+        },
+        {
+          path: "/shift",
+          element: <ShiftList />,
+        },
+        {
+          path: "/shift-open-pages",
+          element: <ShiftOpenPages />,
         },
         {
           path: "/food-setting/food-type/limit/:limit/page/:page",

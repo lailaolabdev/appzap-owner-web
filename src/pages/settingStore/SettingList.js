@@ -18,8 +18,9 @@ import {
   faBuilding,
   faBuildingColumns,
   faBox,
+  faClock,
 } from "@fortawesome/free-solid-svg-icons";
-
+// import { faRegClock } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
 import styled from "styled-components";
@@ -177,6 +178,12 @@ export default function SettingList() {
     //   title: "ຈັດການເມນູພື້ນຖານຂອງຮ້ານ",
     //   icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faUtensils} />,
     //   path: `/food-setting/limit/40/page/1`,
+    // },
+    // {
+    //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
+    //   title: "ຈັດການກະ",
+    //   icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faClock} />,
+    //   path: "/shift",
     // },
   ];
 

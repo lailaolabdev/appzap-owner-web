@@ -44,6 +44,7 @@ import useWindowDimensions from "../../helpers/useWindowDimension2";
 import { RiListOrdered2 } from "react-icons/ri";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { useShiftStore } from "./../../zustand/ShiftStore";
 
 const limitData = 50;
 
@@ -71,10 +72,10 @@ export default function FarkCreatePage() {
   const [widthBill80, setWidthBill80] = useState(0);
   const billFark80Ref = useRef();
   // store
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const { printerCounter, printers } = useStore();
   const { width } = useWindowDimensions();
-  const [cartModal, setCartModal] = useState(false);
+  const { shiftCurrent } = useShiftStore();
 
   // useEffect
   useEffect(() => {
@@ -148,8 +149,17 @@ export default function FarkCreatePage() {
 
   const handleClickCreateBillFark = async () => {
     try {
+      if (!customerName) {
+        errorAdd("ກະລູນາປ້ອນຊື່ລູກຄ້າ");
+        return;
+      }
+
+      if (!customerPhone) {
+        errorAdd("ກະລຸນາປ້ອນເບີໂທລູກຄ້າ");
+        return;
+      }
+
       const { DATA, TOKEN } = await getLocalData();
-      console.log("DATA", DATA);
       let menus = menuFarkData.filter((e) => e?.addToCart);
       let menusFormat = menus.map((e) => ({
         menuId: e?._id,
@@ -161,6 +171,7 @@ export default function FarkCreatePage() {
         customerPhone: customerPhone,
         endDate: expirDate,
         storeId: DATA?.storeId,
+        shiftId: shiftCurrent[0]?._id,
       };
       const data = await createBillFark(_body, TOKEN);
       if (data.error) {
