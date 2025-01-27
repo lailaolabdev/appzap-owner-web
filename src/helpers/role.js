@@ -14,7 +14,7 @@ const data = {
  * @param {Object} user
  * @returns {data}
  */
-const role = (role, user, storeDetail, shift) => {
+const role = (role, user, storeDetail, shiftCurrent) => {
   switch (role) {
     case "APPZAP_ADMIN":
       return {

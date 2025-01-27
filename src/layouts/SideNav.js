@@ -29,6 +29,7 @@ import {
   faStoreAlt,
   faBuilding,
   faClock,
+  faMoneyBill,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, COLOR_GRAY, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
