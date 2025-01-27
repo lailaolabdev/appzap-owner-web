@@ -26,12 +26,9 @@ export default function SettingTable() {
   const { t } = useTranslation();
   const [data, setData] = useState("No result");
   const params = useParams();
-  const {
-    tableListCheck,
-    setTableListCheck,
-    getTableDataStoreList,
-  } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { tableListCheck, setTableListCheck, getTableDataStoreList } =
+    useStore();
+  const { storeDetail } = useStoreStore();
   useEffect(() => {
     getTableDataStoreList();
     getDataZone();
