@@ -31,10 +31,12 @@ import Loading from "../../../components/Loading";
 
 import { useStoreStore } from "../../../zustand/storeStore";
 import { useShiftStore } from "../../../zustand/ShiftStore";
+import { data } from "browserslist";
 
 export default function CheckOutPopupCafe({
   onPrintDrawer,
-
+  bill,
+  onQueue,
   onPrintBill,
   onPrintForCher,
   open,
@@ -75,9 +77,6 @@ export default function CheckOutPopupCafe({
   const { setSelectedTable, getTableDataStore } = useStore();
 
   const { t } = useTranslation();
-  // val
-  // console.log("tableData:=======abc======>", tableData);
-  // console.log("dataBill:=============>", dataBill);
 
   useEffect(() => {
     setMemberData();
@@ -265,6 +264,8 @@ export default function CheckOutPopupCafe({
       userNanme: null,
       saveCafe: true,
       phone: null,
+      queue: bill,
+      isCafe: true,
       memberId: memberData?._id,
       memberName: memberData?.name,
       memberPhone: memberData?.phone,
@@ -298,8 +299,9 @@ export default function CheckOutPopupCafe({
         setSelectedMenu([]);
         localStorage.removeItem("STAFFCONFIRM_DATA");
         setIsLoading(false);
-        // console.log("response",response)
+
         onClose();
+        onQueue();
         Swal.fire({
           icon: "success",
           title: "ສໍາເລັດການເຊັກບິນ",
@@ -329,8 +331,6 @@ export default function CheckOutPopupCafe({
   //   setTotal(_total);
   // };
   // useEffect
-
-  // console.log("Total on Checkout", total);
 
   // useEffect
   useEffect(() => {
@@ -450,9 +450,6 @@ export default function CheckOutPopupCafe({
       setTransfer(value);
     });
   };
-
-  // console.log(transfer);
-  // console.log(cash);
 
   return (
     <Modal

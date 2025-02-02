@@ -45,7 +45,7 @@ import Loading from "../../components/Loading";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json, useNavigate, useParams } from "react-router-dom";
-import { getBillCafe } from "../../services/bill";
+import { getBillCafe, getBills } from "../../services/bill";
 import { useStore } from "../../store";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
@@ -94,6 +94,11 @@ function Homecafe() {
   });
   const [selectedOptionsArray, setSelectedOptionsArray] = useState([]);
   const [total, setTotal] = useState();
+  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
+  const [startTime, setStartTime] = useState("00:00:00");
+  const [endTime, setEndTime] = useState("23:59:59");
+  const [bill, setBill] = useState(0);
 
   const [isMobile, setIsMobile] = useState(
     window.matchMedia("(max-width: 767px)").matches
@@ -241,6 +246,27 @@ function Homecafe() {
     setMenus,
     setMenuCategories,
   ]);
+
+  useEffect(() => {
+    billData();
+  }, []);
+
+  const billData = async () => {
+    try {
+      let findby = "?";
+      findby += `storeId=${storeDetail?._id}&`;
+      findby += `startDate=${startDate}&`;
+      findby += `endDate=${endDate}&`;
+      findby += `startTime=${startTime}&`;
+      findby += `endTime=${endTime}`;
+      const res = await getBills(findby);
+      console.log("RES: ", res);
+      const filteredBills = res?.filter((bill) => bill.isCafe === true) || [];
+      setBill(filteredBills.length);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const afterSearch = _.filter(
     menus,
@@ -647,12 +673,11 @@ function Homecafe() {
 
   const convertHtmlToBase64 = (orderSelect) => {
     const base64ArrayAndPrinter = [];
-    orderSelect.forEach((data, index) => {
+    orderSelect.forEach((data) => {
       if (data) {
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
 
-        // Define base dimensions
         const baseHeight = 250;
         const extraHeightPerOption = 30;
         const extraHeightForNote = data?.note ? 40 : 0;
@@ -665,11 +690,9 @@ function Homecafe() {
         canvas.width = width;
         canvas.height = dynamicHeight;
 
-        // Set white background
         context.fillStyle = "#fff";
         context.fillRect(0, 0, width, dynamicHeight);
 
-        // Helper function for text wrapping
         function wrapText(context, text, x, y, maxWidth, lineHeight) {
           const words = text.split(" ");
           let line = "";
@@ -689,10 +712,16 @@ function Homecafe() {
           return y + lineHeight;
         }
 
-        // Content: Item Name and Quantity
         context.fillStyle = "#000";
         context.font = "bold 32px NotoSansLao, Arial, sans-serif";
         let yPosition = 30;
+
+        // Render "Queue no" at the top and center it
+        context.textAlign = "center"; // Center align the text
+        context.fillText(`Queue No ${bill}`, width / 2, yPosition);
+        yPosition += 40; // Add some space after "Queue no"
+        // Render data.name below "Queue no"
+        context.textAlign = "left"; // Reset alignment to left for other text
         yPosition = wrapText(
           context,
           `${data?.name} (${data?.quantity})`,
@@ -702,39 +731,33 @@ function Homecafe() {
           36
         );
 
-        // Content: Item Note
         if (data?.note) {
           const noteLabel = "note: ";
           const noteText = data.note;
 
-          // Draw "Note:" label in bold
           context.fillStyle = "#666";
           context.font = "bold italic 24px Arial, sans-serif";
           context.fillText(noteLabel, 10, yPosition);
 
-          // Measure width of the "Note:" label
           const noteLabelWidth = context.measureText(noteLabel).width;
 
-          // Wrap the note text, starting after the "Note:" label
           context.font = "italic 24px Arial, sans-serif";
           yPosition = wrapText(
             context,
             noteText,
-            10 + noteLabelWidth, // Start after the label width
+            10 + noteLabelWidth,
             yPosition,
-            width - 20 - noteLabelWidth, // Adjust wrapping width
+            width - 20 - noteLabelWidth,
             30
           );
 
-          // Add spacing after the note
           yPosition += 10;
         }
 
-        // Options
         if (data.options && data.options.length > 0) {
           context.fillStyle = "#000";
           context.font = "24px NotoSansLao, Arial, sans-serif";
-          data.options.forEach((option, idx) => {
+          data.options.forEach((option) => {
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
               : "";
@@ -751,7 +774,6 @@ function Homecafe() {
             );
           });
 
-          // Divider below options
           context.strokeStyle = "#ccc";
           context.setLineDash([4, 2]);
           context.beginPath();
@@ -775,46 +797,45 @@ function Homecafe() {
           46
         );
 
-        // Set text properties
-        context.fillStyle = "#000"; // Black text color
-        context.font = "28px NotoSansLao, Arial, sans-serif"; // Font style and size
-        context.textAlign = "right"; // Align text to the right
-        context.textBaseline = "bottom"; // Align text baseline to bottom
+        context.fillStyle = "#000";
+        context.font = "28px NotoSansLao, Arial, sans-serif";
+        context.textAlign = "right";
+        context.textBaseline = "bottom";
 
-        // Add a dotted line above the footer
-        context.strokeStyle = "#000"; // Black dotted line
-        context.setLineDash([4, 2]); // Dotted line style
+        context.strokeStyle = "#000";
+        context.setLineDash([4, 2]);
         context.beginPath();
-        context.moveTo(0, yPosition - 25); // Position 70px above footer
-        context.lineTo(width, yPosition - 25); // Full-width dotted line
+        context.moveTo(0, yPosition - 25);
+        context.lineTo(width, yPosition - 25);
         context.stroke();
-        context.setLineDash([]); // Reset line dash style
+        context.setLineDash([]);
 
-        // Footer Section
         context.font = "bold 24px NotoSansLao, Arial, sans-serif";
         context.fillStyle = "#000";
 
-        // Draw "Created By" text at the bottom-left
-        context.textAlign = "left"; // Align text to the left
+        context.textAlign = "left";
         context.fillText(
-          data?.createdBy?.data?.firstname || profile?.data?.firstname, // Footer text
-          10, // 10px from the left edge
-          yPosition + 10 // Position Y: 20px above the bottom
+          data?.createdBy?.data?.firstname || profile?.data?.firstname,
+          10,
+          yPosition + 10
         );
 
-        // Draw date and time at the bottom-right
-        context.textAlign = "right"; // Align text to the right
-        context.fillStyle = "#6e6e6e"; // Gray color
-        context.font = "22px NotoSansLao, Arial, sans-serif"; // Smaller font size
+        context.textAlign = "right";
+        context.fillStyle = "#6e6e6e";
+        context.font = "22px NotoSansLao, Arial, sans-serif";
         context.fillText(
           `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
             data?.createdAt
-          ).format("LT")}`, // Date and time
-          width - 10, // 10px from the right edge
-          yPosition + 10 // Position Y: 20px above the bottom
+          ).format("LT")}`,
+          width - 10,
+          yPosition + 10
         );
 
-        // Convert canvas to base64
+        // Add Queue no
+        context.fillStyle = "#000";
+        context.font = "bold 28px NotoSansLao, Arial, sans-serif";
+        context.textAlign = "center";
+
         const dataUrl = canvas.toDataURL("image/png");
         const printer = printers.find((e) => e?._id === data?.printer);
         if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
@@ -1442,6 +1463,7 @@ function Homecafe() {
                           }}
                           disabled={disabledButton}
                           onClick={() => {
+                            // billData();
                             onPrintForCher();
                           }}
                         >
@@ -1938,7 +1960,9 @@ function Homecafe() {
         onSubmit={async () => onRemoveFromCart(itemDeleting.id)}
       />
       <CheckOutPopupCafe
+        bill={bill}
         onPrintForCher={onPrintForCher}
+        onQueue={billData}
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}
         dataBill={selectedMenu}
@@ -1954,6 +1978,7 @@ function Homecafe() {
 
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
         <BillForCheckOutCafe80
+          data={bill}
           storeDetail={storeDetail}
           dataBill={selectedMenu}
           taxPercent={taxPercent}
