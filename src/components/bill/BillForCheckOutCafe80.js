@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 
 export default function BillForCheckOutCafe80({
   storeDetail,
+  data,
   selectedTable,
   dataBill,
   taxPercent = 0,
@@ -124,12 +125,12 @@ export default function BillForCheckOutCafe80({
           )}
           <span
             style={{
-              fontSize: "24px",
+              fontSize: "18px",
               fontWeight: "bold",
               marginRight: "10px",
             }}
           >
-            # {dataBill?.queue}
+            Queue No {data || 0}
           </span>
         </div>
       </div>
