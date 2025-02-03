@@ -44,17 +44,18 @@ export const DebtListAll = ({
 
     if (filtered.length > 0) {
       const totalRemaining = filtered.reduce((sum, item) => sum + (item.remainingAmount || 0), 0);
+      const totalRemainingAmount = filtered.reduce((sum, item) => sum + (item?.amount || 0), 0);
       const customerInfo = {
         name: filtered[0].customerName,
         phone: filtered[0].customerPhone
       };
-      return { filteredData: filtered, totalRemaining, customerInfo };
+      return { filteredData: filtered, totalRemaining,totalRemainingAmount, customerInfo };
     }
 
     return { filteredData: [], totalRemaining: 0, customerInfo: null };
   };
 
-  const { filteredData, totalRemaining, customerInfo } = getSearchResults();
+  const { filteredData, totalRemaining,totalRemainingAmount, customerInfo } = getSearchResults();
 
   const sortedData = filteredData.sort((a, b) =>
     new Date(b.updatedAt) - new Date(a.updatedAt)
@@ -95,14 +96,20 @@ export const DebtListAll = ({
         </Button>
       </div>
 
-      {/* แสดงผลรวม remainingAmount สำหรับลูกค้าที่ค้นหา */}
+     
       {searchTerm && searchTerm.length >= 2 && customerInfo && (
-        <Card style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa' }}>
+        <Card style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', display: 'flex'}}>
           <div style={{ fontSize: '18px', marginBottom: '10px', fontWeight:'bold'}}>
            {t("name")}: {customerInfo.name} 
           </div>
           <div style={{ fontSize: '18px', marginBottom: '10px', fontWeight:'bold'}}>
              {t("phoneNumber")} :{customerInfo.phone}
+          </div>
+          <div style={{ fontSize: '20px', fontWeight: 'bold', color: COLOR_APP }}>
+            {t("total_debt")}: {moneyCurrency(totalRemainingAmount)} ກິບ
+          </div>
+          <div style={{ fontSize: '20px', fontWeight: 'bold', color: COLOR_APP }}>
+            {t("paid_already")}: {moneyCurrency(totalRemainingAmount - totalRemaining) } ກິບ
           </div>
           <div style={{ fontSize: '20px', fontWeight: 'bold', color: COLOR_APP }}>
             {t("outstanding_money")}: {moneyCurrency(totalRemaining)} ກິບ
