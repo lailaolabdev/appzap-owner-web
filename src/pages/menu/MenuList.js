@@ -82,6 +82,7 @@ export default function MenuList() {
   const [dataUpdateMenuOption, setDataUpdateMenuOption] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isLoading, setIsLoading] = useState(false);
+  const [formattedPrice, setFormattedPrice] = useState("");
 
   //update show menu
   const [detailMenu, setDetailMenu] = useState();
@@ -1124,7 +1125,7 @@ export default function MenuList() {
                       }}
                     />
                   </Box>
-                  <div
+                  {/* <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
                     <label>{t("close_open_status")}</label>
@@ -1139,7 +1140,7 @@ export default function MenuList() {
                     <label for="isOpened">
                       {values?.isOpened ? `${t("oppen")}` : `${t("close")}`}
                     </label>
-                  </div>
+                  </div> */}
                   <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
@@ -1182,7 +1183,7 @@ export default function MenuList() {
                       onChange={handleChange}
                     />
                   </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlSelect1">
+                  {/* <Form.Group controlId="exampleForm.ControlSelect1">
                     <Form.Label>{t("food_type")}</Form.Label>
                     <Form.Control
                       as="select"
@@ -1206,7 +1207,7 @@ export default function MenuList() {
                         return <option value={item?._id}>{item?.name}</option>;
                       })}
                     </Form.Control>
-                  </Form.Group>
+                  </Form.Group> */}
 
                   <Form.Group controlId="exampleForm.ControlSelect1">
                     <Form.Label>{t("type")}</Form.Label>
@@ -1325,11 +1326,41 @@ export default function MenuList() {
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>{t("price")}</Form.Label>
                     <Form.Control
-                      type="number"
+                      type="text"
                       name="price"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values?.price}
+                      onFocus={() => {
+                        setFieldValue("price", "0");
+                        setFormattedPrice("");
+                      }}
+                      onChange={(e) => {
+                        const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                        const formattedValue = rawValue
+                          ? new Intl.NumberFormat("la-LA", {
+                              style: "currency",
+                              currency: "LAK",
+                              minimumFractionDigits: 0,
+                            }).format(rawValue)
+                          : "";
+                        setFieldValue("price", rawValue);
+                        setFormattedPrice(formattedValue);
+                      }}
+                      onBlur={() => {
+                        handleBlur("price");
+                        if (!formattedPrice) {
+                          setFormattedPrice("LAK 0");
+                          setFieldValue("price", "0");
+                        }
+                      }}
+                      value={
+                        formattedPrice ||
+                        (values?.price
+                          ? new Intl.NumberFormat("la-LA", {
+                              style: "currency",
+                              currency: "LAK",
+                              minimumFractionDigits: 0,
+                            }).format(values.price)
+                          : "LAK 0")
+                      }
                       placeholder={t("food_name")}
                       style={{
                         border:
@@ -1339,7 +1370,8 @@ export default function MenuList() {
                       }}
                     />
                   </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlInput1">
+
+                  {/* <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>{t("order_add")}</Form.Label>
                     {dataMenuOption?.length > 0 &&
                       dataMenuOption?.map((item, index) => (
@@ -1476,7 +1508,7 @@ export default function MenuList() {
                         + {t("order_add")}
                       </Button>
                     </div>
-                  </Form.Group>
+                  </Form.Group> */}
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>{t("note")}</Form.Label>
                     <Form.Control
@@ -1588,10 +1620,10 @@ export default function MenuList() {
                       setFieldValue("images", [e.name]);
                     }}
                   />
-                  <div
+                  {/* <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
-                    <label>{t("close_open_status")}</label>
+                    <label>{t("close_open_statuss")}</label>
                     <input
                       type="checkbox"
                       id="isOpened"
@@ -1603,7 +1635,7 @@ export default function MenuList() {
                     <label for="isOpened">
                       {values?.isOpened ? `${t("oppen")}` : `${t("close")}`}
                     </label>
-                  </div>
+                  </div> */}
                   <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
@@ -1646,7 +1678,7 @@ export default function MenuList() {
                       onChange={handleChange}
                     />
                   </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlSelect1">
+                  {/* <Form.Group controlId="exampleForm.ControlSelect1">
                     <Form.Label>{t("food_type")}</Form.Label>
                     <Form.Control
                       as="select"
@@ -1662,7 +1694,7 @@ export default function MenuList() {
                         return <option value={item?._id}>{item?.name}</option>;
                       })}
                     </Form.Control>
-                  </Form.Group>
+                  </Form.Group> */}
                   <Form.Group controlId="exampleForm.ControlSelect1">
                     <Form.Label>{t("type")}</Form.Label>
                     <Form.Control
@@ -1785,11 +1817,41 @@ export default function MenuList() {
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>{t("price")}</Form.Label>
                     <Form.Control
-                      type="number"
+                      type="text"
                       name="price"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.price}
+                      onFocus={() => {
+                        setFieldValue("price", "0");
+                        setFormattedPrice("");
+                      }}
+                      onChange={(e) => {
+                        const rawValue = e.target.value.replace(/[^0-9]/g, "");
+                        const formattedValue = rawValue
+                          ? new Intl.NumberFormat("la-LA", {
+                              style: "currency",
+                              currency: "LAK",
+                              minimumFractionDigits: 0,
+                            }).format(rawValue)
+                          : "";
+                        setFieldValue("price", rawValue);
+                        setFormattedPrice(formattedValue);
+                      }}
+                      onBlur={() => {
+                        handleBlur("price");
+                        if (!formattedPrice) {
+                          setFormattedPrice("LAK 0");
+                          setFieldValue("price", "0");
+                        }
+                      }}
+                      value={
+                        formattedPrice ||
+                        (values?.price
+                          ? new Intl.NumberFormat("la-LA", {
+                              style: "currency",
+                              currency: "LAK",
+                              minimumFractionDigits: 0,
+                            }).format(values.price)
+                          : "LAK 0")
+                      }
                       placeholder={t("food_name")}
                       style={{
                         border:
@@ -1799,7 +1861,8 @@ export default function MenuList() {
                       }}
                     />
                   </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlInput1">
+
+                  {/* <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>{t("order_add")}</Form.Label>
                     {dataUpdateMenuOption?.length > 0 &&
                       dataUpdateMenuOption?.map((item, index) => (
@@ -1936,7 +1999,7 @@ export default function MenuList() {
                         + {t("order_add")}
                       </Button>
                     </div>
-                  </Form.Group>
+                  </Form.Group> */}
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>{t("note")}</Form.Label>
                     <Form.Control

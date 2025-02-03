@@ -1201,14 +1201,14 @@ function AddOrder() {
                         {storeDetail?.firstCurrency}
                       </span>
                       <br />
-                      <span
+                      {/* <span
                         className={cn(
                           "text-[13px] text-gray-500",
                           fontMap[language]
                         )}
                       >
                         {t("amount_exist")} : {data?.quantity || 0}
-                      </span>
+                      </span> */}
                     </div>
                   </div>
                 ))
