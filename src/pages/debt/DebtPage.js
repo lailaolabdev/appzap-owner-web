@@ -23,10 +23,6 @@ import PopUpSetStartAndEndDateDebt from "../../components/popup/PopUpSetStartAnd
 import { useStoreStore } from "../../zustand/storeStore";
 import { DebtListAll } from "./DebtListAll";
 import { PayDebtListHistory } from "./PayDebtListHistory";
-import  IncressDebtListHistory  from "./IncressDebtListHistory";
-
-
-
 
 export default function DebtPage() {
   const { t } = useTranslation();
@@ -299,11 +295,6 @@ export default function DebtPage() {
         </Card>
       </Box>
 
-      
-
-
-
-
       <Tabs 
         defaultActiveKey="billDebt-list"
         activeKey={activeTab}
@@ -342,30 +333,6 @@ export default function DebtPage() {
           style={{ paddingTop: 20 }}
         >
           <PayDebtListHistory
-            t={t}
-            getDataHistory={getDataHistory}
-            startDate={startDate}
-            startTime={startTime}
-            endDate={endDate}
-            endTime={endTime}
-            setPopup={setPopup}
-            isHovered={isHovered}
-            setIsHovered={setIsHovered}
-            isLoading={isLoading}
-            debtHistoryData={debtHistoryData}
-            pagination={pagination}
-            limitData={limitData}
-            setPagination={setPagination}
-            totalPagination={totalPagination}
-          />
-        </Tab>
-
-        <Tab
-          eventKey="Incress-debt-list"
-          title={t("IncressDebt_list_history")}
-          style={{ paddingTop: 20 }}
-        >
-          <IncressDebtListHistory
             t={t}
             getDataHistory={getDataHistory}
             startDate={startDate}

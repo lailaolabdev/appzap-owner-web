@@ -215,10 +215,11 @@ export default function CheckPopupDebt({
   const handleClickCreateDebt = async () => {
     try {
 
-      if (tab === "cash_transfer" && !isValidPayment()) {
+      if (customerName === "cash_transfer" && !isValidPayment()) {
         errorAdd("ກະລຸນາປ້ອນຈຳນວນເງິນ");
         return;
       }
+
 
       const { DATA, TOKEN } = await getLocalData();
 
@@ -489,8 +490,6 @@ export default function CheckPopupDebt({
 
 
   const onChangeRemainingAmountInput = (inputData) => {
-    // Ton update
-    console.log({ inputData });
     convertNumberReverse(inputData, (value) => {
       setRemainingAmount(value);
       if (selectCurrency !== "LAK") {
@@ -505,7 +504,6 @@ export default function CheckPopupDebt({
   };
 
   const onChangeTransferInput = (inputData) => {
-    console.log({ inputData });
     convertNumberReverse(inputData, (value) => {
       setTransfer(value);
     });
@@ -540,6 +538,7 @@ export default function CheckPopupDebt({
     setRemainingAmount(remainingCalculate);
   }, [totalBill, amountBefore, transfer, forcus, open]);
 
+
   return (
     <Modal
       show={open}
@@ -567,6 +566,90 @@ export default function CheckPopupDebt({
         >
           {/* news---------------------------------------------------------------------------------------------------------------------- */}
           <div style={{ padding: 20 }}>
+            
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+                marginBottom: 10,
+              }}
+            >
+              {/* Input lakha */}
+              
+
+              <Form.Label>
+                {t("ctm_tel")} <span style={{ color: "red" }}>*</span>
+              </Form.Label>
+              <BoxInput>
+                <div className="debt-input">
+                  <Select
+                    options={optionsData}
+                    placeholder={t("ctm_tel")}
+                    onChange={(e) => {
+                      setCustomerPhone(e.tel);
+                      setCustomerName(e.value);
+                    }}
+                  />
+                </div>
+                <div className="debt-btn-group">
+                  <button
+                    type="button"
+                    style={{ color: "white" }}
+                    className="btn btn-primary"
+                    onClick={() => getMembersData()}
+                  >
+                    {/* {isLoading ? (
+                    <Spinner animation="border" size="sm" />
+                    ) : ( */}
+                    <MdRefresh />
+                    {/* )} */}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={
+                      () => window.open("/create/members", "_blank").focus()
+                      // navigate("/reports/members-report/create-member", "_blank", {
+                      //   state: { key: "create-debt" },
+                      // })
+                    }
+                  >
+                    ເພີ່ມໃໝ່
+                  </button>
+                </div>
+              </BoxInput>
+
+              <Form.Label>
+                {t("customer_name")}
+                <span style={{ color: "red" }}>*</span>
+              </Form.Label>
+              <Form.Control
+                placeholder={t("customer_name")}
+                maxLength={10}
+                value={customerName}
+                onChange={(e) => setCustomerPhone(e?.target.value)}
+              />
+
+              <Form.Label>{t("start_date_debt")}</Form.Label>
+              <Form.Control
+                placeholder={t("exp_date")}
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e?.target.value)}
+              />
+              <Form.Label>{t("end_date_debt")}</Form.Label>
+              <Form.Control
+                placeholder={t("exp_date")}
+                type="date"
+                value={expirtDate}
+                onChange={(e) => setExpirtDate(e?.target.value)}
+              />
+            </div>
+
+            
+            <hr style={{paddingTop: "10px"}}/>
+            <div >
             <div
               style={{
                 marginBottom: 10,
@@ -616,16 +699,7 @@ export default function CheckPopupDebt({
                 ({t("exchange_rate")}: {convertNumber(rateCurrency)})
               </span>
             </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 10,
-                marginBottom: 10,
-              }}
-            >
-              {/* Input lakha */}
-              <InputGroup hidden={selectCurrency === "LAK"}>
+            <InputGroup hidden={selectCurrency === "LAK"}>
                 <InputGroup.Text>{selectCurrency}</InputGroup.Text>
                 <Form.Control
                   type="text"
@@ -679,7 +753,7 @@ export default function CheckPopupDebt({
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
 
-              <Form hidden={tab !== "cash_transfer"}>
+              <Form hidden={tab !== "cash_transfer"} className="mt-3">
                 {['radio'].map((type) => (
                   <div key={`inline-${type}`} className="mb-3">
                     <CustomCheck
@@ -732,77 +806,7 @@ export default function CheckPopupDebt({
                 />
                 <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
               </InputGroup>
-
-              <Form.Label>
-                {t("ctm_tel")} <span style={{ color: "red" }}>*</span>
-              </Form.Label>
-              <BoxInput>
-                <div className="debt-input">
-                  <Select
-                    options={optionsData}
-                    placeholder={t("ctm_tel")}
-                    onChange={(e) => {
-                      setCustomerPhone(e.tel);
-                      setCustomerName(e.value);
-                    }}
-                  />
-                </div>
-                <div className="debt-btn-group">
-                  <button
-                    type="button"
-                    style={{ color: "white" }}
-                    className="btn btn-primary"
-                    onClick={() => getMembersData()}
-                  >
-                    {/* {isLoading ? (
-                    <Spinner animation="border" size="sm" />
-                    ) : ( */}
-                    <MdRefresh />
-                    {/* )} */}
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={
-                      () => window.open("/create/members", "_blank").focus()
-                      // navigate("/reports/members-report/create-member", "_blank", {
-                      //   state: { key: "create-debt" },
-                      // })
-                    }
-                  >
-                    ເພີ່ມໃໝ່
-                  </button>
-                </div>
-              </BoxInput>
-
-              <Form.Label>
-                {t("customer_name")}
-                <span style={{ color: "red" }}>*</span>
-              </Form.Label>
-              <Form.Control
-                placeholder={t("customer_phone")}
-                maxLength={10}
-                value={customerName}
-                onChange={(e) => setCustomerPhone(e?.target.value)}
-              />
-
-              <Form.Label>{t("start_date_debt")}</Form.Label>
-              <Form.Control
-                placeholder={t("exp_date")}
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e?.target.value)}
-              />
-              <Form.Label>{t("end_date_debt")}</Form.Label>
-              <Form.Control
-                placeholder={t("exp_date")}
-                type="date"
-                value={expirtDate}
-                onChange={(e) => setExpirtDate(e?.target.value)}
-              />
-            </div>
-
-            <div
+              <div
               style={{
                 marginBottom: 10,
               }}
@@ -831,6 +835,7 @@ export default function CheckPopupDebt({
                       : 0)
               )}{" "}
               {storeDetail?.firstCurrency}
+            </div>
             </div>
 
             {/* Button click Money */}

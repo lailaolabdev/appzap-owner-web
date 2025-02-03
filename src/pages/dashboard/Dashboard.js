@@ -71,6 +71,7 @@ export default function Dashboard() {
   const [changeText, setChangeText] = useState("CLICK1");
   const [countIsDebtTrue, setCountIsDebtTrue] = useState(0);
 
+
   const [shifts, setShift] = useState([]);
   const [shiftId, setShiftId] = useState(null);
 
@@ -130,7 +131,6 @@ export default function Dashboard() {
     return findBy;
   };
 
-  // console.log("findByData", findByData);
 
   // function
   const getReportData = async () => {
@@ -357,7 +357,7 @@ export default function Dashboard() {
                 {" : "}
                 {convertNumber(
                   totalBillActiveReport?.total +
-                    salesInformationReport?.totalSales
+                    salesInformationReport?.totalSales 
                 )}
               </div>
               <div className={fontMap[language]}>

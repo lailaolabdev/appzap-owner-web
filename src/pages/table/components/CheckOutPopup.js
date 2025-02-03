@@ -273,6 +273,7 @@ export default function CheckOutPopup({
       console.log("err:", err);
     }
   };
+
   const _checkBill = async (currencyId, currencyName) => {
     const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 

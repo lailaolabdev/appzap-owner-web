@@ -8,7 +8,6 @@ import { moneyCurrency } from "../../helpers";
 import ImageEmpty from "../../image/empty.png";
 import { MdOutlineCloudDownload } from "react-icons/md";
 import { useStoreStore } from "../../zustand/storeStore";
-import { convertBillDebtStatus } from "../../helpers/convertBillDebtStatus";
 import { COLOR_APP } from "../../constants";
 
 export default function PopUpDebtExport({
@@ -37,9 +36,7 @@ export default function PopUpDebtExport({
     if (debtHistoryData) {
       const filtered = debtHistoryData
         .filter(e => {
-          if (exportType === 'increase') {
-            return e?.amountIncrease > 0;
-          } else if (exportType === 'payment') {
+          if (exportType === 'payment') {
             return e?.totalPayment > 0;
           }
           return e?.remainingAmount >= 0;
@@ -55,8 +52,6 @@ export default function PopUpDebtExport({
 
   const getModalTitle = () => {
     switch (exportType) {
-      case 'increase':
-        return t("IncressDebt_list_history");
       case 'payment':
         return t("paydebt_list_history");
       default:
@@ -68,8 +63,6 @@ export default function PopUpDebtExport({
     if (!filteredData?.length) return 0;
 
     switch (exportType) {
-      case 'increase':
-        return filteredData.reduce((sum, item) => sum + (item.amountIncrease || 0), 0);
       case 'payment':
         return filteredData.reduce((sum, item) => sum + (item.totalPayment || 0), 0);
       default:
@@ -77,7 +70,7 @@ export default function PopUpDebtExport({
     }
   };
 
- const exportToExcel = async () => {
+  const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'Your Application';
     workbook.created = new Date();
@@ -110,9 +103,8 @@ export default function PopUpDebtExport({
       t("name"),
       t("tel"),
       t("money_remaining"),
-      exportType === 'increase' ? t("debt_add_remaining") 
-      : exportType === 'payment' ? t("debt_pay_remaining")
-      : t("status"), 
+      exportType === 'payment' ? t("debt_pay_remaining")
+        : t("status"),
       t("payment_datetime_debt")
     ].filter(Boolean);
 
@@ -139,11 +131,10 @@ export default function PopUpDebtExport({
     // Add data rows with explicit zero handling
     filteredData.forEach((item, index) => {
       const remainingAmount = typeof item?.remainingAmount === 'number' ? item.remainingAmount : 0;
-      const amountIncrease = typeof item?.amountIncrease === 'number' ? item.amountIncrease : 0;
       const totalPayment = typeof item?.totalPayment === 'number' ? item.totalPayment : 0;
 
       const getStatusText = (status) => {
-        switch(status) {
+        switch (status) {
           case 'PAY_DEBT':
             return 'ຊຳລະແລ້ວ';
           case 'PARTIAL_PAYMENT':
@@ -161,8 +152,7 @@ export default function PopUpDebtExport({
         item?.customerName || '',
         item?.customerPhone || '',
         remainingAmount,
-        exportType === 'increase' ? amountIncrease
-          : exportType === 'payment' ? totalPayment
+        exportType === 'payment' ? totalPayment
           : getStatusText(item?.status || ''),
         item?.outStockDate ? moment(item?.outStockDate).format("DD/MM/YYYY - HH:mm:SS") : ''
       ];
@@ -171,7 +161,6 @@ export default function PopUpDebtExport({
       row.font = defaultFont;
       row.height = 20;
       row.eachCell((cell, colNumber) => {
-        // If it's a numeric column and the value is undefined/null, set it to 0
         if ([5, 6].includes(colNumber) && (cell.value === null || cell.value === undefined || cell.value === '')) {
           cell.value = 0;
         }
@@ -186,11 +175,31 @@ export default function PopUpDebtExport({
       });
     });
 
+    // Add empty row for spacing
+    worksheet.addRow([]);
+
+    // Add total row
+    const totalRow = worksheet.addRow([
+      '',
+      '',
+      '',
+      exportType === 'payment' ? t("ຍອດລວມການຊຳລະໜີ້ທັງຫມົດ") : t("ຍອດລວມການຕິດໜີ້ທັງຫມົດ"),
+      getTotalAmount(),
+      'ກີບ',
+      ''
+    ]);
+
+    // Style total row
+    totalRow.font = { ...defaultFont, bold: true };
+    totalRow.height = 25;
+    totalRow.getCell(4).alignment = { horizontal: 'right' };
+    totalRow.getCell(5).numFmt = '#,##0.00';
+    totalRow.getCell(5).alignment = { horizontal: 'right' };
+
     // Format columns
     [5, 6].forEach(col => {
       if (worksheet.getColumn(col)) {
         worksheet.getColumn(col).numFmt = '#,##0.00';
-        // Ensure empty cells in numeric columns show 0
         worksheet.getColumn(col).eachCell({ includeEmpty: true }, cell => {
           if (cell.value === null || cell.value === undefined || cell.value === '') {
             cell.value = 0;
@@ -220,9 +229,9 @@ export default function PopUpDebtExport({
       }),
       fileName
     );
-};
+  };
 
- 
+
 
   return (
     <Modal show={showMainModal} onHide={onClose} size="xl">
@@ -240,11 +249,8 @@ export default function PopUpDebtExport({
         >
           <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
             <span>
-              {exportType === 'increase' ? `${t("ຍອດລວມການຕິດໜີ້ເພີມທັງຫມົດ")} ${moneyCurrency(getTotalAmount())}`
-                : exportType === 'payment' ? `${t("ຍອດລວມການຊຳລະໜີ້ທັງຫມົດ")} ${moneyCurrency(getTotalAmount())}`
+              {exportType === 'payment' ? `${t("ຍອດລວມການຊຳລະໜີ້ທັງຫມົດ")} ${moneyCurrency(getTotalAmount())}`
                 : `${t("ຍອດລວມການຕິດໜີ້ທັງຫມົດ")} ${moneyCurrency(getTotalAmount())}`} ກີບ"
-
-              
             </span>
             <Button
               onClick={exportToExcel}
@@ -272,7 +278,6 @@ export default function PopUpDebtExport({
                 <th style={{ paddingRight: "7rem" }}>{t("tel")}</th>
                 <th style={{ paddingRight: "2rem" }}>{t("money_remaining")}</th>
                 {exportType === '' && (<th>{t("status")}</th>)}
-                {exportType === 'increase' && (<th style={{ paddingRight: "2rem" }}>{t("debt_add_remaining")}</th>)}
                 {exportType === 'payment' && (<th style={{ paddingRight: "2rem" }}>{t("debt_pay_remaining")}</th>)}
                 <th>{t("payment_datetime_debt")}</th>
               </tr>
@@ -292,8 +297,7 @@ export default function PopUpDebtExport({
                     <td>{e?.customerName}</td>
                     <td>{e?.customerPhone}</td>
                     <td>{moneyCurrency(e?.remainingAmount)}</td>
-                    {exportType === ''  && ( <td>{t ?convertBillDebtStatus(e?.status, t) : ""}</td>)}
-                    {exportType === 'increase' && (<td style={{ color: "Coral" }}>{moneyCurrency(e?.amountIncrease)}</td> )}
+                    {exportType === '' && (<td style={{ color: `${e?.status === 'DEBT' ? "red" : e?.status === "PAY_DEBT" ? "green" : "orange"}` }}>{e?.status === "DEBT" ? t("debt") : e?.status === "PAY_DEBT" ? t("debt_pay") : t("partial_payment")}</td>)}
                     {exportType === 'payment' && (<td style={{ color: "MediumSeaGreen" }}>{moneyCurrency(e?.totalPayment)}</td>)}
                     {exportType === '' ? <td>
                       {e?.outStockDate ? moment(e?.outStockDate).format("DD/MM/YYYY - HH:mm:SS : a") : ""} </td>
