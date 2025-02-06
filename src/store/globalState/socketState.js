@@ -4,6 +4,10 @@ import { END_POINT_SOCKET } from "../../constants/api";
 import { useStoreStore } from "../../zustand/storeStore";
 import { useOrderStore } from "../../zustand/orderStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
+import {
+  useSlideImageStore,
+  useCombinedToggleSlide,
+} from "../../zustand/slideImageStore";
 import { data } from "browserslist";
 import { set } from "lodash";
 const { sendToKitchenPrinter } = require("../../helpers/printerHelper");
@@ -31,6 +35,9 @@ export const useSocketState = ({ setRunSound }) => {
 
   const { storeDetail, fetchStoreDetail } = useStoreStore();
   const { setShiftList, setShiftListCurrent } = useShiftStore();
+  const { setUseSlideImage } = useSlideImageStore();
+  const { Settoggle, SettoggleTable, SettoggleSlide, SettoggleOpenTwoScreen } =
+    useCombinedToggleSlide();
   const { handleNewOrderItems } = useOrderStore();
 
   useEffect(() => {
@@ -96,6 +103,25 @@ export const useSocketState = ({ setRunSound }) => {
     const getDataShiftCurentOpen = async (data) => {
       setShiftListCurrent(data?.data);
     };
+    const useSlideImage = async (data) => {
+      setUseSlideImage(data?.data);
+    };
+    const showTable = async (data) => {
+      // console.log("socket showTable", data?.data?.showTable);
+      SettoggleTable(data?.data?.showTable);
+    };
+    const showSlide = async (data) => {
+      // console.log("socket showSlide", data?.data?.showSlide);
+      SettoggleSlide(data?.data?.showSlide);
+    };
+    const showTitle = async (data) => {
+      // console.log("socket showTitle", data?.data?.showTitle);
+      Settoggle(data?.data?.showTitle);
+    };
+    const OpenTwoScreen = async (data) => {
+      // console.log("socket OpenTwoScreen", data?.data?.isOpenSecondScreen);
+      SettoggleOpenTwoScreen(data?.data?.isOpenSecondScreen);
+    };
 
     // Register socket listeners
     socket.on("connect", handleConnect);
@@ -112,6 +138,11 @@ export const useSocketState = ({ setRunSound }) => {
     socket.on(`SHIFT_ALL:${storeDetail._id}`, getDataShift);
     socket.on(`CLOSE_OPEN_SHIFT:${storeDetail._id}`, getDataShiftOpenAndClose);
     socket.on(`SHIFT_UPDATE_OPEN:${storeDetail._id}`, getDataShiftCurentOpen);
+    socket.on(`UPDATE_USE_SLIDE:${storeDetail._id}`, useSlideImage);
+    socket.on(`SHOW_TABLE:${storeDetail._id}`, showTable);
+    socket.on(`SHOW_TITLE:${storeDetail._id}`, showTitle);
+    socket.on(`SHOW_SLIDE:${storeDetail._id}`, showSlide);
+    socket.on(`OPEN_TWO_SCREEN:${storeDetail._id}`, OpenTwoScreen);
 
     // Cleanup listeners to prevent duplicates
     return () => {
@@ -135,6 +166,10 @@ export const useSocketState = ({ setRunSound }) => {
         `SHIFT_UPDATE_OPEN:${storeDetail._id}`,
         getDataShiftCurentOpen
       );
+      socket.off(`SHOW_TABLE:${storeDetail._id}`, showTable);
+      socket.off(`SHOW_TITLE:${storeDetail._id}`, showTitle);
+      socket.off(`SHOW_SLIDE:${storeDetail._id}`, showSlide);
+      socket.off(`OPEN_TWO_SCREEN:${storeDetail._id}`, OpenTwoScreen);
     };
   }, [storeDetail, setRunSound]);
 
