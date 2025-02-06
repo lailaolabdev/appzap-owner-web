@@ -85,6 +85,8 @@ import StockCreateCategory from "../pages/stock/StockCreateCategory";
 import ReportStocks from "../pages/report/ReportStocks";
 import ShiftList from "../pages/shift/Shift";
 import ShiftOpenPages from "../pages/shift/ShiftOpenPages";
+import SecondScreen from "../pages/secondScreen/SecondScreen";
+import MainScreen from "../pages/secondScreen/MainScreen";
 
 function Router() {
   return useRoutes([
@@ -122,6 +124,10 @@ function Router() {
     {
       path: "/create/members",
       element: <CreateMemberPageWithDebt />,
+    },
+    {
+      path: "/second-screen",
+      element: <SecondScreen />,
     },
     {
       path: "/",
@@ -343,6 +349,11 @@ function Router() {
           path: "/settingStore/settingZone/:id",
           element: <ZoneList />,
         },
+        {
+          path: "/setting-screen",
+          element: <MainScreen />,
+        },
+
         OrderRoutes,
         PrinterRoutes,
         DesignRoutes,

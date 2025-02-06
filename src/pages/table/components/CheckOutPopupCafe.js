@@ -32,6 +32,8 @@ import Loading from "../../../components/Loading";
 import { useStoreStore } from "../../../zustand/storeStore";
 import { useShiftStore } from "../../../zustand/ShiftStore";
 import { data } from "browserslist";
+import { useMenuSelectStore } from "../../../zustand/menuSelectStore";
+import { useChangeMoney } from "../../../zustand/slideImageStore";
 
 export default function CheckOutPopupCafe({
   onPrintDrawer,
@@ -75,6 +77,8 @@ export default function CheckOutPopupCafe({
 
   const [currencyList, setCurrencyList] = useState([]);
   const { setSelectedTable, getTableDataStore } = useStore();
+  const { setSelectedMenus } = useMenuSelectStore();
+  const { SetChangeAmount, ChangeAmount, ClearChangeAmount } = useChangeMoney();
 
   const { t } = useTranslation();
 
@@ -171,7 +175,32 @@ export default function CheckOutPopupCafe({
       moneyChange: moneyChange,
       dataStaffConfirm: staffConfirm,
     }));
+    SetChangeAmount(
+      (parseFloat(cash) || 0) +
+        (parseFloat(transfer) || 0) -
+        (dataBill
+          ? totalBill
+            ? totalBill
+            : 0
+          : totalBill > 0
+          ? totalBill
+          : 0) <=
+        0
+        ? 0
+        : (parseFloat(cash) || 0) +
+            (parseFloat(transfer) || 0) -
+            (dataBill
+              ? totalBill > 0
+                ? totalBill
+                : 0
+              : totalBill > 0
+              ? totalBill
+              : 0)
+    );
   }, [cash, transfer, selectCurrency]);
+
+  console.log("ChangeAmount", ChangeAmount);
+
   useEffect(() => {
     if (!open) return;
     if (selectCurrency != "LAK") {
@@ -296,7 +325,7 @@ export default function CheckOutPopupCafe({
         setSelectInput("inputCash");
         setHasCRM(false);
         setTextSearchMember("");
-        setSelectedMenu([]);
+        setSelectedMenus([]);
         localStorage.removeItem("STAFFCONFIRM_DATA");
         setIsLoading(false);
 
@@ -309,6 +338,7 @@ export default function CheckOutPopupCafe({
           timer: 1800,
         });
         await onPrintForCher();
+        ClearChangeAmount();
         // navigate("/history-cafe-sale")
       })
       .catch(function (error) {

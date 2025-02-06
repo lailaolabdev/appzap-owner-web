@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const ImageSlider = ({ images, autoPlayInterval = 3000 }) => {
+const ImageSliderSecondSreen = ({ images, autoPlayInterval = 3000 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -22,8 +22,8 @@ const ImageSlider = ({ images, autoPlayInterval = 3000 }) => {
   };
 
   const sliderStyle = {
-    width: "400px",
-    height: "200px",
+    width: "550px",
+    height: "310px",
     margin: "0 auto",
     position: "relative",
     overflow: "hidden",
@@ -68,4 +68,4 @@ const ImageSlider = ({ images, autoPlayInterval = 3000 }) => {
   );
 };
 
-export default ImageSlider;
+export default ImageSliderSecondSreen;
