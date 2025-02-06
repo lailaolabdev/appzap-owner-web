@@ -6,7 +6,6 @@ import { moneyCurrency } from "../../helpers";
 import ImageEmpty from "../../image/empty.png";
 import moment from "moment";
 import { COLOR_APP } from "../../constants";
-import { convertBillDebtStatus } from "../../helpers/convertBillDebtStatus";
 import { BsFillCalendarWeekFill } from "react-icons/bs";
 import Box from "../../components/Box";
 
@@ -30,13 +29,33 @@ export const DebtListAll = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredData = searchTerm && searchTerm.length >= 2
-    ? billDebtData.filter(item =>
-    (item.code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  // คำนวณผลรวม remainingAmount สำหรับลูกค้าที่ค้นหา
+  const getSearchResults = () => {
+    if (!searchTerm || searchTerm.length < 2) return {
+      filteredData: billDebtData,
+      totalRemaining: 0,
+      customerInfo: null
+    };
+
+    const filtered = billDebtData.filter(item =>
       item.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.customerPhone?.includes(searchTerm))
-    )
-    : billDebtData;
+      item.customerPhone?.includes(searchTerm)
+    );
+
+    if (filtered.length > 0) {
+      const totalRemaining = filtered.reduce((sum, item) => sum + (item.remainingAmount || 0), 0);
+      const totalRemainingAmount = filtered.reduce((sum, item) => sum + (item?.amount || 0), 0);
+      const customerInfo = {
+        name: filtered[0].customerName,
+        phone: filtered[0].customerPhone
+      };
+      return { filteredData: filtered, totalRemaining,totalRemainingAmount, customerInfo };
+    }
+
+    return { filteredData: [], totalRemaining: 0, customerInfo: null };
+  };
+
+  const { filteredData, totalRemaining,totalRemainingAmount, customerInfo } = getSearchResults();
 
   const sortedData = filteredData.sort((a, b) =>
     new Date(b.updatedAt) - new Date(a.updatedAt)
@@ -44,12 +63,11 @@ export const DebtListAll = ({
 
   return (
     <>
-
       <div style={{ display: "flex", gap: 10, padding: "10px 0", justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: "flex", gap: 10, padding: "10px 0", alignItems: 'center' }}>
           <Form.Control
             style={{ maxWidth: 220 }}
-            placeholder={t("search_bill_code")}
+            placeholder={t("ຄົນຫາຊື່ຫຼຶເບີໂທ")}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <Button
@@ -78,6 +96,27 @@ export const DebtListAll = ({
         </Button>
       </div>
 
+     
+      {searchTerm && searchTerm.length >= 2 && customerInfo && (
+        <Card style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', display: 'flex'}}>
+          <div style={{ fontSize: '18px', marginBottom: '10px', fontWeight:'bold'}}>
+           {t("name")}: {customerInfo.name} 
+          </div>
+          <div style={{ fontSize: '18px', marginBottom: '10px', fontWeight:'bold'}}>
+             {t("phoneNumber")} :{customerInfo.phone}
+          </div>
+          <div style={{ fontSize: '20px', fontWeight: 'bold', color: COLOR_APP }}>
+            {t("total_debt")}: {moneyCurrency(totalRemainingAmount)} ກິບ
+          </div>
+          <div style={{ fontSize: '20px', fontWeight: 'bold', color: COLOR_APP }}>
+            {t("paid_already")}: {moneyCurrency(totalRemainingAmount - totalRemaining) } ກິບ
+          </div>
+          <div style={{ fontSize: '20px', fontWeight: 'bold', color: COLOR_APP }}>
+            {t("outstanding_money")}: {moneyCurrency(totalRemaining)} ກິບ
+          </div>
+        </Card>
+      )}
+
       <Card border="primary" style={{ margin: 0 }}>
         <Card.Header
           style={{
@@ -103,7 +142,6 @@ export const DebtListAll = ({
             variant="dark"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-
             onClick={() => {
               setPopup({
                 PopUpDebtExport: true,
@@ -145,14 +183,15 @@ export const DebtListAll = ({
                       setPopup({ PopUpDetaillBillDebt: true });
                       setSelectBillDebt(e);
                     }}
+                    style={{cursor: 'pointer'}}
                   >
                     <td>{(pagination - 1) * limitData + i + 1}</td>
                     <td>{e?.code}</td>
                     <td>{e?.customerName}</td>
                     <td>{e?.customerPhone}</td>
                     <td>{moneyCurrency(e?.remainingAmount)}</td>
-                    <td>
-                      {t ? convertBillDebtStatus(e?.status, t) : ""}
+                    <td style={{color:`${e?.status === 'DEBT' ? "red": e?.status === "PAY_DEBT" ? "green": "orange"}`}}>
+                      {e?.status === "DEBT" ? t("debt") : e?.status === "PAY_DEBT" ? t("debt_pay"): t("partial_payment") }
                     </td>
                     <td>{moment(e?.createdAt).format("DD/MM/YYYY - HH:mm:SS")}</td>
                     <td>{moment(e?.endDate).format("DD/MM/YYYY - HH:mm:SS")}</td>

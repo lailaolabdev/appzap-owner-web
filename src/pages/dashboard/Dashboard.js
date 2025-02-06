@@ -71,6 +71,7 @@ export default function Dashboard() {
   const [changeText, setChangeText] = useState("CLICK1");
   const [countIsDebtTrue, setCountIsDebtTrue] = useState(0);
 
+
   const [shifts, setShift] = useState([]);
   const [shiftId, setShiftId] = useState(null);
 
@@ -130,7 +131,6 @@ export default function Dashboard() {
     return findBy;
   };
 
-  // console.log("findByData", findByData);
 
   // function
   const getReportData = async () => {
@@ -145,10 +145,12 @@ export default function Dashboard() {
     );
     setSalesInformationReport(data);
   };
+
   const getMoneyReportData = async () => {
     const data = await getMoneyReport(storeDetail?._id, findByData());
     setMoneyReport(data);
   };
+
   const getPromotionReportData = async () => {
     // const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getPromotionReport(storeDetail?._id, findByData());
@@ -158,6 +160,7 @@ export default function Dashboard() {
     const data = await getCountBillsV7(storeDetail?._id, findByData());
     setCountAllBillReport(data);
   };
+
 
   const getCountBillActiveReportData = async () => {
     let findBy = "?";
@@ -357,7 +360,7 @@ export default function Dashboard() {
                 {" : "}
                 {convertNumber(
                   totalBillActiveReport?.total +
-                    salesInformationReport?.totalSales
+                    salesInformationReport?.totalSales 
                 )}
               </div>
               <div className={fontMap[language]}>
