@@ -208,7 +208,7 @@ export default function DashboardFinance({
     setIsLoading(false);
   };
 
-  console.log("data: ", data)
+  //console.log("data: ", data)
 
   useEffect(() => {
     let _disCountDataKib = 0;
