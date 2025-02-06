@@ -999,5 +999,18 @@
   "plachoder_shift": "Chose shift",
   "open_function_shift": "Open function shift",
   "open_shift": "Open",
-  "all_shifts": "All list"
+  "all_shifts": "All list",
+  "manage_second_screen": "Manage second screen",
+  "list_slide_second_screen": "List slide",
+  "image_slide": "Slide image",
+  "name_slide": "Slide name",
+  "open_slide": "Open slide",
+  "delete_image_slide": "Delete All",
+  "ex_manage": "Example Slide and Manage",
+  "show_title": "Show title",
+  "add_slide": "Add slide",
+  "edit_slide": "Edit slide",
+  "show_slide": "Show slide",
+  "show_table": "Show table",
+  "totals": "Total"
 }

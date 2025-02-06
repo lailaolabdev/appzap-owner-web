@@ -50,9 +50,12 @@ export default function Upload({
         },
       });
       const url = afterUpload.config.url.split("?")[0];
+      console.log("url", url);
       setUrl(url);
       const splitName = url.split("/");
+      console.log("splitName", splitName);
       const name = splitName[splitName.length - 1];
+      console.log("name", name);
       onChange({ url, name });
       setSelectImage();
     } catch (error) {
@@ -88,7 +91,7 @@ export default function Upload({
             }}
             onClick={removeImage}
           >
-            {t('delete_image')}
+            {t("delete_image")}
           </div>
         ) : (
           ""
@@ -103,7 +106,7 @@ export default function Upload({
             cursor: "pointer",
             display: "flex",
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
           }}
         >
           {src ? (
@@ -154,6 +157,7 @@ export default function Upload({
             aria-valuenow={imageLoading}
             aria-valuemin="0"
             aria-valuemax="100"
+            tabIndex="0"
           >
             {imageLoading}%
           </div>

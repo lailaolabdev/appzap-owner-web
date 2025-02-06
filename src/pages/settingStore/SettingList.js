@@ -19,6 +19,7 @@ import {
   faBuildingColumns,
   faBox,
   faClock,
+  faDesktop,
 } from "@fortawesome/free-solid-svg-icons";
 // import { faRegClock } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
@@ -173,12 +174,12 @@ export default function SettingList() {
       path: `/settingStore/delivery/${params?.id}`,
     },
 
-    // {
-    //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
-    //   title: "ຈັດການເມນູພື້ນຖານຂອງຮ້ານ",
-    //   icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faUtensils} />,
-    //   path: `/food-setting/limit/40/page/1`,
-    // },
+    {
+      id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
+      title: "ການຕັ້ງຄ່າກ່ຽວກັບ 2 ໜ້າຈໍ",
+      icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDesktop} />,
+      path: "/setting-screen",
+    },
     // {
     //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
     //   title: "ຈັດການກະ",
