@@ -92,6 +92,7 @@ export default function CheckPopupDebt({
   );
   const [debtTotal, setDebtTotal] = useState(true)
   const [debtAndPay, setDebtAndPay] = useState(false)
+  const [isPaymentExceeded, setIsPaymentExceeded] = useState(false);
 
 
   useEffect(() => {
@@ -534,9 +535,21 @@ export default function CheckPopupDebt({
     const totalPaidBefore = Number(amountBefore || 0) + Number(transfer || 0);
     const remainingCalculate = totalBill - totalPaidBefore;
 
+    if(remainingCalculate < 0) {
+      setIsPaymentExceeded(true);
+    }else{
+      setIsPaymentExceeded(false);
+    }
+
+
+
     setRemainingShow(remainingCalculate);
     setRemainingAmount(remainingCalculate);
   }, [totalBill, amountBefore, transfer, forcus, open]);
+
+ 
+
+  
 
 
   return (
@@ -954,7 +967,7 @@ export default function CheckPopupDebt({
         <div style={{ width: "20%" }} />
         <Button
           onClick={handleClickCreateDebt}
-          disabled={tab === "cash_transfer" && !isValidPayment()}
+          disabled={tab === "cash_transfer" && !isValidPayment() || isPaymentExceeded}
         >
           {t("debt_create")}
         </Button>

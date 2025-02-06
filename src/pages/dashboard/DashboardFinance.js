@@ -208,7 +208,7 @@ export default function DashboardFinance({
     setIsLoading(false);
   };
 
-  //console.log("data: ", data)
+  console.log("data: ", data)
 
   useEffect(() => {
     let _disCountDataKib = 0;
@@ -629,7 +629,7 @@ export default function DashboardFinance({
                       }).format(
                         item?.isDebtAndPay
                           ? item?.payAmount + item?.transferAmount
-                          : item?.isDebtPayment ? item?.totalTranferAndPayLast
+                          : item?.isDebtPayment ? (item?.payAmount + item?.transferAmount) - item?.totalTranferAndPayLast
                           :  isNaN(
                             item?.billAmount +
                             item?.taxAmount +
@@ -642,6 +642,7 @@ export default function DashboardFinance({
                             item?.serviceChargeAmount -
                             item?.point
                       )}{" "} 
+                      {item?.isDebtPayment && <span className=" text-blue-500">( + {moneyCurrency(item?.totalTranferAndPayLast)}) </span>}
                   {storeDetail?.firstCurrency}
                 </td>
                 <td>

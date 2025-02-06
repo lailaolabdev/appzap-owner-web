@@ -38,6 +38,7 @@ export default function PopUpDetailBillDebt({
   const [disabledEditBill, setDisabledEditBill] = useState(false);
   const [errorAdd, setErrorAdd] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isPaymentExceeded, setIsPaymentExceeded] = useState(false);
 
 
 
@@ -46,12 +47,17 @@ export default function PopUpDetailBillDebt({
       setTotalPayment(0);
       setNumericValue(0);
       setErrorAdd("");
+      setIsPaymentExceeded(false);
     }
   }, [open]);
 
   const calculateAmounts = () => {
-    const newRemainingAmount = billDebtData?.remainingAmount - (totalPayment + transfer) || 0;
+    const totalAmount = totalPayment + transfer;
+    const newRemainingAmount = billDebtData?.remainingAmount - totalAmount || 0;
     setRemainingAmount(newRemainingAmount);
+
+    // Check if payment exceeds bill amount
+    setIsPaymentExceeded(totalAmount > billDebtData?.remainingAmount);
   };
 
   useEffect(() => {
@@ -83,7 +89,7 @@ export default function PopUpDetailBillDebt({
       await billReset();
       handleClickConfirmDebt();
       _checkBill();
-      successAdd("Success");
+      successAdd(t("paymentCompleted"));
     } catch (error) {
       errorAdd(t("checkbill_fial"));
       console.error(error);
@@ -136,6 +142,7 @@ export default function PopUpDetailBillDebt({
 
   const _checkBill = async () => {
     const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
+    const currentDateTime = new Date().toISOString();
 
     try {
       await axios.put(
@@ -157,6 +164,13 @@ export default function PopUpDetailBillDebt({
             fullnameStaffCheckOut:
               `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-",
             staffCheckOutId: staffConfirm?.id,
+            debtPaymentDateTime: [{
+              payAmount: totalPayment,
+              transferAmount: transfer,
+              billAmount:totalPayment + transfer,
+              billAmountBefore:totalPayment + transfer,
+              dateTime: currentDateTime
+            }]
           },
         },
         {
@@ -322,7 +336,7 @@ export default function PopUpDetailBillDebt({
             disabled={
               (billDebtData?.status !== "DEBT" &&
                 billDebtData?.status !== "PARTIAL_PAYMENT") ||
-              isLoading
+              isLoading || isPaymentExceeded
             }
           >
             {isLoading ? (
