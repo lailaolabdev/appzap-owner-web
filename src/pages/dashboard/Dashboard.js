@@ -145,10 +145,13 @@ export default function Dashboard() {
     );
     setSalesInformationReport(data);
   };
+
+  console.log("salesInformationReport: ",salesInformationReport)
   const getMoneyReportData = async () => {
     const data = await getMoneyReport(storeDetail?._id, findByData());
     setMoneyReport(data);
   };
+  console.log("moneyReport: ",moneyReport)
   const getPromotionReportData = async () => {
     // const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getPromotionReport(storeDetail?._id, findByData());
@@ -158,6 +161,8 @@ export default function Dashboard() {
     const data = await getCountBillsV7(storeDetail?._id, findByData());
     setCountAllBillReport(data);
   };
+
+  console.log("countAllBillReport: ",countAllBillReport)
 
   const getCountBillActiveReportData = async () => {
     let findBy = "?";
