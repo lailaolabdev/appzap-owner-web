@@ -459,7 +459,7 @@ export default function CheckPopupDebt({
   };
 
   const onChangeCashInput = (inputData) => {
-    console.log({ inputData });
+    //console.log({ inputData });
     convertNumberReverse(inputData, (value) => {
       setCash(value);
       if (selectCurrency !== "LAK") {
@@ -475,7 +475,7 @@ export default function CheckPopupDebt({
 
   const onChangeAmountBeforeInput = (inputData) => {
     // Ton update
-    console.log({ inputData });
+    //console.log({ inputData });
     convertNumberReverse(inputData, (value) => {
       setAmountBefore(value);
       if (selectCurrency !== "LAK") {

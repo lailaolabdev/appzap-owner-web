@@ -302,7 +302,7 @@ export default function DashboardPage() {
         });
 
         // Create a Blob from the response data
-        console.log("response", response.data);
+       // console.log("response", response.data);
         const fileBlob = new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
