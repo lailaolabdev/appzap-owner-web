@@ -101,6 +101,7 @@ export default function MenuList() {
   const location = useLocation();
   const pathParts = location.pathname.split("/");
   const defaultActiveKey = `/settingStore/${pathParts[2]}`;
+  const [selectedPositions, setSelectedPositions] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -126,7 +127,7 @@ export default function MenuList() {
           const _localData = await getLocalData();
 
           setIsLoading(true);
-          // getMenu(_localData?.DATA?.storeId, filterCategory)
+          getMenu(_localData?.DATA?.storeId, filterCategory);
 
           await fetch(
             MENUS +
@@ -139,7 +140,9 @@ export default function MenuList() {
           )
             .then((response) => response.json())
             .then((json) => {
-              setMenus(json);
+              // Sort the menus by the 'sort' field
+              const sortedMenus = json.sort((a, b) => a.sort - b.sort);
+              setMenus(sortedMenus);
             });
           setIsLoading(false);
         } catch (err) {
@@ -150,6 +153,76 @@ export default function MenuList() {
       fetchFilter();
     }
   }, [filterName, filterCategory]);
+
+  const getMenuFilter = async () => {
+    try {
+      const _localData = await getLocalData();
+
+      setIsLoading(true);
+      getMenu(_localData?.DATA?.storeId, filterCategory);
+
+      await fetch(
+        MENUS +
+          `/?storeId=${_localData?.DATA?.storeId}${
+            filterCategory === "All" ? "" : `&categoryId=${filterCategory}`
+          }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
+        {
+          method: "GET",
+        }
+      )
+        .then((response) => response.json())
+        .then((json) => {
+          // Sort the menus by the 'sort' field
+          setMenus(json);
+        });
+      setIsLoading(false);
+    } catch (err) {
+      console.log(err);
+      setIsLoading(false);
+    }
+  };
+
+  // useEffect(() => {
+  //   if (filterName || filterCategory) {
+  //     const fetchFilter = async () => {
+  //       try {
+  //         const _localData = await getLocalData();
+
+  //         setIsLoading(true);
+
+  //         const response = await fetch(
+  //           MENUS +
+  //             `/?storeId=${_localData?.DATA?.storeId}${
+  //               filterCategory === "All" ? "" : `&categoryId=${filterCategory}`
+  //             }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
+  //           {
+  //             method: "GET",
+  //           }
+  //         );
+
+  //         const json = await response.json();
+
+  //         let sortedMenus = [...json];
+
+  //         Object.entries(selectedPositions).forEach(([menuId, position]) => {
+  //           const menuIndex = sortedMenus.findIndex((m) => m.id === menuId);
+  //           if (menuIndex !== -1) {
+  //             const [selectedMenu] = sortedMenus.splice(menuIndex, 1);
+  //             sortedMenus.splice(position - 1, 0, selectedMenu);
+  //           }
+  //         });
+
+  //         setMenus(sortedMenus);
+  //       } catch (err) {
+  //         console.log(err);
+  //       } finally {
+  //         setIsLoading(false);
+  //       }
+  //     };
+
+  //     fetchFilter();
+  //   }
+  // }, [filterName, filterCategory, selectedPositions]);
 
   const getcategory = async (id) => {
     try {
@@ -475,6 +548,7 @@ export default function MenuList() {
     console.log("resData", resData);
     if (resData?.data) {
       handleClose2();
+      getMenuFilter();
       successAdd(`${t("edit_success")}`);
     }
   };
