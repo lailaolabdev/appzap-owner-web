@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import Select from "react-select";
 import { Modal, Form, Button, InputGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Box from "../../../components/Box";
@@ -7,8 +8,8 @@ import axios from "axios";
 import { COLOR_APP, END_POINT } from "../../../constants";
 import { getHeaders } from "../../../services/auth";
 import Swal from "sweetalert2";
-import { errorAdd } from "../../../helpers/sweetalert";
-import { BiSolidPrinter } from "react-icons/bi";
+import { errorAdd, successAdd } from "../../../helpers/sweetalert";
+import { BiSolidPrinter, BiRotateRight } from "react-icons/bi";
 import { FaSearch } from "react-icons/fa";
 
 import _ from "lodash";
@@ -23,12 +24,12 @@ import NumberKeyboard from "../../../components/keyboard/NumberKeyboard";
 import convertNumber from "../../../helpers/convertNumber";
 import matchRoundNumber from "../../../helpers/matchRound";
 import convertNumberReverse from "../../../helpers/convertNumberReverse";
-
+import { RedeemPoint, PointUser } from "../../../services/point";
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
 
 import Loading from "../../../components/Loading";
-
+import { getMemberAllCount } from "../../../services/member.service";
 import { useStoreStore } from "../../../zustand/storeStore";
 import { useShiftStore } from "../../../zustand/ShiftStore";
 import { data } from "browserslist";
@@ -46,14 +47,13 @@ export default function CheckOutPopupCafe({
   dataBill,
   setDataBill,
   taxPercent = 0,
-  setSelectedMenu,
   setIsLoading,
 }) {
   // ref
   const inputCashRef = useRef(null);
   const inputTransferRef = useRef(null);
   const { profile } = useStore();
-  const { storeDetail } = useStoreStore();
+  const { storeDetail, setStoreDetail } = useStoreStore();
   const { shiftCurrent } = useShiftStore();
   const navigate = useNavigate();
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
@@ -61,6 +61,7 @@ export default function CheckOutPopupCafe({
   // state
   const [selectInput, setSelectInput] = useState("inputCash");
   const [selectDataOpption, setSelectDataOpption] = useState();
+  const [point, setPoint] = useState();
   const [cash, setCash] = useState();
   const [transfer, setTransfer] = useState();
   const [tab, setTab] = useState("cash");
@@ -73,8 +74,9 @@ export default function CheckOutPopupCafe({
   const [cashCurrency, setCashCurrency] = useState();
   const [hasCRM, setHasCRM] = useState(false);
   const [memberData, setMemberData] = useState();
+  const [memberDataSearch, setMemberDataSearch] = useState();
   const [textSearchMember, setTextSearchMember] = useState("");
-
+  const [membersData, setMembersData] = useState([]);
   const [currencyList, setCurrencyList] = useState([]);
   const { setSelectedTable, getTableDataStore } = useStore();
   const { setSelectedMenus } = useMenuSelectStore();
@@ -84,42 +86,40 @@ export default function CheckOutPopupCafe({
 
   useEffect(() => {
     setMemberData();
-    if (textSearchMember.length == 8) {
+    if (textSearchMember.length > 0) {
       handleSearchOne();
     }
   }, [textSearchMember]);
+
   const handleSearchOne = async () => {
     try {
-      let url =
-        END_POINT_SEVER_TABLE_MENU +
-        "/v4/member/search-one?phone=" +
-        textSearchMember;
+      const url = `${END_POINT_SEVER_TABLE_MENU}/v6/members/search-one?phone=${textSearchMember}`;
       const _header = await getHeaders();
       const _res = await axios.get(url, { headers: _header });
       if (!_res.data) throw new Error("Empty!");
-      setMemberData(_res.data);
+      setMemberDataSearch(_res.data);
       setDataBill((prev) => ({
         ...prev,
         memberId: _res.data?._id,
-        memberName: _res.data?.name,
         memberPhone: _res.data?.phone,
+        memberName: _res.data?.name,
+        Name: _res.data?.name,
+        Point: _res.data?.point,
       }));
     } catch (err) {
       console.log(err);
       errorAdd("ບໍ່ພົບສະມາຊິກ");
     }
   };
-  // console.log("tableData:=======abc======>", tableData)
 
-  // const totalBillDefualt = _.sumBy(
-  //   dataBill?.map((e) => e?.price * e?.quantity)
-  // );
-
-  // const TotalPrice = () => {
-  //   return dataBill.reduce((currentValue, nextValue) => {
-  //     return currentValue + nextValue.price * nextValue.quantity;
-  //   }, 0);
-  // };
+  const getMembersData = async () => {
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
+      if (_data.error) throw new Error("error");
+      setMembersData(_data?.data);
+    } catch (err) {}
+  };
 
   const totalBillDefualt = _.sumBy(
     dataBill?.filter(
@@ -130,6 +130,7 @@ export default function CheckOutPopupCafe({
   const totalBills = totalBillDefualt + taxAmount;
 
   useEffect(() => {
+    setMemberDataSearch();
     setCash();
     setTransfer();
     setTab("cash");
@@ -142,13 +143,15 @@ export default function CheckOutPopupCafe({
     let moneyReceived = "";
     let moneyChange = "";
     moneyReceived = `${
-      selectCurrency == "LAK"
-        ? moneyCurrency((parseFloat(cash) || 0) + (parseFloat(transfer) || 0))
-        : moneyCurrency(parseFloat(cashCurrency) || 0)
+      selectCurrency === "LAK"
+        ? moneyCurrency(
+            (Number.parseFloat(cash) || 0) + (Number.parseFloat(transfer) || 0)
+          )
+        : moneyCurrency(Number.parseFloat(cashCurrency) || 0)
     } ${selectCurrency}`;
     moneyChange = `${moneyCurrency(
-      (parseFloat(cash) || 0) +
-        (parseFloat(transfer) || 0) -
+      (Number.parseFloat(cash) || 0) +
+        (Number.parseFloat(transfer) || 0) -
         (dataBill
           ? totalBill
             ? totalBill
@@ -158,8 +161,8 @@ export default function CheckOutPopupCafe({
           : 0) <=
         0
         ? 0
-        : (parseFloat(cash) || 0) +
-            (parseFloat(transfer) || 0) -
+        : (Number.parseFloat(cash) || 0) +
+            (Number.parseFloat(transfer) || 0) -
             (dataBill
               ? totalBill > 0
                 ? totalBill
@@ -176,8 +179,8 @@ export default function CheckOutPopupCafe({
       dataStaffConfirm: staffConfirm,
     }));
     SetChangeAmount(
-      (parseFloat(cash) || 0) +
-        (parseFloat(transfer) || 0) -
+      (Number.parseFloat(cash) || 0) +
+        (Number.parseFloat(transfer) || 0) -
         (dataBill
           ? totalBill
             ? totalBill
@@ -187,8 +190,8 @@ export default function CheckOutPopupCafe({
           : 0) <=
         0
         ? 0
-        : (parseFloat(cash) || 0) +
-            (parseFloat(transfer) || 0) -
+        : (Number.parseFloat(cash) || 0) +
+            (Number.parseFloat(transfer) || 0) -
             (dataBill
               ? totalBill > 0
                 ? totalBill
@@ -199,13 +202,11 @@ export default function CheckOutPopupCafe({
     );
   }, [cash, transfer, selectCurrency]);
 
-  console.log("ChangeAmount", ChangeAmount);
-
   useEffect(() => {
     if (!open) return;
-    if (selectCurrency != "LAK") {
+    if (selectCurrency !== "LAK") {
       const _currencyData = currencyList.find(
-        (e) => e.currencyCode == selectCurrency
+        (e) => e.currencyCode === selectCurrency
       );
       setRateCurrency(_currencyData?.buy || 1);
     } else {
@@ -263,7 +264,7 @@ export default function CheckOutPopupCafe({
         const data = await axios.get(
           `${QUERY_CURRENCIES}?storeId=${DATA?.storeId}`
         );
-        if (data?.status == 200) {
+        if (data?.status === 200) {
           setCurrencyList(data?.data?.data);
         }
       }
@@ -273,8 +274,7 @@ export default function CheckOutPopupCafe({
   };
   const _checkBill = async () => {
     setIsLoading(true);
-    let staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
-
+    const moneyChange = calculateReturnAmount();
     const Orders = dataBill?.map((itemOrder) => itemOrder);
 
     const datas = {
@@ -294,18 +294,20 @@ export default function CheckOutPopupCafe({
       saveCafe: true,
       phone: null,
       queue: bill,
+      point: point,
+      change: moneyChange,
       isCafe: true,
-      memberId: memberData?._id,
-      memberName: memberData?.name,
-      memberPhone: memberData?.phone,
+      memberId: memberDataSearch?._id,
+      memberName: memberDataSearch?.name,
+      memberPhone: memberDataSearch?.phone,
       fullnameStaffCheckOut:
-        profile.data.firstname + " " + profile.data.lastname ?? "-",
+        `${profile.data.firstname} ${profile.data.lastname}` ?? "-",
       staffCheckOutId: profile.data._id,
     };
 
     await axios
       .post(
-        END_POINT + `/v3/admin/bill-cafe-checkout`,
+        `${END_POINT}/v7/admin/bill-cafe-checkout`,
         {
           data: datas,
         },
@@ -313,72 +315,118 @@ export default function CheckOutPopupCafe({
           headers: await getHeaders(),
         }
       )
-      .then(async function (response) {
-        setSelectedTable();
-        getTableDataStore();
-        setCashCurrency();
-        setTab("cash");
-        setCash();
-        setSelectCurrency("LAK");
-        setRateCurrency(1);
-        setTransfer();
-        setSelectInput("inputCash");
-        setHasCRM(false);
-        setTextSearchMember("");
-        setSelectedMenus([]);
-        localStorage.removeItem("STAFFCONFIRM_DATA");
-        setIsLoading(false);
+      .then(async (response) => {
+        if (response?.status === 200) {
+          await Swal.fire({
+            icon: "success",
+            title: "ສໍາເລັດການເຊັກບິນ",
+            showConfirmButton: false,
+            timer: 1800,
+          });
 
-        onClose();
-        onQueue();
-        Swal.fire({
-          icon: "success",
-          title: "ສໍາເລັດການເຊັກບິນ",
-          showConfirmButton: false,
-          timer: 1800,
-        });
-        await onPrintForCher();
-        ClearChangeAmount();
+          setSelectedTable();
+          getTableDataStore();
+          setCashCurrency();
+          setTab("cash");
+          setCash();
+          setSelectCurrency("LAK");
+          setRateCurrency(1);
+          setTransfer();
+          setSelectInput("inputCash");
+          setHasCRM(false);
+          setTextSearchMember("");
+          setSelectedMenus([]);
+          localStorage.removeItem("STAFFCONFIRM_DATA");
+          setIsLoading(false);
+
+          onClose();
+          onQueue();
+
+          await onPrintForCher();
+          ClearChangeAmount();
+        }
+
         // navigate("/history-cafe-sale")
       })
-      .catch(function (error) {
+      .catch((error) => {
         errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
       });
   };
-  const handleSubmit = () => {
-    _checkBill();
-    // onSubmit();
-    // console.log("valueConfirm:------>", valueConfirm)
+
+  const RedeemPointUser = async () => {
+    const TotalPrices =
+      (Number(cash) || 0) + (Number(transfer) || 0) + (Number(point) || 0);
+
+    const statusTable =
+      storeDetail?.tableEdit === undefined
+        ? false
+        : !storeDetail?.tableEdit
+        ? false
+        : true;
+
+    const data = {
+      memberId: memberDataSearch?._id,
+      point: point,
+      storeId: storeDetail?._id,
+      moneyTotal: TotalPrices,
+      money: totalBill,
+      billId: dataBill?._id,
+      statusTable: statusTable,
+    };
+    return await RedeemPoint(data);
   };
 
-  // const _calculateTotals = () => {
-  //   let _total = 0;
-  //   for (let i = 0; i < dataBill?.length; i++) {
-  //     if (dataBill[i]?.status === "SERVED") {
-  //       _total += dataBill[i]?.quantity * dataBill[i]?.price;
-  //     }
-  //   }
-  //   setTotal(_total);
-  // };
-  // useEffect
+  const handleSubmit = async () => {
+    const showAlert = (icon, title, text, timer = 1800) => {
+      Swal.fire({
+        icon,
+        title,
+        text,
+        showConfirmButton: false,
+        timer,
+      });
+    };
+
+    try {
+      if (storeDetail?.isCRM && tab === "cash_transfer_point") {
+        try {
+          await RedeemPointUser();
+        } catch {
+          showAlert(
+            "error",
+            "ເກີດຂໍ້ຜິດພາດ",
+            "ການຊຳລະດ້ວຍພ໋ອຍບໍ່ສຳເລັດ ກະລຸນາເລຶອກສະມາຊິກດ້ວຍ"
+          );
+          return; // Stop further execution if RedeemPointUser fails
+        }
+      }
+
+      await _checkBill();
+    } catch (error) {
+      console.error("Unexpected error in handleSubmit:", error);
+      showAlert("error", "An unexpected error occurred");
+    }
+  };
 
   // useEffect
   useEffect(() => {
     getDataCurrency();
+    getMembersData();
+    setMemberDataSearch();
   }, []);
 
   useEffect(() => {
     if (!open) return;
-    if (forcus == "CASH") {
-      if (dataBill) {
-        if (dataBill) {
-          if (cash >= totalBill) {
+    if (forcus === "CASH") {
+      if (dataBill?.discount) {
+        if (dataBill?.discountType === "PERCENT") {
+          if (cash >= totalBill - (totalBill * dataBill?.discount) / 100) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
           }
         } else {
-          if (cash >= totalBill) {
+          if (cash >= totalBill - dataBill?.discount) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
@@ -391,28 +439,29 @@ export default function CheckOutPopupCafe({
           setCanCheckOut(false);
         }
       }
-    } else if (forcus == "TRANSFER") {
-      if (dataBill) {
-        if (dataBill) {
-          setTransfer(totalBill);
+    } else if (forcus === "TRANSFER") {
+      if (dataBill?.discount) {
+        if (dataBill?.discountType === "PERCENT") {
+          setTransfer(totalBill - (totalBill * dataBill?.discount) / 100);
         } else {
-          setTransfer(totalBill);
+          setTransfer(totalBill - dataBill?.discount);
         }
       } else {
         setTransfer(totalBill);
       }
       setCanCheckOut(true);
-    } else if (forcus == "TRANSFER_CASH") {
-      const _sum = (parseInt(cash) || 0) + (parseInt(transfer) || 0);
-      if (dataBill) {
-        if (dataBill) {
-          if (_sum >= totalBill) {
+    } else if (forcus === "TRANSFER_CASH") {
+      const _sum =
+        (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
+      if (dataBill?.discount) {
+        if (dataBill?.discountType === "PERCENT") {
+          if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
           }
         } else {
-          if (_sum >= totalBill) {
+          if (_sum >= totalBill - dataBill?.discount) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
@@ -425,8 +474,94 @@ export default function CheckOutPopupCafe({
           setCanCheckOut(false);
         }
       }
+    } else if (forcus === "POINT") {
+      const checkPoint = Math.max(0, Number.parseInt(dataBill?.Point - point));
+      if (checkPoint === 0) {
+        Swal.fire({
+          icon: "warning",
+          title: `${t("error_point")}`,
+          text: `${t("error_point_enough")}`,
+          showConfirmButton: false,
+          timer: 1800,
+        });
+        return;
+      }
+
+      if (
+        dataBill?.Point <
+        totalBill - (totalBill * dataBill?.discount) / 100
+      ) {
+        setCanCheckOut(true);
+        return;
+      }
+
+      if (dataBill?.discount) {
+        if (dataBill?.discountType === "PERCENT") {
+          if (point >= totalBill - (totalBill * dataBill?.discount) / 100) {
+            setCanCheckOut(true);
+          } else {
+            setCanCheckOut(false);
+          }
+        } else {
+          if (point >= totalBill - dataBill?.discount) {
+            setCanCheckOut(true);
+          } else {
+            setCanCheckOut(false);
+          }
+        }
+      } else {
+        if (point >= totalBill) {
+          setCanCheckOut(true);
+        } else {
+          setCanCheckOut(false);
+        }
+      }
+    } else if (forcus === "CASH_TRANSFER_POINT") {
+      const checkPoint = Math.max(0, Number.parseInt(dataBill?.Point - point));
+      if (checkPoint === 0) {
+        Swal.fire({
+          icon: "warning",
+          title: `${t("error_point")}`,
+          text: `${t("error_point_enough")} ${dataBill?.Point} ${t("point")}`,
+          showConfirmButton: false,
+          timer: 1800,
+        });
+        setPoint("");
+        return;
+      }
+      const _sum =
+        (Number.parseInt(cash) || 0) +
+        (Number.parseInt(transfer) || 0) +
+        (Number.parseInt(point) || 0);
+      if (dataBill?.discount) {
+        if (dataBill?.discountType === "PERCENT") {
+          if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
+            setCanCheckOut(true);
+          } else {
+            setCanCheckOut(false);
+          }
+        } else {
+          if (_sum >= totalBill - dataBill?.discount) {
+            setCanCheckOut(true);
+          } else {
+            setCanCheckOut(false);
+          }
+        }
+      } else {
+        if (_sum >= totalBill) {
+          setCanCheckOut(true);
+        } else {
+          setCanCheckOut(false);
+        }
+      }
+    } else if (forcus === "POINT") {
+      if (point <= 0) {
+        setCanCheckOut(false);
+      } else {
+        setCanCheckOut(true);
+      }
     }
-  }, [cash, transfer, totalBill, forcus]);
+  }, [cash, transfer, totalBill, forcus, point]);
 
   let transferCal = dataBill
     ? totalBill > 0
@@ -437,8 +572,8 @@ export default function CheckOutPopupCafe({
     : 0;
 
   let totalBillMoney = dataBill
-    ? parseFloat(totalBill > 0 ? totalBill : 0)
-    : parseFloat(totalBill > 0 ? totalBill : 0);
+    ? Number.parseFloat(totalBill > 0 ? totalBill : 0)
+    : Number.parseFloat(totalBill > 0 ? totalBill : 0);
 
   let _selectDataOption = (option) => {
     setSelectDataOpption(option);
@@ -475,11 +610,68 @@ export default function CheckOutPopupCafe({
     });
   };
 
+  const onChangePointInput = (inputData) => {
+    convertNumberReverse(inputData, (value) => {
+      setPoint(value);
+      setStoreDetail({
+        point: value,
+      });
+    });
+  };
+  const optionsData = membersData?.map((item) => {
+    // console.log(item);
+    return {
+      value: item.phone,
+      label: `${item.name} (${item.phone})`,
+      phoneNumber: item.phone,
+      point: item.point,
+    };
+  });
+
+  const handleSearchInput = (option) => {
+    setTextSearchMember(option.value);
+  };
+
   const onChangeTransferInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setTransfer(value);
     });
   };
+
+  const handleChangeCurrencie = (e) => {
+    if (e.target.value === "LAK") {
+      setSelectCurrency({
+        id: "LAK",
+        name: "LAK",
+      });
+      return;
+    }
+    const selectedCurrencie = currencyList.find(
+      (item) => item?._id === e?.target?.value
+    );
+    setSelectCurrency({
+      id: selectedCurrencie._id,
+      name: selectedCurrencie.currencyName,
+    });
+  };
+
+  const calculateReturnAmount = () => {
+    const parsedCash = Number.parseInt(cash) || 0;
+    const parsedTransfer = Number.parseInt(transfer) || 0;
+    const parsedPoint = Number.parseInt(point) || 0;
+
+    // console.log("parsedCash", parsedCash);
+    // console.log("transfer", transfer);
+    // console.log("point", point);
+    // console.log("totalBill", totalBill);
+    // console.log("dataBill", dataBill);
+
+    const totalAmount = parsedCash + parsedTransfer + parsedPoint - totalBill;
+
+    return totalAmount <= 0 ? 0 : totalAmount;
+  };
+
+  // console.log("calculateReturnAmount", calculateReturnAmount());
 
   return (
     <Modal
@@ -488,6 +680,7 @@ export default function CheckOutPopupCafe({
         setCash();
         setTransfer();
         onClose();
+        ClearChangeAmount();
       }}
       keyboard={false}
       size="lg"
@@ -508,7 +701,7 @@ export default function CheckOutPopupCafe({
                 fontSize: 22,
               }}
             >
-              <span>ລາຄາລວມ: </span>
+              <span>{t("bill_total")}: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
                 {dataBill
                   ? moneyCurrency(totalBill ? matchRoundNumber(totalBill) : 0)
@@ -565,93 +758,187 @@ export default function CheckOutPopupCafe({
                 />
                 <InputGroup.Text>{selectCurrency}</InputGroup.Text>
               </InputGroup>
-              <InputGroup>
-                <InputGroup.Text>ເງິນສົດ</InputGroup.Text>
-                <Form.Control
-                  disabled={tab !== "cash" && tab !== "cash_transfer"}
-                  type="text"
-                  placeholder="0"
-                  value={convertNumber(cash)}
-                  onClick={() => {
-                    setSelectInput("inputCash");
-                  }}
-                  onChange={(e) => {
-                    onChangeCashInput(e.target.value);
-                  }}
-                  size="lg"
-                />
-                <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
-              </InputGroup>
-              <InputGroup>
-                <InputGroup.Text>ເງິນໂອນ</InputGroup.Text>
-                <Form.Control
-                  disabled={tab !== "cash_transfer"}
-                  type="text"
-                  placeholder="0"
-                  value={convertNumber(matchRoundNumber(transfer || 0))}
-                  onClick={() => {
-                    setSelectInput("inputTransfer");
-                  }}
-                  onChange={(e) => {
-                    onChangeTransferInput(e.target.value);
-                  }}
-                  size="lg"
-                />
-                <InputGroup.Text>{storeDetail?.firstCurrency}</InputGroup.Text>
-              </InputGroup>
-              <InputGroup hidden={!hasCRM}>
-                <InputGroup.Text>ສະມາຊິກ</InputGroup.Text>
-                <InputGroup.Text>+856 20</InputGroup.Text>
-                <Form.Control
-                  type="text"
-                  placeholder="xxxx xxxx"
-                  maxLength={8}
-                  value={textSearchMember}
-                  // onClick={() => {
-                  //   setSelectInput("inputTransfer");
-                  // }}
-                  onChange={(e) => {
-                    setTextSearchMember(e.target.value);
-                  }}
-                  size="lg"
-                />
-                <Button>
-                  <FaSearch />
-                </Button>
-                <div style={{ width: 30 }} />
-                <InputGroup.Text>ຊື່: {memberData?.name}</InputGroup.Text>
-                <InputGroup.Text>ພ໋ອຍ: {memberData?.point}</InputGroup.Text>
-              </InputGroup>
+              <div hidden={tab === "point"} className="flxe flex-col gap-2">
+                <div className="mb-2">
+                  <InputGroup>
+                    <InputGroup.Text>{t("cash")}</InputGroup.Text>
+                    <Form.Control
+                      disabled={
+                        tab !== "cash" &&
+                        tab !== "cash_transfer" &&
+                        tab !== "cash_transfer_point"
+                      }
+                      type="text"
+                      placeholder="0"
+                      value={convertNumber(cash)}
+                      onClick={() => {
+                        setSelectInput("inputCash");
+                      }}
+                      onChange={(e) => {
+                        onChangeCashInput(e.target.value);
+                      }}
+                      size="lg"
+                    />
+                    <InputGroup.Text>
+                      {storeDetail?.firstCurrency}
+                    </InputGroup.Text>
+                  </InputGroup>
+                </div>
+                <div>
+                  <InputGroup>
+                    <InputGroup.Text>{t("transfer")}</InputGroup.Text>
+                    <Form.Control
+                      disabled={
+                        tab !== "cash_transfer" && tab !== "cash_transfer_point"
+                      }
+                      type="text"
+                      placeholder="0"
+                      value={convertNumber(transfer)}
+                      onClick={() => {
+                        setSelectInput("inputTransfer");
+                      }}
+                      onChange={(e) => {
+                        onChangeTransferInput(e.target.value);
+                      }}
+                      size="lg"
+                    />
+                    <InputGroup.Text>
+                      {storeDetail?.firstCurrency}
+                    </InputGroup.Text>
+                  </InputGroup>
+                </div>
+              </div>
+              {tab === "point" || tab === "cash_transfer_point" ? (
+                <div hidden={hasCRM} style={{ marginBottom: 10 }}>
+                  <div className="w-full flex flex-col dmd:flex-row justify-between gap-2">
+                    <div className="whitespace-nowrap flex-1 flex gap-1.5">
+                      <div className="flex-1">
+                        <Select
+                          placeholder={<div>{t("enter_phone_and_name")}</div>}
+                          options={optionsData}
+                          onChange={handleSearchInput}
+                        />
+                      </div>
+                      <Button
+                        className="primary"
+                        onClick={() => getMembersData()}
+                      >
+                        <BiRotateRight />
+                      </Button>
+                      <div hidden={tab === "point"}>
+                        <Button
+                          className="primary"
+                          onClick={() => {
+                            window.open("/add/newMembers");
+                          }}
+                        >
+                          {t("add_new")}{" "}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-1 justify-start dmd:justify-end">
+                      <div className="box-name">
+                        <InputGroup.Text>
+                          {t("name")}:{" "}
+                          {memberDataSearch?.name ? memberDataSearch?.name : ""}
+                        </InputGroup.Text>
+                      </div>
+                      <div className="box-name">
+                        <InputGroup.Text>
+                          {t("point")}:{" "}
+                          {point
+                            ? convertNumber(memberDataSearch?.point - point)
+                            : convertNumber(memberDataSearch?.point)
+                            ? convertNumber(memberDataSearch?.point)
+                            : "0"}
+                        </InputGroup.Text>
+                      </div>
+                    </div>
+                  </div>
+                  <InputGroup style={{ marginTop: 10 }}>
+                    <InputGroup.Text>{t("point")}</InputGroup.Text>
+                    <Form.Control
+                      disabled={
+                        memberDataSearch?.point <= 0 ||
+                        !memberDataSearch?.name ||
+                        !memberDataSearch?.point ||
+                        memberDataSearch?.point <= point
+                      }
+                      type="text"
+                      placeholder="0"
+                      value={convertNumber(point)}
+                      onClick={() => {
+                        setSelectInput("inputPoint");
+                      }}
+                      onChange={(e) => {
+                        onChangePointInput(e.target.value);
+                      }}
+                      size="lg"
+                    />
+                  </InputGroup>
+                </div>
+              ) : (
+                ""
+              )}
+              <div hidden={!hasCRM} style={{ marginBottom: 10 }}>
+                <div className="w-full flex flex-col dmd:flex-row justify-between gap-2">
+                  <div className="whitespace-nowrap flex-1 flex gap-1.5">
+                    <div className="flex-1">
+                      <Select
+                        placeholder={<div>{t("enter_phone_and_name")}</div>}
+                        options={optionsData}
+                        onChange={handleSearchInput}
+                      />
+                    </div>
+                    <Button
+                      className="primary"
+                      onClick={() => getMembersData()}
+                    >
+                      <BiRotateRight />
+                    </Button>
+                    <div hidden={tab === "point"}>
+                      <Button
+                        className="primary"
+                        onClick={() => {
+                          window.open("/add/newMembers");
+                        }}
+                      >
+                        {t("add_new")}{" "}
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-1 justify-start dmd:justify-end">
+                    <div className="box-name">
+                      <InputGroup.Text>
+                        {t("name")}:{" "}
+                        {memberDataSearch?.name ? memberDataSearch?.name : ""}
+                      </InputGroup.Text>
+                    </div>
+                    <div className="box-name">
+                      <InputGroup.Text>
+                        {t("point")}:{" "}
+                        {point
+                          ? convertNumber(memberDataSearch?.point - point)
+                          : convertNumber(memberDataSearch?.point)
+                          ? convertNumber(memberDataSearch?.point)
+                          : "0"}
+                      </InputGroup.Text>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div
               style={{
                 marginBottom: 10,
               }}
             >
-              ທອນ:{" "}
-              {moneyCurrency(
-                (parseInt(cash) || 0) +
-                  (parseInt(transfer) || 0) -
-                  (dataBill
-                    ? totalBill > 0
-                      ? totalBill
-                      : 0
-                    : totalBill > 0
-                    ? totalBill
-                    : 0) <=
-                  0
-                  ? 0
-                  : (parseInt(cash) || 0) +
-                      (parseInt(transfer) || 0) -
-                      (dataBill
-                        ? totalBill > 0
-                          ? totalBill
-                          : 0
-                        : totalBill > 0
-                        ? totalBill
-                        : 0)
-              )}{" "}
-              {storeDetail?.firstCurrency}
+              <div hidden={tab === "point"} style={{ marginBottom: 10 }}>
+                {t("return")}: {moneyCurrency(calculateReturnAmount())}{" "}
+                {storeDetail?.firstCurrency}
+              </div>
             </div>
             <div
               style={{
@@ -662,6 +949,9 @@ export default function CheckOutPopupCafe({
             >
               <Button
                 variant={tab === "cash" ? "primary" : "outline-primary"}
+                style={{
+                  fontSize: 15,
+                }}
                 onClick={() => {
                   setCash();
                   setTransfer();
@@ -670,28 +960,40 @@ export default function CheckOutPopupCafe({
                   setForcus("CASH");
                 }}
               >
-                ເງິນສົດ
+                {t("cash")}
               </Button>
               <Button
                 variant={tab === "transfer" ? "primary" : "outline-primary"}
+                style={{
+                  fontSize: 15,
+                }}
                 onClick={() => {
                   setCash();
-                  setSelectCurrency("LAK");
+                  // setSelectCurrency({
+                  //   id: "LAK",
+                  //   name: "LAK",
+                  // });
                   setRateCurrency(1);
                   setTransfer(transferCal);
                   setTab("transfer");
                   setForcus("TRANSFER");
                 }}
               >
-                ໂອນ
+                {t("transfer")}
               </Button>
               <Button
                 variant={
                   tab === "cash_transfer" ? "primary" : "outline-primary"
                 }
+                style={{
+                  fontSize: 15,
+                }}
                 onClick={() => {
                   setCash();
-                  setSelectCurrency("LAK");
+                  // setSelectCurrency({
+                  //   id: "LAK",
+                  //   name: "LAK",
+                  // });
                   setRateCurrency(1);
                   setTransfer();
                   setTab("cash_transfer");
@@ -699,17 +1001,38 @@ export default function CheckOutPopupCafe({
                   setForcus("TRANSFER_CASH");
                 }}
               >
-                ເງິນສົດ ແລະ ໂອນ
+                {t("cash_transfer")}
               </Button>
+              {storeDetail?.isCRM && (
+                <Button
+                  disabled={hasCRM}
+                  style={{
+                    fontSize: 15,
+                  }}
+                  variant={
+                    tab === "cash_transfer_point"
+                      ? "primary"
+                      : "outline-primary"
+                  }
+                  onClick={() => {
+                    setCash();
+                    setTransfer();
+                    setPoint();
+                    setTab("cash_transfer_point");
+                    setSelectInput("inputCash");
+                    setForcus("CASH_TRANSFER_POINT");
+                  }}
+                >
+                  {t("transfercashpoint")}
+                </Button>
+              )}
               <div style={{ flex: 1 }} />
               <Form.Control
                 hidden={tab !== "cash"}
                 as="select"
                 style={{ width: 80 }}
-                value={selectCurrency}
-                onChange={(e) => {
-                  setSelectCurrency(e?.target?.value);
-                }}
+                value={selectCurrency?.id}
+                onChange={handleChangeCurrencie}
               >
                 <option value="LAK">{storeDetail?.firstCurrency}</option>
                 {currencyList?.map((e) => (

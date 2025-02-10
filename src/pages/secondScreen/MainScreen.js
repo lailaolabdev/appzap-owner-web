@@ -107,87 +107,77 @@ const MainScreen = () => {
     getDataImageSlide();
   }, []);
 
-  const openSecondScreen = () => {
-    if ("getScreenDetails" in window) {
-      // Use Window Management API
-      window.getScreenDetails().then((details) => {
-        // console.log("details", details.screens);
-        if (details.screens.length > 1) {
-          const secondScreen = details.screens[1];
-          const newWindow = window.open(
-            "/second-screen",
-            "_blank",
-            `left=${secondScreen.availLeft},top=${secondScreen.availTop},width=${secondScreen.availWidth},height=${secondScreen.availHeight}`
-          );
-          if (!newWindow) {
-            errorAdd("Browser blocked the new window. Please allow pop-ups.");
-          } else {
-            setSecondScreenWindow(newWindow);
-            SettoggleOpenScreen(newWindow);
-            newWindow.postMessage("FULLSCREEN", "*");
-          }
-        } else {
-          // Fallback for unsupported browsers
-          const newWindow = window.open(
-            "/second-screen",
-            "_blank",
-            "width=1366,height=768"
-          );
+  // const openSecondScreen = () => {
+  //   if ("getScreenDetails" in window) {
+  //     // Use Window Management API
+  //     window.getScreenDetails().then((details) => {
+  //       // console.log("details", details.screens);
+  //       if (details.screens.length > 1) {
+  //         const secondScreen = details.screens[1];
+  //         const newWindow = window.open(
+  //           "/second-screen",
+  //           "_blank",
+  //           `left=${secondScreen.availLeft},top=${secondScreen.availTop},width=${secondScreen.availWidth},height=${secondScreen.availHeight}`
+  //         );
 
-          if (!newWindow) {
-            errorAdd("Browser blocked the new window. Please allow pop-ups.");
-          } else {
-            setSecondScreenWindow(newWindow);
-            SettoggleOpenScreen(newWindow);
-            newWindow.postMessage("FULLSCREEN", "*");
-          }
-        }
-      });
-    } else {
-      // Fallback for unsupported browsers
-      const newWindow = window.open(
-        "second-screen",
-        "_blank",
-        "width=1366,height=768"
-      );
+  //         if (!newWindow) {
+  //           errorAdd("Browser blocked the new window. Please allow pop-ups.");
+  //         } else {
+  //           setSecondScreenWindow(newWindow);
+  //           // SettoggleOpenScreen(newWindow);
+  //           newWindow.postMessage("FULLSCREEN", "*");
+  //         }
+  //       } else {
+  //         // Fallback for unsupported browsers
+  //         const newWindow = window.open(
+  //           "/second-screen",
+  //           "_blank",
+  //           "width=1366,height=768"
+  //         );
 
-      if (!newWindow) {
-        errorAdd("Browser blocked the new window. Please allow pop-ups.");
-      } else {
-        setSecondScreenWindow(newWindow);
-        SettoggleOpenScreen(newWindow);
-        newWindow.postMessage("FULLSCREEN", "*");
-      }
-    }
-  };
+  //         if (newWindow) {
+  //           setTimeout(() => {
+  //             newWindow.moveTo(1920, 0); // Adjust position based on known second screen resolution
+  //             newWindow.resizeTo(1280, 720); // Adjust window size
+  //           }, 500);
+  //         }
+  //         if (!newWindow) {
+  //           errorAdd("Browser blocked the new window. Please allow pop-ups.");
+  //         } else {
+  //           setSecondScreenWindow(newWindow);
+  //           // SettoggleOpenScreen(newWindow);
+  //           newWindow.postMessage("FULLSCREEN", "*");
+  //         }
+  //       }
+  //     });
+  //   } else {
+  //     // Fallback for unsupported browsers
+  //     const newWindow = window.open(
+  //       "second-screen",
+  //       "_blank",
+  //       "width=1366,height=768"
+  //     );
 
-  console.log("secondScreenWindow", secondScreenWindow);
-  console.log("isToggledOpenScreen", isToggledOpenScreen[0]?.closed);
+  //     if (!newWindow) {
+  //       errorAdd("Browser blocked the new window. Please allow pop-ups.");
+  //     } else {
+  //       setSecondScreenWindow(newWindow);
+  //       // SettoggleOpenScreen(newWindow);
+  //       newWindow.postMessage("FULLSCREEN", "*");
+  //     }
+  //   }
+  // };
 
-  const closeSecondScreen = () => {
-    if (secondScreenWindow && !secondScreenWindow.closed) {
-      secondScreenWindow.close();
-      // setSecondScreenWindow(null);
-      SettoggleOpenScreen(null);
-    } else {
-      // alert("Second screen is already closed");
-      errorAdd("ຈໍທີ່ສອງປິດແລ້ວ!!! ກະລຸນາກວດສອບເບິ່ງອີກຄັ້ງ");
-    }
-  };
-
-  useEffect(() => {
-    if (screenDetails) {
-      const handleScreenChange = () => {
-        // console.log("Screen change detected");
-        // console.log("All screens:", screenDetails.screens);
-      };
-      screenDetails.addEventListener("screenschange", handleScreenChange);
-      return () =>
-        screenDetails.removeEventListener("screenschange", handleScreenChange);
-    }
-
-    console.log("screenDetails", screenDetails);
-  }, [screenDetails]);
+  // const closeSecondScreen = () => {
+  //   if (secondScreenWindow && !secondScreenWindow.closed) {
+  //     secondScreenWindow.close();
+  //     // setSecondScreenWindow(null);
+  //     SettoggleOpenScreen(null);
+  //   } else {
+  //     // alert("Second screen is already closed");
+  //     errorAdd("ຈໍທີ່ສອງປິດແລ້ວ!!! ກະລຸນາກວດສອບເບິ່ງອີກຄັ້ງ");
+  //   }
+  // };
 
   const handleShowAdd = () => setShowAdd(true);
   const handleCloseAdd = () => setShowAdd(false);
@@ -202,19 +192,6 @@ const MainScreen = () => {
     setShowEdit(true);
   };
   const handleCloseDelete = () => setShowDelete(false);
-
-  // useEffect(() => {
-
-  //   // if (isToggledOpenTwoScreen) {
-  //   //   openSecondScreen();
-  //   // } else {
-  //   //   closeSecondScreen();
-  //   // }
-  //   // handleOpenTwoScreen();
-  //   // handleUseShowTitle();
-  //   // handleUseShowTable();
-  //   // handleUseShowSlide();
-  // }, []);
 
   const getDataImageSlide = async () => {
     try {
@@ -268,7 +245,6 @@ const MainScreen = () => {
     const response = await UpdateImageSlide(
       dataEdit?._id,
       getTokken?.DATA?.storeId,
-      shiftCurrent[0]?._id,
       values
     );
     if (response?.data) {
@@ -283,26 +259,18 @@ const MainScreen = () => {
   const _confirmeDelete = async () => {
     const respone = await deleteImageSlide(
       dataDelete?._id,
-      getTokken?.DATA?.storeId,
-      shiftCurrent[0]?._id
+      getTokken?.DATA?.storeId
     );
 
     if (respone.data) {
       successAdd(`${t("delete_data_success")}`);
       handleCloseEdit();
       getDataImageSlide();
+      setShowDelete(false);
     } else {
       errorAdd(`${t("delete_data_fail")}`);
     }
   };
-
-  // useEffect(() => {
-  //   if (isToggledOpenTwoScreen) {
-  //     openSecondScreen();
-  //   } else {
-  //     closeSecondScreen();
-  //   }
-  // }, [isToggledOpenTwoScreen]);
 
   const toggleOpenSlideToSecondScreen = async (e, id) => {
     const _type = e?.target?.checked;
@@ -312,7 +280,6 @@ const MainScreen = () => {
       const response = await UseImageSlide(
         id,
         getTokken?.DATA?.storeId,
-        shiftCurrent[0]?._id,
         isType
       );
       if (response.data) {
@@ -333,11 +300,7 @@ const MainScreen = () => {
     const isType = _type ? "true" : "false";
 
     try {
-      const response = await UseShowSlide(
-        getTokken?.DATA?.storeId,
-        shiftCurrent[0]?._id,
-        isType
-      );
+      const response = await UseShowSlide(getTokken?.DATA?.storeId, isType);
 
       if (response.data) {
         getDataImageSlide();
@@ -350,11 +313,7 @@ const MainScreen = () => {
     const _type = e?.target?.checked;
     const isType = _type ? "true" : "false";
     try {
-      const response = await UseShowTable(
-        getTokken?.DATA?.storeId,
-        shiftCurrent[0]?._id,
-        isType
-      );
+      const response = await UseShowTable(getTokken?.DATA?.storeId, isType);
 
       if (response.data) {
         getDataImageSlide();
@@ -367,11 +326,7 @@ const MainScreen = () => {
     const _type = e?.target?.checked;
     const isType = _type ? "true" : "false";
     try {
-      const response = await UseShowTitle(
-        getTokken?.DATA?.storeId,
-        shiftCurrent[0]?._id,
-        isType
-      );
+      const response = await UseShowTitle(getTokken?.DATA?.storeId, isType);
 
       if (response.data) {
         getDataImageSlide();
@@ -384,11 +339,7 @@ const MainScreen = () => {
     const _type = e?.target?.checked;
     const isType = _type ? "true" : "false";
     try {
-      const response = await UseOpenTwoScreen(
-        getTokken?.DATA?.storeId,
-        shiftCurrent[0]?._id,
-        isType
-      );
+      const response = await UseOpenTwoScreen(getTokken?.DATA?.storeId, isType);
 
       if (response.data) {
         if (response?.data?.data?.isOpenSecondScreen) {
@@ -404,16 +355,97 @@ const MainScreen = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const handleMessage = (event) => {
-  //     if (event.data.type === "SECOND_SCREEN_CLOSED") {
-  //       toggleSecondScreen(); // Close the second screen in the Zustand state
-  //     }
-  //   };
+  const openSecondScreen = () => {
+    if ("getScreenDetails" in window) {
+      window.getScreenDetails().then((details) => {
+        if (details.screens.length > 1) {
+          const secondScreen = details.screens[1];
+          const newWindow = window.open(
+            "/second-screen",
+            "secondScreenWindow", // Set a specific name for the window
+            `left=${secondScreen.availLeft},top=${secondScreen.availTop},width=${secondScreen.availWidth},height=${secondScreen.availHeight}`
+          );
+          if (!newWindow) {
+            errorAdd("Browser blocked the new window. Please allow pop-ups.");
+          } else {
+            localStorage.setItem(
+              "secondScreenWindowName",
+              "secondScreenWindow"
+            );
+            setSecondScreenWindow(newWindow);
+            newWindow.postMessage("FULLSCREEN", "*");
+          }
+        } else {
+          const newWindow = window.open(
+            "/second-screen",
+            "secondScreenWindow", // Set a specific name for the window
+            "width=1366,height=768"
+          );
+          if (!newWindow) {
+            errorAdd("Browser blocked the new window. Please allow pop-ups.");
+          } else {
+            localStorage.setItem(
+              "secondScreenWindowName",
+              "secondScreenWindow"
+            );
+            setSecondScreenWindow(newWindow);
+            newWindow.postMessage("FULLSCREEN", "*");
+          }
+        }
+      });
+    } else {
+      const newWindow = window.open(
+        "/second-screen",
+        "secondScreenWindow", // Set a specific name for the window
+        "width=1366,height=768"
+      );
+      if (!newWindow) {
+        errorAdd("Browser blocked the new window. Please allow pop-ups.");
+      } else {
+        localStorage.setItem("secondScreenWindowName", "secondScreenWindow");
+        setSecondScreenWindow(newWindow);
+        newWindow.postMessage("FULLSCREEN", "*");
+      }
+    }
+  };
 
-  //   window.addEventListener("message", handleMessage);
-  //   return () => window.removeEventListener("message", handleMessage);
-  // }, [toggleSecondScreen]);
+  useEffect(() => {
+    const storedWindowName = localStorage.getItem("secondScreenWindowName");
+    if (storedWindowName) {
+      const restoredWindow = window.open("", storedWindowName);
+      if (restoredWindow && !restoredWindow.closed) {
+        setSecondScreenWindow(restoredWindow);
+      } else {
+        localStorage.removeItem("secondScreenWindowName");
+      }
+    }
+  }, []);
+
+  const checkCrossOrigin = (windowObject) => {
+    try {
+      const test = windowObject.location.href; // Try accessing a property of the window
+      return false; // Not cross-origin
+    } catch (e) {
+      return true; // Cross-origin
+    }
+  };
+
+  const closeSecondScreen = () => {
+    const storedWindowName = localStorage.getItem("secondScreenWindowName");
+    if (storedWindowName) {
+      const secondScreenWindow = window.open("", storedWindowName);
+      if (checkCrossOrigin(secondScreenWindow)) {
+        errorAdd("ບໍ່ສາມາດເຂົ້າເຖິງຈໍທີ່ສອງ (Cross-Origin Restrictions)");
+      } else if (secondScreenWindow && !secondScreenWindow.closed) {
+        secondScreenWindow.close();
+        localStorage.removeItem("secondScreenWindowName");
+      } else {
+        errorAdd("ຈໍທີ່ສອງປິດແລ້ວ!!! ກະລຸນາກວດສອບເບິ່ງອີກຄັ້ງ");
+      }
+    } else {
+      errorAdd("ບໍ່ພົບຂໍ້ມູນຂອງຈໍທີ່ສອງ");
+    }
+  };
 
   return (
     <>
@@ -515,15 +547,11 @@ const MainScreen = () => {
                       <td>
                         <div className="flex justify-start items-center gap-2">
                           <Form.Label htmlFor={"switch-isPublished"}>
-                            {data?.isPublished === UseSlideImage?.isPublished
-                              ? t("oppen")
-                              : t("close")}
+                            {data?.isPublished ? t("oppen") : t("close")}
                           </Form.Label>
                           <Form.Check
                             type="switch"
-                            checked={
-                              data?.isPublished === UseSlideImage?.isPublished
-                            }
+                            checked={data?.isPublished}
                             id={`switch-${index}`}
                             onChange={(e) =>
                               toggleOpenSlideToSecondScreen(e, data._id)

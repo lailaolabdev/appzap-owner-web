@@ -22,7 +22,7 @@ export const useSlideImageStore = create(
 export const useCombinedToggleSlide = create(
   persist(
     (set) => ({
-      isToggledOpenTwoScreen: true,
+      isToggledOpenTwoScreen: false,
       isToggledSlide: true,
       isToggledTable: true,
       isToggled: true,

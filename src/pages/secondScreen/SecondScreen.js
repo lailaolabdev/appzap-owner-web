@@ -23,6 +23,7 @@ import {
 } from "../../zustand/slideImageStore";
 import { useStoreStore } from "../../zustand/storeStore";
 import { TypeEffect } from "./TypeEffect";
+import { BsCartXFill } from "react-icons/bs";
 
 const SecondScreen = () => {
   const { t } = useTranslation();
@@ -58,22 +59,20 @@ const SecondScreen = () => {
     }, 0);
   };
 
-  // window.addEventListener("beforeunload", () => {
-  //   window.opener.postMessage({ type: "SECOND_SCREEN_CLOSED" }, "*");
-  // });
-
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.data === "FULLSCREEN") {
-        const element = document.documentElement;
-        if (element.requestFullscreen) {
-          element.requestFullscreen();
-        } else if (element.mozRequestFullScreen) {
-          element.mozRequestFullScreen();
-        } else if (element.webkitRequestFullscreen) {
-          element.webkitRequestFullscreen();
-        } else if (element.msRequestFullscreen) {
-          element.msRequestFullscreen();
+        if (!document.fullscreenElement) {
+          // เข้าสู่ Full Screen
+          if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+          } else if (document.documentElement.mozRequestFullScreen) {
+            document.documentElement.mozRequestFullScreen();
+          } else if (document.documentElement.webkitRequestFullscreen) {
+            document.documentElement.webkitRequestFullscreen();
+          } else if (document.documentElement.msRequestFullscreen) {
+            document.documentElement.msRequestFullscreen();
+          }
         }
       }
     };
@@ -120,49 +119,169 @@ const SecondScreen = () => {
             textEffect={UseSlideImage?.name}
           />
         )}
-        {UseSlideImage?.isPublished === true ? (
+
+        {UseSlideImage?.isPublished ? (
           <div
             className={`${
               isToggled ? "pt-2" : "p-6"
             } flex gap-2 flex-row items-center justify-center`}
           >
-            {isToggledSlide && (
+            {/* Swiper Image Slider */}
+            {isToggledSlide && !isToggledTable ? (
               <div
                 className={` ${
-                  isToggled ? "w-[810px] h-[580px]" : "w-[810px] h-[625px]"
-                } 2xl:w-[1200px] 2xl:h-[875px]  bg-white rounded-lg shadow-lg p-4 overflow-hidden`}
+                  isToggled ? "w-[1300px] h-[580px]" : "w-[1300px] h-[625px]"
+                } 2xl:w-[1200px] 2xl:h-[875px] bg-white rounded-lg shadow-lg p-4 overflow-hidden`}
               >
                 <Swiper
                   spaceBetween={30}
-                  centeredSlides={true}
-                  autoplay={{
-                    delay: 2500,
-                    disableOnInteraction: false,
-                  }}
-                  pagination={{
-                    clickable: true,
-                  }}
-                  // navigation={true}
+                  centeredSlides
+                  autoplay={{ delay: 2500, disableOnInteraction: false }}
+                  pagination={{ clickable: true }}
                   modules={[Autoplay, Pagination]}
                   className="mySwiper"
                 >
-                  {UseSlideImage?.isPublished === true &&
-                    UseSlideImage?.images.map((item) => (
-                      <SwiperSlide key={item}>
-                        <img
-                          src={`${URL_PHOTO_AW3}${item}`}
-                          alt="placeholder"
-                          className="w-[900px] h-[530px] 2xl:w-[1200px] 2xl:h-[800px] object-cover rounded-md"
-                        />
-                      </SwiperSlide>
-                    ))}
+                  {UseSlideImage?.images?.map((item) => (
+                    <SwiperSlide key={item}>
+                      <img
+                        src={`${URL_PHOTO_AW3}${item}`}
+                        alt="Slide"
+                        className="w-[1250px] h-[530px] 2xl:w-[1200px] 2xl:h-[800px] object-cover rounded-md"
+                      />
+                    </SwiperSlide>
+                  ))}
                 </Swiper>
               </div>
+            ) : isToggledSlide ? (
+              <div
+                className={` ${
+                  isToggled ? "w-[820px] h-[580px]" : "w-[820px] h-[625px]"
+                } 2xl:w-[1200px] 2xl:h-[875px] bg-white rounded-lg shadow-lg p-4 overflow-hidden`}
+              >
+                <Swiper
+                  spaceBetween={30}
+                  centeredSlides
+                  autoplay={{ delay: 2500, disableOnInteraction: false }}
+                  pagination={{ clickable: true }}
+                  modules={[Autoplay, Pagination]}
+                  className="mySwiper"
+                >
+                  {UseSlideImage?.images?.map((item) => (
+                    <SwiperSlide key={item}>
+                      <img
+                        src={`${URL_PHOTO_AW3}${item}`}
+                        alt="Slide"
+                        className="w-[900px] h-[530px] 2xl:w-[1200px] 2xl:h-[800px] object-cover rounded-md"
+                      />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </div>
+            ) : (
+              ""
             )}
-            {isToggledTable && (
+
+            {/* Table Section */}
+            {isToggledTable && !isToggledSlide ? (
+              <div className="w-[1300px] h-[580px] 2xl:h-[980px] bg-white rounded-lg shadow-lg p-4 overflow-hidden">
+                <div className="w-full h-[400px] 2xl:h-[700px] overflow-y-auto">
+                  <Table
+                    responsive
+                    className="table w-full border-collapse border border-black"
+                  >
+                    <thead style={{ backgroundColor: "#F1F1F1" }}>
+                      <tr>
+                        <th style={{ textAlign: "center" }}>{t("no")}</th>
+                        <th style={{ textAlign: "left" }}>{t("menu_name")}</th>
+                        <th style={{ textAlign: "center" }}>{t("amount")}</th>
+                        <th style={{ textAlign: "left" }}>{t("price")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.isArray(SelectedMenus) &&
+                      SelectedMenus.length > 0 ? (
+                        SelectedMenus.map((data, index) => {
+                          const optionsString = data.options?.length
+                            ? data.options
+                                .map((option) =>
+                                  option.quantity > 1
+                                    ? `[${option.quantity} x ${option.name}]`
+                                    : `[${option.name}]`
+                                )
+                                .join(" ")
+                            : "";
+                          const itemPrice =
+                            data?.price + (data?.totalOptionPrice || 0);
+                          return (
+                            <tr key={data.id}>
+                              <td className="text-center">{index + 1}</td>
+                              <td className="text-left">
+                                {data.name} {optionsString}
+                              </td>
+                              <td className="text-center">{data.quantity}</td>
+                              <td>{moneyCurrency(itemPrice)}</td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan={4} className="text-center">
+                            <div className="flex flex-col items-center mt-20">
+                              <BsCartXFill className="text-[80px] text-orange-500 animate-bounce" />
+                              <p className="text-[16px] mt-2 font-bold text-orange-500">
+                                {t("no_order_list")}
+                              </p>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </Table>
+                </div>
+
+                {/* Summary Section */}
+                <div className="mt-1 flex flex-col ml-[39rem] 2xl:ml-[58rem] w-[25rem] gap-2">
+                  <div className="flex justify-between">
+                    <span>{t("amountTotal")}:</span>
+                    <span className="font-bold">
+                      {Array.isArray(SelectedMenus) && SelectedMenus.length > 0
+                        ? TotalAmount().toFixed(2)
+                        : 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>{t("totalAmount")}:</span>
+                    <span className="font-bold">
+                      {Array.isArray(SelectedMenus) && SelectedMenus.length > 0
+                        ? moneyCurrency(total + ChangeAmount)
+                        : 0}{" "}
+                      {storeDetail?.firstCurrency}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>{t("change")}:</span>
+                    <span className="font-bold">
+                      {Array.isArray(SelectedMenus) && SelectedMenus.length > 0
+                        ? moneyCurrency(ChangeAmount)
+                        : 0}{" "}
+                      {storeDetail?.firstCurrency}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-[25px] font-bold">
+                    <span>{t("totals")}:</span>
+                    <span>
+                      {Array.isArray(SelectedMenus) && SelectedMenus.length > 0
+                        ? moneyCurrency(total)
+                        : 0}{" "}
+                      {storeDetail?.firstCurrency}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ) : isToggledTable ? (
               <div
                 className={`${
-                  isToggled ? "w-[510px] h-[580px]" : "w-[810px] h-[625px]"
+                  isToggled ? "w-[520px] h-[580px]" : "w-[820px] h-[625px]"
                 } 2xl:w-[680px] 2xl:h-[875px] bg-white rounded-lg shadow-lg p-4 overflow-hidden`}
               >
                 {/* Table Section */}
@@ -193,8 +312,8 @@ const SecondScreen = () => {
                               ? data.options
                                   .map((option) =>
                                     option.quantity > 1
-                                      ? `[${option.quantity} x ${option.name}]`
-                                      : `[${option.name}]`
+                                      ? [`${option.quantity} x ${option.name}`]
+                                      : [`${option.name}`]
                                   )
                                   .join(" ")
                               : "";
@@ -223,13 +342,14 @@ const SecondScreen = () => {
                         })
                       ) : (
                         <tr>
-                          <td colSpan={4} className="text-center py-8">
-                            <div className="flex justify-center items-center">
-                              <img
-                                src={ImageEmpty}
-                                alt="No Data"
-                                className="w-[180px] h-[150px] object-cover rounded-md shadow-sm"
-                              />
+                          <td colSpan={5}>
+                            <div className="h-[500] mt-20 flex justify-center items-center">
+                              <div className="flex flex-col items-center">
+                                <BsCartXFill className="text-[80px] text-orange-500 animate-bounce" />
+                                <p className="text-[16] mt-2 font-bold text-orange-500">
+                                  {t("no_order_list")}
+                                </p>
+                              </div>
                             </div>
                           </td>
                         </tr>
@@ -284,148 +404,101 @@ const SecondScreen = () => {
                   </div>
                 </div>
               </div>
+            ) : (
+              ""
             )}
           </div>
         ) : (
-          <div className="w-full h-[580px] 2xl:h-[980px]   bg-white rounded-lg shadow-lg p-4 overflow-hidden">
-            <div className="w-full h-[370px] 2xl:h-[700px] overflow-y-auto">
-              <Table
-                responsive
-                className="table  w-full border-collapse border border-black"
-              >
-                <thead style={{ backgroundColor: "#F1F1F1" }}>
-                  <tr style={{ fontSize: "bold", border: "none" }}>
-                    <th
-                      style={{
-                        border: "none",
-                        textWrap: "nowrap",
-                        textAlign: "center",
-                      }}
-                    >
-                      {t("no")}
-                    </th>
-                    <th
-                      style={{
-                        border: "none",
-                        textWrap: "nowrap",
-                        textAlign: "left",
-                      }}
-                    >
-                      {t("menu_name")}
-                    </th>
-                    <th
-                      style={{
-                        border: "none",
-                        textWrap: "nowrap",
-                        textAlign: "center",
-                      }}
-                    >
-                      {t("amount")}
-                    </th>
-                    <th
-                      style={{
-                        border: "none",
-                        textWrap: "nowrap",
-                        textAlign: "left",
-                      }}
-                    >
-                      {t("price")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {SelectedMenus?.length > 0 ? (
-                    SelectedMenus?.map((data, index) => {
-                      // Create the options string if options exist
-                      const optionsString =
-                        data.options && data.options.length > 0
+          // Case when UseSlideImage is NOT published
+          <div className="flex justify-center items-center">
+            <div className="w-[1300px] h-[580px] 2xl:h-[980px] bg-white rounded-lg shadow-lg p-4 overflow-hidden">
+              <div className="w-full h-[400px] 2xl:h-[700px] overflow-y-auto">
+                <Table
+                  responsive
+                  className="table w-full border-collapse border border-black"
+                >
+                  <thead style={{ backgroundColor: "#F1F1F1" }}>
+                    <tr>
+                      <th style={{ textAlign: "center" }}>{t("no")}</th>
+                      <th style={{ textAlign: "left" }}>{t("menu_name")}</th>
+                      <th style={{ textAlign: "center" }}>{t("amount")}</th>
+                      <th style={{ textAlign: "left" }}>{t("price")}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Array.isArray(SelectedMenus) &&
+                    SelectedMenus.length > 0 ? (
+                      SelectedMenus.map((data, index) => {
+                        const optionsString = data.options?.length
                           ? data.options
-                              .map((option) =>
-                                option.quantity > 1
-                                  ? `[${option.quantity} x ${option.name}]`
-                                  : `[${option.name}]`
+                              .map(
+                                (option) =>
+                                  `[${option.quantity} x ${option.name}]`
                               )
                               .join(" ")
                           : "";
-                      const totalOptionPrice = data?.totalOptionPrice || 0;
-                      const itemPrice = data?.price + totalOptionPrice;
-                      return (
-                        <tr key={data.id} className="overflow-y-auto">
-                          <td style={{ width: 20 }}>{index + 1}</td>
-                          <td style={{ textAlign: "left", paddingBottom: 0 }}>
-                            {data.name} {optionsString}
-                          </td>
-                          <td
-                            style={{
-                              textWrap: "nowrap",
-                              textAlign: "center",
-                            }}
-                          >
-                            <p>{data.quantity}</p>
-                          </td>
-                          <td>
-                            <p>{moneyCurrency(itemPrice)}</p>
-                          </td>
-                        </tr>
-                      );
-                    })
-                  ) : (
-                    <tr>
-                      <td colSpan={7} style={{ textAlign: "center" }}>
-                        <div className="flex justify-center items-center">
-                          <img
-                            src={ImageEmpty}
-                            alt=""
-                            style={{ width: 300, height: 200 }}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </Table>
-            </div>
-            <div className="mt-1 ">
-              <div className="mb-3 flex flex-col ml-[36rem] 2xl:ml-[58rem]  w-[25rem] gap-2">
-                <div className="flex flex-row justify-between">
-                  <span>{t("amountTotal")} : </span>
+                        const itemPrice =
+                          data?.price + (data?.totalOptionPrice || 0);
+                        return (
+                          <tr key={data.id}>
+                            <td className="text-center">{index + 1}</td>
+                            <td className="text-left">
+                              {data.name} {optionsString}
+                            </td>
+                            <td className="text-center">{data.quantity}</td>
+                            <td>{moneyCurrency(itemPrice)}</td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan={4} className="text-center">
+                          <div className="flex flex-col items-center mt-20">
+                            <BsCartXFill className="text-[80px] text-orange-500 animate-bounce" />
+                            <p className="text-[16px] mt-2 font-bold text-orange-500">
+                              {t("no_order_list")}
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </Table>
+              </div>
+              {/* Summary Section */}
+              <div className="mt-1 flex flex-col ml-[39rem] 2xl:ml-[58rem] w-[25rem] gap-2">
+                <div className="flex justify-between">
+                  <span>{t("amountTotal")}:</span>
                   <span className="font-bold">
-                    {SelectedMenus?.length > 0
-                      ? Number.parseFloat(TotalAmount())
-                      : 0}{" "}
+                    {Array.isArray(SelectedMenus) && SelectedMenus.length > 0
+                      ? TotalAmount().toFixed(2)
+                      : 0}
                   </span>
                 </div>
-                <div className="flex flex-row justify-between">
-                  <span>{t("totalAmount")} : </span>
+                <div className="flex justify-between">
+                  <span>{t("totalAmount")}:</span>
                   <span className="font-bold">
-                    {SelectedMenus?.length > 0
+                    {Array.isArray(SelectedMenus) && SelectedMenus.length > 0
                       ? moneyCurrency(total + ChangeAmount)
                       : 0}{" "}
                     {storeDetail?.firstCurrency}
                   </span>
                 </div>
-                {/* <div className="flex flex-row justify-between">
-                  <span>{t("discount")} : </span>
+                <div className="flex justify-between">
+                  <span>{t("change")}:</span>
                   <span className="font-bold">
-                    {SelectedMenus?.length > 0 ? moneyCurrency(20000) : 0}{" "}
-                    {storeDetail?.firstCurrency}
-                  </span>
-                </div> */}
-                <div className="flex flex-row justify-between">
-                  <span>{t("change")} : </span>
-                  <span className="font-bold">
-                    {SelectedMenus?.length > 0
+                    {Array.isArray(SelectedMenus) && SelectedMenus.length > 0
                       ? moneyCurrency(ChangeAmount)
                       : 0}{" "}
                     {storeDetail?.firstCurrency}
                   </span>
                 </div>
-                <div className="flex flex-row justify-between">
-                  <span className="font-bold text-[25px]">
-                    {t("totals")} :{" "}
-                  </span>
-                  <span className="font-bold text-[25px]">
-                    {SelectedMenus?.length > 0 ? moneyCurrency(total) : 0}{" "}
+                <div className="flex justify-between text-[25px] font-bold">
+                  <span>{t("totals")}:</span>
+                  <span>
+                    {Array.isArray(SelectedMenus) && SelectedMenus.length > 0
+                      ? moneyCurrency(total)
+                      : 0}{" "}
                     {storeDetail?.firstCurrency}
                   </span>
                 </div>
