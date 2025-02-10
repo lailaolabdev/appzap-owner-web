@@ -1152,7 +1152,6 @@ function Homecafe() {
           });
         }
       );
-
       await Swal.fire({
         icon: "success",
         title: "ປິນສຳເລັດ",
@@ -2149,6 +2148,7 @@ function Homecafe() {
         onPrintForCher={onPrintForCher}
         onQueue={billData}
         onPrintBill={onPrintBill}
+        onPrintForCherLaBel={onPrintForCherLaBel}
         onPrintDrawer={onPrintDrawer}
         dataBill={SelectedMenus}
         tableData={selectedTable}
@@ -2170,15 +2170,17 @@ function Homecafe() {
         />
       </div>
 
-      {selectedMenu?.map((val, i) => {
+      {SelectedMenus?.map((val, i) => {
         return (
           <div
+            key={val}
             style={{
               width: "80mm",
               paddingRight: "20px",
               paddingBottom: "10px",
             }}
-            ref={(el) => (billForCher80.current[i] = el)}
+            // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+            ref={(el) => (billForCherCancel80.current[i] = el)}
           >
             <PrintLabel data={bill} bill={{ ...val }} />
           </div>
