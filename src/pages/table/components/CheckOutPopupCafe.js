@@ -42,6 +42,7 @@ export default function CheckOutPopupCafe({
   onQueue,
   onPrintBill,
   onPrintForCher,
+  onPrintForCherLaBel,
   open,
   onClose,
   dataBill,
@@ -341,7 +342,6 @@ export default function CheckOutPopupCafe({
 
           onClose();
           onQueue();
-
           await onPrintForCher();
           ClearChangeAmount();
         }
@@ -1117,7 +1117,10 @@ export default function CheckOutPopupCafe({
               {t("print_checkbill")}
             </Button>
             <Button
-              onClick={handleSubmit}
+              onClick={() => {
+                handleSubmit();
+                // onPrintForCherLaBel();
+              }}
               className="dmd:w-fit w-full"
               disabled={!canCheckOut}
             >
