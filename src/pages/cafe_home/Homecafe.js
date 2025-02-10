@@ -287,7 +287,6 @@ function Homecafe() {
       findby += `startTime=${startTime}&`;
       findby += `endTime=${endTime}`;
       const res = await getBills(findby);
-      console.log("RES: ", res);
       const filteredBills = res?.filter((bill) => bill.isCafe === true) || [];
       setBill(filteredBills.length);
     } catch (error) {
@@ -875,13 +874,10 @@ function Homecafe() {
         context.textAlign = "center";
 
         const dataUrl = canvas.toDataURL("image/png");
-        console.log("dataUrl", dataUrl);
         const printer = printers.find((e) => e?._id === data?.printer);
         if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
       }
     });
-
-    console.log("base64ArrayAndPrinter", base64ArrayAndPrinter);
 
     return base64ArrayAndPrinter;
   };
@@ -968,120 +964,217 @@ function Homecafe() {
     }
   };
 
-  // console.log("bill80Ref CaFe",bill80Ref)
-
   const billForCherCancel80 = useRef([]);
-
   if (billForCherCancel80.current.length !== arrLength) {
     // add or remove refs
     billForCherCancel80.current = Array(arrLength)
       .fill()
       .map((_, i) => billForCherCancel80.current[i]);
   }
+  // const onPrintForCherLaBel = async () => {
+  //   // setOnPrinting(true);
+
+  //   let _dataBill = {
+  //     ...bill,
+  //     typePrint: "PRINT_BILL_LABEL",
+  //   };
+  //   await _createHistoriesPrinter(_dataBill);
+
+  //   const orderSelect = selectedMenu?.filter((e) => e);
+  //   console.log("ORDER", orderSelect);
+  //   let _index = 0;
+  //   const printDate = [...billForCherCancel80.current];
+  //   let dataUrls = [];
+  //   for (const _ref of printDate) {
+  //     if (_ref) {
+  //       // Ensure _ref is a valid element
+  //       const dataUrl = await html2canvas(_ref, {
+  //         useCORS: true,
+  //         scrollX: 10,
+  //         scrollY: 0,
+  //         scale: 530 / widthBill80,
+  //         backgroundColor: "null",
+  //         color: "black",
+  //       });
+  //       dataUrls.push(dataUrl);
+  //     }
+  //   }
+  //   for (const _ref of printDate) {
+  //     const _printer = printers.find((e) => {
+  //       return e?._id === orderSelect?.[_index]?.printer;
+  //     });
+
+  //     try {
+  //       let urlForPrinter = "";
+  //       let dataUrl = dataUrls[_index];
+
+  //       // if (_printer?.type === "ETHERNET") {
+  //       //   urlForPrinter = ETHERNET_PRINTER_PORT;
+  //       // }
+  //       // if (_printer?.type === "BLUETOOTH") {
+  //       //   urlForPrinter = BLUETOOTH_PRINTER_PORT;
+  //       // }
+  //       // if (_printer?.type === "USB") {
+  //       //   urlForPrinter = USB_PRINTER_PORT;
+  //       // }
+  //       urlForPrinter = USB_LABEL_PRINTER_PORT;
+  //       // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
+
+  //       console.log("dataUrl", dataUrl);
+
+  //       const _file = await base64ToBlob(dataUrl.toDataURL());
+
+  //       console.log("_file", _file);
+
+  //       console.log("file", _file);
+  //       var bodyFormData = new FormData();
+  //       bodyFormData.append("ip", _printer?.ip);
+  //       bodyFormData.append("isdrawer", false);
+  //       bodyFormData.append("port", "9150");
+  //       bodyFormData.append("image", _file);
+  //       bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
+  //       if (_index === 0) {
+  //         bodyFormData.append("beep1", 1);
+  //         bodyFormData.append("beep2", 9);
+  //       }
+  //       await axios({
+  //         method: "post",
+  //         url: urlForPrinter,
+  //         data: bodyFormData,
+  //         headers: { "Content-Type": "multipart/form-data" },
+  //       });
+
+  //       // await printFlutter(
+  //       //   {
+  //       //     drawer: false,
+  //       //     paper: _printer?.width === "58mm" ? 400 : 500,
+  //       //     imageBuffer: dataUrl.toDataURL(),
+  //       //     ip: _printer?.ip,
+  //       //     type: _printer?.type,
+  //       //     port: "9100",
+  //       //     width: _printer?.width === "58mm" ? 400 : 580,
+  //       //   },
+
+  //       // );
+
+  //       if (_index === 0) {
+  //         await Swal.fire({
+  //           icon: "success",
+  //           title: `${t("print_success")}`,
+  //           showConfirmButton: false,
+  //           timer: 1500,
+  //         });
+  //       }
+  //     } catch (err) {
+  //       console.log(err);
+  //       if (_index === 0) {
+  //         // setOnPrinting(false);
+  //         return { error: true, err };
+  //         await Swal.fire({
+  //           icon: "error",
+  //           title: "ປິ້ນບໍ່ສຳເລັດ",
+  //           showConfirmButton: false,
+  //           timer: 1500,
+  //         });
+  //       }
+  //     }
+  //     _index++;
+  //   }
+  //   // setOnPrinting(false);
+  // };
 
   const onPrintForCherLaBel = async () => {
-    // setOnPrinting(true);
+    try {
+      let _dataBill = { ...bill, typePrint: "PRINT_BILL_LABEL" };
+      await _createHistoriesPrinter(_dataBill);
 
-    let _dataBill = {
-      ...bill,
-      typePrint: "PRINT_BILL_LABEL",
-    };
-    await _createHistoriesPrinter(_dataBill);
+      const orderSelect = selectedMenu?.filter((e) => e);
+      console.log("ORDER", orderSelect);
 
-    const orderSelect = selectedMenu?.filter((e) => e);
-    console.log("ORDER", orderSelect);
-    let _index = 0;
-    const printDate = [...billForCherCancel80.current];
-    let dataUrls = [];
-    for (const _ref of printDate) {
-      if (_ref) {
-        // Ensure _ref is a valid element
-        const dataUrl = await html2canvas(_ref, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-          scale: 530 / widthBill80,
-        });
-        dataUrls.push(dataUrl);
-      }
-    }
-    for (const _ref of printDate) {
-      const _printer = printers.find((e) => {
-        return e?._id === orderSelect?.[_index]?.printer;
-      });
+      let _index = 0;
+      const printDate = [...billForCherCancel80.current];
+      let dataUrls = [];
 
-      try {
-        let urlForPrinter = "";
-        let dataUrl = dataUrls[_index];
-
-        // if (_printer?.type === "ETHERNET") {
-        //   urlForPrinter = ETHERNET_PRINTER_PORT;
-        // }
-        // if (_printer?.type === "BLUETOOTH") {
-        //   urlForPrinter = BLUETOOTH_PRINTER_PORT;
-        // }
-        // if (_printer?.type === "USB") {
-        //   urlForPrinter = USB_PRINTER_PORT;
-        // }
-        urlForPrinter = USB_LABEL_PRINTER_PORT;
-        // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
-
-        const _file = await base64ToBlob(dataUrl.toDataURL());
-        console.log("file", _file);
-        var bodyFormData = new FormData();
-        bodyFormData.append("ip", _printer?.ip);
-        bodyFormData.append("isdrawer", false);
-        bodyFormData.append("port", "9100");
-        bodyFormData.append("image", _file);
-        bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
-        if (_index === 0) {
-          bodyFormData.append("beep1", 1);
-          bodyFormData.append("beep2", 9);
-        }
-        await axios({
-          method: "post",
-          url: urlForPrinter,
-          data: bodyFormData,
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-
-        // await printFlutter(
-        //   {
-        //     drawer: false,
-        //     paper: _printer?.width === "58mm" ? 400 : 500,
-        //     imageBuffer: dataUrl.toDataURL(),
-        //     ip: _printer?.ip,
-        //     type: _printer?.type,
-        //     port: "9100",
-        //     width: _printer?.width === "58mm" ? 400 : 580,
-        //   },
-
-        // );
-
-        if (_index === 0) {
-          await Swal.fire({
-            icon: "success",
-            title: `${t("print_success")}`,
-            showConfirmButton: false,
-            timer: 1500,
+      // Step 1: Capture all HTML elements as images
+      for (const _ref of printDate) {
+        if (_ref) {
+          const canvas = await html2canvas(_ref, {
+            useCORS: true,
+            scrollX: 0,
+            scrollY: 0,
+            scale: 530 / widthBill80,
+            backgroundColor: null, // ✅ Fix background issue
           });
-        }
-      } catch (err) {
-        console.log(err);
-        if (_index === 0) {
-          // setOnPrinting(false);
-          return { error: true, err };
-          await Swal.fire({
-            icon: "error",
-            title: "ປິ້ນບໍ່ສຳເລັດ",
-            showConfirmButton: false,
-            timer: 1500,
-          });
+          dataUrls.push(canvas.toDataURL("image/png"));
         }
       }
-      _index++;
+
+      // Step 2: Loop through each captured image and send to printer
+      for (const _ref of printDate) {
+        const _printer = printers.find(
+          (e) => e?._id === orderSelect?.[_index]?.printer
+        );
+
+        if (!_printer) {
+          console.error("Printer not found for index:", _index);
+          continue; // Skip this iteration
+        }
+
+        try {
+          let urlForPrinter = USB_LABEL_PRINTER_PORT;
+          let dataUrl = dataUrls[_index];
+
+          console.log("Captured Image:", dataUrl);
+
+          // Convert base64 image to blob
+          const response = await fetch(dataUrl);
+          const blob = await response.blob();
+          const _file = new File([blob], "label.png", { type: "image/png" });
+
+          console.log("File prepared for upload:", _file);
+
+          // Create FormData object
+          let bodyFormData = new FormData();
+          bodyFormData.append("ip", _printer?.ip);
+          bodyFormData.append("isdrawer", false);
+          bodyFormData.append("port", "9150");
+          bodyFormData.append("image", _file);
+          bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
+
+          if (_index === 0) {
+            bodyFormData.append("beep1", 1);
+            bodyFormData.append("beep2", 9);
+          }
+
+          // Send to printer
+          await axios.post(urlForPrinter, bodyFormData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+
+          if (_index === 0) {
+            await Swal.fire({
+              icon: "success",
+              title: `${t("print_success")}`,
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          }
+        } catch (err) {
+          console.error("Print error:", err);
+          if (_index === 0) {
+            await Swal.fire({
+              icon: "error",
+              title: "ປິ້ນບໍ່ສຳເລັດ",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          }
+        }
+        _index++;
+      }
+    } catch (error) {
+      console.error("Unexpected error:", error);
     }
-    // setOnPrinting(false);
   };
 
   const onPrintBill = async () => {
@@ -1152,6 +1245,8 @@ function Homecafe() {
           });
         }
       );
+
+      await onPrintForCherLaBel();
 
       await Swal.fire({
         icon: "success",
@@ -2170,15 +2265,20 @@ function Homecafe() {
         />
       </div>
 
-      {selectedMenu?.map((val, i) => {
+      {SelectedMenus?.map((val, i) => {
         return (
           <div
             style={{
               width: "80mm",
               paddingRight: "20px",
               paddingBottom: "10px",
+              backgroundColor: "transparent" /* Ensure no background */,
+              color: "black" /* Ensure text is visible */,
             }}
-            ref={(el) => (billForCher80.current[i] = el)}
+            key={i}
+            ref={(el) => {
+              billForCherCancel80.current[i] = el;
+            }}
           >
             <PrintLabel data={bill} bill={{ ...val }} />
           </div>
