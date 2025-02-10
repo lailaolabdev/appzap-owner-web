@@ -40,6 +40,7 @@ export const EMPTY_LOGO =
 export const ETHERNET_PRINTER_PORT = "http://localhost:9150/ethernet/image";
 export const BLUETOOTH_PRINTER_PORT = "http://localhost:9150/bluetooth/image";
 export const USB_PRINTER_PORT = "http://localhost:9150/usb/image";
+export const USB_LABEL_PRINTER_PORT = "http://localhost:9150/usb/label";
 
 // No Cut Endpoint
 export const NOCUT_ETHERNET_PRINTER_PORT =
