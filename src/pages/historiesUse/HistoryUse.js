@@ -24,6 +24,7 @@ import LoadingAppzap from "../../components/LoadingAppzap";
 import PaginationAppzap from "../../constants/PaginationAppzap";
 import { useTranslation } from "react-i18next";
 import { BsBank2 } from "react-icons/bs";
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function HistoryUse() {
   const { t } = useTranslation();
@@ -38,6 +39,8 @@ export default function HistoryUse() {
   const rowsPerPage = 100;
   const [page, setPage] = useState(0);
   const pageAll = totalLogs > 0 ? Math.ceil(totalLogs / rowsPerPage) : 1;
+
+  const { storeDetail } = useStoreStore();
 
   const handleChangePage = useCallback((newPage) => {
     setPage(newPage);
@@ -238,58 +241,63 @@ export default function HistoryUse() {
             <div style={{ width: 8 }}></div> {t("edit_bill")}
           </Nav.Link>
         </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="/transferTable"
-            style={{
-              color: "#FB6E3B",
-              border: "none",
-              height: 60,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onClick={() => setFiltterModele("transferTable")}
-          >
-            <FontAwesomeIcon icon={faPeopleArrows} />{" "}
-            <div style={{ width: 8 }}></div> {t("change_combine_table")}
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="/historyServiceChange"
-            style={{
-              color: "#FB6E3B",
-              border: "none",
-              height: 60,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onClick={() => setFiltterModele("historyServiceChange")}
-          >
-            <FontAwesomeIcon icon={faHistory} />{" "}
-            <div style={{ width: 8 }}></div> {t("history service change")}
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="/billPayBefore"
-            style={{
-              color: "#FB6E3B",
-              border: "none",
-              height: 60,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onClick={() => setFiltterModele("billPayBefore")}
-          >
-            <FontAwesomeIcon icon={faListAlt}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div>
-            {t("bill_paid")}
-          </Nav.Link>
-        </Nav.Item>
+        {!storeDetail?.isStatusCafe && (
+          <>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/transferTable"
+                style={{
+                  color: "#FB6E3B",
+                  border: "none",
+                  height: 60,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onClick={() => setFiltterModele("transferTable")}
+              >
+                <FontAwesomeIcon icon={faPeopleArrows} />{" "}
+                <div style={{ width: 8 }}></div> {t("change_combine_table")}
+              </Nav.Link>
+            </Nav.Item>
+
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/historyServiceChange"
+                style={{
+                  color: "#FB6E3B",
+                  border: "none",
+                  height: 60,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onClick={() => setFiltterModele("historyServiceChange")}
+              >
+                <FontAwesomeIcon icon={faHistory} />{" "}
+                <div style={{ width: 8 }}></div> {t("history service change")}
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/billPayBefore"
+                style={{
+                  color: "#FB6E3B",
+                  border: "none",
+                  height: 60,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onClick={() => setFiltterModele("billPayBefore")}
+              >
+                <FontAwesomeIcon icon={faListAlt}></FontAwesomeIcon>{" "}
+                <div style={{ width: 8 }}></div>
+                {t("bill_paid")}
+              </Nav.Link>
+            </Nav.Item>
+          </>
+        )}
         <Nav.Item>
           <Nav.Link
             eventKey="/bankTransfer"

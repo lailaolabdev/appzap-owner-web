@@ -101,6 +101,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       icon: faHome,
       typeStore: "",
       hidden: !storeDetail?.hasPOS,
+      isCafe: storeDetail?.isStatusCafe,
       system: "tableManagement",
     },
     {
@@ -109,16 +110,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       icon: faAddressCard,
       hidden: !storeDetail?.hasPOS,
+      isCafe: storeDetail?.isStatusCafe,
       system: "orderManagement",
-    },
-    {
-      title: t("stock_manage"),
-      key: "stock",
-      // icon: BsArchive,
-      icon: faBoxes,
-      typeStore: "",
-      hidden: !storeDetail?.hasPOS,
-      system: "stockManagement",
     },
     {
       title: `${t("isCafe")}`,
@@ -128,10 +121,22 @@ export default function Sidenav({ location, navigate, onToggle }) {
           : "shift-open-pages"
         : "cafe",
       icon: faStoreAlt,
-      typeStore: storeDetail?.isRestuarant,
+      typeStore: storeDetail?.isStatusCafe
+        ? storeDetail?.isStatusCafe
+        : storeDetail?.isRestuarant,
       hidden: !storeDetail?.hasPOS,
       system: "tableManagement",
     },
+    {
+      title: t("stock_manage"),
+      key: "stock",
+      icon: faBoxes,
+      typeStore: "",
+      hidden: !storeDetail?.hasPOS,
+      isCafe: storeDetail?.isStatusCafe,
+      system: "stockManagement",
+    },
+
     {
       title: `${t("paid_manage")}`,
       key: "expends",
@@ -147,23 +152,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.isReservable,
       system: "reservationManagement",
     },
-
-    // {
-    //   title: "ລາຍງານການຈອງ",
-    //   key: "reservationDashboard",
-    //   icon: faChartBar,
-    //   typeStore: "",
-    //   hidden: !storeDetail?.hasReservation,
-    //   system: "reservationManagement",
-    // },
-    // {
-    //   title: "ລູກຄ້າສັ່ງເອງ",
-    //   key: "self-ordering-order",
-    //   typeStore: "",
-    //   icon: faUser,
-    //   system: "orderManagement",
-    // },
-
     {
       title: `${t("menu_manage")}`,
       key: "menu",
@@ -172,49 +160,15 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasSmartMenu,
       system: "menuManagement",
     },
-
-    // {
-    //   title: "ລາຍງານ (ໃໝ່)",
-    //   key: "reports/sales-report",
-    //   typeStore: "",
-    //   icon: faChartLine,
-    //   hidden: !storeDetail?.hasPOS,
-    //   system: "reportManagement",
-    // },
-
-    // {
-    //   title: "ລາຍງານສະຕ໋ອກ",
-    //   key: "reportStocks",
-    //   typeStore: "",
-    //   icon: faChartLine,
-    // hidden: !storeDetail?.hasPOS,
-    //   system: "settingManagement",
-    // },
-    // {
-    //   title: "ສະຕ໊ອກ",
-    //   key: "settingStore/stock",
-    //   typeStore: "",
-    //   icon: faBoxes,
-    //   hidden: !storeDetail?.hasPOS,
-    //   system: "stockManagement",
-    // },
-    // {
-    //   title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
-    //   key: "settingStore",
-    //   typeStore: "",
-    //   icon: faCogs,
-    //   hidden: !storeDetail?.hasPOS,
-    //   system: "settingManagement",
-    // },
   ]
     .filter((e) => e.title) // Filter out items with empty title
-
     .filter((e) => {
       const verify = role(profile?.data?.role, profile?.data);
       return verify?.[e?.system] ?? false;
     })
-    .filter((e) => !e?.hidden)
-    .filter((e) => e.typeStore != "GENERAL");
+    .filter((e) => !e.isCafe) // Only include items where isCafe is true
+    .filter((e) => !e.hidden) // Exclude hidden items
+    .filter((e) => e.typeStore !== "GENERAL"); // Exclude items with typeStore === "GENERAL"
 
   const itemReports = [
     {
@@ -272,6 +226,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       icon: faBeer,
       hidden: !storeDetail?.hasPOS,
+      isCafe: storeDetail?.isStatusCafe,
       system: "farkManagement",
     },
     {
@@ -280,6 +235,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       icon: faMoneyBill,
       hidden: !storeDetail?.hasPOS,
+      isCafe: storeDetail?.isStatusCafe,
       system: "reportManagement",
     },
   ]
@@ -287,7 +243,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
       const verify = role(profile?.data?.role, profile?.data);
       return verify?.[e?.system] ?? false;
     })
-    .filter((e) => !e?.hidden);
+    .filter((e) => !e?.hidden)
+    .filter((e) => !e?.isCafe);
 
   const listForRole = itemList.filter((e) => {
     const verify = role(profile?.data?.role, profile?.data);
@@ -593,53 +550,61 @@ export default function Sidenav({ location, navigate, onToggle }) {
         ) : (
           ""
         )} */}
-          <NavItem eventKey="songlist">
-            <NavIcon>
-              <FontAwesomeIcon
-                className={openTableData.length > 0 ? "scale-animation" : ""}
-                icon={faMusic}
-                style={{
-                  color: UN_SELECTED_TAB_TEXT,
-                }}
-              />
-            </NavIcon>
-            <NavText>
-              <b
-                style={{
-                  color: UN_SELECTED_TAB_TEXT,
-                }}
-                className={fontMap[language]}
-              >
-                {t("require_music")}
-              </b>
-            </NavText>
-          </NavItem>
+          {storeDetail?.isStatusCafe ? null : (
+            <>
+              <NavItem eventKey="songlist">
+                <NavIcon>
+                  <FontAwesomeIcon
+                    className={
+                      openTableData.length > 0 ? "scale-animation" : ""
+                    }
+                    icon={faMusic}
+                    style={{
+                      color: UN_SELECTED_TAB_TEXT,
+                    }}
+                  />
+                </NavIcon>
+                <NavText>
+                  <b
+                    style={{
+                      color: UN_SELECTED_TAB_TEXT,
+                    }}
+                    className={fontMap[language]}
+                  >
+                    {t("require_music")}
+                  </b>
+                </NavText>
+              </NavItem>
 
-          <NavItem eventKey="supplier">
-            <NavIcon>
-              <FontAwesomeIcon
-                className={openTableData.length > 0 ? "scale-animation" : ""}
-                icon={faShoppingCart}
-                style={{
-                  color: UN_SELECTED_TAB_TEXT,
-                }}
-              />
-            </NavIcon>
-            <NavText
-              style={{
-                color: UN_SELECTED_TAB_TEXT,
-              }}
-            >
-              <b
-                style={{
-                  color: COLOR_GRAY,
-                }}
-                className={fontMap[language]}
-              >
-                {t("market")}
-              </b>
-            </NavText>
-          </NavItem>
+              <NavItem eventKey="supplier">
+                <NavIcon>
+                  <FontAwesomeIcon
+                    className={
+                      openTableData.length > 0 ? "scale-animation" : ""
+                    }
+                    icon={faShoppingCart}
+                    style={{
+                      color: UN_SELECTED_TAB_TEXT,
+                    }}
+                  />
+                </NavIcon>
+                <NavText
+                  style={{
+                    color: UN_SELECTED_TAB_TEXT,
+                  }}
+                >
+                  <b
+                    style={{
+                      color: COLOR_GRAY,
+                    }}
+                    className={fontMap[language]}
+                  >
+                    {t("market")}
+                  </b>
+                </NavText>
+              </NavItem>
+            </>
+          )}
         </SideNav.Nav>
       </SideNav>
     </>

@@ -8,15 +8,27 @@ export const TypeEffect = ({ storeDetail, textEffect }) => {
         {storeDetail?.name}{" "}
         <span className="text-orange-500 font-bold">
           {/* Style will be inherited from the parent element */}
-          <Typewriter
-            words={[textEffect]}
-            loop={5}
-            cursor
-            cursorStyle="_"
-            typeSpeed={70}
-            deleteSpeed={50}
-            delaySpeed={1000}
-          />
+          {textEffect ? (
+            <Typewriter
+              words={[textEffect]}
+              loop={5}
+              cursor
+              cursorStyle="_"
+              typeSpeed={70}
+              deleteSpeed={50}
+              delaySpeed={1000}
+            />
+          ) : (
+            <Typewriter
+              words={["cafe text effect"]}
+              loop={5}
+              cursor
+              cursorStyle="_"
+              typeSpeed={70}
+              deleteSpeed={50}
+              delaySpeed={1000}
+            />
+          )}
         </span>
       </h1>
     </div>

@@ -35,6 +35,7 @@ import { values } from "lodash";
 import ButtonPrimary from "../../components/button/ButtonPrimary";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
 import convertNumber from "./../../helpers/convertNumber";
+import { useMenuSelectStore } from "../../zustand/menuSelectStore";
 
 export default function ShiftList() {
   const { t } = useTranslation();
@@ -46,7 +47,7 @@ export default function ShiftList() {
   const [showOpenShiftPopUp, setShowOpenShiftPopUp] = useState(false);
 
   const { profile } = useStore();
-
+  const { SelectedMenus } = useMenuSelectStore();
   const { storeDetail, setStoreDetail } = useStoreStore();
   const { getShift, shiftList } = useShiftStore();
   const [shiftHistory, setShiftHistory] = useState([]);
@@ -116,6 +117,12 @@ export default function ShiftList() {
   };
 
   const handleCloseShift = async () => {
+    if (SelectedMenus?.length > 0) {
+      errorAdd("ກະລຸນາເຊັກບິນໃຫ້ໝົດກ່ອນປິດກະ");
+      setShowOpenShiftPopUp(false);
+      return;
+    }
+
     await CloseShift(shifData?._id)
       .then((res) => {
         successAdd("ປິດກະສຳເລັດ");
