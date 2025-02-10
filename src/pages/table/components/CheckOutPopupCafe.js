@@ -401,7 +401,7 @@ export default function CheckOutPopupCafe({
           return; // Stop further execution if RedeemPointUser fails
         }
       }
-      onPrintForCherLaBel();
+      // onPrintForCherLaBel();
       await _checkBill();
     } catch (error) {
       console.error("Unexpected error in handleSubmit:", error);
