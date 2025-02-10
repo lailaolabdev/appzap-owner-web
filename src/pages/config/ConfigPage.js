@@ -181,77 +181,74 @@ export default function ConfigPage() {
             gridTemplateRows: "masonry",
           }}
         >
-          {!storeDetail?.isStatusCafe && (
-            <>
-              <Card border="primary" style={{ margin: 0 }}>
-                <Card.Header
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("tax")}
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>
+                  {t("tax")}: {tax}%
+                </div>
+                <div
                   style={{
-                    backgroundColor: COLOR_APP,
-                    color: "#fff",
-                    fontSize: 18,
-                    fontWeight: "bold",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
                   }}
                 >
-                  {t("tax")}
-                </Card.Header>
-                <Card.Body>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
-                      gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
-                    }}
+                  <Button onClick={() => setPopup({ PopUpEditTax: true })}>
+                    {t("edit")}
+                  </Button>
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>
+                  {t("service_charge")}: {serviceCharge}%
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Button
+                    onClick={() => setPopup({ PopUpEditServiceCharge: true })}
                   >
-                    <div>
-                      {t("tax")}: {tax}%
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Button onClick={() => setPopup({ PopUpEditTax: true })}>
-                        {t("edit")}
-                      </Button>
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
-                      gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
-                    }}
-                  >
-                    <div>
-                      {t("service_charge")}: {serviceCharge}%
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Button
-                        onClick={() =>
-                          setPopup({ PopUpEditServiceCharge: true })
-                        }
-                      >
-                        {t("edit")}
-                      </Button>
-                    </div>
-                  </div>
-                </Card.Body>
-              </Card>
-
+                    {t("edit")}
+                  </Button>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+          {!storeDetail?.isStatusCafe && (
+            <>
               <Card border="primary" style={{ margin: 0 }}>
                 <Card.Header
                   style={{

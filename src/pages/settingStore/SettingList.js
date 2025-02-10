@@ -278,12 +278,14 @@ export default function SettingList() {
               </div>
             </ItemBox>
           ))}
-        <ItemBox onClick={clickDeleteHistoryStore}>
-          <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDatabase} />
-          <span className={fontMap[language]}>
-            {t("clear_restaurant_data")}
-          </span>
-        </ItemBox>
+        {!storeDetail?.isStatusCafe && (
+          <ItemBox onClick={clickDeleteHistoryStore}>
+            <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDatabase} />
+            <span className={fontMap[language]}>
+              {t("clear_restaurant_data")}
+            </span>
+          </ItemBox>
+        )}
       </Box>
       <PopUpConfirm
         open={showDeletem}
