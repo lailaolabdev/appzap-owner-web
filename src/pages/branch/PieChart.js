@@ -94,9 +94,9 @@ const PieChart = ({ DatabranchInCome, TotalInCome }) => {
   };
 
   return (
-    <>
+    <div className="max-w-[540px] -my-12">
       <Pie data={data} options={options} />
-    </>
+    </div>
   );
 };
 
