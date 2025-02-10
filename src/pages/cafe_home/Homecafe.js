@@ -15,6 +15,7 @@ import { Formik } from "formik";
 import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
 import { base64ToBlob } from "../../helpers";
 import { RiListOrdered2 } from "react-icons/ri";
+import { BsCartXFill } from "react-icons/bs";
 
 /**
  * const
@@ -68,6 +69,7 @@ import { useMenuSelectStore } from "../../zustand/menuSelectStore";
 import theme from "../../theme";
 import moment from "moment";
 import url from "socket.io-client/lib/url";
+import CheckOutPopupCafeNew from "../table/components/CheckOutPopupCafeNew";
 
 function Homecafe() {
   const params = useParams();
@@ -1402,7 +1404,7 @@ function Homecafe() {
                       </tr>
                     </thead>
                     <tbody>
-                      {SelectedMenus?.length > 0 &&
+                      {SelectedMenus?.length > 0 ? (
                         SelectedMenus?.map((data, index) => {
                           // Create the options string if options exist
                           const optionsString =
@@ -1541,7 +1543,21 @@ function Homecafe() {
                               </td>
                             </tr>
                           );
-                        })}
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan={5}>
+                            <div className="h-[400px] flex justify-center items-center">
+                              <div className="flex flex-col items-center">
+                                <BsCartXFill className="text-[100px] text-orange-500 animate-bounce" />
+                                <p className="text-[16] mt-3 font-bold text-orange-500">
+                                  {t("no_order_list")}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </Table>
                   {SelectedMenus?.length > 0 ? (
@@ -1729,7 +1745,7 @@ function Homecafe() {
                     </tr>
                   </thead>
                   <tbody>
-                    {SelectedMenus?.length > 0 &&
+                    {SelectedMenus?.length > 0 ? (
                       SelectedMenus?.map((data, index) => {
                         // Create the options string if options exist
                         const optionsString =
@@ -1867,7 +1883,21 @@ function Homecafe() {
                             </td>
                           </tr>
                         );
-                      })}
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan={5}>
+                          <div className="h-[400] flex justify-center items-center">
+                            <div className="flex flex-col items-center">
+                              <BsCartXFill className="text-[100px] text-orange-500 animate-bounce" />
+                              <p className="text-[16] mt-2 font-bold text-orange-500">
+                                {t("no_order_list")}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </Table>
               </div>

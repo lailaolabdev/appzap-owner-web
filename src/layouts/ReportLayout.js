@@ -18,7 +18,7 @@ export default function ReportLayout() {
   const [activeButton, setActiveButton] = useState("");
   const Location = useLocation();
 
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
 
   const onViewStocksPath = (patch) => {
     navigate(`/reports/${patch}`);
@@ -81,7 +81,7 @@ export default function ReportLayout() {
               <MdOutlinePieChartOutline style={{ fontSize: 35 }} />
               <strong>{t("report_sell")}</strong>
             </div>
-            <div
+            {/* <div
               onKeyDown={() => {}}
               className="menu-report-stocks mt-1"
               style={{
@@ -118,7 +118,7 @@ export default function ReportLayout() {
             >
               <MdDining style={{ fontSize: 35 }} />
               <strong>{t("stoke_report")}</strong>
-            </div>
+            </div> */}
             {storeDetail?.isCRM && (
               <div
                 onKeyDown={() => {}}
@@ -140,25 +140,6 @@ export default function ReportLayout() {
                 <strong>{t("member_report")}</strong>
               </div>
             )}
-            <div
-              onKeyDown={() => {}}
-              className="menu-report-stocks mt-1"
-              style={{
-                background:
-                  activeButton === "/reports/ChildStores-report"
-                    ? COLOR_APP
-                    : "white",
-                color:
-                  activeButton === "/reports/ChildStores-report"
-                    ? "white"
-                    : COLOR_APP,
-                // width: width > 900 ? "100%" : "fit-content",
-              }}
-              onClick={() => navigate("/reports/ChildStores-report")}
-            >
-              <MdStore style={{ fontSize: 35 }} />
-              <strong>{t("report_sub")}</strong>
-            </div>
           </ButtonGroup>
         </div>
       </div>
