@@ -30,6 +30,7 @@ import {
   faBuilding,
   faClock,
   faMoneyBill,
+  faUserAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, COLOR_GRAY, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -89,6 +90,95 @@ export default function Sidenav({ location, navigate, onToggle }) {
   } = useTranslation();
   const { profile } = useStore();
   const { user } = useStore();
+  const itemMenuForCafe = [
+    {
+      title: `${t("isCafe")}`,
+      key: storeDetail?.isShift
+        ? shiftCurrent[0]?.status === "OPEN"
+          ? "cafe"
+          : "shift-open-pages"
+        : "cafe",
+      icon: faStoreAlt,
+      typeStore: storeDetail?.isStatusCafe
+        ? storeDetail?.isStatusCafe
+        : storeDetail?.isRestuarant,
+      hidden: !storeDetail?.hasPOS,
+      system: "tableManagement",
+      role: "APPZAP_COUNTER",
+    },
+    {
+      title: `${t("statistic_money")}`,
+      key: "report",
+      icon: faLayerGroup,
+      typeStore: "",
+      system: "reportManagement",
+      role: "APPZAP_COUNTER",
+    },
+    {
+      title: `${t("report_new")}`,
+      key: "DashboardPage",
+      typeStore: "",
+      icon: faChartLine,
+      hidden: !storeDetail?.hasPOS,
+      system: "reportManagement",
+      role: profile?.data?.role,
+    },
+    {
+      title: `${t("paid_manage")}`,
+      key: "expends",
+      icon: faBook,
+      typeStore: "",
+      system: "reportManagement",
+      role: profile?.data?.role,
+    },
+    {
+      title: `${t("menu_manage")}`,
+      key: "menu",
+      typeStore: "",
+      icon: faBoxOpen,
+      hidden: !storeDetail?.hasSmartMenu,
+      system: "menuManagement",
+      role: profile?.data?.role,
+    },
+    {
+      title: `${t("CRM")}`,
+      key: "member/crm",
+      typeStore: "",
+      icon: faUserAlt,
+      hidden: !storeDetail?.hasSmartMenu,
+      system: "menuManagement",
+      role: profile?.data?.role,
+    },
+    {
+      title: `${t("branch")}`,
+      key: "branch",
+      typeStore: "",
+      icon: faBuilding,
+      hidden: !storeDetail?.hasPOS,
+      system: "reportManagement",
+      role: profile?.data?.role,
+    },
+    {
+      title: `${t("shop_setting")}`,
+      key: "settingStore",
+      typeStore: "",
+      icon: faCogs,
+      hidden: !storeDetail?.hasPOS,
+      system: "settingManagement",
+      role: profile?.data?.role,
+    },
+  ].filter((e) => {
+    // For APPZAP_COUNTER, show only "cafe" and "report"
+    if (profile?.data?.role === "APPZAP_COUNTER") {
+      return e.key === "cafe" || e.key === "report";
+    }
+    // Show all items for APPZAP_ADMIN
+    if (profile?.data?.role === "APPZAP_ADMIN") {
+      return true;
+    }
+    // For other roles, show based on their permissions
+    return e.role === profile?.data?.role;
+  });
 
   const itemList = [
     {
@@ -353,16 +443,234 @@ export default function Sidenav({ location, navigate, onToggle }) {
         }}
       >
         <Toggle />
-        <SideNav.Nav value={location.pathname.split("/")[1]}>
-          <hr style={{ marginTop: "-.05em" }} />
-          {listForRole
-            .filter((e) => !e?.hidden)
-            .map((e, index) => (
+        {storeDetail?.isStatusCafe ? (
+          <SideNav.Nav value={location.pathname.split("/")[1]}>
+            <hr style={{ marginTop: "-.05em" }} />
+            {itemMenuForCafe
+              .filter((e) => !e?.hidden)
+              .map((e, index) => (
+                <NavItem
+                  eventKey={e?.key}
+                  key={index}
+                  style={{
+                    backgroundColor: selected === e?.key ? "#ffff" : "",
+                  }}
+                >
+                  <NavIcon>
+                    <FontAwesomeIcon
+                      className={
+                        openTableData.length > 0 ? "scale-animation" : ""
+                      }
+                      icon={e?.icon}
+                      style={{
+                        color:
+                          selected === e?.key
+                            ? COLOR_APP
+                            : UN_SELECTED_TAB_TEXT,
+                        fontSize: 16,
+                      }}
+                    />
+                    {e?.key === "orders" && waitingOrders.length > 0 && (
+                      <span style={popNoti}>{waitingOrders.length}</span>
+                    )}
+                  </NavIcon>
+                  <NavText>
+                    <b
+                      style={{
+                        color:
+                          selected === e?.key
+                            ? COLOR_APP
+                            : UN_SELECTED_TAB_TEXT,
+                      }}
+                      className={fontMap[language]}
+                    >
+                      {" "}
+                      {e?.title}
+                    </b>
+                  </NavText>
+                  {e?.children?.map((element, index) => {
+                    return (
+                      <NavItem
+                        eventKey={element?.key}
+                        key={index}
+                        style={{
+                          backgroundColor:
+                            selected === element?.key ? "#ffff" : "",
+                        }}
+                      >
+                        <NavText
+                          style={{
+                            color:
+                              selected === element?.key
+                                ? COLOR_APP
+                                : UN_SELECTED_TAB_TEXT,
+                          }}
+                          className={fontMap[language]}
+                        >
+                          {element?.title}
+                        </NavText>
+                      </NavItem>
+                    );
+                  })}
+                </NavItem>
+              ))}
+            <hr />
+          </SideNav.Nav>
+        ) : (
+          <SideNav.Nav value={location.pathname.split("/")[1]}>
+            <hr style={{ marginTop: "-.05em" }} />
+            {listForRole
+              .filter((e) => !e?.hidden)
+              .map((e, index) => (
+                <NavItem
+                  eventKey={e?.key}
+                  key={index}
+                  style={{
+                    backgroundColor: selected === e?.key ? "#ffff" : "",
+                  }}
+                >
+                  <NavIcon>
+                    <FontAwesomeIcon
+                      className={
+                        openTableData.length > 0 ? "scale-animation" : ""
+                      }
+                      icon={e?.icon}
+                      style={{
+                        color:
+                          selected === e?.key
+                            ? COLOR_APP
+                            : UN_SELECTED_TAB_TEXT,
+                        fontSize: 16,
+                      }}
+                    />
+                    {e?.key === "orders" && waitingOrders.length > 0 && (
+                      <span style={popNoti}>{waitingOrders.length}</span>
+                    )}
+                  </NavIcon>
+                  <NavText>
+                    <b
+                      style={{
+                        color:
+                          selected === e?.key
+                            ? COLOR_APP
+                            : UN_SELECTED_TAB_TEXT,
+                      }}
+                      className={fontMap[language]}
+                    >
+                      {" "}
+                      {e?.title}
+                    </b>
+                  </NavText>
+                  {e?.children?.map((element, index) => {
+                    return (
+                      <NavItem
+                        eventKey={element?.key}
+                        key={index}
+                        style={{
+                          backgroundColor:
+                            selected === element?.key ? "#ffff" : "",
+                        }}
+                      >
+                        <NavText
+                          style={{
+                            color:
+                              selected === element?.key
+                                ? COLOR_APP
+                                : UN_SELECTED_TAB_TEXT,
+                          }}
+                          className={fontMap[language]}
+                        >
+                          {element?.title}
+                        </NavText>
+                      </NavItem>
+                    );
+                  })}
+                </NavItem>
+              ))}
+            <hr />
+
+            {itemReports?.length !== 0 ? (
               <NavItem
-                eventKey={e?.key}
-                key={index}
-                style={{ backgroundColor: selected === e?.key ? "#ffff" : "" }}
+                eventKey="reportGroups"
+                style={{
+                  color:
+                    isPathInclude(["report"]) || isPathInclude(["reports"])
+                      ? COLOR_APP
+                      : COLOR_GRAY,
+                }}
               >
+                <NavIcon>
+                  <FontAwesomeIcon
+                    className={
+                      openTableData.length > 0 ? "scale-animation" : ""
+                    }
+                    icon={faTachometerAlt}
+                    style={{
+                      color:
+                        isPathInclude(["report"]) || isPathInclude(["reports"])
+                          ? COLOR_APP
+                          : COLOR_GRAY,
+                    }}
+                  />
+                </NavIcon>
+                <NavText>
+                  <b
+                    style={{
+                      color: UN_SELECTED_TAB_TEXT,
+                    }}
+                    className={fontMap[language]}
+                  >
+                    {t("report")}
+                  </b>
+                </NavText>
+
+                {itemReports.map((elm, index) => (
+                  <NavItem key={index} eventKey={elm?.key}>
+                    <NavText>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "start",
+                          height: 40,
+                          alignItems: "center",
+                          gap: 8,
+                          width: "100%",
+                        }}
+                      >
+                        <div>
+                          <FontAwesomeIcon
+                            className={
+                              openTableData.length > 0 ? "scale-animation" : ""
+                            }
+                            icon={elm?.icon}
+                            style={{
+                              color:
+                                selected === elm?.key ? COLOR_APP : COLOR_GRAY,
+                              marginTop: "-2em",
+                            }}
+                          />
+                        </div>
+                        <p
+                          style={{
+                            paddingTop: 13,
+                            fontSize: 15,
+                            color:
+                              selected === elm?.key ? COLOR_APP : COLOR_GRAY,
+                          }}
+                          className={fontMap[language]}
+                        >
+                          {elm?.title}
+                        </p>
+                      </div>
+                    </NavText>
+                  </NavItem>
+                ))}
+              </NavItem>
+            ) : (
+              ""
+            )}
+            {settingNavItem?.map((e, index) => (
+              <NavItem key={index} eventKey={e?.key}>
                 <NavIcon>
                   <FontAwesomeIcon
                     className={
@@ -370,163 +678,30 @@ export default function Sidenav({ location, navigate, onToggle }) {
                     }
                     icon={e?.icon}
                     style={{
-                      color:
-                        selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-                      fontSize: 16,
+                      color: isPathInclude([e?.key]) ? COLOR_APP : COLOR_GRAY,
                     }}
                   />
                   {e?.key === "orders" && waitingOrders.length > 0 && (
                     <span style={popNoti}>{waitingOrders.length}</span>
                   )}
+                  {e?.key === "reservations" && bookingWaitingLength > 0 && (
+                    <span style={popNoti}>{bookingWaitingLength}</span>
+                  )}
                 </NavIcon>
                 <NavText>
                   <b
                     style={{
-                      color:
-                        selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
+                      color: isPathInclude([e?.key]) ? COLOR_APP : COLOR_GRAY,
                     }}
                     className={fontMap[language]}
                   >
-                    {" "}
                     {e?.title}
                   </b>
                 </NavText>
-                {e?.children?.map((element, index) => {
-                  return (
-                    <NavItem
-                      eventKey={element?.key}
-                      key={index}
-                      style={{
-                        backgroundColor:
-                          selected === element?.key ? "#ffff" : "",
-                      }}
-                    >
-                      <NavText
-                        style={{
-                          color:
-                            selected === element?.key
-                              ? COLOR_APP
-                              : UN_SELECTED_TAB_TEXT,
-                        }}
-                        className={fontMap[language]}
-                      >
-                        {element?.title}
-                      </NavText>
-                    </NavItem>
-                  );
-                })}
               </NavItem>
             ))}
-          <hr />
-
-          {itemReports?.length !== 0 ? (
-            <NavItem
-              eventKey="reportGroups"
-              style={{
-                color:
-                  isPathInclude(["report"]) || isPathInclude(["reports"])
-                    ? COLOR_APP
-                    : COLOR_GRAY,
-              }}
-            >
-              <NavIcon>
-                <FontAwesomeIcon
-                  className={openTableData.length > 0 ? "scale-animation" : ""}
-                  icon={faTachometerAlt}
-                  style={{
-                    color:
-                      isPathInclude(["report"]) || isPathInclude(["reports"])
-                        ? COLOR_APP
-                        : COLOR_GRAY,
-                  }}
-                />
-              </NavIcon>
-              <NavText>
-                <b
-                  style={{
-                    color: UN_SELECTED_TAB_TEXT,
-                  }}
-                  className={fontMap[language]}
-                >
-                  {t("report")}
-                </b>
-              </NavText>
-
-              {itemReports.map((elm, index) => (
-                <NavItem key={index} eventKey={elm?.key}>
-                  <NavText>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "start",
-                        height: 40,
-                        alignItems: "center",
-                        gap: 8,
-                        width: "100%",
-                      }}
-                    >
-                      <div>
-                        <FontAwesomeIcon
-                          className={
-                            openTableData.length > 0 ? "scale-animation" : ""
-                          }
-                          icon={elm?.icon}
-                          style={{
-                            color:
-                              selected === elm?.key ? COLOR_APP : COLOR_GRAY,
-                            marginTop: "-2em",
-                          }}
-                        />
-                      </div>
-                      <p
-                        style={{
-                          paddingTop: 13,
-                          fontSize: 15,
-                          color: selected === elm?.key ? COLOR_APP : COLOR_GRAY,
-                        }}
-                        className={fontMap[language]}
-                      >
-                        {elm?.title}
-                      </p>
-                    </div>
-                  </NavText>
-                </NavItem>
-              ))}
-            </NavItem>
-          ) : (
-            ""
-          )}
-          {settingNavItem?.map((e, index) => (
-            <NavItem key={index} eventKey={e?.key}>
-              <NavIcon>
-                <FontAwesomeIcon
-                  className={openTableData.length > 0 ? "scale-animation" : ""}
-                  icon={e?.icon}
-                  style={{
-                    color: isPathInclude([e?.key]) ? COLOR_APP : COLOR_GRAY,
-                  }}
-                />
-                {e?.key === "orders" && waitingOrders.length > 0 && (
-                  <span style={popNoti}>{waitingOrders.length}</span>
-                )}
-                {e?.key === "reservations" && bookingWaitingLength > 0 && (
-                  <span style={popNoti}>{bookingWaitingLength}</span>
-                )}
-              </NavIcon>
-              <NavText>
-                <b
-                  style={{
-                    color: isPathInclude([e?.key]) ? COLOR_APP : COLOR_GRAY,
-                  }}
-                  className={fontMap[language]}
-                >
-                  {e?.title}
-                </b>
-              </NavText>
-            </NavItem>
-          ))}
-          <hr />
-          {/* {role(profile?.data?.role, profile?.data)?.["settingManagement"] ? (
+            <hr />
+            {/* {role(profile?.data?.role, profile?.data)?.["settingManagement"] ? (
           <NavItem eventKey="customerList">
             <NavIcon>
               <FontAwesomeIcon
@@ -550,62 +725,63 @@ export default function Sidenav({ location, navigate, onToggle }) {
         ) : (
           ""
         )} */}
-          {storeDetail?.isStatusCafe ? null : (
-            <>
-              <NavItem eventKey="songlist">
-                <NavIcon>
-                  <FontAwesomeIcon
-                    className={
-                      openTableData.length > 0 ? "scale-animation" : ""
-                    }
-                    icon={faMusic}
-                    style={{
-                      color: UN_SELECTED_TAB_TEXT,
-                    }}
-                  />
-                </NavIcon>
-                <NavText>
-                  <b
-                    style={{
-                      color: UN_SELECTED_TAB_TEXT,
-                    }}
-                    className={fontMap[language]}
-                  >
-                    {t("require_music")}
-                  </b>
-                </NavText>
-              </NavItem>
+            {storeDetail?.isStatusCafe ? null : (
+              <>
+                <NavItem eventKey="songlist">
+                  <NavIcon>
+                    <FontAwesomeIcon
+                      className={
+                        openTableData.length > 0 ? "scale-animation" : ""
+                      }
+                      icon={faMusic}
+                      style={{
+                        color: UN_SELECTED_TAB_TEXT,
+                      }}
+                    />
+                  </NavIcon>
+                  <NavText>
+                    <b
+                      style={{
+                        color: UN_SELECTED_TAB_TEXT,
+                      }}
+                      className={fontMap[language]}
+                    >
+                      {t("require_music")}
+                    </b>
+                  </NavText>
+                </NavItem>
 
-              <NavItem eventKey="supplier">
-                <NavIcon>
-                  <FontAwesomeIcon
-                    className={
-                      openTableData.length > 0 ? "scale-animation" : ""
-                    }
-                    icon={faShoppingCart}
+                <NavItem eventKey="supplier">
+                  <NavIcon>
+                    <FontAwesomeIcon
+                      className={
+                        openTableData.length > 0 ? "scale-animation" : ""
+                      }
+                      icon={faShoppingCart}
+                      style={{
+                        color: UN_SELECTED_TAB_TEXT,
+                      }}
+                    />
+                  </NavIcon>
+                  <NavText
                     style={{
                       color: UN_SELECTED_TAB_TEXT,
                     }}
-                  />
-                </NavIcon>
-                <NavText
-                  style={{
-                    color: UN_SELECTED_TAB_TEXT,
-                  }}
-                >
-                  <b
-                    style={{
-                      color: COLOR_GRAY,
-                    }}
-                    className={fontMap[language]}
                   >
-                    {t("market")}
-                  </b>
-                </NavText>
-              </NavItem>
-            </>
-          )}
-        </SideNav.Nav>
+                    <b
+                      style={{
+                        color: COLOR_GRAY,
+                      }}
+                      className={fontMap[language]}
+                    >
+                      {t("market")}
+                    </b>
+                  </NavText>
+                </NavItem>
+              </>
+            )}
+          </SideNav.Nav>
+        )}
       </SideNav>
     </>
   );
