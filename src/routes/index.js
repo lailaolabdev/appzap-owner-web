@@ -88,6 +88,8 @@ import ShiftOpenPages from "../pages/shift/ShiftOpenPages";
 import SecondScreen from "../pages/secondScreen/SecondScreen";
 import MainScreen from "../pages/secondScreen/MainScreen";
 
+import MemberPage from "../pages/member/MemberPage";
+import DashboardPage from "../pages/dashboardnew/DashboardPage";
 function Router() {
   return useRoutes([
     {
@@ -352,6 +354,14 @@ function Router() {
         {
           path: "/setting-screen",
           element: <MainScreen />,
+        },
+        {
+          path: "/member/crm",
+          element: <MemberPage />,
+        },
+        {
+          path: "/DashboardPage",
+          element: <DashboardPage />,
         },
 
         OrderRoutes,

@@ -820,7 +820,7 @@ const MainScreen = () => {
                 <Modal.Footer>
                   <Button
                     style={{
-                      backgroundColor: COLOR_APP_CANCEL,
+                      backgroundColor: "#e32037",
                       color: "#ffff",
                     }}
                     onClick={handleCloseAdd}
@@ -910,7 +910,7 @@ const MainScreen = () => {
                 <Modal.Footer>
                   <Button
                     style={{
-                      backgroundColor: COLOR_APP_CANCEL,
+                      backgroundColor: "#e32037",
                       color: "#ffff",
                     }}
                     onClick={handleCloseEdit}

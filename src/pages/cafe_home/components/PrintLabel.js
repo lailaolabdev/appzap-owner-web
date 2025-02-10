@@ -6,6 +6,9 @@ import { useStoreStore } from "../../../zustand/storeStore";
 export default function PrintLabel({ data, bill }) {
   const { storeDetail } = useStoreStore();
 
+  console.log("data", data);
+  console.log("bill", bill?.price);
+
   return (
     <div className="py-2 px-4 bg-white rounded-lg shadow-md">
       <span className="flex items-center justify-between">
@@ -32,8 +35,7 @@ export default function PrintLabel({ data, bill }) {
           {moment(bill?.createdAt).format("LT")}
         </div>
         <div>
-          {moneyCurrency(bill?.price + bill?.totalOptionPrice)}{" "}
-          {storeDetail?.firstCurrency}
+          {moneyCurrency(bill?.price)} {storeDetail?.firstCurrency}
         </div>
       </span>
     </div>

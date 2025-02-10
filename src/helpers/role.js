@@ -106,6 +106,8 @@ const role = (role, user, storeDetail, shiftCurrent) => {
           ? shiftCurrent[0]?.status === "OPEN"
             ? "/tables"
             : "/shift-open-pages"
+          : storeDetail?.isStatusCafe
+          ? "/cafe"
           : "/tables",
         reportManagement: true,
         tableManagement: true,
