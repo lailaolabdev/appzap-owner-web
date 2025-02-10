@@ -1158,7 +1158,7 @@ function Homecafe() {
         showConfirmButton: false,
         timer: 1500,
       });
-
+      await onPrintForCherLaBel();
       // update bill status to call check out
       // callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
