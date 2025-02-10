@@ -181,36 +181,15 @@ export default function ConfigPage() {
             gridTemplateRows: "masonry",
           }}
         >
-          <Card border="primary" style={{ margin: 0 }}>
-            <Card.Header
-              style={{
-                backgroundColor: COLOR_APP,
-                color: "#fff",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}
-            >
-              {t("tax")}
-            </Card.Header>
-            <Card.Body>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr auto",
-                  gap: 10,
-                  padding: "10px 0",
-                  borderBottom: `1px dotted ${COLOR_APP}`,
-                }}
-              >
-                <div>
-                  {t("tax")}: {tax}%
-                </div>
-                <div
+          {/* {!storeDetail?.isStatusCafe && (
+            <>
+              <Card border="primary" style={{ margin: 0 }}>
+                <Card.Header
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    justifyContent: "center",
+                    backgroundColor: COLOR_APP,
+                    color: "#fff",
+                    fontSize: 18,
+                    fontWeight: "bold",
                   }}
                 >
                   <Button onClick={() => setPopup({ PopUpEditTax: true })}>
@@ -246,7 +225,7 @@ export default function ConfigPage() {
                 </div>
               </div>
             </Card.Body>
-          </Card>
+          </Card> */}
           {!storeDetail?.isStatusCafe && (
             <>
               <Card border="primary" style={{ margin: 0 }}>
