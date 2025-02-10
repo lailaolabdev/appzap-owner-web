@@ -343,6 +343,7 @@ export default function CheckOutPopupCafe({
           onClose();
           onQueue();
           await onPrintForCher();
+          await onPrintForCherLaBel();
           ClearChangeAmount();
         }
 
@@ -400,7 +401,7 @@ export default function CheckOutPopupCafe({
           return; // Stop further execution if RedeemPointUser fails
         }
       }
-
+      onPrintForCherLaBel();
       await _checkBill();
     } catch (error) {
       console.error("Unexpected error in handleSubmit:", error);
@@ -1119,7 +1120,7 @@ export default function CheckOutPopupCafe({
             <Button
               onClick={() => {
                 handleSubmit();
-                // onPrintForCherLaBel();
+                onPrintForCherLaBel();
               }}
               className="dmd:w-fit w-full"
               disabled={!canCheckOut}
