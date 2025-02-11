@@ -251,31 +251,28 @@ export default function Dashboard() {
               <DonutChart
                 className="bg-white rounded-xl"
                 chartConfig={{
-                  income: {
-                    label: "ສາຂາ",
-                  },
-                  ...branchInCome?.reduce((acc, item) => {
-                    return {
-                      ...acc,
-                      [item?.storeId?.name]: {
-                        label: item?.storeId?.name,
-                        color: "hsl(var(--chart-2))",
+                  income: { label: "ສາຂາ" },
+                  ...branchInCome.reduce(
+                    (config, branch, index) => ({
+                      ...config,
+                      [branch.storeId.name]: {
+                        label: branch.storeId.name,
+                        color: `hsl(var(--chart-${(index % 9) + 1}))`,
                       },
-                    };
-                  }, {}),
+                    }),
+                    {}
+                  ),
                 }}
-                chartData={
-                  branchInCome?.map((item) => ({
-                    branch: item?.storeId?.name,
-                    income: item?.totalAmount,
-                    fill: "var(--chart-2)",
-                  })) || []
-                }
+                chartData={branchInCome.map((branch, index) => ({
+                  branch: branch.storeId.name,
+                  income: branch.totalAmount,
+                  fill: `hsl(var(--chart-${(index % 9) + 1}))`,
+                }))}
               />
 
               <Card className="bg-white rounded-xl overflow-hidden">
                 <div className="border rounded-md relative h-full">
-                  <div className="overflow-y-auto max-h-[460px] overscroll-none">
+                  <div className="overflow-y-auto max-h-[640px] overscroll-none">
                     <table className="w-full rounded-2xl">
                       <tr className="text-white bg-color-app hover:bg-color-app hover:text-white sticky top-0">
                         {/* <th style={{ textAlign: "left" }}>ລຳດັບ</th> */}
@@ -308,11 +305,7 @@ export default function Dashboard() {
                         </th>
                       </tr>
                       {branchInCome?.length > 0 &&
-                        [
-                          ...branchInCome,
-                          ...branchInCome,
-                          ...branchInCome,
-                        ]?.map((data, index) => (
+                        branchInCome?.map((data, index) => (
                           <tr key={data._id}>
                             {/* <td style={{ textAlign: "left" }}>{index + 1}</td> */}
                             <td
@@ -329,6 +322,9 @@ export default function Dashboard() {
                               style={{
                                 textAlign: "start",
                                 fontWeight: "bold",
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: 4,
                               }}
                             >
                               <Button
