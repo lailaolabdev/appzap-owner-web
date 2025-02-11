@@ -207,20 +207,27 @@ function Homecafe() {
   };
   const handleClose = () => setShow(false);
 
-  function handleSetQuantity(int, data) {
+  const handleSetQuantity = (int, data) => {
     const dataArray = [];
     for (const i of SelectedMenus) {
       let _data = { ...i };
-      if (data?.id === i?.id) {
+
+      if (
+        data?.id === i?.id &&
+        JSON.stringify(data?.options) === JSON.stringify(i?.options)
+      ) {
         _data = { ..._data, quantity: _data?.quantity + int };
       }
+
       if (_data.quantity > 0) {
         dataArray.push(_data);
       }
     }
+
+    // อัปเดต state
     setSelectedMenu(dataArray);
     setSelectedMenus(dataArray);
-  }
+  };
 
   const {
     printerCounter,
@@ -287,7 +294,6 @@ function Homecafe() {
       findby += `startTime=${startTime}&`;
       findby += `endTime=${endTime}`;
       const res = await getBills(findby);
-      console.log("RES: ", res);
       const filteredBills = res?.filter((bill) => bill.isCafe === true) || [];
       setBill(filteredBills.length);
     } catch (error) {
@@ -506,7 +512,7 @@ function Homecafe() {
 
     setSelectedMenu((prevMenu) => {
       // Check if the menu item with the same ID and options already exists
-      const existingMenuIndex = prevMenu.findIndex((item) => {
+      const existingMenuIndex = prevMenu?.findIndex((item) => {
         const sortedItemOptionsForComparison = item.options
           ? sortOptionsById([...item.options])
           : [];
@@ -532,6 +538,7 @@ function Homecafe() {
             updatedMenu[existingMenuIndex].quantity +
           updatedMenu[existingMenuIndex].totalOptionPrice;
         return updatedMenu;
+        // biome-ignore lint/style/noUselessElse: <explanation>
       } else {
         // Menu is not in selectedMenu, add it
         return [...prevMenu, data];
@@ -540,6 +547,8 @@ function Homecafe() {
 
     handleClose();
   };
+
+  console.log("selectedMenu", selectedMenu);
 
   const AlertMessage = () => {
     Swal.fire({
@@ -1163,6 +1172,7 @@ function Homecafe() {
       // callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
       getTableDataStore();
+      localStorage.removeItem("menuSlected");
     } catch (err) {
       console.log("err printer", err);
       await Swal.fire({
@@ -1213,42 +1223,6 @@ function Homecafe() {
         }}
       >
         <CafeMenu>
-          {/* <div
-            style={{
-              padding: 10,
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gridGap: 20,
-            }}
-          >
-            <div>
-              <label>{t("choose_food_type")}</label>
-              <select
-                className="form-control"
-                onChange={(e) => setSelectedCategory(e.target.value)}
-              >
-                <option value="All">{t("all")}</option>
-                {Categorys &&
-                  Categorys?.map((data, index) => {
-                    return (
-                      <option key={"category" + index} value={data?._id}>
-                        {data?.name}
-                      </option>
-                    );
-                  })}
-              </select>
-            </div>
-            <div>
-              <label>{t("search")}</label>
-              <input
-                placeholder={t("search")}
-                className="form-control"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-          </div> */}
-
           <div className="py-2 sticky top-0 z-10 bg-white flex flex-col">
             <div className="w-full px-2 py-1">
               <input
@@ -1339,13 +1313,6 @@ function Homecafe() {
                         <span className="text-color-app font-medium text-base font-inter">
                           {moneyCurrency(data?.price)}{" "}
                           {storeDetail?.firstCurrency}
-                          {/* {currency?.map(
-                            (e) =>
-                              " / " +
-                              (data?.price / e.sell).toFixed(2) +
-                              " " +
-                              e?.currencyCode
-                          )} */}
                         </span>
                         <br />
                         <span
@@ -1595,7 +1562,10 @@ function Homecafe() {
                             backgroundColor: theme.primaryColor,
                             color: "#ffffff",
                           }}
-                          onClick={() => clearSelectedMenus()}
+                          onClick={() => {
+                            clearSelectedMenus();
+                            setSelectedMenu([]);
+                          }}
                         >
                           {t("cancel")}
                         </Button>
@@ -1618,38 +1588,6 @@ function Homecafe() {
                           {/* {t("print_bill")} */}
                           CheckOut
                         </Button>
-                        <Button
-                          variant="light"
-                          className={cn("hover-me", fontMap[language])}
-                          style={{
-                            marginRight: 15,
-                            backgroundColor: theme.primaryColor,
-                            color: "#ffffff",
-                            fontWeight: "bold",
-                            flex: 1,
-                          }}
-                          disabled={disabledButton}
-                          onClick={() => {
-                            billData();
-                            // onPrintForCher();
-                          }}
-                        >
-                          {t("print_bill")}
-                        </Button>
-                        {/* <Button
-                          variant="outline-warning"
-                          className={cn("hover-me", fontMap[language])}
-                          style={{
-                            marginRight: 15,
-                            border: `solid 1px ${theme.primaryColor}`,
-                            fontWeight: "bold",
-                            backgroundColor: theme.primaryColor,
-                            color: "#ffffff",
-                          }}
-                          
-                        >
-                          {t("print_bill")}
-                        </Button> */}
                       </>
                     ) : (
                       ""
@@ -1932,7 +1870,10 @@ function Homecafe() {
                           backgroundColor: theme.primaryColor,
                           color: "#ffffff",
                         }}
-                        onClick={() => setSelectedMenus([])}
+                        onClick={() => {
+                          setSelectedMenus([]);
+                          setSelectedMenu([]);
+                        }}
                       >
                         {t("cancel")}
                       </Button>
@@ -1959,21 +1900,6 @@ function Homecafe() {
                   ) : (
                     ""
                   )}
-                  {/* <Button
-                    variant="light"
-                    className="hover-me"
-                    style={{
-                      marginRight: 15,
-                      backgroundColor: theme.primaryColor,
-                      color: "#ffffff",
-                      fontWeight: "bold",
-                      flex: 1,
-                    }}
-                    disabled={disabledButton}
-                    onClick={() => navigate(`/history-cafe-sale`)}
-                  >
-                    {t("history_sales")}
-                  </Button> */}
                 </div>
               </div>
             </div>
@@ -2171,20 +2097,24 @@ function Homecafe() {
       </div>
 
       {SelectedMenus?.map((val, i) => {
-        return (
+        const totalPrice = () => {
+          const totalOptionPrice = val?.totalOptionPrice || 0;
+          return val?.price + totalOptionPrice;
+        };
+        return Array.from({ length: val?.quantity }).map((_, index) => (
           <div
-            key={val}
+            key={`${val._id}-${index}`}
             style={{
               width: "80mm",
               paddingRight: "20px",
               paddingBottom: "10px",
             }}
             // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
-            ref={(el) => (billForCherCancel80.current[i] = el)}
+            ref={(el) => (billForCherCancel80.current[index] = el)}
           >
-            <PrintLabel data={bill} bill={{ ...val }} />
+            <PrintLabel data={bill} bill={{ ...val }} totalPrice={totalPrice} />
           </div>
-        );
+        ));
       })}
     </div>
   );

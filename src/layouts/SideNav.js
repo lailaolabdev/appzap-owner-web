@@ -31,6 +31,7 @@ import {
   faClock,
   faMoneyBill,
   faUserAlt,
+  faDesktop,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, COLOR_GRAY, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -145,9 +146,27 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "member/crm",
       typeStore: "",
       icon: faUserAlt,
-      hidden: !storeDetail?.hasSmartMenu,
+      hidden: !storeDetail?.isCRM,
       system: "menuManagement",
       role: profile?.data?.role,
+    },
+    {
+      title: `${t("shift")}`,
+      key: "shift",
+      typeStore: "",
+      icon: faClock,
+      hidden: !storeDetail?.isShift,
+      system: "reportManagement",
+      role: "APPZAP_COUNTER",
+    },
+    {
+      title: `${t("open_second_screen")}`,
+      key: "setting-screen",
+      typeStore: "",
+      icon: faDesktop,
+      hidden: "",
+      system: "reportManagement",
+      role: "APPZAP_COUNTER",
     },
     {
       title: `${t("branch")}`,
@@ -168,15 +187,17 @@ export default function Sidenav({ location, navigate, onToggle }) {
       role: profile?.data?.role,
     },
   ].filter((e) => {
-    // For APPZAP_COUNTER, show only "cafe" and "report"
     if (profile?.data?.role === "APPZAP_COUNTER") {
-      return e.key === "cafe" || e.key === "report";
+      return (
+        e.key === "cafe" ||
+        e.key === "report" ||
+        e.key === "shift" ||
+        e.key === "setting-screen"
+      );
     }
-    // Show all items for APPZAP_ADMIN
     if (profile?.data?.role === "APPZAP_ADMIN") {
       return true;
     }
-    // For other roles, show based on their permissions
     return e.role === profile?.data?.role;
   });
 

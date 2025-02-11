@@ -535,7 +535,7 @@ export default function MemberPage() {
           <div className="flex gap-2 items-center">
             <Button
               variant="outline-primary"
-              onClick={() => navigate("/reports/members-report/setting-point")}
+              onClick={() => navigate("/point-seting")}
             >
               <span className="flex gap-1 items-center">
                 <FaCogs />
