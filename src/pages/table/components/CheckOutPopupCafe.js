@@ -342,7 +342,9 @@ export default function CheckOutPopupCafe({
 
           onClose();
           onQueue();
-          await onPrintForCher();
+          if (!storeDetail?.isStatusCafe) {
+            await onPrintForCher();
+          }
           await onPrintForCherLaBel();
           ClearChangeAmount();
         }
