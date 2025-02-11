@@ -23,6 +23,8 @@ import convertNumber from "../../helpers/convertNumber";
 import PieChart from "./PieChart";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { DonutChart } from "./DonutChart";
+import { Card } from "../../components/ui/Card";
 
 export default function Dashboard() {
   const { t } = useTranslation();
@@ -147,10 +149,11 @@ export default function Dashboard() {
   return (
     <div
       style={{
-        padding: 10,
-        overflow: "auto",
+        padding: "16px 16px 24px 16px",
+        overflowY: "auto",
         maxHeight: "100vh",
         height: "calc(100vh - 64px)",
+        backgroundColor: "#f8f8f8",
       }}
     >
       <div style={{ height: 10 }} />
@@ -229,39 +232,97 @@ export default function Dashboard() {
           <div style={{ flex: 1 }} />
         </div>
 
-        <p style={{ fontWeight: "bold", fontSize: 18, color: COLOR_APP }}>
-          {`${t("total_branch")} (${t("all_recieve")}
-            ${convertNumber(TotalInCome())} ${t("lak")})`}
-        </p>
         {loadingData ? (
           <Loading />
         ) : branchInCome?.length > 0 ? (
           <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 pb-3">
+              <Card className="bg-white rounded-xl overflow-hidden p-4">
+                <h2 className="text-lg font-bold">ລາຍຮັບທັງໝົດ</h2>
+                <h3 className="text-xl font-bold">
+                  <span className="text-color-app text-3xl font-bold font-inter">
+                    {convertNumber(TotalInCome())}
+                  </span>{" "}
+                  <span className="text-lg font-bold">{t("lak")}</span>
+                </h3>
+              </Card>
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="px-4 rounded-xl flex-1">
-                <PieChart
-                  DatabranchInCome={branchInCome}
-                  TotalInCome={TotalInCome}
-                />
-              </div>
-              <div className="p-4 flex-1 rounded-xl">
-                <div className="border rounded-md relative">
+              <DonutChart
+                className="bg-white rounded-xl"
+                chartConfig={{
+                  income: {
+                    label: "ສາຂາ",
+                  },
+                  ...branchInCome?.reduce((acc, item) => {
+                    return {
+                      ...acc,
+                      [item?.storeId?.name]: {
+                        label: item?.storeId?.name,
+                        color: "hsl(var(--chart-2))",
+                      },
+                    };
+                  }, {}),
+                }}
+                chartData={
+                  branchInCome?.map((item) => ({
+                    branch: item?.storeId?.name,
+                    income: item?.totalAmount,
+                    fill: "var(--chart-2)",
+                  })) || []
+                }
+              />
+
+              <Card className="bg-white rounded-xl overflow-hidden">
+                <div className="border rounded-md relative h-full">
                   <div className="overflow-y-auto max-h-[460px] overscroll-none">
-                    <table className="w-full">
+                    <table className="w-full rounded-2xl">
                       <tr className="text-white bg-color-app hover:bg-color-app hover:text-white sticky top-0">
                         {/* <th style={{ textAlign: "left" }}>ລຳດັບ</th> */}
-                        <th style={{ textAlign: "center" }}>ຊື່ຮ້ານ</th>
-                        <th style={{ textAlign: "center" }}>ລາຍຮັບທັງໝົດ</th>
-                        <th style={{ textAlign: "center" }}>ຈັດການ</th>
+                        <th
+                          style={{
+                            textAlign: "center",
+                            fontSize: "18px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          ຊື່ຮ້ານ
+                        </th>
+                        <th
+                          style={{
+                            textAlign: "center",
+                            fontSize: "18px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          ລາຍຮັບທັງໝົດ
+                        </th>
+                        <th
+                          style={{
+                            textAlign: "center",
+                            fontSize: "18px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          ຈັດການ
+                        </th>
                       </tr>
                       {branchInCome?.length > 0 &&
-                        branchInCome?.map((data, index) => (
+                        [
+                          ...branchInCome,
+                          ...branchInCome,
+                          ...branchInCome,
+                        ]?.map((data, index) => (
                           <tr key={data._id}>
                             {/* <td style={{ textAlign: "left" }}>{index + 1}</td> */}
-                            <td style={{ textAlign: "start" }}>
+                            <td
+                              style={{ textAlign: "start", padding: "0 24px" }}
+                            >
                               {data?.storeId?.name}
                             </td>
-                            <td style={{ textAlign: "end" }}>
+                            <td
+                              style={{ textAlign: "center", padding: "0 16px" }}
+                            >
                               {convertNumber(data?.totalAmount)} {t("lak")}
                             </td>
                             <td
@@ -295,46 +356,10 @@ export default function Dashboard() {
                             </td>
                           </tr>
                         ))}
-                      <tr className="sticky bottom-0 p-0">
-                        <td colSpan={3} className="bg-gray-50 pb-0 pt-3">
-                          <ReactPaginate
-                            previousLabel={
-                              <span className="glyphicon glyphicon-chevron-left">
-                                {"ກ່ອນໜ້າ"}
-                              </span>
-                            }
-                            nextLabel={
-                              <span className="glyphicon glyphicon-chevron-right">
-                                {"ຕໍ່ໄປ"}
-                              </span>
-                            }
-                            breakLabel={
-                              <Pagination.Item disabled>...</Pagination.Item>
-                            }
-                            breakClassName={"break-me"}
-                            pageCount={paginationTotal} // Replace with the actual number of pages
-                            marginPagesDisplayed={1}
-                            pageRangeDisplayed={3}
-                            onPageChange={(e) => {
-                              setPaginations(e?.selected + 1);
-                            }}
-                            containerClassName={
-                              "pagination justify-content-center"
-                            } // Bootstrap class for centering
-                            pageClassName={"page-item"}
-                            pageLinkClassName={"page-link"}
-                            activeClassName={"active"}
-                            previousClassName={"page-item"}
-                            nextClassName={"page-item"}
-                            previousLinkClassName={"page-link"}
-                            nextLinkClassName={"page-link"}
-                          />
-                        </td>
-                      </tr>
                     </table>
                   </div>
                 </div>
-              </div>
+              </Card>
             </div>
           </>
         ) : (
