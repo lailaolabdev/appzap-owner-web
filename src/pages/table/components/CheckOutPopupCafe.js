@@ -49,6 +49,7 @@ export default function CheckOutPopupCafe({
   setDataBill,
   taxPercent = 0,
   setIsLoading,
+  setSelectedMenu,
 }) {
   // ref
   const inputCashRef = useRef(null);
@@ -81,7 +82,7 @@ export default function CheckOutPopupCafe({
   const [currencyList, setCurrencyList] = useState([]);
   const { setSelectedTable, getTableDataStore } = useStore();
   const { setSelectedMenus } = useMenuSelectStore();
-  const { SetChangeAmount, ChangeAmount, ClearChangeAmount } = useChangeMoney();
+  const { SetChangeAmount, ClearChangeAmount } = useChangeMoney();
 
   const { t } = useTranslation();
 
@@ -1045,7 +1046,23 @@ export default function CheckOutPopupCafe({
             </div>
             <NumberKeyboard
               onClickMember={() => {
-                setHasCRM((prev) => !prev);
+                if (storeDetail?.isCRM) {
+                  setHasCRM((prev) => !prev);
+                }
+
+                Swal.fire({
+                  title: "ແຈ້ງເຕືອນ?",
+                  text: "ກະລະນາເປີດໃຊ້ງານຟັງຊັນ CRM",
+                  icon: "warning",
+                  showCancelButton: false,
+                  confirmButtonColor: COLOR_APP,
+                  cancelButtonColor: "#d33",
+                  confirmButtonText: "ເປີດໃຊ້ງານ",
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    navigate("/config");
+                  }
+                });
               }}
               onClickButtonDrawer={onPrintDrawer}
               totalBill={totalBillMoney}

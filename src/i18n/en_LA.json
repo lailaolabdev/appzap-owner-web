@@ -1120,7 +1120,7 @@
   "open_function_shift": "ເປີດໃຊ້ງານຟັງຊັນກະ",
   "open_shift": "ເປີດ",
   "all_shifts": "ສະແດງທັງໝົດ",
-  "manage_second_screen": "ຈັດການກ່ຽວກັບໜ້າຈໍລັບລູກຄ້າ",
+  "manage_second_screen": "ຈັດການກ່ຽວກັບໜ້າຈໍສຳລັບລູກຄ້າ",
   "list_slide_second_screen": "ລາຍການຮູບພາບສະໄລສ໌",
   "image_slide": "ຮູບພາບສະໄລສ໌",
   "name_slide": "ຊື່ສະໄລສ໌",
@@ -1134,5 +1134,7 @@
   "show_slide": "ສະໄລສ໌ໂປຣໂມຊັນ",
   "show_table": "ສະແດງລາຍການອໍເດີ້",
   "totals": "ຍອດລວມ (Total)",
-  "no_order_list": "ບໍ່ມີລາຍການອໍເດີ້"
+  "no_order_list": "ບໍ່ມີລາຍການອໍເດີ້",
+  "open_second_screen": "ເປີດໃຊ້ສອງຈໍ",
+  "setting_point": "ຕັ້ງຄ່າການໃຫ້ຄະແນນ"
 }

@@ -38,12 +38,7 @@ import {
 import UploadMutiple from "../../components/UploadMutiple";
 import { useTranslation } from "react-i18next";
 import { useShiftStore } from "../../zustand/ShiftStore";
-import {
-  useSlideImageStore,
-  useCombinedToggleSlide,
-} from "../../zustand/slideImageStore";
-import { useSecondScreenStore } from "../../zustand/useSecondScreenStore";
-
+import { useCombinedToggleSlide } from "../../zustand/slideImageStore";
 import { useStore } from "../../store";
 import UploadMultipleEdit from "../../components/UploadMutipleEdit";
 import PreviewSlide from "./PreviewSlide";
@@ -73,9 +68,6 @@ const MainScreen = () => {
     toggleTable,
     toggle,
   } = useCombinedToggleSlide();
-
-  const { SettoggleOpenScreen, isToggledOpenScreen } = useSecondScreenStore();
-  const { UseSlideImage } = useSlideImageStore();
 
   useEffect(() => {
     if ("getScreenDetails" in window) {
@@ -487,11 +479,13 @@ const MainScreen = () => {
                   <BsImages />
                   <span>{t("list_slide_second_screen")}</span>
                 </div>
-                <Button variant="dark" bg="dark" onClick={handleShowAdd}>
-                  <span className="flex gap-2 items-center">
-                    <MdAssignmentAdd /> <span>{t("add_banner")}</span>
-                  </span>
-                </Button>
+                {profile?.data?.role === "APPZAP_ADMIN" && (
+                  <Button variant="dark" bg="dark" onClick={handleShowAdd}>
+                    <span className="flex gap-2 items-center">
+                      <MdAssignmentAdd /> <span>{t("add_banner")}</span>
+                    </span>
+                  </Button>
+                )}
               </Card.Header>
               <Card.Body style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%" }}>
@@ -500,7 +494,9 @@ const MainScreen = () => {
                     <th style={{ textWrap: "nowrap" }}>{t("image_slide")}</th>
                     <th style={{ textWrap: "nowrap" }}>{t("name_slide")}</th>
                     <th style={{ textWrap: "nowrap" }}>{t("status")}</th>
-                    <th style={{ textWrap: "nowrap" }}>{t("manage_data")}</th>
+                    {profile?.data?.role === "APPZAP_ADMIN" && (
+                      <th style={{ textWrap: "nowrap" }}>{t("manage_data")}</th>
+                    )}
                   </tr>
                   {imageSlideData?.map((data, index) => (
                     <tr key={data?._id}>
@@ -559,14 +555,16 @@ const MainScreen = () => {
                           />
                         </div>
                       </td>
-                      <td className="flex justify-start items-center pt-5 gap-2">
-                        <Button onClick={() => handleShowDelete(data)}>
-                          <FontAwesomeIcon icon={faTrashAlt} />
-                        </Button>
-                        <Button onClick={() => handleShowEdit(data)}>
-                          <FontAwesomeIcon icon={faEdit} />
-                        </Button>
-                      </td>
+                      {profile?.data?.role === "APPZAP_ADMIN" && (
+                        <td className="flex justify-start items-center pt-5 gap-2">
+                          <Button onClick={() => handleShowDelete(data)}>
+                            <FontAwesomeIcon icon={faTrashAlt} />
+                          </Button>
+                          <Button onClick={() => handleShowEdit(data)}>
+                            <FontAwesomeIcon icon={faEdit} />
+                          </Button>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </table>
@@ -654,6 +652,7 @@ const MainScreen = () => {
                       </Form.Label>
                       <Form.Check
                         type="switch"
+                        disabled={profile?.data?.role !== "APPZAP_ADMIN"}
                         checked={isToggled}
                         id={"switch-title"}
                         // onChange={toggle}
@@ -683,8 +682,8 @@ const MainScreen = () => {
                         {isToggledSlide ? t("oppen") : t("close")}
                       </Form.Label>
                       <Form.Check
-                        // disabled={true}
                         type="switch"
+                        disabled={profile?.data?.role !== "APPZAP_ADMIN"}
                         checked={isToggledSlide}
                         id={"slide"}
                         // onChange={toggleSlide}
@@ -715,6 +714,7 @@ const MainScreen = () => {
                       </Form.Label>
                       <Form.Check
                         // disabled={true}
+                        disabled={profile?.data?.role !== "APPZAP_ADMIN"}
                         type="switch"
                         checked={isToggledTable}
                         id={"table"}

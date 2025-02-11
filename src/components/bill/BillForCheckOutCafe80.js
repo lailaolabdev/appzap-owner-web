@@ -58,19 +58,6 @@ export default function BillForCheckOutCafe80({
       // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
       _total += _data?.quantity * itemPrice;
     }
-    // if (dataBill?.discount > 0) {
-    //   if (
-    //     dataBill?.discountType == "LAK" ||
-    //     dataBill?.discountType == "MONEY"
-    //   ) {
-    //     setTotalAfterDiscount(_total - dataBill?.discount);
-    //   } else {
-    //     const ddiscount = parseInt((_total * dataBill?.discount) / 100);
-    //     setTotalAfterDiscount(_total - ddiscount);
-    //   }
-    // } else {
-    //   setTotalAfterDiscount(_total);
-    // }
     setTotal(_total);
     setTaxAmount((_total * taxPercent) / 100);
   };
@@ -106,10 +93,8 @@ export default function BillForCheckOutCafe80({
   }, [imageUrl2]);
 
   return (
-    <Container>
-      <div
-        style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
-      >
+    <div className="p-1 bg-white rounded-lg shadow-md w-[285px] ml-[-12px]">
+      <div className=" flex justify-end ">
         <div className="flex gap-2 items-center">
           {base64Image ? (
             <Image
@@ -130,27 +115,23 @@ export default function BillForCheckOutCafe80({
               marginRight: "10px",
             }}
           >
-            Queue No {data || 0}
+            No {data || 0}
           </span>
         </div>
       </div>
-      <div className="text-center font-bold">{storeDetail?.name}</div>
+      <div className="text-center font-bold my-4">{storeDetail?.name}</div>
       {/* <div style={{ textAlign: "center" }}>{selectedTable?.tableName}</div> */}
       <Price>
         <div style={{ textAlign: "left", fontSize: 12 }}>
-          <div>
+          <div className="mb-1">
             {t("phoneNumber")}: {""}
             <span style={{ fontWeight: "bold" }}>{storeDetail?.phone}</span>
           </div>
-          <div>
+          <div className="mb-1">
             Whatapp:{" "}
             <span style={{ fontWeight: "bold" }}>{storeDetail?.whatsapp}</span>
           </div>
-          {/* <div>
-            {t("tableCode")}:{" "}
-            <span style={{ fontWeight: "bold" }}>{dataBill?.code}</span>
-          </div> */}
-          <div>
+          <div className="mb-1">
             {t("date")}:{" "}
             <span style={{ fontWeight: "bold" }}>
               {moment(dataBill?.createdAt).format("DD-MM-YYYY - HH:mm:ss")}
@@ -163,9 +144,10 @@ export default function BillForCheckOutCafe80({
             </span>
           </div>
         </div>
-        <div style={{ flexGrow: 1 }}></div>
+        <div style={{ flexGrow: 1 }} />
       </Price>
-      <Name style={{ marginBottom: 10, fontSize: 12 }}>
+      <hr className="border-b border-dashed border-gray-600" />
+      <Name style={{ marginBottom: 5, fontSize: 12 }}>
         <div style={{ textAlign: "left" }}>ລຳດັບ </div>
         <div style={{ textAlign: "left", marginLeft: "-20px" }}>
           {t("list")}{" "}
@@ -176,6 +158,7 @@ export default function BillForCheckOutCafe80({
         <div style={{ textAlign: "right" }}>{t("price")}</div>
         <div style={{ textAlign: "right" }}>{t("total")}</div>
       </Name>
+      <hr className="border-b border-dashed border-gray-600" />
       <Order>
         {dataBill?.map((item, index) => {
           const optionsNames =
@@ -220,9 +203,9 @@ export default function BillForCheckOutCafe80({
           );
         })}
       </Order>
-      <div style={{ height: 10 }}></div>
-      <hr style={{ border: "1px solid #000", margin: 0 }} />
-      <div style={{ fontSize: 14 }}>
+      <div style={{ height: 10 }} />
+      <hr className="border-b border-dashed border-gray-600" />
+      <div className="text-[16px] font-bold mb-2">
         <div>
           <div
             style={{
@@ -272,7 +255,7 @@ export default function BillForCheckOutCafe80({
           />
         </Img>
       </div>
-    </Container>
+    </div>
   );
 }
 
@@ -283,12 +266,12 @@ const Name = styled.div`
 const Price = styled.div`
   display: flex;
 `;
-const Container = styled.div`
-  margin: 10px;
-  width: 100%;
-  margin-left: -8px;
-  /* maxwidth: 80mm; */
-`;
+// const Container = styled.div`
+//   margin: 10px;
+//   width: 100%;
+//   margin-left: -8px;
+//   /* maxwidth: 80mm; */
+// `;
 const Img = styled.div`
   width: 200px;
   height: 200px;
