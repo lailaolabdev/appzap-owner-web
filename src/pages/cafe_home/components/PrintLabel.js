@@ -7,7 +7,7 @@ export default function PrintLabel({ data, bill, totalPrice }) {
   const { storeDetail } = useStoreStore();
   return (
     <>
-      <div className="py-2 px-4 bg-white rounded-lg shadow-md">
+      <div className="py-2 px-4 bg-white rounded-lg shadow-md ">
         <span className="flex items-center justify-between">
           <h5 className="font-bold">{bill?.name}</h5>
           <p className="pt-2 font-bold"># {data}</p>
