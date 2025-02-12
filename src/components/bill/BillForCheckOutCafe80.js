@@ -94,7 +94,7 @@ export default function BillForCheckOutCafe80({
 
   return (
     <div className="p-1 bg-white rounded-lg shadow-md w-[285px] ml-[-12px]">
-      <div className=" flex justify-end ">
+      <div className=" flex justify-center relative">
         <div className="flex gap-2 items-center">
           {base64Image ? (
             <Image
@@ -108,16 +108,10 @@ export default function BillForCheckOutCafe80({
           ) : (
             ""
           )}
-          <span
-            style={{
-              fontSize: "18px",
-              fontWeight: "bold",
-              marginRight: "10px",
-            }}
-          >
-            No {data || 0}
-          </span>
         </div>
+        <span className="text-[18px] font-bold absolute top-8 right-4">
+          No {data || 0}
+        </span>
       </div>
       <div className="text-center font-bold my-4">{storeDetail?.name}</div>
       {/* <div style={{ textAlign: "center" }}>{selectedTable?.tableName}</div> */}

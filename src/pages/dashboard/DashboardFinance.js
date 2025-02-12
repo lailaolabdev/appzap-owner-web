@@ -872,7 +872,7 @@ export default function DashboardFinance({
                 <th>{t("price")}</th>
                 {storeDetail?.isDelivery && <th>DC Code</th>}
                 <th>{t("time")}</th>
-                <th>ເວລາອັບເດດ</th>
+                {/* <th>ເວລາອັບເດດ</th> */}
               </tr>
             </thead>
             <tbody>
@@ -890,9 +890,11 @@ export default function DashboardFinance({
                   </td>
                   <td>{item.createdBy}</td>
                   <td>{item.totalPrice}</td>
-                  <td style={{ textAlign: "center" }}>{item.deliveryCode}</td>
+                  {storeDetail?.isDelivery && (
+                    <td style={{ textAlign: "center" }}>{item.deliveryCode}</td>
+                  )}
                   <td>{item.createdAt}</td>
-                  <td>{item.updatedAt}</td>
+                  {/* <td>{item.updatedAt}</td> */}
                 </tr>
               ))}
             </tbody>
