@@ -319,12 +319,12 @@ export default function CheckOutPopupCafe({
       )
       .then(async (response) => {
         if (response?.status === 200) {
-          await Swal.fire({
-            icon: "success",
-            title: "ສໍາເລັດການເຊັກບິນ",
-            showConfirmButton: false,
-            timer: 1800,
-          });
+          // await Swal.fire({
+          //   icon: "success",
+          //   title: "ສໍາເລັດການເຊັກບິນ",
+          //   showConfirmButton: false,
+          //   timer: 1800,
+          // });
 
           setSelectedTable();
           getTableDataStore();

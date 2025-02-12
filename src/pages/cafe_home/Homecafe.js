@@ -977,8 +977,6 @@ function Homecafe() {
     }
   };
 
-  // console.log("bill80Ref CaFe",bill80Ref)
-
   const billForCherCancel80 = useRef([]);
 
   if (billForCherCancel80.current.length !== arrLength) {
@@ -987,6 +985,8 @@ function Homecafe() {
       .fill()
       .map((_, i) => billForCherCancel80.current[i]);
   }
+
+  console.log("billForCherCancel80", billForCherCancel80);
 
   const onPrintForCherLaBel = async () => {
     // setOnPrinting(true);
@@ -1161,13 +1161,15 @@ function Homecafe() {
           });
         }
       );
+      await onPrintForCherLaBel();
       await Swal.fire({
         icon: "success",
         title: "ປິນສຳເລັດ",
         showConfirmButton: false,
         timer: 1500,
       });
-      await onPrintForCherLaBel();
+      setSelectedMenu([]);
+      setSelectedMenus([]);
       // update bill status to call check out
       // callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
@@ -2095,7 +2097,7 @@ function Homecafe() {
           profile={profile}
         />
       </div>
-
+      {/* 
       {SelectedMenus?.map((val, i) => {
         const totalPrice = () => {
           const totalOptionPrice = val?.totalOptionPrice || 0;
@@ -2115,6 +2117,36 @@ function Homecafe() {
             <PrintLabel data={bill} bill={{ ...val }} totalPrice={totalPrice} />
           </div>
         ));
+      })} */}
+      {SelectedMenus?.map((val, i) => {
+        const totalPrice = () => {
+          const totalOptionPrice = val?.totalOptionPrice || 0;
+          return val?.price + totalOptionPrice;
+        };
+        return Array.from({ length: val?.quantity }).map((_, index) => {
+          const key = `${val._id}-${index}`;
+          return (
+            <div
+              key={key}
+              style={{
+                width: "80mm",
+                paddingRight: "20px",
+                paddingBottom: "10px",
+              }}
+              ref={(el) => {
+                if (el) {
+                  billForCherCancel80.current.push(el);
+                }
+              }}
+            >
+              <PrintLabel
+                data={bill}
+                bill={{ ...val }}
+                totalPrice={totalPrice}
+              />
+            </div>
+          );
+        });
       })}
     </div>
   );
