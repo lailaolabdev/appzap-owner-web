@@ -346,7 +346,7 @@ export default function CheckOutPopupCafe({
           if (!storeDetail?.isStatusCafe) {
             await onPrintForCher();
           }
-          await onPrintForCherLaBel();
+          // await onPrintForCherLaBel();
           ClearChangeAmount();
         }
 
@@ -406,7 +406,6 @@ export default function CheckOutPopupCafe({
           return; // Stop further execution if RedeemPointUser fails
         }
       }
-      // onPrintForCherLaBel();
       await _checkBill();
     } catch (error) {
       console.error("Unexpected error in handleSubmit:", error);
@@ -1138,7 +1137,7 @@ export default function CheckOutPopupCafe({
               <BiSolidPrinter />
               {t("print_checkbill")}
             </Button>
-            <Button
+            {/* <Button
               onClick={() => {
                 handleSubmit();
                 onPrintForCherLaBel();
@@ -1147,7 +1146,7 @@ export default function CheckOutPopupCafe({
               disabled={!canCheckOut}
             >
               {t("calculate")}
-            </Button>
+            </Button> */}
           </div>
         </div>
       </Modal.Footer>
