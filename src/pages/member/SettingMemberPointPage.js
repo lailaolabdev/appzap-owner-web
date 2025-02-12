@@ -238,7 +238,7 @@ export default function SettingMemberPointPage() {
               }}
             >
               <BsInfoCircle />
-              Create Member
+              {t("setting_point")}
             </Button>
           </div>
         )}

@@ -90,6 +90,7 @@ import MainScreen from "../pages/secondScreen/MainScreen";
 
 import MemberPage from "../pages/member/MemberPage";
 import DashboardPage from "../pages/dashboardnew/DashboardPage";
+import SettingMemberPointPage from "../pages/member/SettingMemberPointPage";
 function Router() {
   return useRoutes([
     {
@@ -362,6 +363,14 @@ function Router() {
         {
           path: "/DashboardPage",
           element: <DashboardPage />,
+        },
+        {
+          path: "/DashboardPage",
+          element: <DashboardPage />,
+        },
+        {
+          path: "/point-seting",
+          element: <SettingMemberPointPage />,
         },
 
         OrderRoutes,
