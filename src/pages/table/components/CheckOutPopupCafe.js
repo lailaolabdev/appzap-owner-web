@@ -319,12 +319,12 @@ export default function CheckOutPopupCafe({
       )
       .then(async (response) => {
         if (response?.status === 200) {
-          await Swal.fire({
-            icon: "success",
-            title: "ສໍາເລັດການເຊັກບິນ",
-            showConfirmButton: false,
-            timer: 1800,
-          });
+          // await Swal.fire({
+          //   icon: "success",
+          //   title: "ສໍາເລັດການເຊັກບິນ",
+          //   showConfirmButton: false,
+          //   timer: 1800,
+          // });
 
           setSelectedTable();
           getTableDataStore();
@@ -354,6 +354,8 @@ export default function CheckOutPopupCafe({
       })
       .catch((error) => {
         errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
+        setIsLoading(false);
+        onClose();
       });
   };
 

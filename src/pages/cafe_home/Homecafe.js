@@ -1095,6 +1095,7 @@ function Homecafe() {
 
   const onPrintBill = async () => {
     try {
+      setIsLoading(true);
       const _dataBill = {
         ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
@@ -1161,20 +1162,23 @@ function Homecafe() {
           });
         }
       );
+      await onPrintForCherLaBel();
       await Swal.fire({
         icon: "success",
         title: "ປິນສຳເລັດ",
         showConfirmButton: false,
         timer: 1500,
       });
-      await onPrintForCherLaBel();
       // update bill status to call check out
       // callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
       getTableDataStore();
-      localStorage.removeItem("menuSlected");
+      setSelectedMenu([]);
+      setSelectedMenus([]);
+      clearSelectedMenus();
+      setIsLoading(false);
     } catch (err) {
-      console.log("err printer", err);
+      setIsLoading(false);
       await Swal.fire({
         icon: "error",
         title: `${t("print_fial")}`,
@@ -2101,20 +2105,30 @@ function Homecafe() {
           const totalOptionPrice = val?.totalOptionPrice || 0;
           return val?.price + totalOptionPrice;
         };
-        return Array.from({ length: val?.quantity }).map((_, index) => (
-          <div
-            key={`${val._id}-${index}`}
-            style={{
-              width: "80mm",
-              paddingRight: "20px",
-              paddingBottom: "10px",
-            }}
-            // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
-            ref={(el) => (billForCherCancel80.current[index] = el)}
-          >
-            <PrintLabel data={bill} bill={{ ...val }} totalPrice={totalPrice} />
-          </div>
-        ));
+        return Array.from({ length: val?.quantity }).map((_, index) => {
+          const key = `${val._id}-${index}`;
+          return (
+            <div
+              key={key}
+              style={{
+                width: "80mm",
+                paddingRight: "20px",
+                paddingBottom: "10px",
+              }}
+              ref={(el) => {
+                if (el) {
+                  billForCherCancel80.current.push(el);
+                }
+              }}
+            >
+              <PrintLabel
+                data={bill}
+                bill={{ ...val }}
+                totalPrice={totalPrice}
+              />
+            </div>
+          );
+        });
       })}
     </div>
   );
