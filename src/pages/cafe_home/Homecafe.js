@@ -223,8 +223,6 @@ function Homecafe() {
         dataArray.push(_data);
       }
     }
-
-    // อัปเดต state
     setSelectedMenu(dataArray);
     setSelectedMenus(dataArray);
   };
@@ -547,8 +545,6 @@ function Homecafe() {
 
     handleClose();
   };
-
-  console.log("selectedMenu", selectedMenu);
 
   const AlertMessage = () => {
     Swal.fire({
@@ -1023,20 +1019,10 @@ function Homecafe() {
         let urlForPrinter = "";
         let dataUrl = dataUrls[_index];
 
-        // if (_printer?.type === "ETHERNET") {
-        //   urlForPrinter = ETHERNET_PRINTER_PORT;
-        // }
-        // if (_printer?.type === "BLUETOOTH") {
-        //   urlForPrinter = BLUETOOTH_PRINTER_PORT;
-        // }
-        // if (_printer?.type === "USB") {
-        //   urlForPrinter = USB_PRINTER_PORT;
-        // }
         urlForPrinter = USB_LABEL_PRINTER_PORT;
-        // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
 
         const _file = await base64ToBlob(dataUrl.toDataURL());
-        console.log("file", _file);
+
         var bodyFormData = new FormData();
         bodyFormData.append("ip", _printer?.ip);
         bodyFormData.append("isdrawer", false);
@@ -1053,39 +1039,25 @@ function Homecafe() {
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
-
-        // await printFlutter(
-        //   {
-        //     drawer: false,
-        //     paper: _printer?.width === "58mm" ? 400 : 500,
-        //     imageBuffer: dataUrl.toDataURL(),
-        //     ip: _printer?.ip,
-        //     type: _printer?.type,
-        //     port: "9100",
-        //     width: _printer?.width === "58mm" ? 400 : 580,
-        //   },
-
-        // );
-
-        if (_index === 0) {
-          await Swal.fire({
-            icon: "success",
-            title: `${t("print_success")}`,
-            showConfirmButton: false,
-            timer: 1500,
-          });
-        }
+        // if (_index === 0) {
+        //   await Swal.fire({
+        //     icon: "success",
+        //     title: `${t("print_success")}`,
+        //     showConfirmButton: false,
+        //     timer: 1500,
+        //   });
+        // }
       } catch (err) {
         console.log(err);
         if (_index === 0) {
           // setOnPrinting(false);
-          return { error: true, err };
           await Swal.fire({
             icon: "error",
-            title: "ປິ້ນບໍ່ສຳເລັດ",
+            title: "ປິ້ນສະຕິກເກີ້ບໍ່ສຳເລັດ",
             showConfirmButton: false,
             timer: 1500,
           });
+          return { error: true, err };
         }
       }
       _index++;
@@ -1163,20 +1135,19 @@ function Homecafe() {
         }
       );
       await onPrintForCherLaBel();
-      await Swal.fire({
-        icon: "success",
-        title: "ປິນສຳເລັດ",
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      // update bill status to call check out
-      // callCheckOutPrintBillOnly(selectedTable?._id);
+      setIsLoading(false);
       setSelectedTable();
       getTableDataStore();
       setSelectedMenu([]);
       setSelectedMenus([]);
       clearSelectedMenus();
-      setIsLoading(false);
+
+      await Swal.fire({
+        icon: "success",
+        title: `${t("print_success")}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
     } catch (err) {
       setIsLoading(false);
       await Swal.fire({
@@ -2110,11 +2081,12 @@ function Homecafe() {
           return (
             <div
               key={key}
-              style={{
-                width: "80mm",
-                paddingRight: "20px",
-                paddingBottom: "10px",
-              }}
+              // style={{
+              //   width: "80mm",
+              //   paddingRight: "20px",
+              //   paddingBottom: "10px",
+              // }}
+              className="w-[80mm] pr-[20px pb-[10px]"
               ref={(el) => {
                 if (el) {
                   billForCherCancel80.current.push(el);
