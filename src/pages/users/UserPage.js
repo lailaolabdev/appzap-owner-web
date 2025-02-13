@@ -35,7 +35,6 @@ import PopUpCreateUser from "../../components/popup/PopUpCreateUser";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
 import { useTranslation } from "react-i18next";
-
 import { useStoreStore } from "../../zustand/storeStore";
 
 const limitData = 10;
@@ -55,11 +54,12 @@ export default function UserPage() {
   const [userData, setUserData] = useState();
   const [selectUser, setSelectUser] = useState();
   const [popup, setPopup] = useState();
+  const { profile } = useStore();
 
   // store
   const { storeDetail } = useStoreStore()
-  const storeId = storeDetail._id;
-  //console.log("storeId:", storeId)
+  const appzapStaff = "APPZAP_STAFF";
+
 
   // useEffect
   useEffect(() => {
@@ -148,7 +148,7 @@ export default function UserPage() {
               <IoPeople /> {t("staff_report")}
             </span>
             <div>
-              <Button
+              {/* <Button
                 variant="dark"
                 bg="dark"
                 style={{marginRight:'5px'}}
@@ -157,7 +157,7 @@ export default function UserPage() {
                 }
               >
                 {t("manage_counter")}
-              </Button>
+              </Button> */}
               <Button
                 variant="dark"
                 bg="dark"
@@ -266,7 +266,7 @@ export default function UserPage() {
                       <div>{e?.phone}</div>
                     </td>
                     <td style={{ textAlign: "start" }}>
-                      {convertRole(e?.role)}
+                      { e?.role === appzapStaff ? e?.permissionRoleId?.roleName || convertRole(e?.role) : convertRole(e?.role)}
                     </td>
                     <td style={{ textAlign: "start" }}>
                       <div style={{ display: "flex", gap: 10 }}>

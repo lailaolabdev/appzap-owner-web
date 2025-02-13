@@ -32,15 +32,17 @@ const role = (role, user, storeDetail, shiftCurrent) => {
       };
     case "APPZAP_STAFF":
       return {
-        defaultPath: `/tables`,
-        // reportManagement: true,
+        defaultPath: `/settingStore/storeDetail/${user?.storeId}`,
+        reportManagement: true,
         tableManagement: true,
-        // orderManagement: true,
-        // reservationManagement: true,
-        // menuManagement: true,
-        // settingManagement: true,
-        // themeManagement: true,
-        // farkManagement:true,
+        orderManagement: true,
+        reservationManagement: true,
+        menuManagement: true,
+        settingManagement: true,
+        themeManagement: true,
+        report: true,
+        stockManagement: true,
+        farkManagement: true,
       };
     case "APPZAP_RESTAURANT":
       return {

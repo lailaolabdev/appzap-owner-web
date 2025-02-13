@@ -11,23 +11,25 @@ import { getHeaders } from "../../services/auth";
 import { useTranslation } from "react-i18next";
 import { Form } from "react-bootstrap";
 import { createUser } from "../../services/user";
-
+import { getPermissionRoles } from "../../services/permissionRole";
 import { useStoreStore } from "../../zustand/storeStore";
+import { useStore } from "../../store";
 
 export const preventNegativeValues = (e) =>
   ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
 export default function PopUpCreateUser({ open, onClose, callback }) {
   const { t } = useTranslation();
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [formData, setFormData] = useState();
-
+  const [formData, setFormData] = useState({ role: "APPZAP_STAFF" });
+  const [dataPermission, setDataPermision] = useState([])
   const { storeDetail } = useStoreStore()
 
   // useEffect
   useEffect(() => {
     if (!open) {
       setButtonDisabled(false);
-      setFormData();
+      setFormData({ role: "APPZAP_STAFF" });
+      getDataPermissionRole()
     }
   }, [open]);
 
@@ -38,6 +40,18 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
     onClose();
     callback();
   };
+
+
+  const getDataPermissionRole = async () => {
+    try {
+      const permissionData = await getPermissionRoles();
+      setDataPermision(permissionData);
+    } catch (err) {
+      console.error("Error fetching permission roles:", err);
+    }
+  };
+
+
   return (
     <Modal show={open} onHide={onClose}>
       <Modal.Header closeButton>{t("add_staff")}</Modal.Header>
@@ -65,19 +79,19 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
           </div>
           <div>
             <Form.Label>{t("use_system_policy")}</Form.Label>
+            <Form.Label>{t("use_system_policy")}</Form.Label>
             <select
               className="form-control"
-              value={formData?.role}
+              value={formData?.permissionRoleId || ""}
               onChange={(e) =>
-                setFormData((prev) => ({ ...prev, role: e.target.value }))
-              }
-            >
+                setFormData((prev) => ({ ...prev, permissionRoleId: e.target.value }))
+              }>
               <option value="">{t("chose_policy_type")}</option>
-              <option value="APPZAP_ADMIN">{t("ceo")}</option>
-              <option value="APPZAP_STAFF">{t("server_staff")}</option>
-              <option value="APPZAP_COUNTER">{t("counter_staff")}</option>
-              <option value="APPZAP_KITCHEN">{t("chef")}</option>
-              <option value="APPZAP_CUSTOM_ROLE">{t("selft_define")}</option>
+              {dataPermission.map((role) => (
+                <option key={role._id} value={role._id}>
+                  {role.roleName}
+                </option>
+              ))}
             </select>
           </div>
           <div>

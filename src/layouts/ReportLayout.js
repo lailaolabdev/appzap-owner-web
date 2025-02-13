@@ -7,6 +7,7 @@ import useWindowDimension2 from "../helpers/useWindowDimension2";
 import { COLOR_APP } from "../constants";
 import { FaChartLine } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { useStore } from "../store";
 
 import { useStoreStore } from "../zustand/storeStore";
 
@@ -17,8 +18,9 @@ export default function ReportLayout() {
   const { height, width } = useWindowDimension2();
   const [activeButton, setActiveButton] = useState("");
   const Location = useLocation();
+  const { profile } = useStore();
+  const { storeDetail } = useStoreStore();
 
-  const { storeDetail } = useStoreStore()
 
   const onViewStocksPath = (patch) => {
     navigate(`/reports/${patch}`);
@@ -27,6 +29,8 @@ export default function ReportLayout() {
   useEffect(() => {
     setActiveButton(Location.pathname);
   }, [Location.pathname]);
+
+
 
   return (
     <div
@@ -63,7 +67,7 @@ export default function ReportLayout() {
             className="card-left-report"
           >
             <div
-              onKeyDown={() => {}}
+              onKeyDown={() => { }}
               className="menu-report-stocks"
               style={{
                 background:
@@ -82,7 +86,7 @@ export default function ReportLayout() {
               <strong>{t("report_sell")}</strong>
             </div>
             <div
-              onKeyDown={() => {}}
+              onKeyDown={() => { }}
               className="menu-report-stocks mt-1"
               style={{
                 background:
@@ -101,7 +105,7 @@ export default function ReportLayout() {
               <strong>{t("report_p_c")}</strong>
             </div>
             <div
-              onKeyDown={() => {}}
+              onKeyDown={() => { }}
               className="menu-report-stocks mt-1"
               style={{
                 background:
@@ -121,7 +125,7 @@ export default function ReportLayout() {
             </div>
             {storeDetail?.isCRM && (
               <div
-                onKeyDown={() => {}}
+                onKeyDown={() => { }}
                 className="menu-report-stocks mt-1"
                 style={{
                   background:
@@ -141,7 +145,7 @@ export default function ReportLayout() {
               </div>
             )}
             <div
-              onKeyDown={() => {}}
+              onKeyDown={() => { }}
               className="menu-report-stocks mt-1"
               style={{
                 background:

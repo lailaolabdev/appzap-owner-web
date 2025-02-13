@@ -47,6 +47,7 @@ import { useBookingStore } from "../zustand/bookingStore";
 import PopUpOpenShift from "./../components/popup/PopUpOpenShift";
 import { useShiftStore } from "../zustand/ShiftStore";
 
+
 export default function Sidenav({ location, navigate, onToggle }) {
   const { openTableData, getTableDataStore } = useStore();
 
@@ -59,6 +60,20 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const [status, setStatus] = useState(true);
   const [token, setToken] = useState();
   const [isTitle, setIsTitle] = useState(false);
+  const [hasReportStock, setHasReportStock] = useState(false);
+  const [hasReportDebt, setHasReportDebt] = useState(false);
+  const [hasBranches, setHasBranches] = useState(false);
+  const [hasOrders, setHasOrders] = useState(false);
+  const [hasCafe, setHasCafe] = useState(false);
+  const [hasCuctomrRequests, setHasCuctomrRequests] = useState(false);
+  const [hasMarketing, setHasMarketing] = useState(false);
+  const [hasMenu, setHasMenu] = useState(false);
+  const [hasExpenses, setHasExpenses] = useState(false);
+  const [hasReservation, setHasRevervation] = useState(false);
+  const [hasProductExpenses, setHasProductExpress] = useState(false);
+  const [hasFinancialstatistics, setHasFinancialStatistics] = useState(false);
+  const [hasReportNew, setHasReportNew] = useState(false);
+
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
@@ -90,6 +105,28 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const { profile } = useStore();
   const { user } = useStore();
 
+  const permissionRole = profile?.data?.permissionRoleId;
+  const profileRole = profile?.data?.role;
+  const appzapStaff = "APPZAP_STAFF";
+  const appzapAdmin = "APPZAP_ADMIN";
+
+  useEffect(() => {
+    setHasReportStock(permissionRole?.permissions?.includes("MANAGE_STOCK"));
+    setHasReportDebt(permissionRole?.permissions?.includes("REPORT_INDEBTED"));
+    setHasBranches(permissionRole?.permissions?.includes("MANAGE_BRANCHES"));
+    setHasOrders(permissionRole?.permissions?.includes("MANAGE_ORDERS"));
+    setHasCafe(permissionRole?.permissions?.includes("MANAGE_CAFE"));
+    setHasCuctomrRequests(permissionRole?.permissions?.includes("MANAGE_CUSTOMER_REQUESTS"));
+    setHasMarketing(permissionRole?.permissions?.includes("MANAGE_MARKETING"));
+    setHasMenu(permissionRole?.permissions?.includes("MANAGE_MENU"));
+    setHasExpenses(permissionRole?.permissions?.includes("MANAGE_EXPENSES"));
+    setHasRevervation(permissionRole?.permissions?.includes("MANAGE_RESERVATIONS"));
+    setHasProductExpress(permissionRole?.permissions?.includes("MANAGE_PRODUCT_EXPRESS"));
+    setHasFinancialStatistics(permissionRole?.permissions?.includes("FINANCIAL_STATISTICS"));
+    setHasReportNew(permissionRole?.permissions?.includes("REPORT_NEW"));
+  }, [])
+
+
   const itemList = [
     {
       title: `${t("table_status")}`,
@@ -108,7 +145,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "orders",
       typeStore: "",
       icon: faAddressCard,
-      hidden: !storeDetail?.hasPOS,
+      hidden: (!hasOrders && profileRole === appzapStaff) || !storeDetail?.hasPOS,
       system: "orderManagement",
     },
     {
@@ -117,7 +154,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       // icon: BsArchive,
       icon: faBoxes,
       typeStore: "",
-      hidden: !storeDetail?.hasPOS,
+      hidden: (!hasReportStock && profileRole === appzapStaff) || !storeDetail?.hasPOS,
       system: "stockManagement",
     },
     {
@@ -129,7 +166,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
         : "cafe",
       icon: faStoreAlt,
       typeStore: storeDetail?.isRestuarant,
-      hidden: !storeDetail?.hasPOS,
+      hidden: (!hasCafe && profileRole === appzapStaff) || !storeDetail?.hasPOS,
       system: "tableManagement",
     },
     {
@@ -138,13 +175,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       icon: faBook,
       typeStore: "",
       system: "reportManagement",
+      hidden: !hasExpenses && profileRole === appzapStaff,
     },
     {
       title: `${t("booking_manage")}`,
       key: "reservations",
       icon: faList,
       typeStore: "",
-      hidden: !storeDetail?.isReservable,
+      hidden: (!hasReservation && profileRole === appzapStaff) || !storeDetail?.isReservable,
       system: "reservationManagement",
     },
 
@@ -169,7 +207,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "menu",
       typeStore: "",
       icon: faBoxOpen,
-      hidden: !storeDetail?.hasSmartMenu,
+      hidden: (!hasMenu && profileRole === appzapStaff) || !storeDetail?.hasSmartMenu,
       system: "menuManagement",
     },
 
@@ -223,13 +261,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       icon: faLayerGroup,
       typeStore: "",
       system: "reportManagement",
+      hidden: !hasFinancialstatistics && profileRole === appzapStaff,
     },
     {
       title: `${t("report_new")}`,
       key: "reports/sales-report",
       typeStore: "",
       icon: faChartLine,
-      hidden: !storeDetail?.hasPOS,
+      hidden:(!hasReportNew && profileRole === appzapStaff )|| !storeDetail?.hasPOS,
       system: "reportManagement",
     },
   ]
@@ -246,7 +285,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "branch",
       typeStore: "",
       icon: faBuilding,
-      hidden: !storeDetail?.hasPOS,
+      hidden: (!hasBranches && profileRole === appzapStaff) || !storeDetail?.hasPOS,
       system: "reportManagement",
     },
     {
@@ -271,7 +310,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "fark",
       typeStore: "",
       icon: faBeer,
-      hidden: !storeDetail?.hasPOS,
+      hidden: (!hasProductExpenses && profileRole === appzapStaff) || !storeDetail?.hasPOS,
       system: "farkManagement",
     },
     {
@@ -279,7 +318,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "debt",
       typeStore: "",
       icon: faMoneyBill,
-      hidden: !storeDetail?.hasPOS,
+      hidden: (!hasReportDebt && profileRole === appzapStaff) || !storeDetail?.hasPOS,
       system: "reportManagement",
     },
   ]
@@ -365,7 +404,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
             window
               .open(
                 "https://dtf6wpulhnd0r.cloudfront.net/store/songs/" +
-                  `${storeDetail?._id}?token=${token}`,
+                `${storeDetail?._id}?token=${token}`,
                 "_blank"
               )
               .focus();
@@ -375,7 +414,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
             window
               .open(
                 "https://d3ttcep1vkndfn.cloudfront.net/store/crm_customers/" +
-                  `${storeDetail?._id}?token=${token}`,
+                `${storeDetail?._id}?token=${token}`,
                 "_blank"
               )
               .focus();
@@ -593,53 +632,59 @@ export default function Sidenav({ location, navigate, onToggle }) {
         ) : (
           ""
         )} */}
-          <NavItem eventKey="songlist">
-            <NavIcon>
-              <FontAwesomeIcon
-                className={openTableData.length > 0 ? "scale-animation" : ""}
-                icon={faMusic}
-                style={{
-                  color: UN_SELECTED_TAB_TEXT,
-                }}
-              />
-            </NavIcon>
-            <NavText>
-              <b
-                style={{
-                  color: UN_SELECTED_TAB_TEXT,
-                }}
-                className={fontMap[language]}
-              >
-                {t("require_music")}
-              </b>
-            </NavText>
-          </NavItem>
+          {
+            (hasCuctomrRequests && profileRole === appzapStaff) || (profileRole === appzapAdmin) ? <NavItem eventKey="songlist">
+              <NavIcon>
+                <FontAwesomeIcon
+                  className={openTableData.length > 0 ? "scale-animation" : ""}
+                  icon={faMusic}
+                  style={{
+                    color: UN_SELECTED_TAB_TEXT,
+                  }}
+                />
+              </NavIcon>
+              <NavText>
+                <b
+                  style={{
+                    color: UN_SELECTED_TAB_TEXT,
+                  }}
+                  className={fontMap[language]}
+                >
+                  {t("require_music")}
+                </b>
+              </NavText>
+            </NavItem> : ""
+          }
 
-          <NavItem eventKey="supplier">
-            <NavIcon>
-              <FontAwesomeIcon
-                className={openTableData.length > 0 ? "scale-animation" : ""}
-                icon={faShoppingCart}
-                style={{
-                  color: UN_SELECTED_TAB_TEXT,
-                }}
-              />
-            </NavIcon>
-            <NavText
-              style={{
-                color: UN_SELECTED_TAB_TEXT,
-              }}
-            >
-              <b
-                style={{
-                  color: COLOR_GRAY,
-                }}
-                className={fontMap[language]}
-              >
-                {t("market")}
-              </b>
-            </NavText>
-          </NavItem>
+          {
+            (hasMarketing && profileRole === appzapStaff) || (profileRole === appzapAdmin) ? (
+              <NavItem eventKey="supplier">
+                <NavIcon>
+                  <FontAwesomeIcon
+                    className={openTableData.length > 0 ? "scale-animation" : ""}
+                    icon={faShoppingCart}
+                    style={{
+                      color: UN_SELECTED_TAB_TEXT,
+                    }}
+                  />
+                </NavIcon>
+                <NavText
+                  style={{
+                    color: UN_SELECTED_TAB_TEXT,
+                  }}
+                >
+                  <b
+                    style={{
+                      color: COLOR_GRAY,
+                    }}
+                    className={fontMap[language]}
+                  >
+                    {t("market")}
+                  </b>
+                </NavText>
+              </NavItem>
+            ) : ""
+          }
         </SideNav.Nav>
       </SideNav>
     </>
