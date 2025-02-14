@@ -1,7 +1,19 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { createMenu, getMenusByStoreId, updateMenu } from "../services/menu"; // Import necessary API helpers
-import { getCategories } from "../services/menuCategory";
+import {
+  createMenu,
+  deleteMenuData,
+  getMenusByStoreId,
+  updateCategoryMenu,
+  updateMenu,
+} from "../services/menu"; // Import necessary API helpers
+import {
+  addCategory,
+  deleteCategory,
+  deleteCategoryData,
+  getCategories,
+  updateCategory,
+} from "../services/menuCategory";
 
 export const useMenuStore = create(
   persist(
@@ -54,11 +66,39 @@ export const useMenuStore = create(
         set({ isMenuCategoryLoading: true });
         try {
           const data = await getCategories(storeId);
+
           set({ menuCategories: data, isMenuCategoryLoading: false });
           return data;
         } catch (error) {
           console.error("Fetch menu categories error:", error.message);
           set({ isMenuCategoryLoading: false });
+        }
+      },
+
+      //TODO: Action to update a Category menu
+      updateCategory: async (categoryData, categoryId) => {
+        set({ isMenuCategoryLoading: true }); // Set loading state
+        try {
+          const updatedCategory = await updateCategoryMenu(
+            categoryData,
+            categoryId
+          );
+          set({
+            menuCategories: updatedCategory?.data,
+            isMenuCategoryLoading: false,
+          });
+          return updatedCategory;
+        } catch (error) {
+          // Log the error with more details
+          console.error("Failed to update category item:", {
+            error: error.message,
+            categoryData,
+            categoryId,
+          });
+
+          set({ isMenuCategoryLoading: false });
+
+          throw new Error(`Error updating category item: ${error.message}`);
         }
       },
 
@@ -94,6 +134,19 @@ export const useMenuStore = create(
         }
       },
 
+      //TODO: Create a new category menu
+      createCategory: async (data) => {
+        set({ isMenuCategoryLoading: true });
+        try {
+          const res = await addCategory(data);
+          set({ menuCategories: res?.data, isMenuCategoryLoading: false });
+          return res;
+        } catch (error) {
+          set({ isMenuCategoryLoading: false });
+          throw new Error(`Error updating menu item: ${error.message}`);
+        }
+      },
+
       createMenuItem: async (data) => {
         set({ isMenuLoading: true });
         try {
@@ -103,6 +156,31 @@ export const useMenuStore = create(
         } catch (error) {
           set({ isMenuLoading: false });
           throw new Error(`Error updating menu item: ${error.message}`);
+        }
+      },
+
+      //TODO: Action to delete category menu
+      deleteCategory: async (id) => {
+        try {
+          console.log("id", id);
+          const res = await deleteCategoryData(id);
+          set({ menuCategories: res?.data, isMenuCategoryLoading: false });
+          return res;
+        } catch (error) {
+          set({ isMenuCategoryLoading: false });
+          throw new Error(`Error deleting category item: ${error.message}`);
+        }
+      },
+
+      //TODO: Delete a menu item by ID
+      deleteMenuItem: async (menuId) => {
+        try {
+          const res = await deleteMenuData(menuId);
+          set({ menus: res?.data, isMenuLoading: false });
+          return res;
+        } catch (error) {
+          set({ isMenuLoading: false });
+          throw new Error(`Error deleting menu item: ${error.message}`);
         }
       },
 

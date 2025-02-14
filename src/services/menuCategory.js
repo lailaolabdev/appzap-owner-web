@@ -52,3 +52,15 @@ export const addCategory = async (data) => {
     return error;
   }
 };
+
+export const deleteCategoryData = async (id) => {
+  try {
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/category/delete/${id}`;
+    const deleteData = await axios.delete(url, {
+      headers: await getHeaders(),
+    });
+    return deleteData;
+  } catch (error) {
+    return error;
+  }
+};

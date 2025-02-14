@@ -17,6 +17,9 @@ import { useTranslation } from "react-i18next";
 import Box from "../../components/Box";
 import { fontMap } from "../../utils/font-map";
 import { cn } from "../../utils/cn";
+import { updateCategoryMenu } from "../../services/menu";
+import { useMenuStore } from "../../zustand/menuStore";
+import { addCategory } from "../../services/menuCategory";
 
 export default function Categorylist() {
   const {
@@ -26,7 +29,7 @@ export default function Categorylist() {
   const navigate = useNavigate();
   const params = useParams();
   const [getTokken, setgetTokken] = useState();
-
+  const { updateCategory, createCategory, deleteCategory } = useMenuStore();
   const [CATEGORY, setCATEGORY] = useState();
 
   // create
@@ -56,20 +59,26 @@ export default function Categorylist() {
   // =======>
   const _confirmeDelete = async () => {
     try {
-      const header = await getHeaders();
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: header.authorization,
-      };
-      const _resData = await axios.delete(
-        // CATEGORY + `/${dateDelete?.id}`
-        END_POINT_SEVER_TABLE_MENU + `/v3/category/delete/${dateDelete?.id}`,
-        {
-          headers: headers,
-        }
-      );
-      if (_resData?.data) {
-        setCategorys(_resData?.data);
+      // const header = await getHeaders();
+      // const headers = {
+      //   "Content-Type": "application/json",
+      //   Authorization: header.authorization,
+      // };
+      // const _resData = await axios.delete(
+      //   // CATEGORY + `/${dateDelete?.id}`
+      //   END_POINT_SEVER_TABLE_MENU + `/v3/category/delete/${dateDelete?.id}`,
+      //   {
+      //     headers: headers,
+      //   }
+      // );
+      // if (_resData?.data) {
+      //   setCategorys(_resData?.data);
+      //   handleClose3();
+      //   successAdd(`${t("delete_success")}`);
+      // }
+      const res = await deleteCategory(dateDelete?.id);
+      if (res?.data) {
+        setCategorys(res?.data);
         handleClose3();
         successAdd(`${t("delete_success")}`);
       }
@@ -79,15 +88,36 @@ export default function Categorylist() {
   };
   const _createCategory = async (values) => {
     // console.log("DATA VALUES: ", values.categoryTypeId);
-    const header = await getHeaders();
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: header.authorization,
-    };
-    const resData = await axios({
-      method: "POST",
-      url: END_POINT_SEVER_TABLE_MENU + "/v3/category/create",
-      data: {
+    // const header = await getHeaders();
+    // const headers = {
+    //   "Content-Type": "application/json",
+    //   Authorization: header.authorization,
+    // };
+    // const resData = await axios({
+    //   method: "POST",
+    //   url: END_POINT_SEVER_TABLE_MENU + "/v3/category/create",
+    //   data: {
+    //     storeId: getTokken?.DATA?.storeId,
+    //     name: values?.name,
+    //     name_en: values?.name_en,
+    //     name_cn: values?.name_cn,
+    //     name_kr: values?.name_kr,
+    //     note: values?.note,
+    //     sort: values?.sort,
+    //     categoryTypeId: values?.categoryTypeId,
+    //   },
+    //   headers: headers,
+    // })
+    //   .then(async (response) => {
+    //     setCategorys(response?.data);
+    //     handleClose();
+    //     successAdd(`${t("add_success")}}`);
+    //   })
+    //   .catch((error) => {
+    //     errorAdd(`${t("add_fail")}`);
+    //   });
+    try {
+      const body = {
         storeId: getTokken?.DATA?.storeId,
         name: values?.name,
         name_en: values?.name_en,
@@ -96,46 +126,31 @@ export default function Categorylist() {
         note: values?.note,
         sort: values?.sort,
         categoryTypeId: values?.categoryTypeId,
-      },
-      headers: headers,
-    })
-      .then(async (response) => {
-        setCategorys(response?.data);
+      };
+      const res = await createCategory(body);
+      if (res?.data) {
+        // setCategorys(resData?.data);
+        setCategorys(res?.data);
         handleClose();
-        successAdd(`${t("add_success")}}`);
-      })
-      .catch((error) => {
-        errorAdd(`${t("add_fail")}`);
-      });
+        successAdd(`${t("add_success")}`);
+      }
+    } catch (error) {
+      errorAdd(`${t("add_fail")}`);
+    }
   };
   const _updateCategory = async (values) => {
     try {
-      const header = await getHeaders();
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: header.authorization,
+      const body = {
+        name: values?.name,
+        name_en: values?.name_en,
+        name_cn: values?.name_cn,
+        name_kr: values?.name_kr,
+        note: values?.note,
+        sort: values?.sort,
+        categoryTypeId: values?.categoryTypeId,
       };
-      console.log("============>", values);
-
-      const resData = await axios.put(
-        END_POINT_SEVER_TABLE_MENU + `/v3/category/update`,
-        {
-          id: dataUpdate?._id,
-          data: {
-            name: values?.name,
-            name_en: values?.name_en,
-            name_cn: values?.name_cn,
-            name_kr: values?.name_kr,
-            note: values?.note,
-            sort: values?.sort,
-            categoryTypeId: values?.categoryTypeId,
-          },
-        },
-        {
-          headers: headers,
-        }
-      );
-      if (resData?.data) {
+      const res = await updateCategory(body, dataUpdate?._id);
+      if (res?.data) {
         // setCategorys(resData?.data);
         getData(getTokken?.DATA?.storeId);
         setShow2(false);

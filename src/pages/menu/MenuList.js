@@ -95,7 +95,7 @@ export default function MenuList() {
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState();
-  const { updateMenuItem, createMenuItem } = useMenuStore();
+  const { updateMenuItem, createMenuItem, deleteMenuItem } = useMenuStore();
   const { storeDetail } = useStoreStore();
 
   const location = useLocation();
@@ -370,22 +370,21 @@ export default function MenuList() {
   };
   const _confirmeDelete = async () => {
     try {
-      const header = await getHeaders();
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: header.authorization,
-      };
-      const resData = await axios({
-        method: "DELETE",
-        url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/delete/${dateDelete?.id}`,
-        headers: headers,
-      });
+      // const header = await getHeaders();
+      // const headers = {
+      //   "Content-Type": "application/json",
+      //   Authorization: header.authorization,
+      // };
+      // const resData = await axios({
+      //   method: "DELETE",
+      //   url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/delete/${dateDelete?.id}`,
+      //   headers: headers,
+      // });
+      const resData = await deleteMenuItem(dateDelete?.id);
       if (resData?.data) {
         const _localData = await getLocalData();
         setgetTokken(_localData);
-
         getMenu(_localData?.DATA?.storeId);
-
         handleClose3();
         successAdd(`${t("delete_success")}`);
       }

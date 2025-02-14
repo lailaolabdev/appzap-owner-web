@@ -14,6 +14,7 @@ import Box from "../../components/Box";
 import { toast } from "react-toastify"; ///// Ton fix errors ////////
 import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
+import { useMenuStore } from "../../zustand/menuStore";
 
 // style
 import "./login.css";
@@ -35,6 +36,7 @@ function Login() {
   // zustand state store
   const { storeDetail, fetchStoreDetail, updateStoreDetail } = useStoreStore();
   const { shiftCurrent } = useShiftStore();
+  const { clearMenus } = useMenuStore();
 
   useMemo(() => {
     console.log("GOOGLE ANALYTICS STARTED");
@@ -54,6 +56,7 @@ function Login() {
         shiftCurrent
       );
       if (defaultPath) {
+        clearMenus();
         // localStorage.setItem(USER_KEY, JSON.stringify(user?.data));
         setProfile(user?.data);
         // zustand store
