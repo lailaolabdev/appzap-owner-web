@@ -98,21 +98,23 @@ const PreviewSlide = () => {
   return (
     <>
       <div className="h-[320px] w-[310px]">
-        {isToggled && (
+        {UseSlideImage[0]?.showTitle && (
           <h2 className="text-[14px] font-bold text-center text-orange-500">
             {storeDetail?.name}
           </h2>
         )}
-        {UseSlideImage?.isPublished === true ? (
+        {UseSlideImage[0]?.isPublished === true ? (
           <div
             className={`${
-              isToggled ? "pt-2" : "p-6"
+              UseSlideImage[0]?.showTitle ? "pt-2" : "p-6"
             } flex gap-4 flex-row items-center justify-center`}
           >
-            {isToggledSlide && (
+            {UseSlideImage[0]?.showSlide && (
               <div
                 className={` ${
-                  isToggled ? "w-[250px] h-[80px]" : "w-[250px] h-[80px]"
+                  UseSlideImage[0]?.showTitle
+                    ? "w-[250px] h-[80px]"
+                    : "w-[250px] h-[80px]"
                 } rounded-md`}
               >
                 <Swiper
@@ -129,8 +131,8 @@ const PreviewSlide = () => {
                   modules={[Autoplay, Pagination]}
                   className="mySwiper"
                 >
-                  {UseSlideImage?.isPublished === true &&
-                    UseSlideImage?.images.map((item) => (
+                  {UseSlideImage[0]?.isPublished === true &&
+                    UseSlideImage[0]?.images.map((item) => (
                       <SwiperSlide key={item}>
                         <img
                           src={`${URL_PHOTO_AW3}${item}`}
@@ -142,10 +144,10 @@ const PreviewSlide = () => {
                 </Swiper>
               </div>
             )}
-            {isToggledTable && (
+            {UseSlideImage[0]?.showTable && (
               <div
                 className={` ${
-                  isToggled
+                  UseSlideImage[0]?.showTitle
                     ? "w-[250px] h-[80px]"
                     : "w-[250px] h-[80px] border-1 border-slate-400"
                 }`}

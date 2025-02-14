@@ -113,24 +113,26 @@ const SecondScreen = () => {
   return (
     <>
       <div className="h-screen w-screen">
-        {isToggled && (
+        {UseSlideImage[0]?.showTitle && (
           <TypeEffect
             storeDetail={storeDetail}
-            textEffect={UseSlideImage?.name}
+            textEffect={UseSlideImage[0]?.name}
           />
         )}
 
-        {UseSlideImage?.isPublished ? (
+        {UseSlideImage[0]?.isPublished ? (
           <div
             className={`${
-              isToggled ? "pt-2" : "p-6"
+              UseSlideImage[0]?.showTitle ? "pt-2" : "p-6"
             } flex gap-2 flex-row items-center justify-center`}
           >
             {/* Swiper Image Slider */}
-            {isToggledSlide && !isToggledTable ? (
+            {UseSlideImage[0]?.showSlide && !UseSlideImage[0]?.showTable ? (
               <div
                 className={` ${
-                  isToggled ? "w-[1300px] h-[580px]" : "w-[1300px] h-[625px]"
+                  UseSlideImage[0]?.showTitle
+                    ? "w-[1300px] h-[580px]"
+                    : "w-[1300px] h-[625px]"
                 } 2xl:w-[1200px] 2xl:h-[875px] bg-white rounded-lg shadow-lg p-4 overflow-hidden`}
               >
                 <Swiper
@@ -141,7 +143,7 @@ const SecondScreen = () => {
                   modules={[Autoplay, Pagination]}
                   className="mySwiper"
                 >
-                  {UseSlideImage?.images?.map((item) => (
+                  {UseSlideImage[0]?.images?.map((item) => (
                     <SwiperSlide key={item}>
                       <img
                         src={`${URL_PHOTO_AW3}${item}`}
@@ -152,10 +154,12 @@ const SecondScreen = () => {
                   ))}
                 </Swiper>
               </div>
-            ) : isToggledSlide ? (
+            ) : UseSlideImage[0]?.showSlide ? (
               <div
                 className={` ${
-                  isToggled ? "w-[820px] h-[580px]" : "w-[820px] h-[625px]"
+                  UseSlideImage[0]?.showTitle
+                    ? "w-[820px] h-[580px]"
+                    : "w-[820px] h-[625px]"
                 } 2xl:w-[1200px] 2xl:h-[875px] bg-white rounded-lg shadow-lg p-4 overflow-hidden`}
               >
                 <Swiper
@@ -166,7 +170,7 @@ const SecondScreen = () => {
                   modules={[Autoplay, Pagination]}
                   className="mySwiper"
                 >
-                  {UseSlideImage?.images?.map((item) => (
+                  {UseSlideImage[0]?.images?.map((item) => (
                     <SwiperSlide key={item}>
                       <img
                         src={`${URL_PHOTO_AW3}${item}`}
@@ -182,7 +186,7 @@ const SecondScreen = () => {
             )}
 
             {/* Table Section */}
-            {isToggledTable && !isToggledSlide ? (
+            {UseSlideImage[0]?.showTable && !UseSlideImage[0]?.showSlide ? (
               <div className="w-[1300px] h-[580px] 2xl:h-[980px] bg-white rounded-lg shadow-lg p-4 overflow-hidden">
                 <div className="w-full h-[400px] 2xl:h-[700px] overflow-y-auto">
                   <Table
@@ -278,10 +282,12 @@ const SecondScreen = () => {
                   </div>
                 </div>
               </div>
-            ) : isToggledTable ? (
+            ) : UseSlideImage[0]?.showTable ? (
               <div
                 className={`${
-                  isToggled ? "w-[520px] h-[580px]" : "w-[820px] h-[625px]"
+                  UseSlideImage[0]?.showTitle
+                    ? "w-[520px] h-[580px]"
+                    : "w-[820px] h-[625px]"
                 } 2xl:w-[680px] 2xl:h-[875px] bg-white rounded-lg shadow-lg p-4 overflow-hidden`}
               >
                 {/* Table Section */}
@@ -410,7 +416,11 @@ const SecondScreen = () => {
           </div>
         ) : (
           // Case when UseSlideImage is NOT published
-          <div className="flex justify-center items-center">
+          <div
+            className={`flex justify-center items-center ${
+              UseSlideImage[0]?.showTitle ? "pt-0" : "pt-10"
+            }`}
+          >
             <div className="w-[1300px] h-[580px] 2xl:h-[980px] bg-white rounded-lg shadow-lg p-4 overflow-hidden">
               <div className="w-full h-[400px] 2xl:h-[700px] overflow-y-auto">
                 <Table
