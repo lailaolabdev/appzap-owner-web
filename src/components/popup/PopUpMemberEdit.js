@@ -103,7 +103,7 @@ export default function PopUpMemberEdit({
             />
           </InputGroup>
         </div>
-        {/* <div className="mb-3">
+        <div className="mb-3">
           <Form.Label>ພ໋ອຍສະສົມ</Form.Label>
           <Form.Control
             placeholder="ພ໋ອຍສະສົມ"
@@ -111,7 +111,7 @@ export default function PopUpMemberEdit({
             onChange={handleChange}
             name="point"
           />
-        </div> */}
+        </div>
         <div className="mb-3">
           <Form.Label>{t("birth_date")}</Form.Label>
           <DateTimeComponent
