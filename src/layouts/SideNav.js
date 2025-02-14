@@ -122,7 +122,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       icon: faChartLine,
       hidden: !storeDetail?.hasPOS,
       system: "reportManagement",
-      role: profile?.data?.role,
+      role: "APPZAP_COUNTER",
     },
     {
       title: `${t("paid_manage")}`,
@@ -192,7 +192,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
         e.key === "cafe" ||
         e.key === "report" ||
         e.key === "shift" ||
-        e.key === "setting-screen"
+        e.key === "setting-screen" ||
+        e.key === "DashboardPage"
       );
     }
     if (profile?.data?.role === "APPZAP_ADMIN") {
@@ -535,7 +536,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
                   })}
                 </NavItem>
               ))}
-            <hr />
           </SideNav.Nav>
         ) : (
           <SideNav.Nav value={location.pathname.split("/")[1]}>

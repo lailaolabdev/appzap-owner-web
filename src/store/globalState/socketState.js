@@ -35,7 +35,7 @@ export const useSocketState = ({ setRunSound }) => {
 
   const { storeDetail, fetchStoreDetail } = useStoreStore();
   const { setShiftList, setShiftListCurrent } = useShiftStore();
-  const { setUseSlideImage } = useSlideImageStore();
+  const { setUseSlideImage, setUseSlideImageData } = useSlideImageStore();
   const { Settoggle, SettoggleTable, SettoggleSlide, SettoggleOpenTwoScreen } =
     useCombinedToggleSlide();
   const { handleNewOrderItems } = useOrderStore();
@@ -122,6 +122,9 @@ export const useSocketState = ({ setRunSound }) => {
       // console.log("socket OpenTwoScreen", data?.data?.isOpenSecondScreen);
       SettoggleOpenTwoScreen(data?.data?.isOpenSecondScreen);
     };
+    const ImageSlidData = async (data) => {
+      setUseSlideImageData(data?.data);
+    };
 
     // Register socket listeners
     socket.on("connect", handleConnect);
@@ -138,11 +141,13 @@ export const useSocketState = ({ setRunSound }) => {
     socket.on(`SHIFT_ALL:${storeDetail._id}`, getDataShift);
     socket.on(`CLOSE_OPEN_SHIFT:${storeDetail._id}`, getDataShiftOpenAndClose);
     socket.on(`SHIFT_UPDATE_OPEN:${storeDetail._id}`, getDataShiftCurentOpen);
-    socket.on(`UPDATE_USE_SLIDE:${storeDetail._id}`, useSlideImage);
+    // socket.on(`UPDATE_USE_SLIDE:${storeDetail._id}`, useSlideImage);
+    socket.on(`IMAGE_SLIDE_USED:${storeDetail._id}`, useSlideImage);
     socket.on(`SHOW_TABLE:${storeDetail._id}`, showTable);
     socket.on(`SHOW_TITLE:${storeDetail._id}`, showTitle);
     socket.on(`SHOW_SLIDE:${storeDetail._id}`, showSlide);
     socket.on(`OPEN_TWO_SCREEN:${storeDetail._id}`, OpenTwoScreen);
+    socket.on(`IMAGE_SLIDE:${storeDetail._id}`, ImageSlidData);
 
     // Cleanup listeners to prevent duplicates
     return () => {
@@ -170,6 +175,7 @@ export const useSocketState = ({ setRunSound }) => {
       socket.off(`SHOW_TITLE:${storeDetail._id}`, showTitle);
       socket.off(`SHOW_SLIDE:${storeDetail._id}`, showSlide);
       socket.off(`OPEN_TWO_SCREEN:${storeDetail._id}`, OpenTwoScreen);
+      socket.off(`IMAGE_SLIDE:${storeDetail._id}`, ImageSlidData);
     };
   }, [storeDetail, setRunSound]);
 

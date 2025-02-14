@@ -34,11 +34,15 @@ import {
   UseShowTable,
   UseShowTitle,
   UseOpenTwoScreen,
+  getImageSlideUsed,
 } from "../../services/imageSlide";
 import UploadMutiple from "../../components/UploadMutiple";
 import { useTranslation } from "react-i18next";
 import { useShiftStore } from "../../zustand/ShiftStore";
-import { useCombinedToggleSlide } from "../../zustand/slideImageStore";
+import {
+  useCombinedToggleSlide,
+  useSlideImageStore,
+} from "../../zustand/slideImageStore";
 import { useStore } from "../../store";
 import UploadMultipleEdit from "../../components/UploadMutipleEdit";
 import PreviewSlide from "./PreviewSlide";
@@ -69,6 +73,8 @@ const MainScreen = () => {
     toggle,
   } = useCombinedToggleSlide();
 
+  const { UseSlideImageData, UseSlideImage } = useSlideImageStore();
+
   useEffect(() => {
     if ("getScreenDetails" in window) {
       window
@@ -97,6 +103,11 @@ const MainScreen = () => {
     };
     fetchData();
     getDataImageSlide();
+    getDataImageSlideUsed();
+
+    if (UseSlideImage[0]?.isOpenSecondScreen) {
+      openSecondScreen();
+    }
   }, []);
 
   // const openSecondScreen = () => {
@@ -222,6 +233,44 @@ const MainScreen = () => {
       setIsLoading(false);
     }
   };
+  const getDataImageSlideUsed = async () => {
+    try {
+      const { DATA } = await getLocalData();
+      if (!DATA) return;
+
+      setIsLoading(true);
+
+      let findBy = `?storeId=${DATA.storeId}`;
+      findBy += `&status=true`;
+      if (shiftCurrent?.length > 0 && shiftCurrent[0]?._id) {
+        findBy += `&shiftId=${shiftCurrent[0]._id}`;
+      }
+
+      const data = await getImageSlideUsed(findBy);
+
+      if (!data || data.length === 0) {
+        setImageSlideData([]);
+        setImages([]);
+        setIsLoading(false);
+        return;
+      }
+
+      // 🔹 Extract Images Correctly
+      const _images = data.flatMap((item) =>
+        item.images.map(
+          (e) =>
+            `https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/medium/${e}`
+        )
+      );
+
+      setImageSlideData(data);
+      setImages(_images);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Error fetching image slides:", err);
+      setIsLoading(false);
+    }
+  };
 
   const _create = async (values) => {
     const response = await createImageSlide(values);
@@ -276,6 +325,7 @@ const MainScreen = () => {
       );
       if (response.data) {
         getDataImageSlide();
+        getDataImageSlideUsed();
       }
     } catch (error) {
       if (error?.response?.data?.type) {
@@ -296,6 +346,7 @@ const MainScreen = () => {
 
       if (response.data) {
         getDataImageSlide();
+        getDataImageSlideUsed();
       }
     } catch (error) {
       errorAdd("ບໍ່ສາມາດເປິດໃຊ້ງໄດ້");
@@ -309,6 +360,7 @@ const MainScreen = () => {
 
       if (response.data) {
         getDataImageSlide();
+        getDataImageSlideUsed();
       }
     } catch (error) {
       errorAdd("ບໍ່ສາມາດເປິດໃຊ້ງໄດ້");
@@ -322,6 +374,7 @@ const MainScreen = () => {
 
       if (response.data) {
         getDataImageSlide();
+        getDataImageSlideUsed();
       }
     } catch (error) {
       errorAdd("ບໍ່ສາມາດເປິດໃຊ້ງໄດ້");
@@ -341,6 +394,7 @@ const MainScreen = () => {
         }
 
         getDataImageSlide();
+        getDataImageSlideUsed();
       }
     } catch (error) {
       errorAdd("ບໍ່ສາມາດເປິດໃຊ້ງໄດ້");
@@ -459,6 +513,185 @@ const MainScreen = () => {
         <Tabs defaultActiveKey="currency-list">
           <Tab
             eventKey="currency-list"
+            title={t("ex_manage")}
+            style={{ paddingTop: 20 }}
+          >
+            <div
+              // style={{
+              //   display: "grid",
+              //   gridTemplateColumns: "1fr 1fr",
+              //   gridGap: 10,
+              //   gap: 10,
+              // }}
+              className="grid gap-2 2xl:grid-cols-2 xl:grid-cols-2 lg:grid-cols-2 dmd:grid-cols-1 md:grid-cols-1 sm:grid-cols-1"
+            >
+              <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
+                <Card.Header
+                  style={{
+                    backgroundColor: COLOR_APP,
+                    color: "#fff",
+                    fontSize: 18,
+                    fontWeight: "bold",
+                  }}
+                >
+                  <div className="flex gap-1 items-center">
+                    <BsImages /> <span>{t("tool")}</span>
+                  </div>
+                </Card.Header>
+                <Card.Body>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: 10,
+                      padding: "10px 0",
+                      borderBottom: `1px dotted ${COLOR_APP}`,
+                    }}
+                  >
+                    <div>{t("open_seconde_screen")}</div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Form.Label htmlFor={"switch-open"}>
+                        {UseSlideImage[0]?.isOpenSecondScreen
+                          ? t("oppen")
+                          : t("close")}
+                      </Form.Label>
+                      <Form.Check
+                        type="switch"
+                        checked={UseSlideImage[0]?.isOpenSecondScreen}
+                        id={"switch-open"}
+                        // onChange={(e) => toggleOpen(e)}
+                        onChange={(e) => handleOpenTwoScreen(e)}
+                      />
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: 10,
+                      padding: "10px 0",
+                      borderBottom: `1px dotted ${COLOR_APP}`,
+                    }}
+                  >
+                    <div>{t("show_title")}</div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Form.Label htmlFor={"switch-audio-"}>
+                        {UseSlideImage[0]?.showTitle ? t("oppen") : t("close")}
+                      </Form.Label>
+                      <Form.Check
+                        type="switch"
+                        disabled={profile?.data?.role !== "APPZAP_ADMIN"}
+                        checked={UseSlideImage[0]?.showTitle}
+                        id={"switch-title"}
+                        // onChange={toggle}
+                        onChange={(e) => handleUseShowTitle(e)}
+                      />
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: 10,
+                      padding: "10px 0",
+                      borderBottom: `1px dotted ${COLOR_APP}`,
+                    }}
+                  >
+                    <div>{t("show_slide")}</div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Form.Label htmlFor={"switch-slide"}>
+                        {UseSlideImage[0]?.showSlide ? t("oppen") : t("close")}
+                      </Form.Label>
+                      <Form.Check
+                        type="switch"
+                        disabled={profile?.data?.role !== "APPZAP_ADMIN"}
+                        checked={UseSlideImage[0]?.showSlide}
+                        id={"slide"}
+                        // onChange={toggleSlide}
+                        onChange={(e) => handleUseShowSlide(e)}
+                      />
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: 10,
+                      padding: "10px 0",
+                      borderBottom: `1px dotted ${COLOR_APP}`,
+                    }}
+                  >
+                    <div>{t("show_table")}</div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Form.Label htmlFor={"switch-table"}>
+                        {UseSlideImage[0]?.showTable ? t("oppen") : t("close")}
+                      </Form.Label>
+                      <Form.Check
+                        // disabled={true}
+                        disabled={profile?.data?.role !== "APPZAP_ADMIN"}
+                        type="switch"
+                        checked={UseSlideImage[0]?.showTable}
+                        id={"table"}
+                        // onChange={toggleTable}
+                        onChange={(e) => handleUseShowTable(e)}
+                      />
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+
+              <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
+                <Card.Header
+                  style={{
+                    backgroundColor: COLOR_APP,
+                    color: "#fff",
+                    fontSize: 18,
+                    fontWeight: "bold",
+                  }}
+                >
+                  <div className="flex gap-1 items-center">
+                    <BsImages /> <span>{t("ex")}</span>
+                  </div>
+                </Card.Header>
+                <Card.Body>
+                  <div className="flex justify-center ">
+                    <PreviewSlide />
+                  </div>
+                  {/* <ImageSliderSecondSreen images={images} /> */}
+                </Card.Body>
+              </Card>
+            </div>
+          </Tab>
+          <Tab
+            eventKey="currency-list=1"
             title={t("list_slide_second_screen")}
             style={{ paddingTop: 20 }}
           >
@@ -498,7 +731,7 @@ const MainScreen = () => {
                       <th style={{ textWrap: "nowrap" }}>{t("manage_data")}</th>
                     )}
                   </tr>
-                  {imageSlideData?.map((data, index) => (
+                  {UseSlideImageData?.map((data, index) => (
                     <tr key={data?._id}>
                       <td style={{ textWrap: "nowrap" }} className="text-left">
                         {index + 1}
@@ -570,183 +803,6 @@ const MainScreen = () => {
                 </table>
               </Card.Body>
             </Card>
-          </Tab>
-          <Tab
-            eventKey="currency-list-1"
-            title={t("ex_manage")}
-            style={{ paddingTop: 20 }}
-          >
-            <div
-              // style={{
-              //   display: "grid",
-              //   gridTemplateColumns: "1fr 1fr",
-              //   gridGap: 10,
-              //   gap: 10,
-              // }}
-              className="grid gap-2 2xl:grid-cols-2 xl:grid-cols-2 lg:grid-cols-2 dmd:grid-cols-1 md:grid-cols-1 sm:grid-cols-1"
-            >
-              <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
-                <Card.Header
-                  style={{
-                    backgroundColor: COLOR_APP,
-                    color: "#fff",
-                    fontSize: 18,
-                    fontWeight: "bold",
-                  }}
-                >
-                  <div className="flex gap-1 items-center">
-                    <BsImages /> <span>{t("tool")}</span>
-                  </div>
-                </Card.Header>
-                <Card.Body>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
-                      gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
-                    }}
-                  >
-                    <div>{t("open_seconde_screen")}</div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Form.Label htmlFor={"switch-open"}>
-                        {isToggledOpenTwoScreen ? t("oppen") : t("close")}
-                      </Form.Label>
-                      <Form.Check
-                        type="switch"
-                        checked={isToggledOpenTwoScreen}
-                        id={"switch-open"}
-                        // onChange={(e) => toggleOpen(e)}
-                        onChange={(e) => handleOpenTwoScreen(e)}
-                      />
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
-                      gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
-                    }}
-                  >
-                    <div>{t("show_title")}</div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Form.Label htmlFor={"switch-audio-"}>
-                        {isToggled ? t("oppen") : t("close")}
-                      </Form.Label>
-                      <Form.Check
-                        type="switch"
-                        disabled={profile?.data?.role !== "APPZAP_ADMIN"}
-                        checked={isToggled}
-                        id={"switch-title"}
-                        // onChange={toggle}
-                        onChange={(e) => handleUseShowTitle(e)}
-                      />
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
-                      gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
-                    }}
-                  >
-                    <div>{t("show_slide")}</div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Form.Label htmlFor={"switch-slide"}>
-                        {isToggledSlide ? t("oppen") : t("close")}
-                      </Form.Label>
-                      <Form.Check
-                        type="switch"
-                        disabled={profile?.data?.role !== "APPZAP_ADMIN"}
-                        checked={isToggledSlide}
-                        id={"slide"}
-                        // onChange={toggleSlide}
-                        onChange={(e) => handleUseShowSlide(e)}
-                      />
-                    </div>
-                  </div>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
-                      gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
-                    }}
-                  >
-                    <div>{t("show_table")}</div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Form.Label htmlFor={"switch-table"}>
-                        {isToggledTable ? t("oppen") : t("close")}
-                      </Form.Label>
-                      <Form.Check
-                        // disabled={true}
-                        disabled={profile?.data?.role !== "APPZAP_ADMIN"}
-                        type="switch"
-                        checked={isToggledTable}
-                        id={"table"}
-                        // onChange={toggleTable}
-                        onChange={(e) => handleUseShowTable(e)}
-                      />
-                    </div>
-                  </div>
-                </Card.Body>
-              </Card>
-
-              <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
-                <Card.Header
-                  style={{
-                    backgroundColor: COLOR_APP,
-                    color: "#fff",
-                    fontSize: 18,
-                    fontWeight: "bold",
-                  }}
-                >
-                  <div className="flex gap-1 items-center">
-                    <BsImages /> <span>{t("ex")}</span>
-                  </div>
-                </Card.Header>
-                <Card.Body>
-                  <div className="flex justify-center ">
-                    <PreviewSlide />
-                  </div>
-                  {/* <ImageSliderSecondSreen images={images} /> */}
-                </Card.Body>
-              </Card>
-            </div>
           </Tab>
         </Tabs>
 

@@ -14,6 +14,17 @@ export const getImageSlide = async (findby) => {
     return error;
   }
 };
+export const getImageSlideUsed = async (findby) => {
+  try {
+    const url = `${END_POINT_SEVER}/v7/imageslides/used${findby}`;
+    const res = await axios.get(url, {
+      headers: await getHeaders(),
+    });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
 export const createImageSlide = async (values) => {
   try {
     const url = `${END_POINT_SEVER}/v7/imageslide/create`;
