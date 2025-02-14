@@ -4,9 +4,13 @@ import { persist } from "zustand/middleware";
 export const useSlideImageStore = create(
   persist(
     (set) => ({
+      UseSlideImageData: [],
+      setUseSlideImageData: (data) => {
+        set({ UseSlideImageData: data });
+      },
       UseSlideImage: [],
-      setUseSlideImage: (menus) => {
-        set({ UseSlideImage: menus });
+      setUseSlideImage: (data) => {
+        set({ UseSlideImage: data });
       },
       clearUseSlideImage: () => {
         set({ UseSlideImage: [] });

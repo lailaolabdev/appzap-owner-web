@@ -17,6 +17,7 @@ import _ from "lodash";
 import { useStore } from "../../../store";
 import {
   END_POINT_SEVER_TABLE_MENU,
+  END_POINT_SEVER,
   QUERY_CURRENCIES,
   getLocalData,
 } from "../../../constants/api";
@@ -83,6 +84,8 @@ export default function CheckOutPopupCafe({
   const { setSelectedTable, getTableDataStore } = useStore();
   const { setSelectedMenus } = useMenuSelectStore();
   const { SetChangeAmount, ClearChangeAmount } = useChangeMoney();
+  const [selectedBank, setSelectedBank] = useState("");
+  const [banks, setBanks] = useState([]);
 
   const { t } = useTranslation();
 
@@ -280,6 +283,8 @@ export default function CheckOutPopupCafe({
     const Orders = dataBill?.map((itemOrder) => itemOrder);
 
     const datas = {
+      selectedBank: selectedBank.name,
+      bankId: selectedBank.id,
       order: Orders,
       storeId: profile.data.storeId,
       isCheckout: "true",
@@ -643,6 +648,45 @@ export default function CheckOutPopupCafe({
     });
   };
 
+  // const handleChangeCurrencie = (e) => {
+  //   if (e.target.value === "LAK") {
+  //     setSelectCurrency({
+  //       id: "LAK",
+  //       name: "LAK",
+  //     });
+  //     return;
+  //   }
+  //   const selectedCurrencie = currencyList.find(
+  //     (item) => item?._id === e?.target?.value
+  //   );
+  //   setSelectCurrency({
+  //     id: selectedCurrencie._id,
+  //     name: selectedCurrencie.currencyName,
+  //   });
+  // };
+
+  useEffect(() => {
+    const fetchAllBanks = async () => {
+      try {
+        const response = await axios.get(
+          `${END_POINT_SEVER}/v3/banks?storeId=${storeDetail?._id}`
+        );
+        setBanks(response.data.data);
+      } catch (error) {
+        console.error("Error fetching all banks:", error);
+      }
+    };
+
+    fetchAllBanks();
+  }, [tab, selectedBank]);
+
+  const handleChange = (e) => {
+    const selectedOption = banks.find((bank) => bank._id === e.target.value);
+    setSelectedBank({
+      id: selectedOption._id,
+      name: selectedOption.bankName,
+    });
+  };
   const handleChangeCurrencie = (e) => {
     if (e.target.value === "LAK") {
       setSelectCurrency({
@@ -1032,7 +1076,7 @@ export default function CheckOutPopupCafe({
                 </Button>
               )}
               <div style={{ flex: 1 }} />
-              <Form.Control
+              {/* <Form.Control
                 hidden={tab !== "cash"}
                 as="select"
                 style={{ width: 80 }}
@@ -1043,27 +1087,62 @@ export default function CheckOutPopupCafe({
                 {currencyList?.map((e) => (
                   <option value={e?.currencyCode}>{e?.currencyCode}</option>
                 ))}
+              </Form.Control> */}
+              <Form.Control
+                hidden={tab !== "cash"}
+                as="select"
+                style={{ width: 80 }}
+                value={selectCurrency?.id}
+                onChange={handleChangeCurrencie}
+              >
+                <option value="LAK">{storeDetail?.firstCurrency}</option>
+                {currencyList?.map((e) => (
+                  <option key={e?._id} value={e?._id}>
+                    {e?.currencyCode}
+                  </option>
+                ))}
               </Form.Control>
+
+              {(tab === "transfer" ||
+                tab === "cash_transfer" ||
+                tab === "cash_transfer_point") && (
+                <Form.Control
+                  as="select"
+                  style={{ width: 140 }}
+                  value={selectedBank?.id || ""}
+                  onChange={handleChange}
+                >
+                  <option value="" disabled>
+                    ເລືອກທະນາຄານ
+                  </option>
+                  {Array.isArray(banks) &&
+                    banks.map((bank) => (
+                      <option key={bank._id} value={bank._id}>
+                        {bank.bankName}
+                      </option>
+                    ))}
+                </Form.Control>
+              )}
             </div>
             <NumberKeyboard
               onClickMember={() => {
                 if (storeDetail?.isCRM) {
                   setHasCRM((prev) => !prev);
+                } else {
+                  Swal.fire({
+                    title: "ແຈ້ງເຕືອນ?",
+                    text: "ກະລະນາເປີດໃຊ້ງານຟັງຊັນ CRM",
+                    icon: "warning",
+                    showCancelButton: false,
+                    confirmButtonColor: COLOR_APP,
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "ເປີດໃຊ້ງານ",
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      navigate("/config");
+                    }
+                  });
                 }
-
-                Swal.fire({
-                  title: "ແຈ້ງເຕືອນ?",
-                  text: "ກະລະນາເປີດໃຊ້ງານຟັງຊັນ CRM",
-                  icon: "warning",
-                  showCancelButton: false,
-                  confirmButtonColor: COLOR_APP,
-                  cancelButtonColor: "#d33",
-                  confirmButtonText: "ເປີດໃຊ້ງານ",
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    navigate("/config");
-                  }
-                });
               }}
               onClickButtonDrawer={onPrintDrawer}
               totalBill={totalBillMoney}
