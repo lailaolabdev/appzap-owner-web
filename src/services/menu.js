@@ -126,3 +126,15 @@ export const updateMenuStockAmount = async (id, data) => {
     return error;
   }
 };
+
+export const deleteMenuData = async (menuId) => {
+  try {
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu/delete/${menuId}`;
+    const res = await axios.delete(url, {
+      headers: await getHeaders(),
+    });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
