@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { FaListCheck } from "react-icons/fa6";
 import { ButtonComponent } from "../../components";
 import { END_POINT_SERVER_SHOWSALES, END_POINT_SEVER, getLocalData } from "../../constants/api";
+import { errorAdd, successAdd } from "../../helpers/sweetalert";
 
 export default function HistoryBankTransferClaim({ data }) {
     const { t } = useTranslation();
@@ -73,13 +74,29 @@ export default function HistoryBankTransferClaim({ data }) {
                 }
             );
             console.log(_res)
+            successAdd(`ສ້າງເຄລມສຳເລັດ`);
         } catch (err) {
             console.log(err)
+            errorAdd(`ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃຫມ່`);
         }
 
     }
-    const claimAllPayment = () => {
+    const claimAllPayment = async() => {
         console.log("claimAllPayment")
+        try {
+            const { DATA } = await getLocalData();
+            const _res = await axios.post(
+                END_POINT_SERVER_SHOWSALES + "/v5/claim-payment/create-all",
+                {
+                    storeId: DATA?.storeId,
+                }
+            );
+            console.log(_res)
+            successAdd(`ສ້າງເຄລມທັງຫມົດສຳເລັດ`);
+        } catch (err) {
+            console.log(err)
+            errorAdd(`ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃຫມ່`);
+        }
 
     }
 
@@ -283,7 +300,8 @@ export default function HistoryBankTransferClaim({ data }) {
                                     </td>
                                     <td style={{ textWrap: "nowrap", color: checkPaymentSelected(item) ? "white" : "" }}>
                                         {/* <Button onClick={() => selectPayment(item)} >{"ອັບເດດ"}</Button> */}
-                                        <Dropdown>
+                                        {item?.claimStatus}
+                                        {/* <Dropdown>
                                             <Dropdown.Toggle variant="warning" id="dropdown-basic">
                                                 ອັບເດດ
                                             </Dropdown.Toggle>
@@ -294,7 +312,7 @@ export default function HistoryBankTransferClaim({ data }) {
                                                 <Dropdown.Item href="#/action-3">ຍົກເລີກ</Dropdown.Item>
                                                 <Dropdown.Item href="#/action-3">ກຳລັງດຳເນີນ</Dropdown.Item>
                                             </Dropdown.Menu>
-                                        </Dropdown>
+                                        </Dropdown> */}
                                     </td>
                                 </tr>
                             );
