@@ -70,20 +70,16 @@ import theme from "../../theme";
 import moment from "moment";
 import url from "socket.io-client/lib/url";
 import CheckOutPopupCafeNew from "../table/components/CheckOutPopupCafeNew";
+import { getAllStorePoints } from "../../services/member.service";
 
 function Homecafe() {
   const params = useParams();
-  const navigate = useNavigate();
-  const code = params?.code;
   const [billId, setBillId] = useState();
-  const tableId = params?.tableId;
   const [isLoading, setIsLoading] = useState(false);
-  const [disabledButton, setDisabledButton] = useState(false);
 
   const [selectedMenu, setSelectedMenu] = useState([]);
   const [selectedItem, setSelectedItem] = useState();
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [allSelectedMenu, setAllSelectedMenu] = useState([]);
   const [show, setShow] = useState(false);
   const [menuOptions, setMenuOptions] = useState([]);
   const [isPopup, setIsPupup] = useState(false);
@@ -230,12 +226,11 @@ function Homecafe() {
   const {
     printerCounter,
     printers,
-    selectedTable,
     setSelectedTable,
     getTableDataStore,
     profile,
   } = useStore();
-  const { storeDetail } = useStoreStore();
+  const { storeDetail, setStoreDetail } = useStoreStore();
   const [search, setSearch] = useState("");
 
   const {
@@ -281,7 +276,25 @@ function Homecafe() {
 
   useEffect(() => {
     billData();
+    fetchPointsData();
   }, []);
+
+  const fetchPointsData = async () => {
+    try {
+      const data = await getAllStorePoints();
+      if (!data.error) {
+        const { DATA } = await getLocalData();
+        const filteredData = data.filter(
+          (point) => point.storeId === DATA.storeId
+        );
+        setStoreDetail({
+          pointStore: filteredData[0].money,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch points data: ", error);
+    }
+  };
 
   const billData = async () => {
     try {
@@ -1071,7 +1084,6 @@ function Homecafe() {
     try {
       setIsLoading(true);
       const _dataBill = {
-        ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
       };
       await _createHistoriesPrinter(_dataBill);
@@ -2054,7 +2066,6 @@ function Homecafe() {
         onPrintForCherLaBel={onPrintForCherLaBel}
         onPrintDrawer={onPrintDrawer}
         dataBill={SelectedMenus}
-        tableData={selectedTable}
         open={popup?.CheckOutType}
         onClose={() => setPopup()}
         setDataBill={setDataBill}
@@ -2070,6 +2081,7 @@ function Homecafe() {
           dataBill={SelectedMenus}
           taxPercent={taxPercent}
           profile={profile}
+          meberData={dataBill}
         />
       </div>
       {SelectedMenus?.map((val, i) => {
