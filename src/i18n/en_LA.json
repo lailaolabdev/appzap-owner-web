@@ -653,6 +653,8 @@
   "table_add_success": "ການເພີ່ມໂຕະສຳເລັດ",
   "table_add_fail": "ການເພີ່ມໂຕະບໍ່ສຳເລັດ",
   "p_fill_code": "ກະລຸນາປ້ອນລະຫັດ",
+  "p_fill_code_new": "ກະລຸນາປ້ອນລະຫັດ (ໃຫມ່)",
+  "p_fill_code_forget": "ລື່ມລະຫັດຜ່ານຫລືບໍ່ ?",
   "can_not_open_table": "ບໍ່ສາມາດປິດໂຕະທີ່ມີແຂກໄດ້",
   "delete_using_table_fail": "ລົບຂໍ້ມູນບໍ່ສຳເລັດເພາະກຳລັງໃຊ້ງານ",
   "add_table": "ເພີ່ມໂຕະ",
