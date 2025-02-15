@@ -94,7 +94,7 @@ export default function MenuList() {
 
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
-  const [Menus, setMenus] = useState();
+  const [Menus, setMenus] = useState([]);
   const { updateMenuItem, createMenuItem, deleteMenuItem } = useMenuStore();
   const { storeDetail } = useStoreStore();
 
