@@ -82,7 +82,6 @@ export default function HistoryBankTransferClaim({ data }) {
 
     }
     const claimAllPayment = async() => {
-        console.log("claimAllPayment")
         try {
             const { DATA } = await getLocalData();
             const _res = await axios.post(
