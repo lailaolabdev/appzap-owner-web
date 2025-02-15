@@ -19,6 +19,7 @@ import { useMenuStore } from "../zustand/menuStore";
 
 // sound
 import messageSound from "../sound/message.mp3";
+import { getLocalData } from "../constants/api";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -58,6 +59,7 @@ export default function NavBar() {
     //   i18n.changeLanguage(lang);
 
     // }
+    getClaimAmountData()
   }, []);
 
   const _onLogout = () => {
@@ -87,6 +89,18 @@ export default function NavBar() {
     }
   }, []);
 
+
+
+  const getClaimAmountData = async () => {
+    try {
+      // const { DATA } = await getLocalData();
+      // const _res = await axios.get(`${END_POINT_SERVER_SHOWSALES}/v5/claim-payments?storeId=${DATA?.storeId}`);
+    } catch (err) {
+      console.log(err)
+    }
+
+  };
+
   return (
     <div className="bg-white shadow-[3px 0px 3px rgba(0, 0, 0, 0.16)] text-[#CC0000] w-full h-16 fixed top-0 left-0 z-10 pl-20 pr-3">
       <div className="flex items-center">
@@ -105,10 +119,22 @@ export default function NavBar() {
         <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
         <div style={{ flexGrow: 1 }} />
 
+
+        <div className="mr-[30px]" style={{ cursor: "pointer" }} onClick={async () => {
+          const { DATA } = await getLocalData();
+          navigate(`/historyUse/${DATA?.storeId}`)
+        }}>
+          <div style={{ backgroundColor: "#eeeeee", borderRadius: 12, padding: 2, paddingRight: 16, paddingLeft: 16, flexDirection: "column", display: "flex", justifyItems: "center", alignItems: "center" }}>
+            <p style={{ margin: 0 }}> ຍອດເງິນ</p>
+            <p style={{ margin: 0, fontSize: 20, fontWeight: "bold" }}>  0 ກີບ</p>
+          </div>
+        </div>
+
         <NotifyButton
           notifyFilterToggle={notifyFilterToggle}
           setNotifyFilterToggle={setNotifyFilterToggle}
         />
+
 
         <div className="mr-[30px]">
           {/* ໃຊ້ value={selectedLanguage} ເພື່ອສະແດງພາສາປັດຈຸບັນ */}
@@ -155,10 +181,10 @@ export default function NavBar() {
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
                 {userData
                   ? (userData?.data?.firstname
-                      ? userData?.data?.firstname
-                      : "") +
-                    " " +
-                    (userData?.data?.lastname ? userData?.data?.lastname : "")
+                    ? userData?.data?.firstname
+                    : "") +
+                  " " +
+                  (userData?.data?.lastname ? userData?.data?.lastname : "")
                   : ""}
               </Box>
             </Dropdown.Toggle>
