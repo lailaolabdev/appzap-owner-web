@@ -299,7 +299,6 @@ export default function HistoryBankTransferClaim({ data }) {
                                         {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
                                     </td>
                                     <td style={{ textWrap: "nowrap", color: checkPaymentSelected(item) ? "white" : "" }}>
-                                        {/* <Button onClick={() => selectPayment(item)} >{"ອັບເດດ"}</Button> */}
                                         {item?.claimStatus}
                                         {/* <Dropdown>
                                             <Dropdown.Toggle variant="warning" id="dropdown-basic">
