@@ -997,6 +997,7 @@ function Homecafe() {
     console.log("ORDER", orderSelect);
     let _index = 0;
     const printDate = [...billForCherCancel80.current];
+    console.log("printDate", printDate);
     let dataUrls = [];
     for (const _ref of printDate) {
       if (_ref) {
@@ -1010,6 +1011,7 @@ function Homecafe() {
         dataUrls.push(dataUrl);
       }
     }
+    console.log("dataUrls", dataUrls);
     for (const _ref of printDate) {
       const _printer = printers.find((e) => {
         return e?._id === orderSelect?.[_index]?.printer;
@@ -2070,7 +2072,6 @@ function Homecafe() {
           profile={profile}
         />
       </div>
-
       {SelectedMenus?.map((val, i) => {
         const totalPrice = () => {
           const totalOptionPrice = val?.totalOptionPrice || 0;
@@ -2089,7 +2090,7 @@ function Homecafe() {
               className="w-[80mm] pr-[20px pb-[10px]"
               ref={(el) => {
                 if (el) {
-                  billForCherCancel80.current.push(el);
+                  billForCherCancel80.current[i] = el;
                 }
               }}
             >
