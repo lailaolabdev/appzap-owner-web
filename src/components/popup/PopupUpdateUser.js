@@ -19,6 +19,13 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
     const [showPassword, setShowPassword] = useState(false);
     const [hasChanges, setHasChanges] = useState(false);
     const [forgetPassword, setForgetPassowrd] = useState(false);
+    const [showErrors, setShowErrors] = useState(false);
+    const [errors, setErrors] = useState({
+        firstname: "",
+        phone: "",
+        userId: "",
+        permissionRoleId: "",
+    });
 
     useEffect(() => {
         if (open && userData) {
@@ -34,17 +41,27 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
             setFormData(initialFormData);
             setInitialData(initialFormData);
             setHasChanges(false);
+            setShowErrors(false);
+            setForgetPassowrd(false)
+            setErrors({
+                firstname: "",
+                phone: "",
+                userId: "",
+                permissionRoleId: "",
+            });
             getDataPermissionRole();
         }
     }, [open, userData]);
 
     useEffect(() => {
         if (!open) {
+            setForgetPassowrd(false)
             setButtonDisabled(false);
             setFormData({});
             setInitialData({});
             setShowPassword(false);
             setHasChanges(false);
+            setShowErrors(false);
         }
     }, [open]);
 
@@ -53,17 +70,34 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
             if (key === 'password') {
                 return formData[key]?.trim() !== '';
             }
-            // For other fields, compare with initial data
             return formData[key] !== initialData[key];
         });
         setHasChanges(hasFormChanged);
     }, [formData, initialData]);
+
+    const validateForm = () => {
+        const newErrors = {
+            firstname: !formData.firstname?.trim() ? t("please_enter_name") : "",
+            phone: !formData.phone?.trim() ? t("please_enter_phone") : "",
+            userId: !formData.userId?.trim() ? t("please_enter_userId") : "",
+            permissionRoleId: !formData.permissionRoleId?.trim() ? t("please_select_rol") : "",
+        };
+
+        setErrors(newErrors);
+        setShowErrors(true);
+
+        return !Object.values(newErrors).some(error => error !== "");
+    };
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
 
     const handleUpdateUser = async () => {
+        if (!validateForm()) {
+            return;
+        }
+
         try {
             setButtonDisabled(true);
             const { TOKEN } = await getLocalData();
@@ -127,7 +161,11 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
                             onChange={(e) =>
                                 setFormData((prev) => ({ ...prev, firstname: e.target.value }))
                             }
+                            isInvalid={showErrors && errors.firstname}
                         />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.firstname}
+                        </Form.Control.Feedback>
                     </div>
                     <div>
                         <Form.Label>{t("l_name")}</Form.Label>
@@ -137,12 +175,16 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
                             onChange={(e) =>
                                 setFormData((prev) => ({ ...prev, lastname: e.target.value }))
                             }
+                            isInvalid={showErrors && errors.lastname}
                         />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.lastname}
+                        </Form.Control.Feedback>
                     </div>
                     <div>
                         <Form.Label>{t("use_system_policy")}</Form.Label>
                         <select
-                            className="form-control"
+                            className={`form-control ${showErrors && errors.permissionRoleId ? 'is-invalid' : ''}`}
                             value={formData?.permissionRoleId || ""}
                             onChange={(e) =>
                                 setFormData((prev) => ({
@@ -158,6 +200,9 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
                                 </option>
                             ))}
                         </select>
+                        <div className="invalid-feedback">
+                            {errors.permissionRoleId}
+                        </div>
                     </div>
                     <div>
                         <Form.Label>{t("phonenumber")}</Form.Label>
@@ -167,7 +212,11 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
                             onChange={(e) =>
                                 setFormData((prev) => ({ ...prev, phone: e.target.value }))
                             }
+                            isInvalid={showErrors && errors.phone}
                         />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.phone}
+                        </Form.Control.Feedback>
                     </div>
                     <div>
                         <Form.Label>{t("username_login")}</Form.Label>
@@ -177,7 +226,11 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
                             onChange={(e) =>
                                 setFormData((prev) => ({ ...prev, userId: e.target.value }))
                             }
+                            isInvalid={showErrors && errors.userId}
                         />
+                        <Form.Control.Feedback type="invalid">
+                            {errors.userId}
+                        </Form.Control.Feedback>
                     </div>
                     {
                         forgetPassword && (
@@ -191,6 +244,7 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
                                         onChange={(e) =>
                                             setFormData((prev) => ({ ...prev, password: e.target.value }))
                                         }
+                                        isInvalid={showErrors && errors.password}
                                     />
                                     <InputGroup.Text
                                         onClick={togglePasswordVisibility}
@@ -198,13 +252,19 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
                                     >
                                         {showPassword ? <FaEyeSlash /> : <FaEye />}
                                     </InputGroup.Text>
-                                </InputGroup></>
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.password}
+                                    </Form.Control.Feedback>
+                                </InputGroup>
+                            </>
                         )
                     }
                 </div>
             </Modal.Body>
             <Modal.Footer className="flex justify-between">
-                <p onClick={() => setForgetPassowrd(true)} className="text-color-app mr-auto cursor-pointer">{t("p_fill_code_forget")}</p>
+                <p onClick={() => setForgetPassowrd(true)} className="text-color-app mr-auto cursor-pointer">
+                    {t("p_fill_code_forget")}
+                </p>
                 <Button
                     disabled={buttonDisabled || !hasChanges}
                     style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
@@ -213,7 +273,6 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
                     {t("confirm")}
                 </Button>
             </Modal.Footer>
-
         </Modal>
     );
 }
