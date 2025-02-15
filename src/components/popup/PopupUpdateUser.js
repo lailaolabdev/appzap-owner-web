@@ -106,7 +106,7 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
                 lastname: formData.lastname,
                 phone: formData.phone,
                 userId: formData.userId,
-                role: formData.role,
+                role: 'APPZAP_STAFF',
                 permissionRoleId: String(formData.permissionRoleId),
                 storeId: storeDetail?._id,
             };
