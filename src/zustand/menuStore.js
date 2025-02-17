@@ -30,6 +30,7 @@ export const useMenuStore = create(
       isMenuCategoryLoading: false,
       staffCart: [],
       menuOption: [],
+      option: [],
 
       // Action to set loading state
       setMenuLoading: (isLoading) => set({ isMenuLoading: isLoading }),
@@ -73,7 +74,7 @@ export const useMenuStore = create(
         set({ isMenuLoading: true });
         try {
           const data = await getMenuOptions(storeId);
-          set({ menus: data, isMenuLoading: false });
+          set({ option: data, isMenuLoading: false });
           return data;
         } catch (error) {
           console.error("Fetch menus error:", error.message);
