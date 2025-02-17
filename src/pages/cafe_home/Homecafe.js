@@ -70,11 +70,8 @@ import theme from "../../theme";
 import moment from "moment";
 import url from "socket.io-client/lib/url";
 import CheckOutPopupCafeNew from "../table/components/CheckOutPopupCafeNew";
-<<<<<<< HEAD
 import { getAllStorePoints } from "../../services/member.service";
-=======
 import AnimationLoading from "../../constants/loading";
->>>>>>> 860dbf5 (fix: menu option && group tab slide bar)
 
 function Homecafe() {
   const params = useParams();
