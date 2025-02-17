@@ -242,6 +242,8 @@ function Homecafe() {
     setMenuCategories,
   } = useMenuStore();
 
+  console.log("MUENUS", menus[0]);
+
   // Get Menus & Categories, and persist it in localstorage.
   // Only no data in localstorage then fetch, if when to clear data just logout
   useEffect(() => {
