@@ -17,6 +17,8 @@ import {
   master_menu_api_dev,
 } from "../../../../constants/api";
 
+import { useMenuStore } from "../../../../zustand/menuStore";
+
 function PopUpAddMenuOption({
   showSetting,
   handleClose,
@@ -29,6 +31,7 @@ function PopUpAddMenuOption({
   const [specificMenuOptions, setSpecificMenuOptions] = useState([]);
   const [loadingOptionId, setLoadingOptionId] = useState(null);
   const { t } = useTranslation();
+  const { addMunuOption } = useMenuStore();
   useEffect(() => {
     if (showSetting && detailMenu) {
       const storeId = getTokken?.DATA?.storeId;
