@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import packageJson from "../../package.json";
-import Navbar from "react-bootstrap/Navbar";
-import Nav from "react-bootstrap/Nav";
+import axios from "axios";
 import Form from "react-bootstrap/Form";
 import Dropdown from "react-bootstrap/Dropdown";
 import { USER_KEY } from "../constants";
 import { useNavigate } from "react-router-dom";
 import Box from "../components/Box";
 import { MdPrint, MdPrintDisabled } from "react-icons/md";
-import { FaBell } from "react-icons/fa";
 import { useStore } from "../store";
 import ReactAudioPlayer from "react-audio-player";
 import i18n from "../i18n";
@@ -19,7 +17,7 @@ import { useMenuStore } from "../zustand/menuStore";
 
 // sound
 import messageSound from "../sound/message.mp3";
-import { getLocalData } from "../constants/api";
+import { END_POINT_SERVER_SHOWSALES, getLocalData } from "../constants/api";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -29,6 +27,7 @@ export default function NavBar() {
   const [userData, setUserData] = useState({});
   const { isConnectPrinter, profile } = useStore();
   const [switchToDev, setSwitchToDev] = useState(0);
+  const [claimableAmount, setClaimableAmount] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState("LA"); // ເພີ່ມ state ນີ້້ສຳລັບພາສາ
   const [notifyFilterToggle, setNotifyFilterToggle] = useState(0);
 
@@ -93,8 +92,11 @@ export default function NavBar() {
 
   const getClaimAmountData = async () => {
     try {
-      // const { DATA } = await getLocalData();
-      // const _res = await axios.get(`${END_POINT_SERVER_SHOWSALES}/v5/claim-payments?storeId=${DATA?.storeId}`);
+      const { DATA } = await getLocalData();
+      const _res = await axios.get(`${END_POINT_SERVER_SHOWSALES}/v5/claim-payments?status=UNCLAIMED&storeId=${DATA?.storeId}`);
+      console.log("_res.data")
+      console.log(_res.data)
+      setClaimableAmount(_res?.data?.totalAmount)
     } catch (err) {
       console.log(err)
     }
@@ -126,7 +128,7 @@ export default function NavBar() {
         }}>
           <div style={{ backgroundColor: "#eeeeee", borderRadius: 12, padding: 2, paddingRight: 16, paddingLeft: 16, flexDirection: "column", display: "flex", justifyItems: "center", alignItems: "center" }}>
             <p style={{ margin: 0 }}> ຍອດເງິນ</p>
-            <p style={{ margin: 0, fontSize: 20, fontWeight: "bold" }}>  0 ກີບ</p>
+            <p style={{ margin: 0, fontSize: 20, fontWeight: "bold" }}>  {claimableAmount} ກີບ</p>
           </div>
         </div>
 

@@ -265,9 +265,9 @@ export default function HistoryBankTransferClaim({ data }) {
                             <th style={{ textWrap: "nowrap" }} scope="col">
                                 {t("date_time")}
                             </th>
-                            <th style={{ textWrap: "nowrap" }} scope="col">
+                            {/* <th style={{ textWrap: "nowrap" }} scope="col">
                                 ຈັດການ
-                            </th>
+                            </th> */}
                         </tr>
                     </thead>
 
@@ -297,21 +297,7 @@ export default function HistoryBankTransferClaim({ data }) {
                                     <td style={{ textWrap: "nowrap", color: checkPaymentSelected(item) ? "white" : "" }}>
                                         {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
                                     </td>
-                                    <td style={{ textWrap: "nowrap", color: checkPaymentSelected(item) ? "white" : "" }}>
-                                        {item?.claimStatus}
-                                        {/* <Dropdown>
-                                            <Dropdown.Toggle variant="warning" id="dropdown-basic">
-                                                ອັບເດດ
-                                            </Dropdown.Toggle>
-
-                                            <Dropdown.Menu>
-                                                <Dropdown.Item href="#/action-1">ສຳເລັດ</Dropdown.Item>
-                                                <Dropdown.Item href="#/action-2">ປະຕິເສດ</Dropdown.Item>
-                                                <Dropdown.Item href="#/action-3">ຍົກເລີກ</Dropdown.Item>
-                                                <Dropdown.Item href="#/action-3">ກຳລັງດຳເນີນ</Dropdown.Item>
-                                            </Dropdown.Menu>
-                                        </Dropdown> */}
-                                    </td>
+                                    
                                 </tr>
                             );
                         })}
