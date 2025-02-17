@@ -71,6 +71,7 @@ import moment from "moment";
 import url from "socket.io-client/lib/url";
 import CheckOutPopupCafeNew from "../table/components/CheckOutPopupCafeNew";
 import { getAllStorePoints } from "../../services/member.service";
+import AnimationLoading from "../../constants/loading";
 
 function Homecafe() {
   const params = useParams();
@@ -240,6 +241,7 @@ function Homecafe() {
     getMenuCategories,
     setMenus,
     setMenuCategories,
+    isMenuLoading,
   } = useMenuStore();
 
   // Get Menus & Categories, and persist it in localstorage.
@@ -1268,11 +1270,11 @@ function Homecafe() {
                 : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 px-2"
             }
           >
-            {isLoading ? (
+            {isLoading || isMenuLoading ? (
               <Loading />
             ) : afterSearch.length === 0 ? (
               <div className="w-full pt-36 flex justify-center items-center">
-                <p>ຍັງບໍ່ມີລາຍການນີ້</p>
+                {AnimationLoading()}
               </div>
             ) : (
               afterSearch?.map((data, index) => {
