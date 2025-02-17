@@ -5,6 +5,8 @@ import {
   addMenuOption,
   createMenu,
   deleteMenuData,
+  deleteMenuOption,
+  getMenuOptionByStoreId,
   getMenuOptions,
   getMenusByStoreId,
   updateCategoryMenu,
@@ -69,8 +71,8 @@ export const useMenuStore = create(
           set({ isMenuLoading: false });
         }
       },
-
-      getMenusByStoreId: async (storeId) => {
+      //TODO: get menu option by store id
+      getMenusOptionByStoreId: async (storeId) => {
         set({ isMenuLoading: true });
         try {
           const data = await getMenuOptions(storeId);
@@ -81,13 +83,37 @@ export const useMenuStore = create(
           set({ isMenuLoading: false });
         }
       },
+      //TODO: delete menu option by store id
+      deleteMenuOption: async (menuId, optionId) => {
+        set({ isMenuLoading: true });
+        try {
+          const res = await deleteMenuOption(menuId, optionId);
+          set({ menus: res, isMenuLoading: false });
+          return res;
+        } catch (error) {
+          console.error("Fetch menus error:", error.message);
+          set({ isMenuLoading: false });
+        }
+      },
       //TODO: Add menu option
       addMunuOption: async (menuId, optionId) => {
         set({ isMenuLoading: true });
         try {
           const res = await addMenuOption(menuId, optionId);
-          console.log("ADD MENU OPTION", res);
-          set({ menuOption: res, isMenuLoading: false });
+          set({ menus: res, isMenuLoading: false });
+          return res;
+        } catch (error) {
+          console.error("Fetch menus error:", error.message);
+          set({ isMenuLoading: false });
+        }
+      },
+
+      getAllMenuOptione: async (storeId) => {
+        set({ isMenuLoading: true });
+        try {
+          const res = await getMenuOptionByStoreId(storeId);
+          set({ option: res, isMenuLoading: false });
+          return res;
         } catch (error) {
           console.error("Fetch menus error:", error.message);
           set({ isMenuLoading: false });
