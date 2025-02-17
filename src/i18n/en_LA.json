@@ -1136,5 +1136,7 @@
   "totals": "ຍອດລວມ (Total)",
   "no_order_list": "ບໍ່ມີລາຍການອໍເດີ້",
   "open_second_screen": "ເປີດໃຊ້ສອງຈໍ",
-  "setting_point": "ຕັ້ງຄ່າການໃຫ້ຄະແນນ"
+  "setting_point": "ຕັ້ງຄ່າການໃຫ້ຄະແນນ",
+  "recive_point": "ຮັບພ໋ອຍ",
+  "used_point": "ພ໋ອຍທີ່ໃຊ້"
 }

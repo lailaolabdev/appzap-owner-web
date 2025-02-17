@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 export default function BillForCheckOutCafe80({
   storeDetail,
   data,
-  selectedTable,
+  meberData,
   dataBill,
   taxPercent = 0,
   profile,
@@ -32,9 +32,9 @@ export default function BillForCheckOutCafe80({
   const { t } = useTranslation();
   const [base64Image, setBase64Image] = useState("");
 
-  // console.log("storeDetail",storeDetail)
+  // console.log("storeDetail", storeDetail);
   // console.log("profile",profile)
-  // console.log("dataBill", dataBill);
+  console.log("meberData", meberData);
 
   // useEffect
   useEffect(() => {
@@ -92,6 +92,15 @@ export default function BillForCheckOutCafe80({
     });
   }, [imageUrl2]);
 
+  const PointRecive = () => {
+    const total =
+      meberData?.moneyReceived < storeDetail?.pointStore
+        ? 0
+        : Math.floor((meberData?.moneyReceived / storeDetail?.pointStore) * 10);
+
+    return total;
+  };
+
   return (
     <div className="p-1 bg-white rounded-lg shadow-md w-[285px] ml-[-12px]">
       <div className=" flex justify-center relative">
@@ -137,6 +146,40 @@ export default function BillForCheckOutCafe80({
               {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
             </span>
           </div>
+          {meberData?.Name && meberData?.Point ? (
+            <>
+              <div>
+                {t("ctm_tel")}: {""}
+                <span style={{ fontWeight: "bold" }}>
+                  {meberData?.memberPhone
+                    ? `${meberData?.memberPhone} (${t(
+                        "point"
+                      )} : ${moneyCurrency(
+                        Number(meberData?.Point || 0) -
+                          Number(storeDetail?.point || 0)
+                      )})`
+                    : ""}
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <span>
+                  {t("recive_point")}: {""}
+                  <span style={{ fontWeight: "bold" }}>
+                    {` ( ${moneyCurrency(PointRecive())})`}
+                  </span>
+                </span>
+                {","}
+                <span>
+                  {t("used_point")}: {""}
+                  <span style={{ fontWeight: "bold" }}>
+                    {` ( ${moneyCurrency(storeDetail?.point)})`}
+                  </span>
+                </span>
+              </div>
+            </>
+          ) : (
+            ""
+          )}
         </div>
         <div style={{ flexGrow: 1 }} />
       </Price>
@@ -199,36 +242,74 @@ export default function BillForCheckOutCafe80({
       </Order>
       <div style={{ height: 10 }} />
       <hr className="border-b border-dashed border-gray-600" />
-      <div className="text-[16px] font-bold mb-2">
-        <div>
+      <div className="mb-2">
+        <div className="w-full flex justify-between text-[14px] font-thin">
           <div
             style={{
               width: "100%",
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent: "end",
+              alignItems: "center",
             }}
           >
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "end",
-                alignItems: "center",
-              }}
-            >
-              {t("total")} :{" "}
-            </div>
+            {t("totalAmount")} :{" "}
+          </div>
 
-            <div
-              style={{
-                width: "60%",
-                display: "flex",
-                justifyContent: "end",
-                alignItems: "center",
-              }}
-            >
-              {moneyCurrency(total)} {storeDetail?.firstCurrency}
-            </div>
+          <div
+            style={{
+              width: "60%",
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            {moneyCurrency(meberData?.moneyReceived)}{" "}
+            {storeDetail?.firstCurrency}
+          </div>
+        </div>
+        <div className="w-full flex justify-between text-[14px] font-thin">
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            {t("change")} :{" "}
+          </div>
+
+          <div
+            style={{
+              width: "60%",
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            {moneyCurrency(meberData?.moneyChange)} {storeDetail?.firstCurrency}
+          </div>
+        </div>
+        <div className="w-full flex justify-between text-[16px] font-bold">
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            {t("totals")} :{" "}
+          </div>
+          <div
+            style={{
+              width: "60%",
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            {moneyCurrency(total)} {storeDetail?.firstCurrency}
           </div>
         </div>
       </div>

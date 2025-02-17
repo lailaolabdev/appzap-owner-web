@@ -147,14 +147,11 @@ export default function CheckOutPopupCafe({
     if (!open) return;
     let moneyReceived = "";
     let moneyChange = "";
-    moneyReceived = `${
-      selectCurrency === "LAK"
-        ? moneyCurrency(
-            (Number.parseFloat(cash) || 0) + (Number.parseFloat(transfer) || 0)
-          )
-        : moneyCurrency(Number.parseFloat(cashCurrency) || 0)
-    } ${selectCurrency}`;
-    moneyChange = `${moneyCurrency(
+    moneyReceived = cashCurrency
+      ? Number.parseFloat(cashCurrency) || 0
+      : (Number.parseFloat(cash) || 0) + (Number.parseFloat(transfer) || 0);
+
+    moneyChange =
       (Number.parseFloat(cash) || 0) +
         (Number.parseFloat(transfer) || 0) -
         (dataBill
@@ -164,18 +161,17 @@ export default function CheckOutPopupCafe({
           : totalBill > 0
           ? totalBill
           : 0) <=
-        0
+      0
         ? 0
         : (Number.parseFloat(cash) || 0) +
-            (Number.parseFloat(transfer) || 0) -
-            (dataBill
-              ? totalBill > 0
-                ? totalBill
-                : 0
-              : totalBill > 0
+          (Number.parseFloat(transfer) || 0) -
+          (dataBill
+            ? totalBill > 0
               ? totalBill
-              : 0)
-    )} ${storeDetail?.firstCurrency}`;
+              : 0
+            : totalBill > 0
+            ? totalBill
+            : 0);
 
     setDataBill((prev) => ({
       ...prev,
@@ -282,6 +278,15 @@ export default function CheckOutPopupCafe({
     const moneyChange = calculateReturnAmount();
     const Orders = dataBill?.map((itemOrder) => itemOrder);
 
+    let statusPoint = "";
+
+    if (storeDetail?.isCRM && tab === "cash_transfer_point") {
+      statusPoint = "REDEEM";
+    }
+    if (storeDetail?.isCRM && hasCRM) {
+      statusPoint = "EARN";
+    }
+
     const datas = {
       selectedBank: selectedBank.name,
       bankId: selectedBank.id,
@@ -307,6 +312,7 @@ export default function CheckOutPopupCafe({
       memberId: memberDataSearch?._id,
       memberName: memberDataSearch?.name,
       memberPhone: memberDataSearch?.phone,
+      statusPoint: statusPoint,
       fullnameStaffCheckOut:
         `${profile.data.firstname} ${profile.data.lastname}` ?? "-",
       staffCheckOutId: profile.data._id,
