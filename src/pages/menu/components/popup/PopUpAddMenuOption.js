@@ -31,7 +31,12 @@ function PopUpAddMenuOption({
   const [specificMenuOptions, setSpecificMenuOptions] = useState([]);
   const [loadingOptionId, setLoadingOptionId] = useState(null);
   const { t } = useTranslation();
-  const { addMunuOption } = useMenuStore();
+  const {
+    addMunuOption,
+    getMenusOptionByStoreId,
+    getAllMenuOptione,
+    deleteMenuOption,
+  } = useMenuStore();
   useEffect(() => {
     if (showSetting && detailMenu) {
       const storeId = getTokken?.DATA?.storeId;
@@ -42,7 +47,8 @@ function PopUpAddMenuOption({
             END_POINT_SEVER_TABLE_MENU +
               `/v3/restaurant/${storeId}/menu-options`
           );
-          setAllMenuOptions(response.data);
+          // const response = await getAllMenuOptione(storeId);
+          setAllMenuOptions(response?.data);
         } catch (error) {
           console.error("Error fetching all menu options:", error);
         }
@@ -54,7 +60,8 @@ function PopUpAddMenuOption({
             END_POINT_SEVER_TABLE_MENU +
               `/v3/menu/${detailMenu.data._id}/menu-options`
           );
-          setSpecificMenuOptions(response.data);
+          // const response = await getMenusOptionByStoreId(detailMenu.data._id);
+          setSpecificMenuOptions(response?.data);
           updateMenuOptionsCount(detailMenu.data._id, response.data.length);
         } catch (error) {
           console.error("Error fetching specific menu options:", error);
@@ -73,16 +80,18 @@ function PopUpAddMenuOption({
   const handleAddOption = async (optionId) => {
     setLoadingOptionId(optionId);
     try {
-      await axios.post(
-        END_POINT_SEVER_TABLE_MENU +
-          `/v3/menu/${detailMenu.data._id}/menu-option/${optionId}/add`
-      );
+      // await axios.post(
+      //   END_POINT_SEVER_TABLE_MENU +
+      //     `/v3/menu/${detailMenu.data._id}/menu-option/${optionId}/add`
+      // );
+      await addMunuOption(detailMenu.data._id, optionId);
+      // const updatedOptions = await getMenusOptionByStoreId(detailMenu.data._id);
       const updatedOptions = await axios.get(
         END_POINT_SEVER_TABLE_MENU +
           `/v3/menu/${detailMenu.data._id}/menu-options`
       );
       console.log("updatedOptions", updatedOptions?.data);
-      setSpecificMenuOptions(updatedOptions.data);
+      setSpecificMenuOptions(updatedOptions?.data);
       updateMenuOptionsCount(detailMenu.data._id, updatedOptions.data.length);
     } catch (error) {
       console.error("Error adding menu option:", error);
@@ -99,15 +108,17 @@ function PopUpAddMenuOption({
   const handleDeleteOption = async (optionId) => {
     setLoadingOptionId(optionId);
     try {
-      await axios.delete(
-        END_POINT_SEVER_TABLE_MENU +
-          `/v3/menu/${detailMenu.data._id}/menu-option/${optionId}/remove`
-      );
+      // await axios.delete(
+      //   END_POINT_SEVER_TABLE_MENU +
+      //     `/v3/menu/${detailMenu.data._id}/menu-option/${optionId}/remove`
+      // );
+      await deleteMenuOption(detailMenu.data._id, optionId);
+      // const updatedOptions = await getMenusOptionByStoreId(detailMenu.data._id);
       const updatedOptions = await axios.get(
         END_POINT_SEVER_TABLE_MENU +
           `/v3/menu/${detailMenu.data._id}/menu-options`
       );
-      setSpecificMenuOptions(updatedOptions.data);
+      setSpecificMenuOptions(updatedOptions?.data);
       updateMenuOptionsCount(detailMenu.data._id, updatedOptions.data.length);
     } catch (error) {
       console.error("Error deleting menu option:", error);

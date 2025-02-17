@@ -239,23 +239,16 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "tableManagement",
     },
-    {
-      title: t("stock_manage"),
-      key: "stock",
-      icon: faBoxes,
-      typeStore: "",
-      hidden: !storeDetail?.hasPOS,
-      isCafe: storeDetail?.isStatusCafe,
-      system: "stockManagement",
-    },
+    // {
+    //   title: t("stock_manage"),
+    //   key: "stock",
+    //   icon: faBoxes,
+    //   typeStore: "",
+    //   hidden: !storeDetail?.hasPOS,
+    //   isCafe: storeDetail?.isStatusCafe,
+    //   system: "stockManagement",
+    // },
 
-    {
-      title: `${t("paid_manage")}`,
-      key: "expends",
-      icon: faBook,
-      typeStore: "",
-      system: "reportManagement",
-    },
     {
       title: `${t("booking_manage")}`,
       key: "reservations",
@@ -298,6 +291,21 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "reportManagement",
     },
+    {
+      title: `${t("branch")}`,
+      key: "branch",
+      typeStore: "",
+      icon: faBuilding,
+      hidden: !storeDetail?.hasPOS,
+      system: "reportManagement",
+    },
+    {
+      title: `${t("paid_manage")}`,
+      key: "expends",
+      icon: faBook,
+      typeStore: "",
+      system: "reportManagement",
+    },
   ]
     .filter((e) => e.title) // Filter out items with empty title
     .filter((e) => {
@@ -307,14 +315,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
     .filter((e) => !e?.hidden);
 
   const settingNavItem = [
-    {
-      title: `${t("branch")}`,
-      key: "branch",
-      typeStore: "",
-      icon: faBuilding,
-      hidden: !storeDetail?.hasPOS,
-      system: "reportManagement",
-    },
     {
       title: `${t("shift")}`,
       key: "shift",

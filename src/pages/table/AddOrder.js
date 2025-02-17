@@ -224,6 +224,7 @@ function AddOrder() {
     getMenuCategories,
     setMenus,
     setMenuCategories,
+    isMenuLoading,
   } = useMenuStore();
 
   // Get Menus & Categories, and persist it in localstorage.
@@ -256,7 +257,10 @@ function AddOrder() {
     getMenuCategories,
     setMenus,
     setMenuCategories,
+    isMenuLoading,
   ]);
+
+  console.log("menus", menus);
 
   const ShowCounterApp =
     profile?.data?.role === "APPZAP_COUNTER" ? true : false;
@@ -1169,7 +1173,7 @@ function AddOrder() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-2 px-2">
-            {isLoading ? (
+            {isLoading || isMenuLoading ? (
               <Loading />
             ) : ShowCounterApp ? (
               afterSearch
@@ -1183,7 +1187,7 @@ function AddOrder() {
                     <div className="relative w-full pt-[75%] overflow-hidden">
                       <img
                         src={
-                          data?.images[0]
+                          Array.isArray(data?.images) && data?.images[0]
                             ? URL_PHOTO_AW3 + data?.images[0]
                             : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
                         }
