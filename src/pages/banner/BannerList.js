@@ -226,8 +226,16 @@ export default function BannerList() {
                 <span>
                   <BsImages /> {t("banner_list")}
                 </span>
-                <Button variant="dark" bg="dark" onClick={handleShowAdd}>
-                  <MdAssignmentAdd /> {t("add_banner")}
+                <Button
+                  variant="dark"
+                  bg="dark"
+                  onClick={() => {
+                    handleShowAdd();
+                  }}
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <MdAssignmentAdd style={{ marginRight: "5px" }} />{" "}
+                  {t("add_banner")}
                 </Button>
               </Card.Header>
               <Card.Body style={{ overflowX: "auto" }}>

@@ -748,7 +748,8 @@ export default function MemberPage() {
               }}
             >
               {/* <FontAwesomeIcon icon={faBirthdayCake}></FontAwesomeIcon>{" "} */}
-              <div style={{ width: 8 }} /> <span>ປະຫວັດການໃຊ້ພ໋ອຍ</span>
+              <div style={{ width: 8 }} />{" "}
+              <span>{t("point_usage_history")}</span>
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -775,7 +776,8 @@ export default function MemberPage() {
               }}
             >
               {/* <FontAwesomeIcon icon={faBirthdayCake}></FontAwesomeIcon>{" "} */}
-              <div style={{ width: 8 }} /> <span>ປະຫວັດການຮັບພ໋ອຍ</span>
+              <div style={{ width: 8 }} />{" "}
+              <span>{t("point_reception_history")}</span>
             </Nav.Link>
           </Nav.Item>
           <Nav.Item>
@@ -865,7 +867,7 @@ export default function MemberPage() {
               <CardHeader>
                 <div className="box-search">
                   <Form.Control
-                    placeholder={t("search_name")}
+                    placeholder={t("search_member")}
                     value={filterValue}
                     onChange={(e) => setFilterValue(e.target.value)}
                     className="input-search"
@@ -880,7 +882,7 @@ export default function MemberPage() {
                 </div>
 
                 <div className="box-date-filter">
-                  <div>ເລືອກວັນທີ : </div>
+                  <div>{t("select_date")} : </div>
                   <Button
                     variant="outline-primary"
                     size="small"
@@ -903,7 +905,7 @@ export default function MemberPage() {
                 <tr>
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
-                  <th style={{ textAlign: "center" }}>{"ພ໋ອຍທັງໝົດ"}</th>
+                  <th style={{ textAlign: "center" }}>{t("total_point")}</th>
                   {/* <th style={{ textAlign: "center" }}>
                     {"ພ໋ອຍທີ່ສາມາດໃຊ້ໄດ້"}
                   </th> */}
@@ -964,10 +966,14 @@ export default function MemberPage() {
             >
               <ReactPaginate
                 previousLabel={
-                  <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+                  <span className="glyphicon glyphicon-chevron-left">
+                    {t("previous")}
+                  </span>
                 }
                 nextLabel={
-                  <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+                  <span className="glyphicon glyphicon-chevron-right">
+                    {t("next")}
+                  </span>
                 }
                 breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
                 breakClassName={"break-me"}
@@ -1094,10 +1100,14 @@ export default function MemberPage() {
             >
               <ReactPaginate
                 previousLabel={
-                  <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+                  <span className="glyphicon glyphicon-chevron-left">
+                    {t("previous")}
+                  </span>
                 }
                 nextLabel={
-                  <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+                  <span className="glyphicon glyphicon-chevron-right">
+                    {t("next")}
+                  </span>
                 }
                 breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
                 breakClassName={"break-me"}
@@ -1145,7 +1155,7 @@ export default function MemberPage() {
                   gap: 10,
                 }}
               >
-                <div>ເລືອກວັນທີ :</div>
+                <div>{t("select_date")} :</div>
                 <Button
                   variant="outline-primary"
                   size="small"
@@ -1212,10 +1222,14 @@ export default function MemberPage() {
             >
               <ReactPaginate
                 previousLabel={
-                  <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+                  <span className="glyphicon glyphicon-chevron-left">
+                    {t("previous")}
+                  </span>
                 }
                 nextLabel={
-                  <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+                  <span className="glyphicon glyphicon-chevron-right">
+                    {t("next")}
+                  </span>
                 }
                 breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
                 breakClassName={"break-me"}
@@ -1253,7 +1267,7 @@ export default function MemberPage() {
                 padding: 10,
               }}
             >
-              <span>ລາຍການປະຫວັດການໃຊ້ພ໋ອຍ</span>
+              <span>{t("point_usage_history_list")}</span>
             </Card.Header>
             <Card.Body>
               <div
@@ -1264,7 +1278,7 @@ export default function MemberPage() {
                   gap: 10,
                 }}
               >
-                <div>ເລືອກວັນທີ :</div>
+                <div>{t("select_date")} :</div>
                 <Button
                   variant="outline-primary"
                   size="small"
@@ -1339,10 +1353,14 @@ export default function MemberPage() {
             >
               <ReactPaginate
                 previousLabel={
-                  <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+                  <span className="glyphicon glyphicon-chevron-left">
+                    {t("previous")}
+                  </span>
                 }
                 nextLabel={
-                  <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+                  <span className="glyphicon glyphicon-chevron-right">
+                    {t("next")}
+                  </span>
                 }
                 breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
                 breakClassName={"break-me"}
@@ -1390,7 +1408,7 @@ export default function MemberPage() {
                   gap: 10,
                 }}
               >
-                <div>ເລືອກວັນທີ :</div>
+                <div>{t("select_date")} :</div>
                 <Button
                   variant="outline-primary"
                   size="small"
@@ -1465,10 +1483,14 @@ export default function MemberPage() {
             >
               <ReactPaginate
                 previousLabel={
-                  <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+                  <span className="glyphicon glyphicon-chevron-left">
+                    {t("previous")}
+                  </span>
                 }
                 nextLabel={
-                  <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+                  <span className="glyphicon glyphicon-chevron-right">
+                    {t("next")}
+                  </span>
                 }
                 breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
                 breakClassName={"break-me"}

@@ -64,8 +64,6 @@ export default function HistoryUse() {
     setTaxPercent(_res?.data?.taxPercent);
   };
 
-  
-
   const getDataServiceCharge = async () => {
     const { DATA } = await getLocalData();
     const _res = await axios.get(
@@ -84,8 +82,11 @@ export default function HistoryUse() {
     _getdataHistories();
   }, [page, filtterModele, startDate, endDate, startTime, endTime]);
 
-  const findBy = `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}&endTime=${encodeURIComponent(endTime)}&startTime=${encodeURIComponent(startTime)}`;
-
+  const findBy = `&startDate=${encodeURIComponent(
+    startDate
+  )}&endDate=${encodeURIComponent(endDate)}&endTime=${encodeURIComponent(
+    endTime
+  )}&startTime=${encodeURIComponent(startTime)}`;
 
   const _getdataHistories = async () => {
     try {
@@ -98,19 +99,32 @@ export default function HistoryUse() {
       } else if (filtterModele === "billPayBefore") {
         apiUrl =
           END_POINT_SEVER +
-          `/v3/bills-split/skip/${page * rowsPerPage
+          `/v3/bills-split/skip/${
+            page * rowsPerPage
           }/limit/${rowsPerPage}?storeId=${params?.id}`;
       } else if (filtterModele === "bankTransfer") {
-        apiUrl = `${END_POINT_SEVER}/v4/pos/get-call-to-checkouts/skip/${page * rowsPerPage
-          }/limit/${rowsPerPage}?storeId=${params?.id
-          }&paymentMethod=BANK_TRANSFER`;
-      } else if(filtterModele === "order_history") {
-        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${page * rowsPerPage
-          }/limit/${rowsPerPage}?storeId=${params?.id}&status=${filtterModele}${findBy}`
-      } else if(filtterModele === "served"|| filtterModele === "doing" || filtterModele === "canceled" ){
-        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${page * rowsPerPage
-          }/limit/${rowsPerPage}?storeId=${params?.id}&modele=${filtterModele}${findBy}`
-      }else{
+        apiUrl = `${END_POINT_SEVER}/v4/pos/get-call-to-checkouts/skip/${
+          page * rowsPerPage
+        }/limit/${rowsPerPage}?storeId=${
+          params?.id
+        }&paymentMethod=BANK_TRANSFER`;
+      } else if (filtterModele === "order_history") {
+        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${
+          page * rowsPerPage
+        }/limit/${rowsPerPage}?storeId=${
+          params?.id
+        }&status=${filtterModele}${findBy}`;
+      } else if (
+        filtterModele === "served" ||
+        filtterModele === "doing" ||
+        filtterModele === "canceled"
+      ) {
+        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${
+          page * rowsPerPage
+        }/limit/${rowsPerPage}?storeId=${
+          params?.id
+        }&modele=${filtterModele}${findBy}`;
+      } else {
         apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${
           page * rowsPerPage
         }/limit/${rowsPerPage}?storeId=${params?.id}&modele=${filtterModele}`;
@@ -167,7 +181,6 @@ export default function HistoryUse() {
     setShow(true);
     setDataModal(item);
   };
-
 
   return (
     <div
@@ -262,7 +275,10 @@ export default function HistoryUse() {
               justifyContent: "center",
               alignItems: "center",
             }}
-            onClick={() => { setFiltterModele("resetBill"); setOrderHistory(true); }}
+            onClick={() => {
+              setFiltterModele("resetBill");
+              setOrderHistory(true);
+            }}
           >
             <FontAwesomeIcon icon={faCertificate} />{" "}
             <div style={{ width: 8 }}></div> {t("edit_bill")}
@@ -281,7 +297,10 @@ export default function HistoryUse() {
                   justifyContent: "center",
                   alignItems: "center",
                 }}
-                onClick={() => { setFiltterModele("transferTable"); setOrderHistory(true); }}
+                onClick={() => {
+                  setFiltterModele("transferTable");
+                  setOrderHistory(true);
+                }}
               >
                 <FontAwesomeIcon icon={faPeopleArrows} />{" "}
                 <div style={{ width: 8 }}></div> {t("change_combine_table")}
@@ -299,7 +318,10 @@ export default function HistoryUse() {
                   justifyContent: "center",
                   alignItems: "center",
                 }}
-                onClick={() => { setFiltterModele("historyServiceChange"); setOrderHistory(true); }}
+                onClick={() => {
+                  setFiltterModele("historyServiceChange");
+                  setOrderHistory(true);
+                }}
               >
                 <FontAwesomeIcon icon={faHistory} />{" "}
                 <div style={{ width: 8 }}></div> {t("history service change")}
@@ -316,7 +338,10 @@ export default function HistoryUse() {
                   justifyContent: "center",
                   alignItems: "center",
                 }}
-                onClick={() => { setFiltterModele("billPayBefore"); setOrderHistory(true); }}
+                onClick={() => {
+                  setFiltterModele("billPayBefore");
+                  setOrderHistory(true);
+                }}
               >
                 <FontAwesomeIcon icon={faListAlt}></FontAwesomeIcon>{" "}
                 <div style={{ width: 8 }}></div>
@@ -336,7 +361,10 @@ export default function HistoryUse() {
               justifyContent: "center",
               alignItems: "center",
             }}
-            onClick={() => { setFiltterModele("bankTransfer"); setOrderHistory(true); }}
+            onClick={() => {
+              setFiltterModele("bankTransfer");
+              setOrderHistory(true);
+            }}
           >
             <BsBank2 /> <div style={{ width: 8 }}></div>
             {t("bank_transfer_history")}
@@ -418,15 +446,15 @@ export default function HistoryUse() {
                       <td>
                         {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                           ? new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(_countAmount(item?.orderId))
+                              currency: "JPY",
+                            }).format(_countAmount(item?.orderId))
                           : new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(
-                            item?.payAmount +
-                            item?.taxAmount +
-                            item?.serviceChargeAmount
-                          )}{" "}
+                              currency: "JPY",
+                            }).format(
+                              item?.payAmount +
+                                item?.taxAmount +
+                                item?.serviceChargeAmount
+                            )}{" "}
                         {selectedCurrency}
                       </td>
                       <td
@@ -440,8 +468,8 @@ export default function HistoryUse() {
                         {item?.paymentMethod === "CASH"
                           ? t("payBycash")
                           : item?.paymentMethod === "TRANSFER"
-                            ? t("transferPayment")
-                            : t("transfercash")}
+                          ? t("transferPayment")
+                          : t("transfercash")}
                       </td>
                       <td>
                         {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
@@ -531,36 +559,77 @@ export default function HistoryUse() {
             </div>
           ) : (
             <div>
-              {
-                !orderHistory && (
-                  <div className=" flex justify-between items-center space-x-2 p-3">
-                    <Button
-                      variant="outline-primary"
-                      size="small"
-                      style={{ display: "flex", gap: 10, alignItems: "center" }}
-                      onClick={() => setPopup({ popupfiltter: true })}
-                    >
-                      <BsFillCalendarWeekFill />
-                      <div>
-                        {startDate} {startTime}
-                      </div>{" "}
-                      ~{" "}
-                      <div>
-                        {endDate} {endTime}
-                      </div>
-                    </Button>
-                    <div className="flex items-center">
+              {!orderHistory && (
+                <div className=" flex justify-between items-center space-x-2 p-3">
+                  <Button
+                    variant="outline-primary"
+                    size="small"
+                    style={{ display: "flex", gap: 10, alignItems: "center" }}
+                    onClick={() => setPopup({ popupfiltter: true })}
+                  >
+                    <BsFillCalendarWeekFill />
                     <div>
-                      <button onClick={() => setFiltterModele("order_history")} className={` border ${filtterModele === "order_history" ? " bg-color-app" : " bg-orange-400"} rounded-md px-2 mx-1 p-1 text-white`}>{t("all")}</button>
-                      <button onClick={() => setFiltterModele("served")} className={` border ${filtterModele === "served" ? " bg-color-app" : "bg-orange-400"} rounded-md px-2 mx-1 p-1 text-white`}>{t("served")}</button>
-                      <button onClick={() => setFiltterModele("doing")} className={` border ${filtterModele === "doing" ? " bg-color-app" : "bg-orange-400"}  rounded-md px-2 mx-1 p-1 text-white`}>{t("cooking")}</button>
-                      <button onClick={() => setFiltterModele("canceled")} className={` border ${filtterModele === "canceled" ? " bg-color-app" : " bg-orange-400"} rounded-md px-2 mx-1 p-1 text-white`}>{t("cancel")}</button>
+                      {startDate} {startTime}
+                    </div>{" "}
+                    ~{" "}
+                    <div>
+                      {endDate} {endTime}
                     </div>
-                    <button onClick={()=>setPopup({PopupOrderHistoryExport:true})}  className={` border  bg-color-app rounded-md px-5 ml-5 p-1 text-white`}>Export</button>
+                  </Button>
+                  <div className="flex items-center">
+                    <div>
+                      <button
+                        onClick={() => setFiltterModele("order_history")}
+                        className={` border ${
+                          filtterModele === "order_history"
+                            ? " bg-color-app"
+                            : " bg-orange-400"
+                        } rounded-md px-2 mx-1 p-1 text-white`}
+                      >
+                        {t("all")}
+                      </button>
+                      <button
+                        onClick={() => setFiltterModele("served")}
+                        className={` border ${
+                          filtterModele === "served"
+                            ? " bg-color-app"
+                            : "bg-orange-400"
+                        } rounded-md px-2 mx-1 p-1 text-white`}
+                      >
+                        {t("served")}
+                      </button>
+                      <button
+                        onClick={() => setFiltterModele("doing")}
+                        className={` border ${
+                          filtterModele === "doing"
+                            ? " bg-color-app"
+                            : "bg-orange-400"
+                        }  rounded-md px-2 mx-1 p-1 text-white`}
+                      >
+                        {t("cooking")}
+                      </button>
+                      <button
+                        onClick={() => setFiltterModele("canceled")}
+                        className={` border ${
+                          filtterModele === "canceled"
+                            ? " bg-color-app"
+                            : " bg-orange-400"
+                        } rounded-md px-2 mx-1 p-1 text-white`}
+                      >
+                        {t("cancel")}
+                      </button>
                     </div>
+                    <button
+                      onClick={() =>
+                        setPopup({ PopupOrderHistoryExport: true })
+                      }
+                      className={` border  bg-color-app rounded-md px-5 ml-5 p-1 text-white`}
+                    >
+                      Export
+                    </button>
                   </div>
-                )
-              }
+                </div>
+              )}
               <table className="table table-hover">
                 <thead className="thead-light">
                   <tr>
@@ -617,9 +686,9 @@ export default function HistoryUse() {
       </td> */}
                         <td
                           style={{
-                            maxWidth: "35%", 
-                            wordBreak: "break-word", 
-                            whiteSpace: "normal", 
+                            maxWidth: "35%",
+                            wordBreak: "break-word",
+                            whiteSpace: "normal",
                           }}
                         >
                           {filtterModele === "historyServiceChange"
@@ -635,8 +704,8 @@ export default function HistoryUse() {
                               item?.reason === undefined ||
                               item?.reason === "undefined" ||
                               item?.reason === "null"
-                              ? "-"
-                              : item?.reason}
+                            ? "-"
+                            : item?.reason}
                         </td>
                         {filtterModele === "historyServiceChange" && (
                           <td>
@@ -695,8 +764,8 @@ export default function HistoryUse() {
                   <td>
                     {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                       item?.totalPrice ||
-                      (item?.price + (item?.totalOptionPrice || 0)) *
-                      item?.quantity
+                        (item?.price + (item?.totalOptionPrice || 0)) *
+                          item?.quantity
                     )}
                   </td>
                   <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
@@ -755,16 +824,16 @@ export default function HistoryUse() {
                           item?.status === "WAITING"
                             ? "#2d00a8"
                             : item?.status === "DOING"
-                              ? "#c48a02"
-                              : item?.status === "SERVED"
-                                ? "green"
-                                : item?.status === "PAID"
-                                  ? COLOR_APP
-                                  : item?.status === "CART"
-                                    ? "#00496e"
-                                    : item?.status === "FEEDBACK"
-                                      ? "#00496e"
-                                      : "#bd0d00",
+                            ? "#c48a02"
+                            : item?.status === "SERVED"
+                            ? "green"
+                            : item?.status === "PAID"
+                            ? COLOR_APP
+                            : item?.status === "CART"
+                            ? "#00496e"
+                            : item?.status === "FEEDBACK"
+                            ? "#00496e"
+                            : "#bd0d00",
                       }}
                     >
                       {orderStatus(item?.status)}
@@ -777,8 +846,8 @@ export default function HistoryUse() {
                         currency: "JPY",
                       }).format(
                         item?.totalPrice ??
-                        (item?.price + (item?.totalOptionPrice ?? 0)) *
-                        item?.quantity
+                          (item?.price + (item?.totalOptionPrice ?? 0)) *
+                            item?.quantity
                       )}
                     </td>
                     <td>
@@ -801,23 +870,23 @@ export default function HistoryUse() {
         </Modal.Footer>
       </Modal>
       <PopUpSetStartAndEndDateDebt
-              open={popup?.popupfiltter}
-              onClose={() => setPopup()}
-              startDate={startDate}
-              setStartDate={setStartDate}
-              setStartTime={setStartTime}
-              startTime={startTime}
-              setEndDate={setEndDate}
-              setEndTime={setEndTime}
-              endTime={endTime}
-              endDate={endDate}
-            />
+        open={popup?.popupfiltter}
+        onClose={() => setPopup()}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        setStartTime={setStartTime}
+        startTime={startTime}
+        setEndDate={setEndDate}
+        setEndTime={setEndTime}
+        endTime={endTime}
+        endDate={endDate}
+      />
       <PopupOrderHistoryExport
-                open={popup?.PopupOrderHistoryExport}
-                onClose={() => setPopup()}
-                data={data}
-                filtterModele={filtterModele}
-              />
+        open={popup?.PopupOrderHistoryExport}
+        onClose={() => setPopup()}
+        data={data}
+        filtterModele={filtterModele}
+      />
     </div>
   );
 }

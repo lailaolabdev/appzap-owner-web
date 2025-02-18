@@ -288,7 +288,7 @@ export default function ReservationList() {
               </FormGroup>
             </div>
             <FormGroup>
-              <Form.Label className={fontMap[language]}>{"ໝາຍເຫດ"}</Form.Label>
+              <Form.Label className={fontMap[language]}>{t("note")}</Form.Label>
               {!isRemarkEditable ? (
                 <InputGroup>
                   <Form.Control

@@ -785,10 +785,14 @@ export default function DashboardFinance({
         >
           <ReactPaginate
             previousLabel={
-              <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+              <span className="glyphicon glyphicon-chevron-left">
+                {t("previous")}
+              </span>
             }
             nextLabel={
-              <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+              <span className="glyphicon glyphicon-chevron-right">
+                {t("next")}
+              </span>
             }
             breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
             breakClassName={"break-me"}

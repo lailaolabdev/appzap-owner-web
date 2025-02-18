@@ -24,7 +24,7 @@ export default function FoodTypeList() {
   const params = useParams();
   // State
   const [getTokken, setgetTokken] = useState();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const [CATEGORY, setCATEGORY] = useState();
 
   const [show, setShow] = useState(false);
@@ -67,10 +67,10 @@ export default function FoodTypeList() {
       if (_resData?.data) {
         setCategorys(_resData?.data);
         handleClose3();
-        successAdd("ລົບຂໍ້ມູນສຳເລັດ");
+        successAdd(t("delete_data_success"));
       }
     } catch (err) {
-      errorAdd("ລົບຂໍ້ມູນບໍ່ສຳເລັດ !");
+      errorAdd(t("delete_data_fail"));
     }
   };
   const _createCategory = async (values) => {
@@ -96,10 +96,10 @@ export default function FoodTypeList() {
       .then(async function (response) {
         setCategorys(response?.data);
         handleClose();
-        successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
+        successAdd(t("add_data_success"));
       })
       .catch(function (error) {
-        errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
+        errorAdd(t("delete_data_fail"));
       });
   };
   const _updateCategory = async (values) => {
@@ -219,9 +219,9 @@ export default function FoodTypeList() {
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
           <Breadcrumb.Item onClick={() => _setting()}>
-            ຕັ້ງຄ່າຮ້ານອາຫານ
+            {t("restaurant_setting")}
           </Breadcrumb.Item>
-          <Breadcrumb.Item active>ປະເພດອາຫານ</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("food_type")}</Breadcrumb.Item>
         </Breadcrumb>
         <div>
           <Nav variant="tabs" defaultActiveKey="/settingStore/category">
@@ -230,7 +230,7 @@ export default function FoodTypeList() {
                 eventKey="/settingStore/menu"
                 onClick={() => _menuList()}
               >
-                ເມນູອາຫານ
+                {t("food_menu")}
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -319,7 +319,7 @@ export default function FoodTypeList() {
             validate={(values) => {
               const errors = {};
               if (!values.name) {
-                errors.name = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານ...";
+                errors.name = t("please_enter_food_type");
               }
               return errors;
             }}
@@ -338,28 +338,28 @@ export default function FoodTypeList() {
             }) => (
               <form onSubmit={handleSubmit}>
                 <Modal.Header closeButton>
-                  <Modal.Title>ເພີ່ມປະເພດອາຫານ</Modal.Title>
+                  <Modal.Title>{t("add_food_type")}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                   <Form.Group>
-                    <Form.Label>ລຳດັບ</Form.Label>
+                    <Form.Label>{t("no")}</Form.Label>
                     <Form.Control
                       type="number"
                       name="sort"
-                      placeholder="ລຳດັບ"
+                      placeholder={t("no")}
                       value={values?.sort}
                       onChange={handleChange}
                     />
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ປະເພດອາຫານ</Form.Label>
+                    <Form.Label>{t("foodTypeName")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="name"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.name}
-                      placeholder="ຊື່ປະເພດອາຫານ..."
+                      placeholder={t("food_type_name")}
                     />
                   </Form.Group>
                   <div style={{ color: "red" }}>
@@ -367,42 +367,42 @@ export default function FoodTypeList() {
                   </div>
 
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ປະເພດອາຫານພາສາອັງກິດ</Form.Label>
+                    <Form.Label>{t("type_name_en")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="name_en"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.name_en}
-                      placeholder="ຊື່ປະເພດອາຫານພາສາອັງກິດ..."
+                      placeholder={t("type_name_en")}
                     />
                   </Form.Group>
                   <div style={{ color: "red" }}>
                     {errors.name_en && touched.name_en && errors.name_en}
                   </div>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ປະເພດອາຫານພາສາຈີນ</Form.Label>
+                    <Form.Label>{t("type_name_cn")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="name_cn"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.name_cn}
-                      placeholder="ຊື່ປະເພດອາຫານພາສາຈີນ..."
+                      placeholder={t("type_name_cn")}
                     />
                   </Form.Group>
                   <div style={{ color: "red" }}>
                     {errors.name_cn && touched.name_cn && errors.name_cn}
                   </div>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ</Form.Label>
+                    <Form.Label>{t("type_name_kr")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="name_kr"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.name_kr}
-                      placeholder="ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ..."
+                      placeholder={t("type_name_kr")}
                     />
                   </Form.Group>
                   <div style={{ color: "red" }}>
@@ -410,20 +410,20 @@ export default function FoodTypeList() {
                   </div>
 
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ໝາຍເຫດ</Form.Label>
+                    <Form.Label>{t("note")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="note"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.note}
-                      placeholder="ໝາຍເຫດ..."
+                      placeholder={t("note_")}
                     />
                   </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="danger" onClick={handleClose}>
-                    ຍົກເລີກ
+                    {t("cancel")}
                   </Button>
                   <Button
                     style={{
@@ -433,7 +433,7 @@ export default function FoodTypeList() {
                     }}
                     onClick={() => handleSubmit()}
                   >
-                    ບັນທືກ
+                    {t("save")}
                   </Button>
                 </Modal.Footer>
               </form>
@@ -453,7 +453,7 @@ export default function FoodTypeList() {
             validate={(values) => {
               const errors = {};
               if (!values.name) {
-                errors.name = "ກະລຸນາປ້ອນຊື່ປະເພດອາຫານ...";
+                errors.name = t("fill_type_name");
               }
               return errors;
             }}
@@ -472,28 +472,28 @@ export default function FoodTypeList() {
             }) => (
               <form onSubmit={handleSubmit}>
                 <Modal.Header closeButton>
-                  <Modal.Title>ແກ້ໄຂປະເພດອາຫານ</Modal.Title>
+                  <Modal.Title>{t("edit_food_type")}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                   <Form.Group>
-                    <Form.Label>ລຳດັບ</Form.Label>
+                    <Form.Label>{t("no")}</Form.Label>
                     <Form.Control
                       type="number"
                       name="sort"
-                      placeholder="ລຳດັບ"
+                      placeholder={`${t("no")}..`}
                       value={values.sort}
                       onChange={handleChange}
                     />
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ປະເພດອາຫານ</Form.Label>
+                    <Form.Label>{t("foodType")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="name"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.name}
-                      placeholder="ຊື່ປະເພດອາຫານ..."
+                      placeholder={t("food_type_name")}
                     />
                   </Form.Group>
                   <div style={{ color: "red" }}>
@@ -501,42 +501,42 @@ export default function FoodTypeList() {
                   </div>
 
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ປະເພດອາຫານພາສາອັງກິດ</Form.Label>
+                    <Form.Label>{t("type_name_en")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="name_en"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.name_en}
-                      placeholder="ຊື່ປະເພດອາຫານພາສາອັງກິດ..."
+                      placeholder={t("type_name_en")}
                     />
                   </Form.Group>
                   <div style={{ color: "red" }}>
                     {errors.name_en && touched.name_en && errors.name_en}
                   </div>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ປະເພດອາຫານພາສາຈີນ</Form.Label>
+                    <Form.Label>{t("type_name_cn")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="name_cn"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.name_cn}
-                      placeholder="ຊື່ປະເພດອາຫານພາສາຈີນ..."
+                      placeholder={t("type_name_cn")}
                     />
                   </Form.Group>
                   <div style={{ color: "red" }}>
                     {errors.name_cn && touched.name_cn && errors.name_cn}
                   </div>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ</Form.Label>
+                    <Form.Label>{t("type_name_kr")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="name_kr"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.name_kr}
-                      placeholder="ຊື່ປະເພດອາຫານພາສາເກົາຫຼີ..."
+                      placeholder={t("type_name_kr")}
                     />
                   </Form.Group>
                   <div style={{ color: "red" }}>
@@ -544,20 +544,20 @@ export default function FoodTypeList() {
                   </div>
 
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ໝາຍເຫດ</Form.Label>
+                    <Form.Label>{t("note")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="note"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.note}
-                      placeholder="ໝາຍເຫດ..."
+                      placeholder={t("note_")}
                     />
                   </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="danger" onClick={handleClose2}>
-                    ຍົກເລີກ
+                    {t("cancel")}
                   </Button>
                   <Button
                     style={{
@@ -567,7 +567,7 @@ export default function FoodTypeList() {
                     }}
                     onClick={() => handleSubmit()}
                   >
-                    ບັນທືກ
+                    {t("save")}
                   </Button>
                 </Modal.Footer>
               </form>
@@ -578,19 +578,19 @@ export default function FoodTypeList() {
           <Modal.Header closeButton></Modal.Header>
           <Modal.Body>
             <div style={{ textAlign: "center" }}>
-              <div>ທ່ານຕ້ອງການລົບຂໍ້ມູນ? </div>
+              <div>{t("sure_to_delete_data")}? </div>
               <div style={{ color: "red" }}>{dateDelete?.name}</div>
             </div>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose3}>
-              ຍົກເລີກ
+              {t("cancel")}
             </Button>
             <Button
               style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
               onClick={() => _confirmeDelete()}
             >
-              ຢືນຢັນການລົບ
+              {t("approve_delete")}
             </Button>
           </Modal.Footer>
         </Modal>

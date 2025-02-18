@@ -6,11 +6,13 @@ import { IoMdCloseCircle } from "react-icons/io";
 import Box from "../../components/Box";
 import Upload from "../Upload";
 import { moneyCurrency } from "../../helpers";
+import { useTranslation } from "react-i18next";
 
 import { useStoreStore } from "../../zustand/storeStore";
 
 export default function PopUpAddMenu({ open, onClose, onSubmit }) {
   // state
+  const { t } = useTranslation();
   const [isStockOne, setIsStockOne] = useState(false);
   const [isStockMulti, setIsStockMulti] = useState(false);
   const [isOption, setIsOption] = useState(false);
@@ -21,12 +23,12 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
   const [nameOption, setNameOption] = useState();
   const [priceOption, setPriceOption] = useState();
 
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
 
   return (
     <Modal show={open} onHide={onClose} keyboard={false}>
       <Modal.Header closeButton>
-        <Modal.Title>ເພີ່ມເມນູອາຫານ</Modal.Title>
+        <Modal.Title>{t("add_menu")}</Modal.Title>
       </Modal.Header>
       <Formik
         initialValues={{
@@ -45,13 +47,13 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
         validate={(values) => {
           const errors = {};
           if (!values.name) {
-            errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+            errors.name = t("please_fill_menu_name");
           }
           if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
-            errors.price = "ກະລຸນາປ້ອນລາຄາ...";
+            errors.price = t("please_fill_price");
           }
           if (!values.categoryId) {
-            errors.categoryId = "ກະລຸນາປ້ອນ...";
+            errors.categoryId = t("please_fill");
           }
           return errors;
         }}
@@ -91,7 +93,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                   >
                     <Form.Group>
                       <Form.Label>
-                        ຊື່ອາຫານ <span style={{ color: "red" }}>*</span>
+                        {t("food_name")} <span style={{ color: "red" }}>*</span>
                       </Form.Label>
                       <Form.Control
                         type="text"
@@ -99,7 +101,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                         onChange={handleChange}
                         onBlur={handleBlur}
                         value={values.name}
-                        placeholder="ຊື່ອາຫານ..."
+                        placeholder={`${t("food_name")}...`}
                         style={{
                           border:
                             errors.name && touched.name && errors.name
@@ -109,14 +111,14 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                       />
                     </Form.Group>
                     <Form.Group>
-                      <Form.Label>ຊື່ອາຫານ (en)</Form.Label>
+                      <Form.Label>{t("food_name")} (EN)</Form.Label>
                       <Form.Control
                         type="text"
                         name="name_en"
                         onChange={handleChange}
                         onBlur={handleBlur}
                         value={values.name_en}
-                        placeholder="ຊື່ອາຫານ..."
+                        placeholder={`${t("food_name")}...`}
                         style={{
                           border:
                             errors.name_en && touched.name_en && errors.name_en
@@ -126,14 +128,14 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                       />
                     </Form.Group>
                     <Form.Group>
-                      <Form.Label>ຊື່ອາຫານ (cn)</Form.Label>
+                      <Form.Label>{t("food_name")} (CN)</Form.Label>
                       <Form.Control
                         type="text"
                         name="name_cn"
                         onChange={handleChange}
                         onBlur={handleBlur}
                         value={values.name_cn}
-                        placeholder="ຊື່ອາຫານ..."
+                        placeholder={`${t("food_name")}...`}
                         style={{
                           border:
                             errors.name_cn && touched.name_cn && errors.name_cn
@@ -143,14 +145,14 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                       />
                     </Form.Group>
                     <Form.Group>
-                      <Form.Label>ຊື່ອາຫານ (kr)</Form.Label>
+                      <Form.Label>{t("food_name")} (KR)</Form.Label>
                       <Form.Control
                         type="text"
                         name="name_kr"
                         onChange={handleChange}
                         onBlur={handleBlur}
                         value={values.name_kr}
-                        placeholder="ຊື່ອາຫານ..."
+                        placeholder={`${t("food_name")}...`}
                         style={{
                           border:
                             errors.name_kr && touched.name_kr && errors.name_kr
@@ -162,7 +164,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                   </div>
                   <Form.Group controlId="exampleForm.ControlSelect1">
                     <Form.Label>
-                      ປະເພດອາຫານ <span style={{ color: "red" }}>*</span>
+                      {t("food_type")} <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <Form.Control
                       as="select"
@@ -188,7 +190,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
               </Box>
               <Form.Group>
                 <Form.Label>
-                  ລາຄາ <span style={{ color: "red" }}>*</span>
+                  {t("price")} <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control
                   type="number"
@@ -196,7 +198,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.price}
-                  placeholder="ລາຄາ..."
+                  placeholder={`${t("price")}...`}
                   style={{
                     border:
                       errors.price && touched.price && errors.price
@@ -262,7 +264,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                           ])
                         }
                       >
-                        ເພີ່ມ
+                        {t("add")}
                       </Button>
                     </div>
                   )}
@@ -413,7 +415,7 @@ export default function PopUpAddMenu({ open, onClose, onSubmit }) {
                 }}
                 onClick={() => handleSubmit()}
               >
-                ບັນທຶກເມນູອາຫານ
+                {t("save_menu")}
               </Button>
             </Modal.Footer>
           </form>

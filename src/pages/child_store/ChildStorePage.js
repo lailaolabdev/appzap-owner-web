@@ -53,8 +53,7 @@ export default function ChildStores() {
   const [reportData, setReportData] = useState([]);
   const [categoryReport, setCategoryReport] = useState();
   const [promotionReport, setPromotionReport] = useState();
-  const { storeDetail } = useStoreStore()
-
+  const { storeDetail } = useStoreStore();
 
   const fetchBranchStore = async () => {
     const { DATA } = await getLocalData();
@@ -277,7 +276,7 @@ export default function ChildStores() {
                             )}`,
                           },
                           {
-                            title: `${t("avg_sale")}`,
+                            title: `${t("avg_sales")}`,
                             amount: `${moneyCurrency(
                               salesInformationReport?.[
                                 "averageSales_Transaction"
@@ -541,7 +540,7 @@ export default function ChildStores() {
                               {t("menu_type")}
                             </th>
                             <th style={{ textAlign: "center" }}>
-                              {t("order_cussess")}
+                              {t("success_order")}
                             </th>
                             <th style={{ textAlign: "center" }}>
                               {t("cancel")}

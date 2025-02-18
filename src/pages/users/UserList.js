@@ -824,13 +824,13 @@ export default function UserList() {
         <Modal.Header closeButton></Modal.Header>
         <Modal.Body>
           <div style={{ textAlign: "center" }}>
-            <div>ທ່ານຕ້ອງການລົບຂໍ້ມູນ </div>
+            <div>{t("would_delete")} </div>
             <div style={{ color: "red" }}>{dateDelete?.name}</div>
           </div>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose3}>
-            ຍົກເລີກ
+            {t("cancel")}
           </Button>
           <Button
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}

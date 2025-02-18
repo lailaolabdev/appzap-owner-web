@@ -26,10 +26,7 @@ export default function PopUpSetStartAndEndDateMember({
   const [valueEndTime, setValueEndTime] = useState(endTimeMember);
   const [selectedButton, setSelectedButton] = useState(null);
 
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const { t } = useTranslation();
   // useEffect
   useEffect(() => {
@@ -99,7 +96,7 @@ export default function PopUpSetStartAndEndDateMember({
 
   return (
     <Modal show={open} onHide={onClose} size="lg">
-      <Modal.Header closeButton>ເລືອກວັນທີ</Modal.Header>
+      <Modal.Header closeButton>{t("select_date")}</Modal.Header>
       <Modal.Body
         style={{
           boxSizing: "border-box",

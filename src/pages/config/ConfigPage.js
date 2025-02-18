@@ -171,7 +171,7 @@ export default function ConfigPage() {
       >
         <Breadcrumb>
           <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
-          <Breadcrumb.Item active>POS config</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("posconfig")}</Breadcrumb.Item>
         </Breadcrumb>
         <Box
           sx={{
