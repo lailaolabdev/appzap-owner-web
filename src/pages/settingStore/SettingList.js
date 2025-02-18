@@ -65,32 +65,36 @@ export default function SettingList() {
   const [hasHistory, setHasHistoryUsed] = useState(false);
   const [hasClearHistory, setHasClearHistory] = useState(false);
 
-  const permissionRole = profile?.data?.permissionRoleId;
-  const profileRole = profile?.data?.role;
+  const permissionRole = profile?.data?.permissionRoleId ;
+  const profileRole = profile?.data?.role ;
   const appzapStaff = "APPZAP_STAFF";
   const appzapAdmin = "APPZAP_ADMIN";
 
   useEffect(() => {
-    setHasMangeStaff(permissionRole?.permissions?.includes("MANAGE_STAFF"));
-    setHasMangeRole(permissionRole?.permissions?.includes("MANAGE_ROLES"));
-    setHasMangeMenu(permissionRole?.permissions?.includes("MANAGE_MENU"));
-    setHasMangeSound(permissionRole?.permissions?.includes("MANAGE_SOUND"));
-    setHasMangeCurrency(permissionRole?.permissions?.includes("MANAGE_CURRENCY_RATES"));
-    setHasMangeBanks(permissionRole?.permissions?.includes("MANAGE_BANKS"));
-    setHasMangeDelivery(permissionRole?.permissions?.includes("MANAGE_DELIVERY"));
-    setHasMangeStock(permissionRole?.permissions?.includes("MANAGE_STOCK"));
-    setHasMangeZone(permissionRole?.permissions?.includes("CONFIGURE_ZONE"));
-    setHasMangeTable(permissionRole?.permissions?.includes("CONFIGURE_TABLE"));
-    setHasMangePrinter(permissionRole?.permissions?.includes("CONFIGURE_PRINTER"));
-    setHasMangePos(permissionRole?.permissions?.includes("CONFIGURE_POS"));
-    setHasMangePin(permissionRole?.permissions?.includes("CONFIGURE_PIN"));
-    setHasMangeSecondScreen(permissionRole?.permissions?.includes("CONFIGURE_SECOND_SCREEN"));
-    setHasMangeBanner(permissionRole?.permissions?.includes("MANAGE_BANNER"));
-    setHasHistoryUsed(permissionRole?.permissions?.includes("HISTORY_USED"));
-    setHasClearHistory(permissionRole?.permissions?.includes("CLRAR_HISTORY"));
-  }, [])
-
-  console.log("hasMangeStaff: ", hasMangeStaff)
+    const permissionMap = [
+      { set: setHasMangeStaff, check: "MANAGE_STAFF" },
+      { set: setHasMangeRole, check: "MANAGE_ROLES" },
+      { set: setHasMangeMenu, check: "MANAGE_MENU" },
+      { set: setHasMangeSound, check: "MANAGE_SOUND" },
+      { set: setHasMangeCurrency, check: "MANAGE_CURRENCY_RATES" },
+      { set: setHasMangeBanks, check: "MANAGE_BANKS" },
+      { set: setHasMangeDelivery, check: "MANAGE_DELIVERY" },
+      { set: setHasMangeStock, check: "MANAGE_STOCK" },
+      { set: setHasMangeZone, check: "CONFIGURE_ZONE" },
+      { set: setHasMangeTable, check: "CONFIGURE_TABLE" },
+      { set: setHasMangePrinter, check: "CONFIGURE_PRINTER" },
+      { set: setHasMangePos, check: "CONFIGURE_POS" },
+      { set: setHasMangePin, check: "CONFIGURE_PIN" },
+      { set: setHasMangeSecondScreen, check: "CONFIGURE_SECOND_SCREEN" },
+      { set: setHasMangeBanner, check: "MANAGE_BANNER" },
+      { set: setHasHistoryUsed, check: "HISTORY_USED" },
+      { set: setHasClearHistory, check: "CLRAR_HISTORY" }
+    ];
+  
+    permissionMap.forEach(({ set, check }) => {
+      set(permissionRole?.permissions?.includes(check));
+    });
+  }, [profile]);
 
   const data = [
     {

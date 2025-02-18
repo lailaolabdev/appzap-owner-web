@@ -20,10 +20,8 @@ import {
   faUser,
   faBook,
   faMusic,
-  faUsers,
   faBeer,
   faShoppingCart,
-  faBox,
   faBoxes,
   faLayerGroup,
   faStoreAlt,
@@ -36,17 +34,14 @@ import "./sidenav.css";
 import { useStore } from "../store";
 import { useTranslation } from "react-i18next";
 import role from "../helpers/role";
-import { getLocalData, getToken } from "../constants/api";
-import { getCountOrderWaiting } from "../services/order";
+import {  getToken } from "../constants/api";
 import _ from "lodash";
 import { fontMap } from "../utils/font-map";
-
 import { useStoreStore } from "../zustand/storeStore";
 import { useOrderStore } from "../zustand/orderStore";
 import { useBookingStore } from "../zustand/bookingStore";
 import PopUpOpenShift from "./../components/popup/PopUpOpenShift";
 import { useShiftStore } from "../zustand/ShiftStore";
-
 
 export default function Sidenav({ location, navigate, onToggle }) {
   const { openTableData, getTableDataStore } = useStore();
@@ -55,6 +50,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const { waitingOrders } = useOrderStore();
   const { bookingWaitingLength, fetchBookingByStatus } = useBookingStore();
 
+
+  const { profile } = useStore();
+  const { user } = useStore();
   const [openPopUpShift, setOpenPopUpShift] = useState(false);
   const { shiftCurrent } = useShiftStore();
   const [status, setStatus] = useState(true);
@@ -73,6 +71,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const [hasProductExpenses, setHasProductExpress] = useState(false);
   const [hasFinancialstatistics, setHasFinancialStatistics] = useState(false);
   const [hasReportNew, setHasReportNew] = useState(false);
+  const [profileRole ,setProfileRole] = useState(profile?.data?.role || null);
+  
 
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
@@ -102,29 +102,36 @@ export default function Sidenav({ location, navigate, onToggle }) {
     t,
     i18n: { language },
   } = useTranslation();
-  const { profile } = useStore();
-  const { user } = useStore();
+ 
 
-  const permissionRole = profile?.data?.permissionRoleId;
-  const profileRole = profile?.data?.role;
   const appzapStaff = "APPZAP_STAFF";
   const appzapAdmin = "APPZAP_ADMIN";
 
+
   useEffect(() => {
-    setHasReportStock(permissionRole?.permissions?.includes("MANAGE_STOCK"));
-    setHasReportDebt(permissionRole?.permissions?.includes("REPORT_INDEBTED"));
-    setHasBranches(permissionRole?.permissions?.includes("MANAGE_BRANCHES"));
-    setHasOrders(permissionRole?.permissions?.includes("MANAGE_ORDERS"));
-    setHasCafe(permissionRole?.permissions?.includes("MANAGE_CAFE"));
-    setHasCuctomrRequests(permissionRole?.permissions?.includes("MANAGE_CUSTOMER_REQUESTS"));
-    setHasMarketing(permissionRole?.permissions?.includes("MANAGE_MARKETING"));
-    setHasMenu(permissionRole?.permissions?.includes("MANAGE_MENU"));
-    setHasExpenses(permissionRole?.permissions?.includes("MANAGE_EXPENSES"));
-    setHasRevervation(permissionRole?.permissions?.includes("MANAGE_RESERVATIONS"));
-    setHasProductExpress(permissionRole?.permissions?.includes("MANAGE_PRODUCT_EXPRESS"));
-    setHasFinancialStatistics(permissionRole?.permissions?.includes("FINANCIAL_STATISTICS"));
-    setHasReportNew(permissionRole?.permissions?.includes("REPORT_NEW"));
-  }, [])
+  if (profile?.data?.permissionRoleId?.permissions) {
+    const permissions = profile?.data?.permissionRoleId?.permissions;
+    const permissionMap = [
+      { set: setHasReportStock, check: "MANAGE_STOCK" },
+      { set: setHasReportDebt, check: "REPORT_INDEBTED" },
+      { set: setHasBranches, check: "MANAGE_BRANCHES" },
+      { set: setHasOrders, check: "MANAGE_ORDERS" },
+      { set: setHasCafe, check: "MANAGE_CAFE" },
+      { set: setHasCuctomrRequests, check: "MANAGE_CUSTOMER_REQUESTS" },
+      { set: setHasMarketing, check: "MANAGE_MARKETING" },
+      { set: setHasMenu, check: "MANAGE_MENU" },
+      { set: setHasExpenses, check: "MANAGE_EXPENSES" },
+      { set: setHasRevervation, check: "MANAGE_RESERVATIONS" },
+      { set: setHasProductExpress, check: "MANAGE_PRODUCT_EXPRESS" },
+      { set: setHasFinancialStatistics, check: "FINANCIAL_STATISTICS" },
+      { set: setHasReportNew, check: "REPORT_NEW" }
+    ];
+
+    permissionMap.forEach(({ set, check }) => {
+      set(permissions.includes(check));
+    });
+  }
+}, [profile?.data?.permissionRoleId?.permissions, profile]);
 
 
   const itemList = [

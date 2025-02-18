@@ -2,21 +2,24 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Form, Card, Spinner, Modal } from "react-bootstrap";
 import { useStoreStore } from "../../zustand/storeStore";
-import { PermissionsConfig } from '../../helpers/permissionRole'; // Changed import
+import { PermissionsConfig } from '../../helpers/permissionRole';
 import Swal from "sweetalert2";
+import { useStore } from "../../store";
 
 export default function PopUpEditRole({
     open,
     onClose,
-    roleData, 
-    updatePermissionRole 
+    roleData,
+    updatePermissionRole
 }) {
     const { t } = useTranslation();
     const [error, setError] = useState('');
     const { storeDetail } = useStoreStore();
     const [loading, setLoading] = useState(false);
+    const { profile, setProfile } = useStore();
+    const [initialFormData, setInitialFormData] = useState(null);
+    const [hasChanges, setHasChanges] = useState(false);
 
-    // Use the hook to get the config and helpers
     const {
         permissionsConfig,
         createInitialState,
@@ -25,21 +28,18 @@ export default function PopUpEditRole({
         createCheckboxChangeHandler
     } = PermissionsConfig();
 
-    // Create initial state from roleData
     const [formData, setFormData] = useState(() => {
         const initialState = createInitialState();
         if (roleData) {
             initialState.accountName = roleData.roleName;
             initialState.note = roleData.note;
 
-            // Set permissions checkboxes
             Object.entries(permissionsConfig.permissionsCategories).forEach(([categoryKey, category]) => {
                 Object.entries(category.permissions).forEach(([permKey, permValue]) => {
                     initialState[categoryKey][permKey] = roleData.permissions.includes(permValue);
                 });
             });
 
-            // Set canAccessAllSystems if all permissions are selected
             const allPermissions = Object.values(permissionsConfig.permissionsCategories).flatMap(
                 category => Object.values(category.permissions)
             );
@@ -52,17 +52,36 @@ export default function PopUpEditRole({
 
     useEffect(() => {
         if (roleData) {
-            setFormData(prev => ({
-                ...prev,
+            const newFormData = {
+                ...formData,
                 accountName: roleData.roleName,
                 note: roleData.note
-            }));
+            };
+            setFormData(newFormData);
+            setInitialFormData(JSON.stringify(newFormData));
+            setHasChanges(false);
         }
     }, [roleData]);
 
-    // Use the helpers from the hook
-    const handleInputChange = createInputChangeHandler(setFormData);
-    const handleCheckboxChange = createCheckboxChangeHandler(setFormData);
+    const handleInputChange = (e) => {
+        const newFormData = {
+            ...formData,
+            [e.target.name]: e.target.value
+        };
+        setFormData(newFormData);
+        checkForChanges(newFormData);
+    };
+
+    const handleCheckboxChange = (category, key) => {
+        const newFormData = createCheckboxChangeHandler(setFormData)(category, key);
+        checkForChanges(newFormData);
+    };
+
+    const checkForChanges = (currentFormData) => {
+        if (!initialFormData) return;
+        const hasChanged = JSON.stringify(currentFormData) !== initialFormData;
+        setHasChanges(hasChanged);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -78,10 +97,13 @@ export default function PopUpEditRole({
                 roleName: formData.accountName,
                 note: formData.note || "-",
                 permissions: permissions,
-                storeId: storeDetail._id
+                storeId: storeDetail._id,
+                userId: profile?.data?._id
             };
 
-            await updatePermissionRole(roleData._id, updatePayload);
+            await updatePermissionRole(roleData._id, updatePayload).then((data) => {
+                setProfile(data)
+            });
 
             Swal.fire({
                 icon: 'success',
@@ -182,8 +204,8 @@ export default function PopUpEditRole({
                         </button>
                         <button
                             onClick={handleSubmit}
-                            className="px-4 py-2 bg-color-app text-white rounded-md hover:bg-orange-400"
-                            disabled={loading}
+                            className="px-4 py-2 bg-color-app text-white rounded-md hover:bg-orange-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={loading || !hasChanges}
                         >
                             {loading ? t("updating") : t("confirm")}
                         </button>
