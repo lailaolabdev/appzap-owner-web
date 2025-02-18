@@ -5,9 +5,6 @@ export const getMembers = async (findBy, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v6/members${findBy}`;
     const res = await axios.get(url, { headers: TOKEN });
-
-    console.log(res?.data);
-
     return res?.data;
   } catch (error) {
     return error;

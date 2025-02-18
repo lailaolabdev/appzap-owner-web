@@ -1,20 +1,20 @@
-
-import React, { useState, useMemo } from "react";                   ///// Ton fix errors ////////
+import React, { useState, useMemo } from "react"; ///// Ton fix errors ////////
 import { Form, Button, Carousel, Spinner } from "react-bootstrap";
 import packetJson from "../../../package.json";
 import ReactGA from "react-ga4";
 import { Formik } from "formik";
 import * as Yup from "yup";
-import axios from "axios";  // Correct import for Axios
+import axios from "axios"; // Correct import for Axios
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "../../store";
 import { getStore } from "../../services/store";
 import Box from "../../components/Box";
-import { toast } from "react-toastify";   ///// Ton fix errors ////////
-import {useStoreStore} from "../../zustand/storeStore"
-
+import { toast } from "react-toastify"; ///// Ton fix errors ////////
+import { useStoreStore } from "../../zustand/storeStore";
+import { useShiftStore } from "../../zustand/ShiftStore";
+import { useMenuStore } from "../../zustand/menuStore";
 
 // style
 import "./login.css";
@@ -34,10 +34,9 @@ function Login() {
   const { t } = useTranslation();
 
   // zustand state store
-  const {
-    storeDetail, 
-    fetchStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, fetchStoreDetail, updateStoreDetail } = useStoreStore();
+  const { shiftCurrent } = useShiftStore();
+  const { clearMenus } = useMenuStore();
 
   useMemo(() => {
     console.log("GOOGLE ANALYTICS STARTED");
@@ -50,13 +49,19 @@ function Login() {
       if (isLoading) return;
       setIsLoading(true);
       const user = await axios.post(`${END_POINT}/v3/admin/login`, values);
-      const { defaultPath } = role(user?.data?.data?.role, user?.data?.data);
+      const { defaultPath } = role(
+        user?.data?.data?.role,
+        user?.data?.data,
+        storeDetail,
+        shiftCurrent
+      );
       if (defaultPath) {
+        clearMenus();
         // localStorage.setItem(USER_KEY, JSON.stringify(user?.data));
         setProfile(user?.data);
         // zustand store
-        const data = await fetchStoreDetail(user?.data?.data?.storeId)
-        
+        const data = await fetchStoreDetail(user?.data?.data?.storeId);
+
         document.title = data?.name;
 
         ReactGA.send({ hitType: "pageview", title: `${data?.name}` });

@@ -15,7 +15,7 @@ export default function NumberKeyboard({
   setCanCheckOut,
   onClickMember,
 }) {
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
 
   const _num = [
     {
@@ -125,11 +125,7 @@ export default function NumberKeyboard({
           }}
         >
           <Button
-            disabled={
-              payType === "point" ||
-              payType === "cash_transfer_point" ||
-              !storeDetail?.isCRM
-            }
+            disabled={payType === "point" || payType === "cash_transfer_point"}
             onClick={() => {
               onClickMember();
             }}

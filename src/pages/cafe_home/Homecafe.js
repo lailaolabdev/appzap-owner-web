@@ -6,6 +6,7 @@ import Table from "react-bootstrap/Table";
 import axios from "axios";
 import ReactToPrint from "react-to-print";
 import BillForCheckOutCafe80 from "../../components/bill/BillForCheckOutCafe80";
+import PrintLabel from "./components/PrintLabel";
 import _ from "lodash";
 import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
@@ -14,6 +15,7 @@ import { Formik } from "formik";
 import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
 import { base64ToBlob } from "../../helpers";
 import { RiListOrdered2 } from "react-icons/ri";
+import { BsCartXFill } from "react-icons/bs";
 
 /**
  * const
@@ -28,6 +30,7 @@ import {
   USB_PRINTER_PORT,
   BLUETOOTH_PRINTER_PORT,
   ETHERNET_PRINTER_PORT,
+  USB_LABEL_PRINTER_PORT,
 } from "../../constants/index";
 
 import {
@@ -45,7 +48,7 @@ import Loading from "../../components/Loading";
 import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json, useNavigate, useParams } from "react-router-dom";
-import { getBillCafe } from "../../services/bill";
+import { getBillCafe, getBills } from "../../services/bill";
 import { useStore } from "../../store";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
@@ -60,22 +63,24 @@ import { fontMap } from "../../utils/font-map";
 
 import { useStoreStore } from "../../zustand/storeStore";
 import { useMenuStore } from "../../zustand/menuStore";
+import { useShiftStore } from "../../zustand/ShiftStore";
+import { useMenuSelectStore } from "../../zustand/menuSelectStore";
+
 import theme from "../../theme";
 import moment from "moment";
+import url from "socket.io-client/lib/url";
+import CheckOutPopupCafeNew from "../table/components/CheckOutPopupCafeNew";
+import { getAllStorePoints } from "../../services/member.service";
+import AnimationLoading from "../../constants/loading";
 
 function Homecafe() {
   const params = useParams();
-  const navigate = useNavigate();
-  const code = params?.code;
   const [billId, setBillId] = useState();
-  const tableId = params?.tableId;
   const [isLoading, setIsLoading] = useState(false);
-  const [disabledButton, setDisabledButton] = useState(false);
 
   const [selectedMenu, setSelectedMenu] = useState([]);
   const [selectedItem, setSelectedItem] = useState();
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [allSelectedMenu, setAllSelectedMenu] = useState([]);
   const [show, setShow] = useState(false);
   const [menuOptions, setMenuOptions] = useState([]);
   const [isPopup, setIsPupup] = useState(false);
@@ -92,6 +97,11 @@ function Homecafe() {
   });
   const [selectedOptionsArray, setSelectedOptionsArray] = useState([]);
   const [total, setTotal] = useState();
+  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
+  const [startTime, setStartTime] = useState("00:00:00");
+  const [endTime, setEndTime] = useState("23:59:59");
+  const [bill, setBill] = useState(0);
 
   const [isMobile, setIsMobile] = useState(
     window.matchMedia("(max-width: 767px)").matches
@@ -100,7 +110,30 @@ function Homecafe() {
   const [cartModal, setCartModal] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null); // Track the row being edited
 
+  const { shiftCurrent } = useShiftStore();
+  const { setSelectedMenus, SelectedMenus, clearSelectedMenus } =
+    useMenuSelectStore();
   const sliderRef = useRef();
+  useEffect(() => {
+    const storedState = localStorage.getItem("menuSlected");
+    if (storedState) {
+      const newState = JSON.parse(storedState);
+      setSelectedMenus(newState.state.SelectedMenus);
+    }
+
+    const handleStorageChange = (event) => {
+      if (event.key === "menuSlected") {
+        const newState = JSON.parse(event.newValue);
+        setSelectedMenus(newState.state.SelectedMenus);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [setSelectedMenus]);
 
   // Make the Category draggable
   useEffect(() => {
@@ -155,7 +188,6 @@ function Homecafe() {
 
     // Add event listener for resize
     window.addEventListener("resize", handleResize);
-
     // Cleanup function to remove event listener when the component unmounts
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -172,29 +204,34 @@ function Homecafe() {
   };
   const handleClose = () => setShow(false);
 
-  function handleSetQuantity(int, data) {
+  const handleSetQuantity = (int, data) => {
     const dataArray = [];
-    for (const i of selectedMenu) {
+    for (const i of SelectedMenus) {
       let _data = { ...i };
-      if (data?.id === i?.id) {
+
+      if (
+        data?.id === i?.id &&
+        JSON.stringify(data?.options) === JSON.stringify(i?.options)
+      ) {
         _data = { ..._data, quantity: _data?.quantity + int };
       }
+
       if (_data.quantity > 0) {
         dataArray.push(_data);
       }
     }
     setSelectedMenu(dataArray);
-  }
+    setSelectedMenus(dataArray);
+  };
 
   const {
     printerCounter,
     printers,
-    selectedTable,
     setSelectedTable,
     getTableDataStore,
     profile,
   } = useStore();
-  const { storeDetail } = useStoreStore();
+  const { storeDetail, setStoreDetail } = useStoreStore();
   const [search, setSearch] = useState("");
 
   const {
@@ -204,6 +241,7 @@ function Homecafe() {
     getMenuCategories,
     setMenus,
     setMenuCategories,
+    isMenuLoading,
   } = useMenuStore();
 
   // Get Menus & Categories, and persist it in localstorage.
@@ -238,6 +276,44 @@ function Homecafe() {
     setMenuCategories,
   ]);
 
+  useEffect(() => {
+    billData();
+    fetchPointsData();
+  }, []);
+
+  const fetchPointsData = async () => {
+    try {
+      const data = await getAllStorePoints();
+      if (!data.error) {
+        const { DATA } = await getLocalData();
+        const filteredData = data.filter(
+          (point) => point.storeId === DATA.storeId
+        );
+        setStoreDetail({
+          pointStore: filteredData[0].money,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch points data: ", error);
+    }
+  };
+
+  const billData = async () => {
+    try {
+      let findby = "?";
+      findby += `storeId=${storeDetail?._id}&`;
+      findby += `startDate=${startDate}&`;
+      findby += `endDate=${endDate}&`;
+      findby += `startTime=${startTime}&`;
+      findby += `endTime=${endTime}`;
+      const res = await getBills(findby);
+      const filteredBills = res?.filter((bill) => bill.isCafe === true) || [];
+      setBill(filteredBills.length);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const afterSearch = _.filter(
     menus,
     (e) =>
@@ -245,7 +321,7 @@ function Homecafe() {
       e?.categoryId?._id === selectedCategory
   );
 
-  const arrLength = selectedMenu?.length;
+  const arrLength = SelectedMenus?.length;
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
   if (billForCher80.current.length !== arrLength) {
@@ -272,12 +348,18 @@ function Homecafe() {
   }, []);
 
   useEffect(() => {
-    _calculateTotal();
+    if (selectedMenu && selectedMenu.length > 0) {
+      setSelectedMenus(selectedMenu);
+    }
   }, [selectedMenu]);
+
+  useEffect(() => {
+    _calculateTotal();
+  }, [SelectedMenus]);
 
   const _calculateTotal = () => {
     let _total = 0;
-    for (const _data of selectedMenu || []) {
+    for (const _data of SelectedMenus || []) {
       const totalOptionPrice = _data?.totalOptionPrice || 0;
       const itemPrice = _data?.price + totalOptionPrice;
       // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
@@ -318,22 +400,25 @@ function Homecafe() {
         price: menu.price,
         categoryId: menu?.categoryId,
         printer: menu?.categoryId?.printer,
+        shiftId: shiftCurrent[0]?._id,
         note: "",
         isWeightMenu: menu?.isWeightMenu,
       };
 
-      const existingMenuIndex = selectedMenu.findIndex(
+      const existingMenuIndex = SelectedMenus.findIndex(
         (item) => item.id === menu._id
       );
 
       if (existingMenuIndex !== -1) {
         // Menu is already in selectedMenu, increase the quantity
-        const updatedMenu = [...selectedMenu];
+        const updatedMenu = [...SelectedMenus];
         updatedMenu[existingMenuIndex].quantity += 1;
         setSelectedMenu(updatedMenu);
+        setSelectedMenus(updatedMenu);
       } else {
         // Menu is not in selectedMenu, add it
-        setSelectedMenu([...selectedMenu, data]);
+        setSelectedMenu([...SelectedMenus, data]);
+        setSelectedMenus([...SelectedMenus, data]);
       }
 
       // setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
@@ -433,13 +518,14 @@ function Homecafe() {
       note: addComments,
       menuOptions: selectedItem.menuOptions,
       options: filteredOptions,
+      shiftId: shiftCurrent[0]?._id,
       totalOptionPrice: totalOptionPrice,
       isWeightMenu: selectedItem?.isWeightMenu,
     };
 
     setSelectedMenu((prevMenu) => {
       // Check if the menu item with the same ID and options already exists
-      const existingMenuIndex = prevMenu.findIndex((item) => {
+      const existingMenuIndex = prevMenu?.findIndex((item) => {
         const sortedItemOptionsForComparison = item.options
           ? sortOptionsById([...item.options])
           : [];
@@ -465,6 +551,7 @@ function Homecafe() {
             updatedMenu[existingMenuIndex].quantity +
           updatedMenu[existingMenuIndex].totalOptionPrice;
         return updatedMenu;
+        // biome-ignore lint/style/noUselessElse: <explanation>
       } else {
         // Menu is not in selectedMenu, add it
         return [...prevMenu, data];
@@ -472,6 +559,8 @@ function Homecafe() {
     });
 
     handleClose();
+    setAddComments("");
+    setEditComments("");
   };
 
   const AlertMessage = () => {
@@ -484,13 +573,13 @@ function Homecafe() {
   };
 
   const TotalAmount = () => {
-    return selectedMenu.reduce((currentValue, nextValue) => {
+    return SelectedMenus?.reduce((currentValue, nextValue) => {
       return currentValue + nextValue.quantity;
     }, 0);
   };
 
   const TotalPrice = () => {
-    return selectedMenu.reduce((currentValue, nextValue) => {
+    return SelectedMenus?.reduce((currentValue, nextValue) => {
       return currentValue + nextValue.price * nextValue.quantity;
     }, 0);
   };
@@ -499,7 +588,7 @@ function Homecafe() {
   // console.log("TotalPrice", TotalPrice());
 
   const onRemoveFromCart = (id) => {
-    const selectedMenuCopied = [...selectedMenu];
+    const selectedMenuCopied = [...SelectedMenus];
     for (let i = 0; i < selectedMenuCopied.length; i++) {
       var obj = selectedMenuCopied[i];
       if (obj.id === id) {
@@ -507,6 +596,7 @@ function Homecafe() {
       }
     }
     setSelectedMenu([...selectedMenuCopied]);
+    setSelectedMenus([...selectedMenuCopied]);
     setIsRemoveItem(false);
   };
   useEffect(() => {
@@ -522,7 +612,7 @@ function Homecafe() {
 
   const handleAddCommentInCart = () => {
     const dataArray = [];
-    for (const i of selectedMenu) {
+    for (const i of SelectedMenus) {
       let _data = { ...i };
       if (noteItems?.id === i?.id) {
         if (noteItems?.note === "") {
@@ -534,6 +624,7 @@ function Homecafe() {
       dataArray.push(_data);
     }
     setSelectedMenu(dataArray);
+    setSelectedMenus(dataArray);
     setIsPupup(false);
     setAddComments("");
     setEditComments("");
@@ -541,7 +632,7 @@ function Homecafe() {
 
   const handleUpdateCommentInCart = () => {
     const dataArray = [];
-    for (const i of selectedMenu) {
+    for (const i of SelectedMenus) {
       let _data = { ...i };
       if (noteItems?.id === i?.id) {
         if (noteItems?.note === "") {
@@ -553,6 +644,7 @@ function Homecafe() {
       dataArray.push(_data);
     }
     setSelectedMenu(dataArray);
+    setSelectedMenus(dataArray);
     setIsPupup(false);
     setAddComments("");
     setEditComments("");
@@ -641,12 +733,11 @@ function Homecafe() {
 
   const convertHtmlToBase64 = (orderSelect) => {
     const base64ArrayAndPrinter = [];
-    orderSelect.forEach((data, index) => {
+    orderSelect.forEach((data) => {
       if (data) {
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
 
-        // Define base dimensions
         const baseHeight = 250;
         const extraHeightPerOption = 30;
         const extraHeightForNote = data?.note ? 40 : 0;
@@ -659,11 +750,9 @@ function Homecafe() {
         canvas.width = width;
         canvas.height = dynamicHeight;
 
-        // Set white background
         context.fillStyle = "#fff";
         context.fillRect(0, 0, width, dynamicHeight);
 
-        // Helper function for text wrapping
         function wrapText(context, text, x, y, maxWidth, lineHeight) {
           const words = text.split(" ");
           let line = "";
@@ -683,10 +772,16 @@ function Homecafe() {
           return y + lineHeight;
         }
 
-        // Content: Item Name and Quantity
         context.fillStyle = "#000";
         context.font = "bold 32px NotoSansLao, Arial, sans-serif";
         let yPosition = 30;
+
+        // Render "Queue no" at the top and center it
+        context.textAlign = "center"; // Center align the text
+        context.fillText(`Queue No ${bill}`, width / 2, yPosition);
+        yPosition += 40; // Add some space after "Queue no"
+        // Render data.name below "Queue no"
+        context.textAlign = "left"; // Reset alignment to left for other text
         yPosition = wrapText(
           context,
           `${data?.name} (${data?.quantity})`,
@@ -696,39 +791,33 @@ function Homecafe() {
           36
         );
 
-        // Content: Item Note
         if (data?.note) {
           const noteLabel = "note: ";
           const noteText = data.note;
 
-          // Draw "Note:" label in bold
           context.fillStyle = "#666";
           context.font = "bold italic 24px Arial, sans-serif";
           context.fillText(noteLabel, 10, yPosition);
 
-          // Measure width of the "Note:" label
           const noteLabelWidth = context.measureText(noteLabel).width;
 
-          // Wrap the note text, starting after the "Note:" label
           context.font = "italic 24px Arial, sans-serif";
           yPosition = wrapText(
             context,
             noteText,
-            10 + noteLabelWidth, // Start after the label width
+            10 + noteLabelWidth,
             yPosition,
-            width - 20 - noteLabelWidth, // Adjust wrapping width
+            width - 20 - noteLabelWidth,
             30
           );
 
-          // Add spacing after the note
           yPosition += 10;
         }
 
-        // Options
         if (data.options && data.options.length > 0) {
           context.fillStyle = "#000";
           context.font = "24px NotoSansLao, Arial, sans-serif";
-          data.options.forEach((option, idx) => {
+          data.options.forEach((option) => {
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
               : "";
@@ -745,7 +834,6 @@ function Homecafe() {
             );
           });
 
-          // Divider below options
           context.strokeStyle = "#ccc";
           context.setLineDash([4, 2]);
           context.beginPath();
@@ -769,51 +857,53 @@ function Homecafe() {
           46
         );
 
-        // Set text properties
-        context.fillStyle = "#000"; // Black text color
-        context.font = "28px NotoSansLao, Arial, sans-serif"; // Font style and size
-        context.textAlign = "right"; // Align text to the right
-        context.textBaseline = "bottom"; // Align text baseline to bottom
+        context.fillStyle = "#000";
+        context.font = "28px NotoSansLao, Arial, sans-serif";
+        context.textAlign = "right";
+        context.textBaseline = "bottom";
 
-        // Add a dotted line above the footer
-        context.strokeStyle = "#000"; // Black dotted line
-        context.setLineDash([4, 2]); // Dotted line style
+        context.strokeStyle = "#000";
+        context.setLineDash([4, 2]);
         context.beginPath();
-        context.moveTo(0, yPosition - 25); // Position 70px above footer
-        context.lineTo(width, yPosition - 25); // Full-width dotted line
+        context.moveTo(0, yPosition - 25);
+        context.lineTo(width, yPosition - 25);
         context.stroke();
-        context.setLineDash([]); // Reset line dash style
+        context.setLineDash([]);
 
-        // Footer Section
         context.font = "bold 24px NotoSansLao, Arial, sans-serif";
         context.fillStyle = "#000";
 
-        // Draw "Created By" text at the bottom-left
-        context.textAlign = "left"; // Align text to the left
+        context.textAlign = "left";
         context.fillText(
-          data?.createdBy?.data?.firstname || profile?.data?.firstname, // Footer text
-          10, // 10px from the left edge
-          yPosition + 10 // Position Y: 20px above the bottom
+          data?.createdBy?.data?.firstname || profile?.data?.firstname,
+          10,
+          yPosition + 10
         );
 
-        // Draw date and time at the bottom-right
-        context.textAlign = "right"; // Align text to the right
-        context.fillStyle = "#6e6e6e"; // Gray color
-        context.font = "22px NotoSansLao, Arial, sans-serif"; // Smaller font size
+        context.textAlign = "right";
+        context.fillStyle = "#6e6e6e";
+        context.font = "22px NotoSansLao, Arial, sans-serif";
         context.fillText(
           `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
             data?.createdAt
-          ).format("LT")}`, // Date and time
-          width - 10, // 10px from the right edge
-          yPosition + 10 // Position Y: 20px above the bottom
+          ).format("LT")}`,
+          width - 10,
+          yPosition + 10
         );
 
-        // Convert canvas to base64
+        // Add Queue no
+        context.fillStyle = "#000";
+        context.font = "bold 28px NotoSansLao, Arial, sans-serif";
+        context.textAlign = "center";
+
         const dataUrl = canvas.toDataURL("image/png");
+        console.log("dataUrl", dataUrl);
         const printer = printers.find((e) => e?._id === data?.printer);
         if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
       }
     });
+
+    console.log("base64ArrayAndPrinter", base64ArrayAndPrinter);
 
     return base64ArrayAndPrinter;
   };
@@ -862,9 +952,8 @@ function Homecafe() {
   };
 
   const onPrintForCher = async () => {
-    console.log("selectedMenu", selectedMenu);
     try {
-      const base64ArrayAndPrinter = convertHtmlToBase64(selectedMenu);
+      const base64ArrayAndPrinter = convertHtmlToBase64(SelectedMenus);
 
       let arrayPrint = [];
       for (var index = 0; index < base64ArrayAndPrinter.length; index++) {
@@ -903,10 +992,102 @@ function Homecafe() {
 
   // console.log("bill80Ref CaFe",bill80Ref)
 
+  const billForCherCancel80 = useRef([]);
+
+  if (billForCherCancel80.current.length !== arrLength) {
+    // add or remove refs
+    billForCherCancel80.current = Array(arrLength)
+      .fill()
+      .map((_, i) => billForCherCancel80.current[i]);
+  }
+
+  const onPrintForCherLaBel = async () => {
+    // setOnPrinting(true);
+
+    let _dataBill = {
+      ...bill,
+      typePrint: "PRINT_BILL_LABEL",
+    };
+    await _createHistoriesPrinter(_dataBill);
+
+    const orderSelect = selectedMenu?.filter((e) => e);
+    console.log("ORDER", orderSelect);
+    let _index = 0;
+    const printDate = [...billForCherCancel80.current];
+    console.log("printDate", printDate);
+    let dataUrls = [];
+    for (const _ref of printDate) {
+      if (_ref) {
+        // Ensure _ref is a valid element
+        const dataUrl = await html2canvas(_ref, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 530 / widthBill80,
+        });
+        dataUrls.push(dataUrl);
+      }
+    }
+    console.log("dataUrls", dataUrls);
+    for (const _ref of printDate) {
+      const _printer = printers.find((e) => {
+        return e?._id === orderSelect?.[_index]?.printer;
+      });
+
+      try {
+        let urlForPrinter = "";
+        let dataUrl = dataUrls[_index];
+
+        urlForPrinter = USB_LABEL_PRINTER_PORT;
+
+        const _file = await base64ToBlob(dataUrl.toDataURL());
+
+        var bodyFormData = new FormData();
+        bodyFormData.append("ip", _printer?.ip);
+        bodyFormData.append("isdrawer", false);
+        bodyFormData.append("port", "9100");
+        bodyFormData.append("image", _file);
+        bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
+        if (_index === 0) {
+          bodyFormData.append("beep1", 1);
+          bodyFormData.append("beep2", 9);
+        }
+        await axios({
+          method: "post",
+          url: urlForPrinter,
+          data: bodyFormData,
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        // if (_index === 0) {
+        //   await Swal.fire({
+        //     icon: "success",
+        //     title: `${t("print_success")}`,
+        //     showConfirmButton: false,
+        //     timer: 1500,
+        //   });
+        // }
+      } catch (err) {
+        console.log(err);
+        if (_index === 0) {
+          // setOnPrinting(false);
+          await Swal.fire({
+            icon: "error",
+            title: "ປິ້ນສະຕິກເກີ້ບໍ່ສຳເລັດ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          return { error: true, err };
+        }
+      }
+      _index++;
+    }
+    // setOnPrinting(false);
+  };
+
   const onPrintBill = async () => {
     try {
+      setIsLoading(true);
       const _dataBill = {
-        ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
       };
       await _createHistoriesPrinter(_dataBill);
@@ -971,20 +1152,22 @@ function Homecafe() {
           });
         }
       );
+      await onPrintForCherLaBel();
+      setIsLoading(false);
+      setSelectedTable();
+      getTableDataStore();
+      setSelectedMenu([]);
+      setSelectedMenus([]);
+      clearSelectedMenus();
 
       await Swal.fire({
         icon: "success",
-        title: "ປິນສຳເລັດ",
+        title: `${t("print_success")}`,
         showConfirmButton: false,
         timer: 1500,
       });
-
-      // update bill status to call check out
-      // callCheckOutPrintBillOnly(selectedTable?._id);
-      setSelectedTable();
-      getTableDataStore();
     } catch (err) {
-      console.log("err printer", err);
+      setIsLoading(false);
       await Swal.fire({
         icon: "error",
         title: `${t("print_fial")}`,
@@ -1009,14 +1192,15 @@ function Homecafe() {
   // };
   const handleQuantityChange = (e, row) => {
     const floatQuantity = Number.parseFloat(e.target.value) || 0; // Ensure it's a valid number
-    const index = selectedMenu.findIndex((item) => item.id === row.id); // Find the index of the item
+    const index = SelectedMenus.findIndex((item) => item.id === row.id); // Find the index of the item
 
     if (index !== -1) {
       // Update the item at the found index
-      const updatedMenu = [...selectedMenu];
+      const updatedMenu = [...SelectedMenus];
       updatedMenu[index] = { ...updatedMenu[index], quantity: floatQuantity };
 
       setSelectedMenu(updatedMenu);
+      setSelectedMenus(updatedMenu);
     }
   };
 
@@ -1032,42 +1216,6 @@ function Homecafe() {
         }}
       >
         <CafeMenu>
-          {/* <div
-            style={{
-              padding: 10,
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gridGap: 20,
-            }}
-          >
-            <div>
-              <label>{t("choose_food_type")}</label>
-              <select
-                className="form-control"
-                onChange={(e) => setSelectedCategory(e.target.value)}
-              >
-                <option value="All">{t("all")}</option>
-                {Categorys &&
-                  Categorys?.map((data, index) => {
-                    return (
-                      <option key={"category" + index} value={data?._id}>
-                        {data?.name}
-                      </option>
-                    );
-                  })}
-              </select>
-            </div>
-            <div>
-              <label>{t("search")}</label>
-              <input
-                placeholder={t("search")}
-                className="form-control"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-          </div> */}
-
           <div className="py-2 sticky top-0 z-10 bg-white flex flex-col">
             <div className="w-full px-2 py-1">
               <input
@@ -1124,11 +1272,11 @@ function Homecafe() {
                 : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 px-2"
             }
           >
-            {isLoading ? (
+            {isLoading || isMenuLoading ? (
               <Loading />
             ) : afterSearch.length === 0 ? (
               <div className="w-full pt-36 flex justify-center items-center">
-                <p>ຍັງບໍ່ມີລາຍການນີ້</p>
+                {AnimationLoading()}
               </div>
             ) : (
               afterSearch?.map((data, index) => {
@@ -1158,13 +1306,6 @@ function Homecafe() {
                         <span className="text-color-app font-medium text-base font-inter">
                           {moneyCurrency(data?.price)}{" "}
                           {storeDetail?.firstCurrency}
-                          {/* {currency?.map(
-                            (e) =>
-                              " / " +
-                              (data?.price / e.sell).toFixed(2) +
-                              " " +
-                              e?.currencyCode
-                          )} */}
                         </span>
                         <br />
                         <span
@@ -1222,8 +1363,8 @@ function Homecafe() {
                       </tr>
                     </thead>
                     <tbody>
-                      {selectedMenu &&
-                        selectedMenu.map((data, index) => {
+                      {SelectedMenus?.length > 0 ? (
+                        SelectedMenus?.map((data, index) => {
                           // Create the options string if options exist
                           const optionsString =
                             data.options && data.options.length > 0
@@ -1238,7 +1379,7 @@ function Homecafe() {
                           const totalOptionPrice = data?.totalOptionPrice || 0;
                           const itemPrice = data?.price + totalOptionPrice;
                           return (
-                            <tr key={"selectMenu" + index}>
+                            <tr key={`selectMenu${index}`}>
                               <td style={{ width: 20 }}>{index + 1}</td>
                               <td
                                 style={{ textAlign: "left", paddingBottom: 0 }}
@@ -1321,6 +1462,7 @@ function Homecafe() {
                                     {data?.quantity}
                                   </p>
                                 )}
+                                {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
                                 <button
                                   style={{
                                     color: "red",
@@ -1360,18 +1502,30 @@ function Homecafe() {
                               </td>
                             </tr>
                           );
-                        })}
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan={5}>
+                            <div className="h-[400px] flex justify-center items-center">
+                              <div className="flex flex-col items-center">
+                                <BsCartXFill className="text-[100px] text-orange-500 animate-bounce" />
+                                <p className="text-[16] mt-3 font-bold text-orange-500">
+                                  {t("no_order_list")}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </Table>
-                  {selectedMenu.length > 0 ? (
+                  {SelectedMenus?.length > 0 ? (
                     <div className="mb-3">
                       <div>
                         <span className={fontMap[language]}>
                           {t("amountTotal")} :{" "}
                         </span>
-                        <span>
-                          {Number.parseFloat(TotalAmount()).toFixed(3)}
-                        </span>
+                        <span>{Number.parseFloat(TotalAmount())}</span>
                       </div>
                       <div>
                         <span className={fontMap[language]}>
@@ -1389,7 +1543,7 @@ function Homecafe() {
                 </div>
                 <div className="col-12">
                   <div className="row" style={{ margin: 0 }}>
-                    {selectedMenu.length > 0 ? (
+                    {SelectedMenus?.length > 0 ? (
                       <>
                         <Button
                           variant="outline-warning"
@@ -1401,7 +1555,10 @@ function Homecafe() {
                             backgroundColor: theme.primaryColor,
                             color: "#ffffff",
                           }}
-                          onClick={() => setSelectedMenu([])}
+                          onClick={() => {
+                            clearSelectedMenus();
+                            setSelectedMenu([]);
+                          }}
                         >
                           {t("cancel")}
                         </Button>
@@ -1416,7 +1573,7 @@ function Homecafe() {
                             flex: 1,
                           }}
                           onClick={() => {
-                            selectedMenu.length === 0
+                            SelectedMenus.length === 0
                               ? AlertMessage()
                               : setPopup({ CheckOutType: true });
                           }}
@@ -1424,37 +1581,6 @@ function Homecafe() {
                           {/* {t("print_bill")} */}
                           CheckOut
                         </Button>
-                        <Button
-                          variant="light"
-                          className={cn("hover-me", fontMap[language])}
-                          style={{
-                            marginRight: 15,
-                            backgroundColor: theme.primaryColor,
-                            color: "#ffffff",
-                            fontWeight: "bold",
-                            flex: 1,
-                          }}
-                          disabled={disabledButton}
-                          onClick={() => {
-                            onPrintForCher();
-                          }}
-                        >
-                          {t("print_bill")}
-                        </Button>
-                        {/* <Button
-                          variant="outline-warning"
-                          className={cn("hover-me", fontMap[language])}
-                          style={{
-                            marginRight: 15,
-                            border: `solid 1px ${theme.primaryColor}`,
-                            fontWeight: "bold",
-                            backgroundColor: theme.primaryColor,
-                            color: "#ffffff",
-                          }}
-                          
-                        >
-                          {t("print_bill")}
-                        </Button> */}
                       </>
                     ) : (
                       ""
@@ -1486,7 +1612,7 @@ function Homecafe() {
           onClick={() => setCartModal(true)}
         >
           <RiListOrdered2 /> ກະຕ່າລາຍການ
-          <span style={{ marginLeft: "5px" }}>({selectedMenu.length})</span>
+          <span style={{ marginLeft: "5px" }}>({SelectedMenus.length})</span>
         </button>
       ) : null}
 
@@ -1549,147 +1675,164 @@ function Homecafe() {
                     </tr>
                   </thead>
                   <tbody>
-                    {selectedMenu?.map((data, index) => {
-                      // Create the options string if options exist
-                      const optionsString =
-                        data.options && data.options.length > 0
-                          ? data.options
-                              .map((option) =>
-                                option.quantity > 1
-                                  ? `[${option.quantity} x ${option.name}]`
-                                  : `[${option.name}]`
-                              )
-                              .join(" ")
-                          : "";
-                      const totalOptionPrice = data?.totalOptionPrice || 0;
-                      const itemPrice = data?.price + totalOptionPrice;
-                      return (
-                        <tr key={"selectMenu" + index}>
-                          <td style={{ width: 20 }}>{index + 1}</td>
-                          <td style={{ textAlign: "left", paddingBottom: 0 }}>
-                            <p>{`${data.name} ${optionsString}`}</p>
-                            <p style={{ fontSize: 12, marginTop: "-1.5em" }}>
-                              {data?.note ?? ""}
-                            </p>
-                          </td>
-
-                          <td
-                            style={{
-                              display: "flex",
-                              flexDirection: "row",
-                              justifyContent: "space-around",
-                              marginTop: "-.05em",
-                              alignItems: "center",
-                            }}
-                          >
-                            <button
-                              style={{
-                                color: "blue",
-                                border: "none",
-                                width: 25,
-                              }}
-                              onClick={() => handleSetQuantity(-1, data)}
-                            >
-                              -
-                            </button>
-                            {editingRowId === data.id ? (
-                              <input
-                                type="number"
-                                step="0.1"
-                                min="0"
-                                value={data.quantity}
-                                autoFocus
-                                onChange={(e) => handleQuantityChange(e, data)}
-                                onBlur={() => saveQuantity()}
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  gap: 10,
-                                  padding: "2px",
-                                  margin: "0px 5px",
-                                  cursor: "pointer",
-                                  border: `2px solid ${theme.primaryColor}`,
-                                  borderRadius: "5px",
-                                  fontSize: 14,
-                                }}
-                              />
-                            ) : data?.isWeightMenu ? (
-                              <p
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  gap: 10,
-                                  margin: "0px 5px",
-                                  cursor: "pointer",
-                                  border: `2px solid ${theme.primaryColor}`,
-                                  borderRadius: "5px",
-                                  fontSize: 14,
-                                }}
-                                onClick={() => setEditingRowId(data?.id)}
-                              >
-                                {Number.parseFloat(data?.quantity).toFixed(3)}
+                    {SelectedMenus?.length > 0 ? (
+                      SelectedMenus?.map((data, index) => {
+                        // Create the options string if options exist
+                        const optionsString =
+                          data.options && data.options.length > 0
+                            ? data.options
+                                .map((option) =>
+                                  option.quantity > 1
+                                    ? `[${option.quantity} x ${option.name}]`
+                                    : `[${option.name}]`
+                                )
+                                .join(" ")
+                            : "";
+                        const totalOptionPrice = data?.totalOptionPrice || 0;
+                        const itemPrice = data?.price + totalOptionPrice;
+                        return (
+                          <tr key={"selectMenu" + index}>
+                            <td style={{ width: 20 }}>{index + 1}</td>
+                            <td style={{ textAlign: "left", paddingBottom: 0 }}>
+                              <p>{`${data.name} ${optionsString}`}</p>
+                              <p style={{ fontSize: 12, marginTop: "-1.5em" }}>
+                                {data?.note ?? ""}
                               </p>
-                            ) : (
-                              <p
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  gap: 10,
-                                  margin: "0px 5px",
-                                }}
-                              >
-                                {data?.quantity}
-                              </p>
-                            )}
-                            <button
-                              style={{
-                                color: "red",
-                                border: "none",
-                                width: 25,
-                              }}
-                              onClick={() => handleSetQuantity(1, data)}
-                            >
-                              +
-                            </button>
-                          </td>
+                            </td>
 
-                          <td>
-                            <p>{moneyCurrency(itemPrice)}</p>
-                          </td>
-
-                          <td style={{ padding: 0, textAlign: "right" }}>
-                            <div
+                            <td
                               style={{
                                 display: "flex",
-                                justifyContent: "end",
-                                gap: 10,
-                                paddingLeft: 10,
-                                paddingTop: 5,
+                                flexDirection: "row",
+                                justifyContent: "space-around",
+                                marginTop: "-.05em",
+                                alignItems: "center",
                               }}
                             >
+                              <button
+                                style={{
+                                  color: "blue",
+                                  border: "none",
+                                  width: 25,
+                                }}
+                                onClick={() => handleSetQuantity(-1, data)}
+                              >
+                                -
+                              </button>
+                              {editingRowId === data.id ? (
+                                <input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={data.quantity}
+                                  autoFocus
+                                  onChange={(e) =>
+                                    handleQuantityChange(e, data)
+                                  }
+                                  onBlur={() => saveQuantity()}
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    gap: 10,
+                                    padding: "2px",
+                                    margin: "0px 5px",
+                                    cursor: "pointer",
+                                    border: `2px solid ${theme.primaryColor}`,
+                                    borderRadius: "5px",
+                                    fontSize: 14,
+                                  }}
+                                />
+                              ) : data?.isWeightMenu ? (
+                                <p
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    gap: 10,
+                                    margin: "0px 5px",
+                                    cursor: "pointer",
+                                    border: `2px solid ${theme.primaryColor}`,
+                                    borderRadius: "5px",
+                                    fontSize: 14,
+                                  }}
+                                  onClick={() => setEditingRowId(data?.id)}
+                                >
+                                  {Number.parseFloat(data?.quantity).toFixed(3)}
+                                </p>
+                              ) : (
+                                <p
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    gap: 10,
+                                    margin: "0px 5px",
+                                  }}
+                                >
+                                  {data?.quantity}
+                                </p>
+                              )}
+                              <button
+                                style={{
+                                  color: "red",
+                                  border: "none",
+                                  width: 25,
+                                }}
+                                onClick={() => handleSetQuantity(1, data)}
+                              >
+                                +
+                              </button>
+                            </td>
+
+                            <td>
+                              <p>{moneyCurrency(itemPrice)}</p>
+                            </td>
+
+                            <td style={{ padding: 0, textAlign: "right" }}>
                               <div
                                 style={{
-                                  cursor: "pointer",
-                                  fontSize: 25,
-                                  color: theme.primaryColor,
+                                  display: "flex",
+                                  justifyContent: "end",
+                                  gap: 10,
+                                  paddingLeft: 10,
+                                  paddingTop: 5,
                                 }}
-                                onClick={() => onConfirmRemoveItem(data)}
                               >
-                                <MdDelete />
+                                <div
+                                  style={{
+                                    cursor: "pointer",
+                                    fontSize: 25,
+                                    color: theme.primaryColor,
+                                  }}
+                                  onClick={() => onConfirmRemoveItem(data)}
+                                >
+                                  <MdDelete />
+                                </div>
                               </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan={5}>
+                          <div className="h-[400] flex justify-center items-center">
+                            <div className="flex flex-col items-center">
+                              <BsCartXFill className="text-[100px] text-orange-500 animate-bounce" />
+                              <p className="text-[16] mt-2 font-bold text-orange-500">
+                                {t("no_order_list")}
+                              </p>
                             </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </Table>
               </div>
               <div className="col-12">
-                {selectedMenu.length > 0 ? (
+                {SelectedMenus.length > 0 ? (
                   <div className="mb-3">
                     <div>
                       <span>{t("amountTotal")} : </span>
@@ -1708,7 +1851,7 @@ function Homecafe() {
                   ""
                 )}
                 <div className="row" style={{ margin: 0 }}>
-                  {selectedMenu.length > 0 ? (
+                  {SelectedMenus.length > 0 ? (
                     <>
                       <Button
                         variant="outline-warning"
@@ -1720,7 +1863,10 @@ function Homecafe() {
                           backgroundColor: theme.primaryColor,
                           color: "#ffffff",
                         }}
-                        onClick={() => setSelectedMenu([])}
+                        onClick={() => {
+                          setSelectedMenus([]);
+                          setSelectedMenu([]);
+                        }}
                       >
                         {t("cancel")}
                       </Button>
@@ -1735,7 +1881,7 @@ function Homecafe() {
                           flex: 1,
                         }}
                         onClick={() => {
-                          selectedMenu.length === 0
+                          SelectedMenus.length === 0
                             ? AlertMessage()
                             : setPopup({ CheckOutType: true });
                         }}
@@ -1747,21 +1893,6 @@ function Homecafe() {
                   ) : (
                     ""
                   )}
-                  {/* <Button
-                    variant="light"
-                    className="hover-me"
-                    style={{
-                      marginRight: 15,
-                      backgroundColor: theme.primaryColor,
-                      color: "#ffffff",
-                      fontWeight: "bold",
-                      flex: 1,
-                    }}
-                    disabled={disabledButton}
-                    onClick={() => navigate(`/history-cafe-sale`)}
-                  >
-                    {t("history_sales")}
-                  </Button> */}
                 </div>
               </div>
             </div>
@@ -1932,12 +2063,13 @@ function Homecafe() {
         onSubmit={async () => onRemoveFromCart(itemDeleting.id)}
       />
       <CheckOutPopupCafe
+        bill={bill}
         onPrintForCher={onPrintForCher}
+        onQueue={billData}
         onPrintBill={onPrintBill}
+        onPrintForCherLaBel={onPrintForCherLaBel}
         onPrintDrawer={onPrintDrawer}
-        dataBill={selectedMenu}
-        setSelectedMenu={setSelectedMenu}
-        tableData={selectedTable}
+        dataBill={SelectedMenus}
         open={popup?.CheckOutType}
         onClose={() => setPopup()}
         setDataBill={setDataBill}
@@ -1948,12 +2080,45 @@ function Homecafe() {
 
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
         <BillForCheckOutCafe80
+          data={bill}
           storeDetail={storeDetail}
-          dataBill={selectedMenu}
+          dataBill={SelectedMenus}
           taxPercent={taxPercent}
           profile={profile}
+          meberData={dataBill}
         />
       </div>
+      {SelectedMenus?.map((val, i) => {
+        const totalPrice = () => {
+          const totalOptionPrice = val?.totalOptionPrice || 0;
+          return val?.price + totalOptionPrice;
+        };
+        return Array.from({ length: val?.quantity }).map((_, index) => {
+          const key = `${val._id}-${index}`;
+          return (
+            <div
+              key={key}
+              // style={{
+              //   width: "80mm",
+              //   paddingRight: "20px",
+              //   paddingBottom: "10px",
+              // }}
+              className="w-[80mm] pr-[20px pb-[10px]"
+              ref={(el) => {
+                if (el) {
+                  billForCherCancel80.current[i] = el;
+                }
+              }}
+            >
+              <PrintLabel
+                data={bill}
+                bill={{ ...val }}
+                totalPrice={totalPrice}
+              />
+            </div>
+          );
+        });
+      })}
     </div>
   );
 }

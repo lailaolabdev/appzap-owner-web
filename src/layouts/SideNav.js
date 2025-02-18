@@ -28,8 +28,10 @@ import {
   faLayerGroup,
   faStoreAlt,
   faBuilding,
+  faClock,
   faMoneyBill,
-  faMoneyCheck,
+  faUserAlt,
+  faDesktop,
 } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP, COLOR_GRAY, WAITING_STATUS } from "../constants";
 import "./sidenav.css";
@@ -44,6 +46,8 @@ import { fontMap } from "../utils/font-map";
 import { useStoreStore } from "../zustand/storeStore";
 import { useOrderStore } from "../zustand/orderStore";
 import { useBookingStore } from "../zustand/bookingStore";
+import PopUpOpenShift from "./../components/popup/PopUpOpenShift";
+import { useShiftStore } from "../zustand/ShiftStore";
 
 export default function Sidenav({ location, navigate, onToggle }) {
   const { openTableData, getTableDataStore } = useStore();
@@ -52,6 +56,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const { waitingOrders } = useOrderStore();
   const { bookingWaitingLength, fetchBookingByStatus } = useBookingStore();
 
+  const [openPopUpShift, setOpenPopUpShift] = useState(false);
+  const { shiftCurrent } = useShiftStore();
+  const [status, setStatus] = useState(true);
   const [token, setToken] = useState();
   const [isTitle, setIsTitle] = useState(false);
   const [selected, setSelectStatus] = useState(
@@ -84,14 +91,129 @@ export default function Sidenav({ location, navigate, onToggle }) {
   } = useTranslation();
   const { profile } = useStore();
   const { user } = useStore();
+  const itemMenuForCafe = [
+    {
+      title: `${t("isCafe")}`,
+      key: storeDetail?.isShift
+        ? shiftCurrent[0]?.status === "OPEN"
+          ? "cafe"
+          : "shift-open-pages"
+        : "cafe",
+      icon: faStoreAlt,
+      typeStore: storeDetail?.isStatusCafe
+        ? storeDetail?.isStatusCafe
+        : storeDetail?.isRestuarant,
+      hidden: !storeDetail?.hasPOS,
+      system: "tableManagement",
+      role: "APPZAP_COUNTER",
+    },
+    {
+      title: `${t("statistic_money")}`,
+      key: "report",
+      icon: faLayerGroup,
+      typeStore: "",
+      system: "reportManagement",
+      role: "APPZAP_COUNTER",
+    },
+    {
+      title: `${t("report_new")}`,
+      key: "DashboardPage",
+      typeStore: "",
+      icon: faChartLine,
+      hidden: !storeDetail?.hasPOS,
+      system: "reportManagement",
+      role: "APPZAP_COUNTER",
+    },
+    {
+      title: `${t("paid_manage")}`,
+      key: "expends",
+      icon: faBook,
+      typeStore: "",
+      system: "reportManagement",
+      role: profile?.data?.role,
+    },
+    {
+      title: `${t("menu_manage")}`,
+      key: "menu",
+      typeStore: "",
+      icon: faBoxOpen,
+      hidden: !storeDetail?.hasSmartMenu,
+      system: "menuManagement",
+      role: profile?.data?.role,
+    },
+    {
+      title: `${t("CRM")}`,
+      key: "member/crm",
+      typeStore: "",
+      icon: faUserAlt,
+      hidden: !storeDetail?.isCRM,
+      system: "menuManagement",
+      role: profile?.data?.role,
+    },
+    {
+      title: `${t("shift")}`,
+      key: "shift",
+      typeStore: "",
+      icon: faClock,
+      hidden: !storeDetail?.isShift,
+      system: "reportManagement",
+      role: "APPZAP_COUNTER",
+    },
+    {
+      title: `${t("open_second_screen")}`,
+      key: "setting-screen",
+      typeStore: "",
+      icon: faDesktop,
+      hidden: "",
+      system: "reportManagement",
+      role: "APPZAP_COUNTER",
+    },
+    {
+      title: `${t("branch")}`,
+      key: "branch",
+      typeStore: "",
+      icon: faBuilding,
+      hidden: !storeDetail?.hasPOS,
+      system: "reportManagement",
+      role: profile?.data?.role,
+    },
+    {
+      title: `${t("shop_setting")}`,
+      key: "settingStore",
+      typeStore: "",
+      icon: faCogs,
+      hidden: !storeDetail?.hasPOS,
+      system: "settingManagement",
+      role: profile?.data?.role,
+    },
+  ].filter((e) => {
+    if (profile?.data?.role === "APPZAP_COUNTER") {
+      return (
+        e.key === "cafe" ||
+        e.key === "report" ||
+        e.key === "shift" ||
+        e.key === "setting-screen" ||
+        e.key === "DashboardPage"
+      );
+    }
+    if (profile?.data?.role === "APPZAP_ADMIN") {
+      return true;
+    }
+    return e.role === profile?.data?.role;
+  });
 
   const itemList = [
     {
       title: `${t("table_status")}`,
-      key: "tables",
+      key: storeDetail?.isShift
+        ? shiftCurrent[0]?.status === "OPEN"
+          ? "tables"
+          : "shift-open-pages"
+        : "tables",
       icon: faHome,
       typeStore: "",
       hidden: !storeDetail?.hasPOS,
+      isCafe: storeDetail?.isStatusCafe,
       system: "tableManagement",
     },
     {
@@ -100,32 +222,33 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       icon: faAddressCard,
       hidden: !storeDetail?.hasPOS,
+      isCafe: storeDetail?.isStatusCafe,
       system: "orderManagement",
     },
     {
-      title: t("stock_manage"),
-      key: "stock",
-      // icon: BsArchive,
-      icon: faBoxes,
-      typeStore: "",
-      hidden: !storeDetail?.hasPOS,
-      system: "stockManagement",
-    },
-    {
       title: `${t("isCafe")}`,
-      key: "cafe",
+      key: storeDetail?.isShift
+        ? shiftCurrent[0]?.status === "OPEN"
+          ? "cafe"
+          : "shift-open-pages"
+        : "cafe",
       icon: faStoreAlt,
-      typeStore: storeDetail?.isRestuarant,
+      typeStore: storeDetail?.isStatusCafe
+        ? storeDetail?.isStatusCafe
+        : storeDetail?.isRestuarant,
       hidden: !storeDetail?.hasPOS,
       system: "tableManagement",
     },
-    {
-      title: `${t("paid_manage")}`,
-      key: "expends",
-      icon: faBook,
-      typeStore: "",
-      system: "reportManagement",
-    },
+    // {
+    //   title: t("stock_manage"),
+    //   key: "stock",
+    //   icon: faBoxes,
+    //   typeStore: "",
+    //   hidden: !storeDetail?.hasPOS,
+    //   isCafe: storeDetail?.isStatusCafe,
+    //   system: "stockManagement",
+    // },
+
     {
       title: `${t("booking_manage")}`,
       key: "reservations",
@@ -134,23 +257,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.isReservable,
       system: "reservationManagement",
     },
-
-    // {
-    //   title: "ລາຍງານການຈອງ",
-    //   key: "reservationDashboard",
-    //   icon: faChartBar,
-    //   typeStore: "",
-    //   hidden: !storeDetail?.hasReservation,
-    //   system: "reservationManagement",
-    // },
-    // {
-    //   title: "ລູກຄ້າສັ່ງເອງ",
-    //   key: "self-ordering-order",
-    //   typeStore: "",
-    //   icon: faUser,
-    //   system: "orderManagement",
-    // },
-
     {
       title: `${t("menu_manage")}`,
       key: "menu",
@@ -159,49 +265,15 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasSmartMenu,
       system: "menuManagement",
     },
-
-    // {
-    //   title: "ລາຍງານ (ໃໝ່)",
-    //   key: "reports/sales-report",
-    //   typeStore: "",
-    //   icon: faChartLine,
-    //   hidden: !storeDetail?.hasPOS,
-    //   system: "reportManagement",
-    // },
-
-    // {
-    //   title: "ລາຍງານສະຕ໋ອກ",
-    //   key: "reportStocks",
-    //   typeStore: "",
-    //   icon: faChartLine,
-    // hidden: !storeDetail?.hasPOS,
-    //   system: "settingManagement",
-    // },
-    // {
-    //   title: "ສະຕ໊ອກ",
-    //   key: "settingStore/stock",
-    //   typeStore: "",
-    //   icon: faBoxes,
-    //   hidden: !storeDetail?.hasPOS,
-    //   system: "stockManagement",
-    // },
-    // {
-    //   title: "ຕັ້ງຄ່າຮ້ານຄ້າ",
-    //   key: "settingStore",
-    //   typeStore: "",
-    //   icon: faCogs,
-    //   hidden: !storeDetail?.hasPOS,
-    //   system: "settingManagement",
-    // },
   ]
     .filter((e) => e.title) // Filter out items with empty title
-
     .filter((e) => {
       const verify = role(profile?.data?.role, profile?.data);
       return verify?.[e?.system] ?? false;
     })
-    .filter((e) => !e?.hidden)
-    .filter((e) => e.typeStore != "GENERAL");
+    .filter((e) => !e.isCafe) // Only include items where isCafe is true
+    .filter((e) => !e.hidden) // Exclude hidden items
+    .filter((e) => e.typeStore !== "GENERAL"); // Exclude items with typeStore === "GENERAL"
 
   const itemReports = [
     {
@@ -219,6 +291,21 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "reportManagement",
     },
+    {
+      title: `${t("branch")}`,
+      key: "branch",
+      typeStore: "",
+      icon: faBuilding,
+      hidden: !storeDetail?.hasPOS,
+      system: "reportManagement",
+    },
+    {
+      title: `${t("paid_manage")}`,
+      key: "expends",
+      icon: faBook,
+      typeStore: "",
+      system: "reportManagement",
+    },
   ]
     .filter((e) => e.title) // Filter out items with empty title
     .filter((e) => {
@@ -229,11 +316,11 @@ export default function Sidenav({ location, navigate, onToggle }) {
 
   const settingNavItem = [
     {
-      title: `${t("branch")}`,
-      key: "branch",
+      title: `${t("shift")}`,
+      key: "shift",
       typeStore: "",
-      icon: faBuilding,
-      hidden: !storeDetail?.hasPOS,
+      icon: faClock,
+      hidden: !storeDetail?.isShift,
       system: "reportManagement",
     },
     {
@@ -251,22 +338,25 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       icon: faBeer,
       hidden: !storeDetail?.hasPOS,
+      isCafe: storeDetail?.isStatusCafe,
       system: "farkManagement",
     },
-    // {
-    //   title: `${t("debt")}`,
-    //   key: "debt",
-    //   typeStore: "",
-    //   icon: faMoneyBill,
-    //   hidden: !storeDetail?.hasPOS,
-    //   system: "reportManagement",
-    // },
+    {
+      title: `${t("debt")}`,
+      key: "debt",
+      typeStore: "",
+      icon: faMoneyBill,
+      hidden: !storeDetail?.hasPOS,
+      isCafe: storeDetail?.isStatusCafe,
+      system: "reportManagement",
+    },
   ]
     .filter((e) => {
       const verify = role(profile?.data?.role, profile?.data);
       return verify?.[e?.system] ?? false;
     })
-    .filter((e) => !e?.hidden);
+    .filter((e) => !e?.hidden)
+    .filter((e) => !e?.isCafe);
 
   const listForRole = itemList.filter((e) => {
     const verify = role(profile?.data?.role, profile?.data);
@@ -292,255 +382,347 @@ export default function Sidenav({ location, navigate, onToggle }) {
   // console.log("=====::::===", { countOrderWaiting })
 
   return (
-    <SideNav
-      style={{
-        backgroundColor: "#FFFFFF",
-        border: "solid 1px #E4E4E4",
-        height: "100vh",
-        display: "block",
-        position: "fixed",
-      }}
-      onSelect={(selected) => {
-        setSelectStatus(selected.split("/")[0].split("-")[0]);
-        if (selected === "dashboard") {
-          selected = selected + "/" + storeDetail?._id;
-        }
-        if (selected === "report") {
-          selected = selected + "/" + storeDetail?._id;
-        }
-        if (selected === "histories") {
-          selected = selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
-        }
-        if (selected === "users") {
-          selected =
-            selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
-        }
-        if (selected === "settingStore/stock") {
-          selected =
-            selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
-        }
-        if (selected === "expends") {
-          selected = selected + "/limit/" + 40 + "/skip/" + 1;
-        }
-        if (selected === "category") {
-          selected =
-            selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
-        }
-        if (selected === "settingStore") {
-          selected = selected + `/${storeDetail?._id}`;
-        }
-        if (selected === "depositBeer") {
-          selected = selected + `/${storeDetail?._id}`;
-        }
-        if (selected === "cafe") {
-          selected = selected;
-        }
-        if (selected === "stock") {
-          selected = selected;
-        }
-        if (selected === "songlist") {
-          window
-            .open(
-              "https://dtf6wpulhnd0r.cloudfront.net/store/songs/" +
-                `${storeDetail?._id}?token=${token}`,
-              "_blank"
-            )
-            .focus();
-          return;
-        }
-        if (selected === "customerList") {
-          window
-            .open(
-              "https://d3ttcep1vkndfn.cloudfront.net/store/crm_customers/" +
-                `${storeDetail?._id}?token=${token}`,
-              "_blank"
-            )
-            .focus();
-          return;
-        }
-        if (selected === "supplier") {
-          window.open("https://supplier.appzap.la", "_blank").focus();
-          return;
-        }
-        const to = "/" + selected;
+    <>
+      <SideNav
+        style={{
+          backgroundColor: "#FFFFFF",
+          border: "solid 1px #E4E4E4",
+          height: "100vh",
+          display: "block",
+          position: "fixed",
+          // overflow: "auto",
+        }}
+        onSelect={(selected) => {
+          setSelectStatus(selected.split("/")[0].split("-")[0]);
+          if (selected === "dashboard") {
+            selected = selected + "/" + storeDetail?._id;
+          }
+          if (selected === "report") {
+            selected = selected + "/" + storeDetail?._id;
+          }
+          if (selected === "histories") {
+            selected = selected + "/pagenumber/" + 1 + "/" + storeDetail?._id;
+          }
+          if (selected === "users") {
+            selected =
+              selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
+          }
+          if (selected === "settingStore/stock") {
+            selected =
+              selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
+          }
+          if (selected === "expends") {
+            selected = selected + "/limit/" + 40 + "/skip/" + 1;
+          }
+          if (selected === "category") {
+            selected =
+              selected + "/limit/" + 40 + "/page/" + 1 + "/" + storeDetail?._id;
+          }
+          if (selected === "settingStore") {
+            selected = selected + `/${storeDetail?._id}`;
+          }
+          if (selected === "depositBeer") {
+            selected = selected + `/${storeDetail?._id}`;
+          }
+          if (selected === "cafe") {
+            selected = selected;
+          }
+          if (selected === "stock") {
+            selected = selected;
+          }
+          if (selected === "songlist") {
+            window
+              .open(
+                "https://dtf6wpulhnd0r.cloudfront.net/store/songs/" +
+                  `${storeDetail?._id}?token=${token}`,
+                "_blank"
+              )
+              .focus();
+            return;
+          }
+          if (selected === "customerList") {
+            window
+              .open(
+                "https://d3ttcep1vkndfn.cloudfront.net/store/crm_customers/" +
+                  `${storeDetail?._id}?token=${token}`,
+                "_blank"
+              )
+              .focus();
+            return;
+          }
+          if (selected === "supplier") {
+            window.open("https://supplier.appzap.la", "_blank").focus();
+            return;
+          }
+          const to = "/" + selected;
 
-        if (location.pathname !== to) {
-          navigate(to);
-        }
-      }}
-      onToggle={(expanded) => {
-        onToggle(expanded);
-      }}
-    >
-      <Toggle />
-      <SideNav.Nav value={location.pathname.split("/")[1]}>
-        <hr style={{ marginTop: "-.05em" }} />
-        {listForRole
-          .filter((e) => !e?.hidden)
-          .map((e, index) => (
-            <NavItem
-              eventKey={e?.key}
-              key={index}
-              style={{ backgroundColor: selected === e?.key ? "#ffff" : "" }}
-            >
-              <NavIcon>
-                <FontAwesomeIcon
-                  className={openTableData.length > 0 ? "scale-animation" : ""}
-                  icon={e?.icon}
+          if (location.pathname !== to) {
+            navigate(to);
+          }
+        }}
+        onToggle={(expanded) => {
+          onToggle(expanded);
+        }}
+      >
+        <Toggle />
+        {storeDetail?.isStatusCafe ? (
+          <SideNav.Nav value={location.pathname.split("/")[1]}>
+            <hr style={{ marginTop: "-.05em" }} />
+            {itemMenuForCafe
+              .filter((e) => !e?.hidden)
+              .map((e, index) => (
+                <NavItem
+                  eventKey={e?.key}
+                  key={index}
                   style={{
-                    color:
-                      selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-                    fontSize: 16,
+                    backgroundColor: selected === e?.key ? "#ffff" : "",
                   }}
-                />
-                {e?.key === "orders" && waitingOrders.length > 0 && (
-                  <span style={popNoti}>{waitingOrders.length}</span>
-                )}
-                {e?.key === "reservations" && bookingWaitingLength > 0 && (
-                  <span style={popNoti}>{bookingWaitingLength}</span>
-                )}
-              </NavIcon>
-              <NavText>
-                <b
-                  style={{
-                    color:
-                      selected === e?.key ? COLOR_APP : UN_SELECTED_TAB_TEXT,
-                  }}
-                  className={fontMap[language]}
                 >
-                  {" "}
-                  {e?.title}
-                </b>
-              </NavText>
-              {e?.children?.map((element, index) => {
-                return (
-                  <NavItem
-                    eventKey={element?.key}
-                    key={index}
-                    style={{
-                      backgroundColor: selected === element?.key ? "#ffff" : "",
-                    }}
-                  >
-                    <NavText
+                  <NavIcon>
+                    <FontAwesomeIcon
+                      className={
+                        openTableData.length > 0 ? "scale-animation" : ""
+                      }
+                      icon={e?.icon}
                       style={{
                         color:
-                          selected === element?.key
+                          selected === e?.key
+                            ? COLOR_APP
+                            : UN_SELECTED_TAB_TEXT,
+                        fontSize: 16,
+                      }}
+                    />
+                    {e?.key === "orders" && waitingOrders.length > 0 && (
+                      <span style={popNoti}>{waitingOrders.length}</span>
+                    )}
+                  </NavIcon>
+                  <NavText>
+                    <b
+                      style={{
+                        color:
+                          selected === e?.key
                             ? COLOR_APP
                             : UN_SELECTED_TAB_TEXT,
                       }}
                       className={fontMap[language]}
                     >
-                      {element?.title}
-                    </NavText>
-                  </NavItem>
-                );
-              })}
-            </NavItem>
-          ))}
+                      {" "}
+                      {e?.title}
+                    </b>
+                  </NavText>
+                  {e?.children?.map((element, index) => {
+                    return (
+                      <NavItem
+                        eventKey={element?.key}
+                        key={index}
+                        style={{
+                          backgroundColor:
+                            selected === element?.key ? "#ffff" : "",
+                        }}
+                      >
+                        <NavText
+                          style={{
+                            color:
+                              selected === element?.key
+                                ? COLOR_APP
+                                : UN_SELECTED_TAB_TEXT,
+                          }}
+                          className={fontMap[language]}
+                        >
+                          {element?.title}
+                        </NavText>
+                      </NavItem>
+                    );
+                  })}
+                </NavItem>
+              ))}
+          </SideNav.Nav>
+        ) : (
+          <SideNav.Nav value={location.pathname.split("/")[1]}>
+            <hr style={{ marginTop: "-.05em" }} />
+            {listForRole
+              .filter((e) => !e?.hidden)
+              .map((e, index) => (
+                <NavItem
+                  eventKey={e?.key}
+                  key={index}
+                  style={{
+                    backgroundColor: selected === e?.key ? "#ffff" : "",
+                  }}
+                >
+                  <NavIcon>
+                    <FontAwesomeIcon
+                      className={
+                        openTableData.length > 0 ? "scale-animation" : ""
+                      }
+                      icon={e?.icon}
+                      style={{
+                        color:
+                          selected === e?.key
+                            ? COLOR_APP
+                            : UN_SELECTED_TAB_TEXT,
+                        fontSize: 16,
+                      }}
+                    />
+                    {e?.key === "orders" && waitingOrders.length > 0 && (
+                      <span style={popNoti}>{waitingOrders.length}</span>
+                    )}
+                  </NavIcon>
+                  <NavText>
+                    <b
+                      style={{
+                        color:
+                          selected === e?.key
+                            ? COLOR_APP
+                            : UN_SELECTED_TAB_TEXT,
+                      }}
+                      className={fontMap[language]}
+                    >
+                      {" "}
+                      {e?.title}
+                    </b>
+                  </NavText>
+                  {e?.children?.map((element, index) => {
+                    return (
+                      <NavItem
+                        eventKey={element?.key}
+                        key={index}
+                        style={{
+                          backgroundColor:
+                            selected === element?.key ? "#ffff" : "",
+                        }}
+                      >
+                        <NavText
+                          style={{
+                            color:
+                              selected === element?.key
+                                ? COLOR_APP
+                                : UN_SELECTED_TAB_TEXT,
+                          }}
+                          className={fontMap[language]}
+                        >
+                          {element?.title}
+                        </NavText>
+                      </NavItem>
+                    );
+                  })}
+                </NavItem>
+              ))}
+            <hr />
 
-        <hr />
-
-        {itemReports?.length !== 0 ? (
-          <NavItem
-            eventKey="reportGroups"
-            style={{
-              color:
-                isPathInclude(["report"]) || isPathInclude(["reports"])
-                  ? COLOR_APP
-                  : COLOR_GRAY,
-            }}
-          >
-            <NavIcon>
-              <FontAwesomeIcon
-                className={openTableData.length > 0 ? "scale-animation" : ""}
-                icon={faTachometerAlt}
+            {itemReports?.length !== 0 ? (
+              <NavItem
+                eventKey="reportGroups"
                 style={{
                   color:
                     isPathInclude(["report"]) || isPathInclude(["reports"])
                       ? COLOR_APP
                       : COLOR_GRAY,
                 }}
-              />
-            </NavIcon>
-            <NavText>
-              <b
-                style={{
-                  color: UN_SELECTED_TAB_TEXT,
-                }}
-                className={fontMap[language]}
               >
-                {t("report")}
-              </b>
-            </NavText>
-
-            {itemReports.map((elm, index) => (
-              <NavItem key={index} eventKey={elm?.key}>
-                <NavText>
-                  <div
+                <NavIcon>
+                  <FontAwesomeIcon
+                    className={
+                      openTableData.length > 0 ? "scale-animation" : ""
+                    }
+                    icon={faTachometerAlt}
                     style={{
-                      display: "flex",
-                      justifyContent: "start",
-                      height: 40,
-                      alignItems: "center",
-                      gap: 8,
-                      width: "100%",
+                      color:
+                        isPathInclude(["report"]) || isPathInclude(["reports"])
+                          ? COLOR_APP
+                          : COLOR_GRAY,
                     }}
+                  />
+                </NavIcon>
+                <NavText>
+                  <b
+                    style={{
+                      color: UN_SELECTED_TAB_TEXT,
+                    }}
+                    className={fontMap[language]}
                   >
-                    <div>
-                      <FontAwesomeIcon
-                        className={
-                          openTableData.length > 0 ? "scale-animation" : ""
-                        }
-                        icon={elm?.icon}
+                    {t("report")}
+                  </b>
+                </NavText>
+
+                {itemReports.map((elm, index) => (
+                  <NavItem key={index} eventKey={elm?.key}>
+                    <NavText>
+                      <div
                         style={{
-                          color: selected === elm?.key ? COLOR_APP : COLOR_GRAY,
-                          marginTop: "-2em",
+                          display: "flex",
+                          justifyContent: "start",
+                          height: 40,
+                          alignItems: "center",
+                          gap: 8,
+                          width: "100%",
                         }}
-                      />
-                    </div>
-                    <p
-                      style={{
-                        paddingTop: 13,
-                        fontSize: 15,
-                        color: selected === elm?.key ? COLOR_APP : COLOR_GRAY,
-                      }}
-                      className={fontMap[language]}
-                    >
-                      {elm?.title}
-                    </p>
-                  </div>
+                      >
+                        <div>
+                          <FontAwesomeIcon
+                            className={
+                              openTableData.length > 0 ? "scale-animation" : ""
+                            }
+                            icon={elm?.icon}
+                            style={{
+                              color:
+                                selected === elm?.key ? COLOR_APP : COLOR_GRAY,
+                              marginTop: "-2em",
+                            }}
+                          />
+                        </div>
+                        <p
+                          style={{
+                            paddingTop: 13,
+                            fontSize: 15,
+                            color:
+                              selected === elm?.key ? COLOR_APP : COLOR_GRAY,
+                          }}
+                          className={fontMap[language]}
+                        >
+                          {elm?.title}
+                        </p>
+                      </div>
+                    </NavText>
+                  </NavItem>
+                ))}
+              </NavItem>
+            ) : (
+              ""
+            )}
+            {settingNavItem?.map((e, index) => (
+              <NavItem key={index} eventKey={e?.key}>
+                <NavIcon>
+                  <FontAwesomeIcon
+                    className={
+                      openTableData.length > 0 ? "scale-animation" : ""
+                    }
+                    icon={e?.icon}
+                    style={{
+                      color: isPathInclude([e?.key]) ? COLOR_APP : COLOR_GRAY,
+                    }}
+                  />
+                  {e?.key === "orders" && waitingOrders.length > 0 && (
+                    <span style={popNoti}>{waitingOrders.length}</span>
+                  )}
+                  {e?.key === "reservations" && bookingWaitingLength > 0 && (
+                    <span style={popNoti}>{bookingWaitingLength}</span>
+                  )}
+                </NavIcon>
+                <NavText>
+                  <b
+                    style={{
+                      color: isPathInclude([e?.key]) ? COLOR_APP : COLOR_GRAY,
+                    }}
+                    className={fontMap[language]}
+                  >
+                    {e?.title}
+                  </b>
                 </NavText>
               </NavItem>
             ))}
-          </NavItem>
-        ) : (
-          ""
-        )}
-        {settingNavItem?.map((e, index) => (
-          <NavItem key={index} eventKey={e?.key}>
-            <NavIcon>
-              <FontAwesomeIcon
-                className={openTableData.length > 0 ? "scale-animation" : ""}
-                icon={e?.icon}
-                style={{
-                  color: isPathInclude([e?.key]) ? COLOR_APP : COLOR_GRAY,
-                }}
-              />
-            </NavIcon>
-            <NavText>
-              <b
-                style={{
-                  color: isPathInclude([e?.key]) ? COLOR_APP : COLOR_GRAY,
-                }}
-                className={fontMap[language]}
-              >
-                {e?.title}
-              </b>
-            </NavText>
-          </NavItem>
-        ))}
-        <hr />
-        {/* {role(profile?.data?.role, profile?.data)?.["settingManagement"] ? (
+            <hr />
+            {/* {role(profile?.data?.role, profile?.data)?.["settingManagement"] ? (
           <NavItem eventKey="customerList">
             <NavIcon>
               <FontAwesomeIcon
@@ -564,54 +746,64 @@ export default function Sidenav({ location, navigate, onToggle }) {
         ) : (
           ""
         )} */}
-        <NavItem eventKey="songlist">
-          <NavIcon>
-            <FontAwesomeIcon
-              className={openTableData.length > 0 ? "scale-animation" : ""}
-              icon={faMusic}
-              style={{
-                color: UN_SELECTED_TAB_TEXT,
-              }}
-            />
-          </NavIcon>
-          <NavText>
-            <b
-              style={{
-                color: UN_SELECTED_TAB_TEXT,
-              }}
-              className={fontMap[language]}
-            >
-              {t("require_music")}
-            </b>
-          </NavText>
-        </NavItem>
+            {storeDetail?.isStatusCafe ? null : (
+              <>
+                <NavItem eventKey="songlist">
+                  <NavIcon>
+                    <FontAwesomeIcon
+                      className={
+                        openTableData.length > 0 ? "scale-animation" : ""
+                      }
+                      icon={faMusic}
+                      style={{
+                        color: UN_SELECTED_TAB_TEXT,
+                      }}
+                    />
+                  </NavIcon>
+                  <NavText>
+                    <b
+                      style={{
+                        color: UN_SELECTED_TAB_TEXT,
+                      }}
+                      className={fontMap[language]}
+                    >
+                      {t("require_music")}
+                    </b>
+                  </NavText>
+                </NavItem>
 
-        <NavItem eventKey="supplier">
-          <NavIcon>
-            <FontAwesomeIcon
-              className={openTableData.length > 0 ? "scale-animation" : ""}
-              icon={faShoppingCart}
-              style={{
-                color: UN_SELECTED_TAB_TEXT,
-              }}
-            />
-          </NavIcon>
-          <NavText
-            style={{
-              color: UN_SELECTED_TAB_TEXT,
-            }}
-          >
-            <b
-              style={{
-                color: COLOR_GRAY,
-              }}
-              className={fontMap[language]}
-            >
-              {t("market")}
-            </b>
-          </NavText>
-        </NavItem>
-      </SideNav.Nav>
-    </SideNav>
+                <NavItem eventKey="supplier">
+                  <NavIcon>
+                    <FontAwesomeIcon
+                      className={
+                        openTableData.length > 0 ? "scale-animation" : ""
+                      }
+                      icon={faShoppingCart}
+                      style={{
+                        color: UN_SELECTED_TAB_TEXT,
+                      }}
+                    />
+                  </NavIcon>
+                  <NavText
+                    style={{
+                      color: UN_SELECTED_TAB_TEXT,
+                    }}
+                  >
+                    <b
+                      style={{
+                        color: COLOR_GRAY,
+                      }}
+                      className={fontMap[language]}
+                    >
+                      {t("market")}
+                    </b>
+                  </NavText>
+                </NavItem>
+              </>
+            )}
+          </SideNav.Nav>
+        )}
+      </SideNav>
+    </>
   );
 }

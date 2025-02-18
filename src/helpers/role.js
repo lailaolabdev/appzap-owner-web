@@ -14,7 +14,30 @@ const data = {
  * @param {Object} user
  * @returns {data}
  */
-const role = (role, user) => {
+const role = (role, user, storeDetail, shiftCurrent) => {
+  const getDefaultPath = () => {
+    if (storeDetail?.isShift) {
+      if (shiftCurrent?.[0]?.status === "OPEN") return "/tables";
+      if (shiftCurrent?.[0]?.status === "CLOSE") return "/cafe";
+      return "/shift-open-pages";
+    }
+    return storeDetail?.isStatusCafe ? "/cafe" : "/tables";
+  };
+
+  // const defaultPath = getDefaultPath();
+
+  const defaultPath = storeDetail?.isShift
+    ? shiftCurrent?.[0]?.status === "OPEN"
+      ? storeDetail?.isStatusCafe
+        ? "/cafe"
+        : "/tables"
+      : shiftCurrent?.[0]?.status === "CLOSE"
+      ? "/cafe"
+      : "/shift-open-pages"
+    : storeDetail?.isStatusCafe
+    ? "/cafe"
+    : "/tables";
+
   switch (role) {
     case "APPZAP_ADMIN":
       return {
@@ -102,7 +125,14 @@ const role = (role, user) => {
       };
     case "APPZAP_COUNTER":
       return {
-        defaultPath: "/tables",
+        defaultPath: defaultPath,
+        // defaultPath: storeDetail?.isShift
+        //   ? shiftCurrent[0]?.status === "OPEN"
+        //     ? "/tables"
+        //     : "/shift-open-pages"
+        //   : storeDetail?.isStatusCafe
+        //   ? "/cafe"
+        //   : "/tables",
         reportManagement: true,
         tableManagement: true,
         orderManagement: true,

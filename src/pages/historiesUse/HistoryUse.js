@@ -24,6 +24,8 @@ import LoadingAppzap from "../../components/LoadingAppzap";
 import PaginationAppzap from "../../constants/PaginationAppzap";
 import { useTranslation } from "react-i18next";
 import { BsBank2 } from "react-icons/bs";
+import { useStoreStore } from "../../zustand/storeStore";
+import HistoryBankTransferClaim from "./HistoryBankTransferClaim";
 
 export default function HistoryUse() {
   const { t } = useTranslation();
@@ -38,6 +40,8 @@ export default function HistoryUse() {
   const rowsPerPage = 100;
   const [page, setPage] = useState(0);
   const pageAll = totalLogs > 0 ? Math.ceil(totalLogs / rowsPerPage) : 1;
+
+  const { storeDetail } = useStoreStore();
 
   const handleChangePage = useCallback((newPage) => {
     setPage(newPage);
@@ -238,58 +242,63 @@ export default function HistoryUse() {
             <div style={{ width: 8 }}></div> {t("edit_bill")}
           </Nav.Link>
         </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="/transferTable"
-            style={{
-              color: "#FB6E3B",
-              border: "none",
-              height: 60,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onClick={() => setFiltterModele("transferTable")}
-          >
-            <FontAwesomeIcon icon={faPeopleArrows} />{" "}
-            <div style={{ width: 8 }}></div> {t("change_combine_table")}
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="/historyServiceChange"
-            style={{
-              color: "#FB6E3B",
-              border: "none",
-              height: 60,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onClick={() => setFiltterModele("historyServiceChange")}
-          >
-            <FontAwesomeIcon icon={faHistory} />{" "}
-            <div style={{ width: 8 }}></div> {t("history service change")}
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link
-            eventKey="/billPayBefore"
-            style={{
-              color: "#FB6E3B",
-              border: "none",
-              height: 60,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onClick={() => setFiltterModele("billPayBefore")}
-          >
-            <FontAwesomeIcon icon={faListAlt}></FontAwesomeIcon>{" "}
-            <div style={{ width: 8 }}></div>
-            {t("bill_paid")}
-          </Nav.Link>
-        </Nav.Item>
+        {!storeDetail?.isStatusCafe && (
+          <>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/transferTable"
+                style={{
+                  color: "#FB6E3B",
+                  border: "none",
+                  height: 60,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onClick={() => setFiltterModele("transferTable")}
+              >
+                <FontAwesomeIcon icon={faPeopleArrows} />{" "}
+                <div style={{ width: 8 }}></div> {t("change_combine_table")}
+              </Nav.Link>
+            </Nav.Item>
+
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/historyServiceChange"
+                style={{
+                  color: "#FB6E3B",
+                  border: "none",
+                  height: 60,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onClick={() => setFiltterModele("historyServiceChange")}
+              >
+                <FontAwesomeIcon icon={faHistory} />{" "}
+                <div style={{ width: 8 }}></div> {t("history service change")}
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/billPayBefore"
+                style={{
+                  color: "#FB6E3B",
+                  border: "none",
+                  height: 60,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onClick={() => setFiltterModele("billPayBefore")}
+              >
+                <FontAwesomeIcon icon={faListAlt}></FontAwesomeIcon>{" "}
+                <div style={{ width: 8 }}></div>
+                {t("bill_paid")}
+              </Nav.Link>
+            </Nav.Item>
+          </>
+        )}
         <Nav.Item>
           <Nav.Link
             eventKey="/bankTransfer"
@@ -426,67 +435,74 @@ export default function HistoryUse() {
               ></div>
             </div>
           ) : filtterModele === "bankTransfer" ? (
-            <table className="table table-hover">
-              <thead className="thead-light">
-                <tr>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
-                    {t("no")}
-                  </th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
-                    {t("tableNumber")}
-                  </th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
-                    {t("tableCode")}
-                  </th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
-                    {t("amount")}
-                  </th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
-                    {t("detail")}
-                  </th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
-                    {t("status")}
-                  </th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
-                    {t("date_time")}
-                  </th>
-                </tr>
-              </thead>
+            <div>
+              <HistoryBankTransferClaim data={data} />
 
-              <tbody>
-                {data?.map((item, index) => {
-                  return (
-                    <tr key={index}>
-                      <td style={{ textWrap: "nowrap" }}>
-                        {page * rowsPerPage + index + 1}
-                      </td>
-                      <td style={{ textWrap: "nowrap" }}>
-                        {item?.tableName ?? "-"}
-                      </td>
-                      <td style={{ textWrap: "nowrap" }}>
-                        {item?.code ?? "-"}
-                      </td>
-                      <td style={{ textWrap: "nowrap" }}>
-                        {item?.totalAmount
-                          ? `${item?.totalAmount.toLocaleString()} ${
-                              item?.currency ?? "LAK"
+              {/* <div style={{display:'flex'}}>
+                <div>ລາຍການຊຳລະຜ່ານທະນາຄານ</div>
+                <div style={{width:20}}>   </div>
+              </div> */}
+              {/* <table className="table table-hover">
+                <thead className="thead-light">
+                  <tr>
+                    <th style={{ textWrap: "nowrap" }} scope="col">
+                      {t("no")}
+                    </th>
+                    <th style={{ textWrap: "nowrap" }} scope="col">
+                      {t("tableNumber")}
+                    </th>
+                    <th style={{ textWrap: "nowrap" }} scope="col">
+                      {t("tableCode")}
+                    </th>
+                    <th style={{ textWrap: "nowrap" }} scope="col">
+                      {t("amount")}
+                    </th>
+                    <th style={{ textWrap: "nowrap" }} scope="col">
+                      {t("detail")}
+                    </th>
+                    <th style={{ textWrap: "nowrap" }} scope="col">
+                      {t("status")}
+                    </th>
+                    <th style={{ textWrap: "nowrap" }} scope="col">
+                      {t("date_time")}
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {data?.map((item, index) => {
+                    return (
+                      <tr key={index}>
+                        <td style={{ textWrap: "nowrap" }}>
+                          {page * rowsPerPage + index + 1}
+                        </td>
+                        <td style={{ textWrap: "nowrap" }}>
+                          {item?.tableName ?? "-"}
+                        </td>
+                        <td style={{ textWrap: "nowrap" }}>
+                          {item?.code ?? "-"}
+                        </td>
+                        <td style={{ textWrap: "nowrap" }}>
+                          {item?.totalAmount
+                            ? `${item?.totalAmount.toLocaleString()} ${item?.currency ?? "LAK"
                             }`
-                          : "-"}
-                      </td>
-                      <td style={{ textWrap: "nowrap" }}>
-                        {t("checkout") ?? "-"}
-                      </td>
-                      <td style={{ textWrap: "nowrap" }}>
-                        {t(item.status) ?? "-"}
-                      </td>
-                      <td style={{ textWrap: "nowrap" }}>
-                        {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                            : "-"}
+                        </td>
+                        <td style={{ textWrap: "nowrap" }}>
+                          {t("checkout") ?? "-"}
+                        </td>
+                        <td style={{ textWrap: "nowrap" }}>
+                          {t(item.status) ?? "-"}
+                        </td>
+                        <td style={{ textWrap: "nowrap" }}>
+                          {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table> */}
+            </div>
           ) : (
             <table className="table table-hover">
               <thead className="thead-light">

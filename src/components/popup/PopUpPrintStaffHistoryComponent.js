@@ -1,4 +1,5 @@
 import moment from "moment";
+import Select from "react-select";
 import styled from "styled-components";
 import React, { useEffect, useState, useRef } from "react";
 import { Modal, Button, InputGroup, Form } from "react-bootstrap";
@@ -24,6 +25,8 @@ import { useTranslation } from "react-i18next";
 import printFlutter from "../../helpers/printFlutter";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { getAllShift } from "./../../services/shift";
+import { useShiftStore } from "../../zustand/ShiftStore";
 
 export default function PopUpPrintStaffHistoryComponent({
   open,
@@ -36,14 +39,31 @@ export default function PopUpPrintStaffHistoryComponent({
   const [selectPrinter, setSelectPrinter] = useState();
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
   const [userReport, setUserReport] = useState([]);
-
+  const [shiftData, setShiftData] = useState([]);
+  const [shiftId, setShiftId] = useState(null);
+  const [shiftDate, setShiftDate] = useState(null);
   // provider
-  const { printerCounter, printers } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { printerCounter, printers, profile } = useStore();
+  const { storeDetail } = useStoreStore();
+  const { shiftCurrent } = useShiftStore();
+
+  const fetchShift = async () => {
+    await getAllShift()
+      .then((res) => {
+        setShiftData(res?.data?.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    fetchShift();
+  }, []);
   // useEffect
   useEffect(() => {
     getUserReportData(startDate);
-  }, [startDate]);
+  }, [startDate, shiftId]);
 
   useEffect(() => {
     if (open && printers?.length > 0) {
@@ -129,32 +149,71 @@ export default function PopUpPrintStaffHistoryComponent({
       });
     }
   };
+
+  const findByData = () => {
+    const endDate = startDate; // Same date range for a single day
+    const startTime = "00:00:00";
+    const endTime = "23:59:59";
+    let findBy = "?";
+
+    if (profile?.data?.role === "APPZAP_ADMIN") {
+      findBy += `startDate=${startDate}&`;
+      findBy += `endDate=${endDate}&`;
+      findBy += `startTime=${startTime}&`;
+      findBy += `endTime=${endTime}&`;
+
+      if (shiftId) {
+        findBy += `shiftId=${shiftId}&`;
+      }
+    } else {
+      findBy += `startDate=${startDate}&`;
+      findBy += `endDate=${endDate}&`;
+      findBy += `startTime=${startTime}&`;
+      findBy += `endTime=${endTime}&`;
+      if (shiftCurrent[0]) {
+        findBy += `shiftId=${shiftCurrent[0]?._id}&`;
+      }
+    }
+
+    return findBy;
+  };
   const getUserReportData = async (startDate) => {
     try {
-      const endDate = startDate;
-      const startTime = "00:00:00";
-      const endTime = "23:59:59";
-      // const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-      // const data = await getBillReport(storeDetail._id, findBy);
-
-      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-      const data = await getUserReport(storeDetail?._id, findBy);
-
+      const data = await getUserReport(storeDetail?._id, findByData());
       setUserReport(data);
-      // logic
-      // setReportBill({
-      //   ຈຳນວນອໍເດີທັງໝົດ: countBill,
-      //   ຈຳນວນອໍເດີທີ່ສຳເລັດ: totalBill,
-      //   ຈຳນວນອໍເດີຍົກເລີກ: cashTotalBill,
-      //   ຈ່າຍເງິນໂອນ: transferTotalBill,
-      // });
     } catch (err) {}
   };
-  // const getUserReportData = async () => {
-  //   const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-  //   const data = await getUserReport(storeDetail?._id, findBy);
-  //   setUserReport(data);
-  // };
+
+  const optionsData = [
+    {
+      value: {
+        shiftID: "ALL",
+      },
+      label: t("all_shifts"),
+    },
+    ...(shiftData ?? []).map((item) => {
+      return {
+        value: {
+          shiftID: item._id,
+          startTime: item.startTime,
+          endTime: item.endTime,
+          name: item.shiftName,
+        },
+        label: item.shiftName,
+      };
+    }),
+  ];
+
+  const handleSearchInput = (option) => {
+    if (option?.value?.shiftID === "ALL") {
+      setShiftId(null);
+      getUserReportData(startDate);
+      setShiftDate(null);
+    } else {
+      setShiftId(option?.value?.shiftID);
+      setShiftDate(option?.value);
+    }
+  };
 
   return (
     <Modal show={open} onHide={onClose} size="md">
@@ -175,12 +234,26 @@ export default function PopUpPrintStaffHistoryComponent({
           flexDirection: "column",
         }}
       >
-        <div>
-          <Form.Control
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
+        <div className="flex gap-2 items-center">
+          <div>
+            <Form.Control
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </div>
+          {profile?.data?.role === "APPZAP_ADMIN"
+            ? storeDetail?.isShift && (
+                <div className="flex gap-1 items-center">
+                  <Select
+                    placeholder={t("chose_shift")}
+                    className="w-36 border-orange-500"
+                    options={optionsData}
+                    onChange={handleSearchInput}
+                  />
+                </div>
+              )
+            : ""}
         </div>
         <div
           ref={billRef}
@@ -189,12 +262,15 @@ export default function PopUpPrintStaffHistoryComponent({
           <Container>
             <div style={{ fontWeight: "bold", fontSize: 24 }}>
               {t("staff_sales_report")}
+              {shiftDate ? `(${shiftDate?.name})` : ""}
             </div>
             <div style={{ fontWeight: "bold" }}>
-              {t("start")}: {startDate} 00:00:00
+              {t("start")}: {startDate}{" "}
+              {shiftDate ? shiftDate?.startTime : "00:00:00"}
             </div>
             <div style={{ fontWeight: "bold" }}>
-              {t("to")}: {startDate} 23:59:59
+              {t("to")}: {startDate}{" "}
+              {shiftDate ? shiftDate?.endTime : "23:59:59"}
             </div>
             {userReport?.length > 0 &&
               userReport?.map((e) => (

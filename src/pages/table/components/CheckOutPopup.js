@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Modal, Form, Button, InputGroup, Spinner } from "react-bootstrap";
 import styled from "styled-components";
 import Select from "react-select";
@@ -30,6 +31,7 @@ import {
 import { RedeemPoint, PointUser } from "../../../services/point";
 
 import { useStoreStore } from "../../../zustand/storeStore";
+import { useShiftStore } from "../../../zustand/ShiftStore";
 
 export default function CheckOutPopup({
   onPrintDrawer,
@@ -50,6 +52,7 @@ export default function CheckOutPopup({
   // const inputCashRef = useRef(null);
   // const inputTransferRef = useRef(null);
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
+  const navigate = useNavigate();
 
   // state
   const [selectInput, setSelectInput] = useState("inputCash");
@@ -84,6 +87,8 @@ export default function CheckOutPopup({
   } = useStore();
 
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
+
+  const { shiftCurrent } = useShiftStore();
 
   //select Bank
 
@@ -127,7 +132,6 @@ export default function CheckOutPopup({
   };
 
   // console.log({ dataBill });
-
   useEffect(() => {
     setMemberData();
     if (textSearchMember.length > 0) {
@@ -270,6 +274,7 @@ export default function CheckOutPopup({
       console.log("err:", err);
     }
   };
+
   const _checkBill = async (currencyId, currencyName) => {
     const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
@@ -294,6 +299,7 @@ export default function CheckOutPopup({
     const body = {
       selectedBank: selectedBank.name,
       bankId: selectedBank.id,
+      shiftId: shiftCurrent[0]?._id,
       orderPayBefore: orderItem,
       isCheckout: checkStatus,
       status: checkStatusBill,
@@ -330,7 +336,7 @@ export default function CheckOutPopup({
 
     await axios
       .put(
-        `${END_POINT}/v6/bill-checkout`,
+        `${END_POINT}/v7/bill-checkout`,
         {
           id: dataBill?._id,
           data: body,
@@ -1363,8 +1369,23 @@ export default function CheckOutPopup({
             </div>
             <NumberKeyboard
               onClickMember={() => {
-                setHasCRM((prev) => !prev);
-                // setTab("point");
+                if (storeDetail?.isCRM) {
+                  setHasCRM((prev) => !prev);
+                } else {
+                  Swal.fire({
+                    title: "ແຈ້ງເຕືອນ?",
+                    text: "ກະລະນາເປີດໃຊ້ງານຟັງຊັນ CRM",
+                    icon: "warning",
+                    showCancelButton: false,
+                    confirmButtonColor: COLOR_APP,
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "ເປີດໃຊ້ງານ",
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                      navigate("/config");
+                    }
+                  });
+                }
               }}
               onClickButtonDrawer={onPrintDrawer}
               totalBill={totalBillMoney}
@@ -1415,6 +1436,15 @@ export default function CheckOutPopup({
           </div>
           <div className="flex flex-col dmd:flex-row gap-2 items-end">
             <Button
+              onClick={() => onSubmit()}
+              disabled={
+                forcus === "DELIVERY" || forcus === "CASH_TRANSFER_POINT"
+              }
+            >
+              {t("debt")}
+            </Button>
+
+            <Button
               onClick={() => {
                 setPrintBillLoading(true);
                 saveServiceChargeDetails();
@@ -1445,7 +1475,6 @@ export default function CheckOutPopup({
             </Button>
           </div>
         </div>
-        {/* <Button onClick={() => onSubmit()}>{t("debt")}</Button> */}
       </Modal.Footer>
     </Modal>
   );

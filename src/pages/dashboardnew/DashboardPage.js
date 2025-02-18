@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
+import Select from "react-select";
 import { Card, Breadcrumb, Button } from "react-bootstrap";
 import { COLOR_APP, END_POINT } from "../../constants";
+import { getLocalData } from "../../constants/api";
 import {
   BsFillCalendarWeekFill,
   BsFillCalendarEventFill,
@@ -15,12 +17,14 @@ import {
   getCurrencyReport,
   getMenuReport,
   getMoneyReport,
+  getDebtReport,
   getPromotionReport,
   getReports,
   getSalesInformationReport,
   getUserReport,
   getDeliveryReport,
 } from "../../services/report";
+import { getAllShift } from "../../services/shift";
 import fileDownload from "js-file-download";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -38,7 +42,9 @@ import PopUpPrintMenuHistoryComponent from "../../components/popup/PopUpPrintMen
 import PopUpPrintMenuCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuCategoryHistoryComponent";
 import PopUpChooseTableComponent from "../../components/popup/PopUpChooseTableComponent";
 import PopUpPrintMenuAndCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuAndCategoryHistoryComponent";
+import { getBilldebts } from "../../services/debt";
 
+import Loading from "../../components/Loading";
 import { errorAdd } from "../../helpers/sweetalert";
 import Axios from "axios";
 import { END_POINT_EXPORT } from "../../constants/api";
@@ -46,6 +52,7 @@ import { useTranslation } from "react-i18next";
 import PopUpReportExportExcel from "../../components/popup/PopUpReportExportExcel";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { useShiftStore } from "../../zustand/ShiftStore";
 
 export default function DashboardPage() {
   const { t } = useTranslation();
@@ -67,30 +74,46 @@ export default function DashboardPage() {
   const [currencyList, setCurrencyList] = useState([]);
   const [selectedTableIds, setSelectedTableIds] = useState([]);
   const [loadingExportCsv, setLoadingExportCsv] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [deliveryReport, setDeliveryReport] = useState([]);
+  const [debtReport, setDebtReport] = useState(null);
+
+  const [shiftData, setShiftData] = useState([]);
+  const [shiftId, setShiftId] = useState([]);
 
   // provider
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
+  const { profile } = useStore();
+  const { shiftCurrent } = useShiftStore();
 
   // useEffect
   useEffect(() => {
     getTable();
+    fetchShift();
   }, []);
+
+  const fetchShift = async () => {
+    await getAllShift()
+      .then((res) => {
+        setShiftData(res?.data?.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   useEffect(() => {
     getReportData();
     getSalesInformationReportData();
     getUserReportData();
     getMenuReportData();
     getMoneyReportData();
+    getDebtReportData();
     getPromotionReportData();
     getCurrencyName();
     getCategoryReportData();
     getBankBillName();
     getDeliveryReports();
-  }, [endDate, startDate, endTime, startTime, selectedTableIds]);
+  }, [endDate, startDate, endTime, startTime, selectedTableIds, shiftId]);
 
   // function
   const getTable = async () => {
@@ -108,85 +131,146 @@ export default function DashboardPage() {
     setPopup({ ReportExport: true });
   };
 
+  const findByData = () => {
+    let findBy = "?";
+
+    if (profile?.data?.role === "APPZAP_ADMIN") {
+      findBy += `startDate=${startDate}&`;
+      findBy += `endDate=${endDate}&`;
+      findBy += `startTime=${startTime}&`;
+      findBy += `endTime=${endTime}&`;
+
+      if (shiftId) {
+        findBy += `shiftId=${shiftId}&`;
+      }
+    } else {
+      findBy += `startDate=${startDate}&`;
+      findBy += `endDate=${endDate}&`;
+      findBy += `startTime=${startTime}&`;
+      findBy += `endTime=${endTime}&`;
+      if (shiftCurrent[0]) {
+        findBy += `shiftId=${shiftCurrent[0]?._id}&`;
+      }
+    }
+
+    return findBy;
+  };
+
   const getReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getReports(storeDetail?._id, findBy, selectedTableIds);
+    setLoading(true);
+    const data = await getReports(
+      storeDetail?._id,
+      findByData(),
+      selectedTableIds
+    );
     setReportData(data);
+    setLoading(false);
   };
   const getSalesInformationReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    setLoading(true);
     const data = await getSalesInformationReport(
       storeDetail?._id,
-      findBy,
+      findByData(),
       selectedTableIds
     );
     setSalesInformationReport(data);
+    setLoading(false);
   };
   const getUserReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    setLoading(true);
     const data = await getUserReport(
       storeDetail?._id,
-      findBy,
+      findByData(),
       selectedTableIds
     );
     setUserReport(data);
+    setLoading(false);
   };
   const getMenuReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    setLoading(true);
     const data = await getMenuReport(
       storeDetail?._id,
-      findBy,
+      findByData(),
       selectedTableIds
     );
     setMenuReport(data);
+    setLoading(false);
   };
   const getCategoryReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    setLoading(true);
     const data = await getCategoryReport(
       storeDetail?._id,
-      findBy,
+      findByData(),
       selectedTableIds
     );
     setCategoryReport(data);
+    setLoading(false);
   };
   const getMoneyReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    setLoading(true);
     const data = await getMoneyReport(
       storeDetail?._id,
-      findBy,
+      findByData(),
       selectedTableIds
     );
     setMoneyReport(data);
+    setLoading(false);
+  };
+
+  const getDebtReportData = async () => {
+    try {
+      let findBy = `?storeId=${storeDetail?._id}`;
+      if (startDate && endDate) {
+        findBy = `${findBy}&startDate=${encodeURIComponent(
+          startDate
+        )}&startTime=${encodeURIComponent(
+          startTime || "00:00:00"
+        )}&endDate=${encodeURIComponent(endDate)}&endTime=${encodeURIComponent(
+          endTime || "23:59:59"
+        )}`;
+      }
+      const data = await getDebtReport(findBy);
+      setDebtReport(data?.data);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setDebtReport(0);
+    }
   };
 
   const getPromotionReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    setLoading(true);
     const data = await getPromotionReport(
       storeDetail?._id,
-      findBy,
+      findByData(),
       selectedTableIds
     );
     setPromotionReport(data);
+    setLoading(false);
   };
   const getCurrencyName = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    setLoading(true);
+    // const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
     const data = await getCurrencyReport(
       storeDetail?._id,
-      findBy,
+      findByData(),
       selectedTableIds
     );
     setCurrencyList(data);
+    setLoading(false);
   };
   const getBankBillName = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getBankReport(storeDetail?._id, findBy);
+    setLoading(true);
+    const data = await getBankReport(storeDetail?._id, findByData());
     setBankList(data);
+    setLoading(false);
   };
 
   const getDeliveryReports = async () => {
+    setLoading(true);
     const findBy = `?startDate=${startDate}&endDate=${endDate}`;
     const data = await getDeliveryReport(storeDetail?._id, findBy);
     setDeliveryReport(data);
+    setLoading(false);
   };
   // console.log("BANK", bankList);
   const downloadCsv = async () => {
@@ -218,7 +302,7 @@ export default function DashboardPage() {
         });
 
         // Create a Blob from the response data
-        console.log("response", response.data);
+       // console.log("response", response.data);
         const fileBlob = new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
@@ -243,9 +327,59 @@ export default function DashboardPage() {
       };
     }
   );
+  const optionsData = [
+    {
+      value: {
+        shiftID: "ALL",
+      },
+      label: t("all_shifts"),
+    },
+    ...(shiftData ?? []).map((item) => {
+      return {
+        value: {
+          shiftID: item._id,
+        },
+        label: item.shiftName,
+      };
+    }),
+  ];
+
+  const handleSearchInput = (option) => {
+    if (option?.value?.shiftID === "ALL") {
+      setShiftId(null);
+      getReportData();
+      getSalesInformationReportData();
+      getUserReportData();
+      getMenuReportData();
+      getMoneyReportData();
+      getPromotionReportData();
+      getCurrencyName();
+      getCategoryReportData();
+      getBankBillName();
+      getDeliveryReports();
+    } else {
+      setShiftId(option?.value?.shiftID);
+    }
+  };
+  // const optionsData = shiftData?.map((item) => {
+  //   // console.log(item);
+  //   return {
+  //     value: {
+  //       startTime: item.startTime,
+  //       endTime: item.endTime,
+  //       id: item._id,
+  //     },
+  //     label: item.shiftName,
+  //   };
+  // });
+
+  // const handleSearchInput = (option) => {
+  //   setShiftId(option?.value?.id);
+  // };
 
   return (
     <div>
+      {loading ? <Loading /> : ""}
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         {/* <Breadcrumb>
           <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
@@ -274,6 +408,19 @@ export default function DashboardPage() {
               {t("chose_table")}
             </Button>
           </div>
+          {profile?.data?.role === "APPZAP_ADMIN"
+            ? storeDetail?.isShift && (
+                <div className="flex gap-1 items-center">
+                  {/* <span>{t("chose_shift")} : </span> */}
+                  <Select
+                    placeholder={t("chose_shift")}
+                    className="w-40 border-1 border-orange-500"
+                    options={optionsData}
+                    onChange={handleSearchInput}
+                  />
+                </div>
+              )
+            : ""}
           {/* <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
@@ -415,7 +562,7 @@ export default function DashboardPage() {
               >
                 <div>{t("all_discount")}</div>
                 <div>
-                  {promotionReport?.[0]?.totalSaleAmount || 0}
+                  {moneyCurrency(promotionReport?.[0]?.totalSaleAmount || 0)}
                   {storeDetail?.firstCurrency}
                 </div>
               </div>
@@ -462,12 +609,20 @@ export default function DashboardPage() {
                       qty: moneyReport?.successAmount?.cashCount || 0,
                       amount: moneyReport?.successAmount?.payByCash || 0,
                     },
+
                     {
                       method: (
                         <div style={{ fontWeight: 700 }}>{t("total_tsf")}</div>
                       ),
                       qty: moneyReport?.successAmount?.transferCount || 0,
                       amount: moneyReport?.successAmount?.transferPayment || 0,
+                    },
+                    {
+                      method: (
+                        <div style={{ fontWeight: 700 }}>{t("total_debt")}</div>
+                      ),
+                      qty: debtReport?.count || 0,
+                      amount: debtReport?.totalRemainingAmount || 0,
                     },
 
                     ...(deliveryReports?.length > 0
@@ -626,6 +781,7 @@ export default function DashboardPage() {
                     <th style={{ textAlign: "center" }}>{t("point")}</th>
                   )}
                   <th style={{ textAlign: "center" }}>{t("discount")}</th>
+                  <th style={{ textAlign: "center" }}>{t("debt")}</th>
                   <th style={{ textAlign: "center" }}>{t("last_amount")}</th>
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
@@ -643,6 +799,10 @@ export default function DashboardPage() {
 
                     <td>
                       {moneyCurrency(e?.discount)}
+                      {storeDetail?.firstCurrency}
+                    </td>
+                    <td>
+                      {moneyCurrency(debtReport?.totalRemainingAmount)}
                       {storeDetail?.firstCurrency}
                     </td>
                     <td>
@@ -823,6 +983,8 @@ export default function DashboardPage() {
         open={popup?.ReportExport}
         setPopup={setPopup}
         onClose={() => setPopup()}
+        shiftId={shiftId}
+        shiftData={shiftCurrent[0]}
       />
 
       <PopUpSetStartAndEndDateFilterExport

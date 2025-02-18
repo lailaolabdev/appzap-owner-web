@@ -5,6 +5,8 @@ export const USER_KEY = "@userKey";
 export const VERSION = packageJson?.version;
 export const URL_PHOTO_AW3 =
   "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/";
+export const URL_PHOTO_AW3_01 =
+  "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/";
 // export const END_POINT = END_POINT_SEVER;
 export const END_POINT = END_POINT_SEVER;
 export const END_POINT_VERSION = "v3";
@@ -38,6 +40,7 @@ export const EMPTY_LOGO =
 export const ETHERNET_PRINTER_PORT = "http://localhost:9150/ethernet/image";
 export const BLUETOOTH_PRINTER_PORT = "http://localhost:9150/bluetooth/image";
 export const USB_PRINTER_PORT = "http://localhost:9150/usb/image";
+export const USB_LABEL_PRINTER_PORT = "http://localhost:9150/usb/label";
 
 // No Cut Endpoint
 export const NOCUT_ETHERNET_PRINTER_PORT =

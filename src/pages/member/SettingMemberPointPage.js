@@ -30,6 +30,7 @@ import {
   getAllStorePoints,
   updatePointStore,
 } from "../../services/member.service";
+import { useStoreStore } from "../../zustand/storeStore";
 import { useTranslation } from "react-i18next";
 
 export default function SettingMemberPointPage() {
@@ -48,6 +49,7 @@ export default function SettingMemberPointPage() {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const [editMode, setEditMode] = useState(false);
+  const { setStoreDetail, storeDetail } = useStoreStore();
   const handleShow = async () => {
     const { DATA } = await getLocalData();
     setFormData((prevData) => ({ ...prevData, storeId: DATA.storeId }));
@@ -117,6 +119,9 @@ export default function SettingMemberPointPage() {
           (point) => point.storeId === DATA.storeId
         );
         setPointsData(filteredData);
+        setStoreDetail({
+          pointStore: filteredData[0].money,
+        });
       } else {
         setError(true);
       }
@@ -238,7 +243,7 @@ export default function SettingMemberPointPage() {
               }}
             >
               <BsInfoCircle />
-              Create Member
+              {t("setting_point")}
             </Button>
           </div>
         )}

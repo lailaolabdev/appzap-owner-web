@@ -59,6 +59,7 @@ import { fontMap } from "../../utils/font-map";
 
 import { useStoreStore } from "../../zustand/storeStore";
 import { useMenuStore } from "../../zustand/menuStore";
+import { useShiftStore } from "../../zustand/ShiftStore";
 import theme from "../../theme";
 
 function AddOrder() {
@@ -96,6 +97,8 @@ function AddOrder() {
 
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
+
+  const { shiftCurrent } = useShiftStore();
 
   const sliderRef = useRef();
 
@@ -221,6 +224,7 @@ function AddOrder() {
     getMenuCategories,
     setMenus,
     setMenuCategories,
+    isMenuLoading,
   } = useMenuStore();
 
   // Get Menus & Categories, and persist it in localstorage.
@@ -253,7 +257,12 @@ function AddOrder() {
     getMenuCategories,
     setMenus,
     setMenuCategories,
+    isMenuLoading,
   ]);
+
+  const ShowCounterApp =
+    profile?.data?.role === "APPZAP_COUNTER" ? true : false;
+  const OpenMenuStaff = profile?.data?.role === "APPZAP_STAFF" ? true : false;
 
   const afterSearch = _.filter(
     menus,
@@ -261,6 +270,8 @@ function AddOrder() {
       (e?.name?.indexOf(search) > -1 && selectedCategory === "All") ||
       e?.categoryId?._id === selectedCategory
   );
+
+  console.log("afterSearch", afterSearch);
 
   const arrLength = selectedMenu?.length;
   const billForCher80 = useRef([]);
@@ -685,6 +696,7 @@ function AddOrder() {
       printer: selectedItem?.categoryId?.printer,
       note: addComments,
       menuOptions: selectedItem.menuOptions,
+      shiftId: shiftCurrent[0]?._id,
       options: filteredOptions,
       totalOptionPrice: totalOptionPrice,
     };
@@ -757,6 +769,7 @@ function AddOrder() {
         price: menu.price,
         categoryId: menu?.categoryId,
         printer: menu?.categoryId?.printer,
+        shiftId: shiftCurrent[0]?._id,
         note: "",
         createdBy: profile,
         deliveryCode: "", // Add delivery code field
@@ -1160,60 +1173,122 @@ function AddOrder() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-2 px-2">
-            {isLoading ? (
+            {isLoading || isMenuLoading ? (
               <Loading />
-            ) : (
-              afterSearch?.map((data, index) => {
-                if (data?.type === "MENU") {
-                  return (
-                    <div
-                      key={"menu" + index}
-                      onClick={() => {
-                        addToCart(data);
-                      }}
-                      className="rounded-lg border border-orange-400 shadow-sm cursor-pointer overflow-hidden"
-                    >
-                      <div className="relative w-full pt-[75%] overflow-hidden">
-                        <img
-                          src={
-                            data?.images[0]
-                              ? URL_PHOTO_AW3 + data?.images[0]
-                              : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
-                          }
-                          alt=""
-                          className="absolute top-0 left-0 w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="bg-white h-full text-gray-700 relative px-2 py-1">
-                        <span className="text-sm">{data?.name}</span>
-                        <br />
-                        <span className="text-color-app font-medium text-base font-inter">
-                          {moneyCurrency(data?.price)}{" "}
-                          {storeDetail?.firstCurrency}
-                          {/* {currency?.map(
-                            (e) =>
-                              " / " +
-                              (data?.price / e.sell).toFixed(2) +
-                              " " +
-                              e?.currencyCode
-                          )} */}
-                        </span>
-                        <br />
-                        <span
-                          className={cn(
-                            "text-[13px] text-gray-500",
-                            fontMap[language]
-                          )}
-                        >
-                          {t("amount_exist")} : {data?.quantity || 0}
-                        </span>
-                      </div>
+            ) : ShowCounterApp ? (
+              afterSearch
+                ?.filter((f) => f?.isShowCounterApp === "true")
+                ?.map((data, index) => (
+                  <div
+                    key={"menu" + index}
+                    onClick={() => addToCart(data)}
+                    className="rounded-lg border border-orange-400 shadow-sm cursor-pointer overflow-hidden"
+                  >
+                    <div className="relative w-full pt-[75%] overflow-hidden">
+                      <img
+                        src={
+                          data?.images[0]
+                            ? URL_PHOTO_AW3 + data?.images[0]
+                            : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
+                        }
+                        alt=""
+                        className="absolute top-0 left-0 w-full h-full object-cover"
+                      />
                     </div>
-                  );
-                } else {
-                  return null;
-                }
-              })
+                    <div className="bg-white h-full text-gray-700 relative px-2 py-1">
+                      <span className="text-sm">{data?.name}</span>
+                      <br />
+                      <span className="text-color-app font-medium text-base font-inter">
+                        {moneyCurrency(data?.price)}{" "}
+                        {storeDetail?.firstCurrency}
+                      </span>
+                      <br />
+                      {/* <span
+                        className={cn(
+                          "text-[13px] text-gray-500",
+                          fontMap[language]
+                        )}
+                      >
+                        {t("amount_exist")} : {data?.quantity || 0}
+                      </span> */}
+                    </div>
+                  </div>
+                ))
+            ) : OpenMenuStaff ? (
+              afterSearch
+                ?.filter((f) => f?.isShowStaffApp === "true")
+                ?.map((data, index) => (
+                  <div
+                    key={"menu" + index}
+                    onClick={() => addToCart(data)}
+                    className="rounded-lg border border-orange-400 shadow-sm cursor-pointer overflow-hidden"
+                  >
+                    <div className="relative w-full pt-[75%] overflow-hidden">
+                      <img
+                        src={
+                          data?.images[0]
+                            ? URL_PHOTO_AW3 + data?.images[0]
+                            : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
+                        }
+                        alt=""
+                        className="absolute top-0 left-0 w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="bg-white h-full text-gray-700 relative px-2 py-1">
+                      <span className="text-sm">{data?.name}</span>
+                      <br />
+                      <span className="text-color-app font-medium text-base font-inter">
+                        {moneyCurrency(data?.price)}{" "}
+                        {storeDetail?.firstCurrency}
+                      </span>
+                      <br />
+                      <span
+                        className={cn(
+                          "text-[13px] text-gray-500",
+                          fontMap[language]
+                        )}
+                      >
+                        {t("amount_exist")} : {data?.quantity || 0}
+                      </span>
+                    </div>
+                  </div>
+                ))
+            ) : (
+              afterSearch?.map((data, index) => (
+                <div
+                  key={"menu" + index}
+                  onClick={() => addToCart(data)}
+                  className="rounded-lg border border-orange-400 shadow-sm cursor-pointer overflow-hidden"
+                >
+                  <div className="relative w-full pt-[75%] overflow-hidden">
+                    <img
+                      src={
+                        data?.images[0]
+                          ? URL_PHOTO_AW3 + data?.images[0]
+                          : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
+                      }
+                      alt=""
+                      className="absolute top-0 left-0 w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="bg-white h-full text-gray-700 relative px-2 py-1">
+                    <span className="text-sm">{data?.name}</span>
+                    <br />
+                    <span className="text-color-app font-medium text-base font-inter">
+                      {moneyCurrency(data?.price)} {storeDetail?.firstCurrency}
+                    </span>
+                    <br />
+                    <span
+                      className={cn(
+                        "text-[13px] text-gray-500",
+                        fontMap[language]
+                      )}
+                    >
+                      {t("amount_exist")} : {data?.quantity || 0}
+                    </span>
+                  </div>
+                </div>
+              ))
             )}
           </div>
         </div>

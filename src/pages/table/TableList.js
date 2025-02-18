@@ -1661,6 +1661,7 @@ export default function TableList() {
     await _createHistoriesPrinter(_dataBill);
 
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
+    console.log("ORDER", orderSelect);
     let _index = 0;
     const printDate = [...billForCherCancel80.current];
     let dataUrls = [];

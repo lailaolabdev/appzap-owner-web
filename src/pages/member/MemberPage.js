@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { FaCoins } from "react-icons/fa";
+import { FaCogs, FaCoins } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import {
   Card,
@@ -532,15 +532,26 @@ export default function MemberPage() {
           style={{ display: "flex", justifyContent: "space-between" }}
         >
           {t("report_member_updates_last")}
-          <Button
-            variant="outline-primary"
-            style={{ display: "flex", gap: 10, alignItems: "center" }}
-            onClick={() => setPopup({ Export: true })}
-            // onClick={downloadExcel}
-            // disabled={loadingExportCsv}
-          >
-            <MdOutlineCloudDownload /> EXPORT
-          </Button>
+          <div className="flex gap-2 items-center">
+            <Button
+              variant="outline-primary"
+              onClick={() => navigate("/point-seting")}
+            >
+              <span className="flex gap-1 items-center">
+                <FaCogs />
+                {t("point_setting")}
+              </span>
+            </Button>
+            <Button
+              variant="outline-primary"
+              style={{ display: "flex", gap: 10, alignItems: "center" }}
+              onClick={() => setPopup({ Export: true })}
+              // onClick={downloadExcel}
+              // disabled={loadingExportCsv}
+            >
+              <MdOutlineCloudDownload /> EXPORT
+            </Button>
+          </div>
         </Alert>
         <Box
           sx={{
@@ -641,16 +652,6 @@ export default function MemberPage() {
               }}
             >
               <span>{t("all_point")}</span>
-
-              <Button
-                variant="dark"
-                bg="dark"
-                onClick={() =>
-                  navigate("/reports/members-report/setting-point")
-                }
-              >
-                <FaCoins /> {t("point_setting")}
-              </Button>
             </Card.Header>
             <Card.Body>
               <div
@@ -662,7 +663,7 @@ export default function MemberPage() {
                   fontWeight: 400,
                 }}
               >
-                {allPoints?.pointAmmount}
+                {moneyCurrency(allPoints?.pointAmmount)}
               </div>
             </Card.Body>
           </Card>
@@ -847,7 +848,9 @@ export default function MemberPage() {
                   navigate("/reports/members-report/create-member")
                 }
               >
-                <MdAssignmentAdd /> {t("add_member")}
+                <span className="flex gap-1 items-center">
+                  <MdAssignmentAdd /> {t("add_member")}
+                </span>
               </Button>
             </Card.Header>
             <Card.Body>
@@ -1574,7 +1577,7 @@ export default function MemberPage() {
                   fontWeight: 700,
                 }}
               >
-                {memberCount}
+                {moneyCurrency(memberCount)}
               </div>
             </Card.Body>
           </Card>
@@ -1600,7 +1603,7 @@ export default function MemberPage() {
                   fontWeight: 700,
                 }}
               >
-                {totalPoints}
+                {moneyCurrency(totalPoints)}
               </div>
             </Card.Body>
           </Card>
@@ -1626,7 +1629,7 @@ export default function MemberPage() {
                   fontWeight: 700,
                 }}
               >
-                {totalPointsUsed}
+                {moneyCurrency(totalPointsUsed)}
               </div>
             </Card.Body>
           </Card>

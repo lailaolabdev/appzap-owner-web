@@ -17,7 +17,8 @@ import { useTranslation } from "react-i18next";
 
 export default function BillForCheckOutCafe80({
   storeDetail,
-  selectedTable,
+  data,
+  meberData,
   dataBill,
   taxPercent = 0,
   profile,
@@ -31,9 +32,9 @@ export default function BillForCheckOutCafe80({
   const { t } = useTranslation();
   const [base64Image, setBase64Image] = useState("");
 
-  // console.log("storeDetail",storeDetail)
+  // console.log("storeDetail", storeDetail);
   // console.log("profile",profile)
-  // console.log("dataBill", dataBill);
+  console.log("meberData", meberData);
 
   // useEffect
   useEffect(() => {
@@ -57,19 +58,6 @@ export default function BillForCheckOutCafe80({
       // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
       _total += _data?.quantity * itemPrice;
     }
-    // if (dataBill?.discount > 0) {
-    //   if (
-    //     dataBill?.discountType == "LAK" ||
-    //     dataBill?.discountType == "MONEY"
-    //   ) {
-    //     setTotalAfterDiscount(_total - dataBill?.discount);
-    //   } else {
-    //     const ddiscount = parseInt((_total * dataBill?.discount) / 100);
-    //     setTotalAfterDiscount(_total - ddiscount);
-    //   }
-    // } else {
-    //   setTotalAfterDiscount(_total);
-    // }
     setTotal(_total);
     setTaxAmount((_total * taxPercent) / 100);
   };
@@ -104,12 +92,24 @@ export default function BillForCheckOutCafe80({
     });
   }, [imageUrl2]);
 
+  const PointRecive = () => {
+    const total =
+      meberData?.moneyReceived < storeDetail?.pointStore
+        ? 0
+        : Math.floor((meberData?.moneyReceived / storeDetail?.pointStore) * 10);
+
+    return total;
+  };
+
   return (
-    <Container>
-      <div
-        style={{ width: "100%", display: "flex", justifyContent: "flex-end" }}
-      >
-        <div style={{ display: "flex", flexDirection: "row" }}>
+    <div className="p-1 bg-white rounded-lg shadow-md w-[285px] ml-[-12px]">
+      <div className="flex flex-col mb-2 items-center ">
+        <span className="">{t("queue no")}</span>
+        <span className="text-[18px] font-bold">{data || 0}</span>
+      </div>
+      <hr className="border-b border-dashed border-gray-600" />
+      <div className=" flex justify-center relative">
+        <div className="flex gap-2 items-center">
           {base64Image ? (
             <Image
               style={{
@@ -122,34 +122,28 @@ export default function BillForCheckOutCafe80({
           ) : (
             ""
           )}
-          <span
-            style={{
-              fontSize: "24px",
-              fontWeight: "bold",
-              marginRight: "10px",
-            }}
-          >
-            # {dataBill?.queue}
-          </span>
         </div>
+        {/* <span className="text-[18px] font-bold absolute top-[-60px] right-[115px]">
+          <span className="flex flex-col gap-2 items-center">
+            {t("queue no")}
+            <br />
+            {data || 0}
+          </span>
+        </span> */}
       </div>
-      <div style={{ textAlign: "center" }}>{storeDetail?.name}</div>
+      <div className="text-center font-bold my-4">{storeDetail?.name}</div>
       {/* <div style={{ textAlign: "center" }}>{selectedTable?.tableName}</div> */}
       <Price>
         <div style={{ textAlign: "left", fontSize: 12 }}>
-          <div>
+          <div className="mb-1">
             {t("phoneNumber")}: {""}
             <span style={{ fontWeight: "bold" }}>{storeDetail?.phone}</span>
           </div>
-          <div>
+          <div className="mb-1">
             Whatapp:{" "}
             <span style={{ fontWeight: "bold" }}>{storeDetail?.whatsapp}</span>
           </div>
-          {/* <div>
-            {t("tableCode")}:{" "}
-            <span style={{ fontWeight: "bold" }}>{dataBill?.code}</span>
-          </div> */}
-          <div>
+          <div className="mb-1">
             {t("date")}:{" "}
             <span style={{ fontWeight: "bold" }}>
               {moment(dataBill?.createdAt).format("DD-MM-YYYY - HH:mm:ss")}
@@ -161,10 +155,45 @@ export default function BillForCheckOutCafe80({
               {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
             </span>
           </div>
+          {meberData?.Name && meberData?.Point ? (
+            <>
+              <div>
+                {t("ctm_tel")}: {""}
+                <span style={{ fontWeight: "bold" }}>
+                  {meberData?.memberPhone
+                    ? `${meberData?.memberPhone} (${t(
+                        "point"
+                      )} : ${moneyCurrency(
+                        Number(meberData?.Point || 0) -
+                          Number(storeDetail?.point || 0)
+                      )})`
+                    : ""}
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <span>
+                  {t("recive_point")}: {""}
+                  <span style={{ fontWeight: "bold" }}>
+                    {` ( ${moneyCurrency(PointRecive())})`}
+                  </span>
+                </span>
+                {","}
+                <span>
+                  {t("used_point")}: {""}
+                  <span style={{ fontWeight: "bold" }}>
+                    {` ( ${moneyCurrency(storeDetail?.point)})`}
+                  </span>
+                </span>
+              </div>
+            </>
+          ) : (
+            ""
+          )}
         </div>
-        <div style={{ flexGrow: 1 }}></div>
+        <div style={{ flexGrow: 1 }} />
       </Price>
-      <Name style={{ marginBottom: 10, fontSize: 12 }}>
+      <hr className="border-b border-dashed border-gray-600" />
+      <Name style={{ marginBottom: 5, fontSize: 12 }}>
         <div style={{ textAlign: "left" }}>ລຳດັບ </div>
         <div style={{ textAlign: "left", marginLeft: "-20px" }}>
           {t("list")}{" "}
@@ -175,6 +204,7 @@ export default function BillForCheckOutCafe80({
         <div style={{ textAlign: "right" }}>{t("price")}</div>
         <div style={{ textAlign: "right" }}>{t("total")}</div>
       </Name>
+      <hr className="border-b border-dashed border-gray-600" />
       <Order>
         {dataBill?.map((item, index) => {
           const optionsNames =
@@ -219,38 +249,76 @@ export default function BillForCheckOutCafe80({
           );
         })}
       </Order>
-      <div style={{ height: 10 }}></div>
-      <hr style={{ border: "1px solid #000", margin: 0 }} />
-      <div style={{ fontSize: 14 }}>
-        <div>
+      <div style={{ height: 10 }} />
+      <hr className="border-b border-dashed border-gray-600" />
+      <div className="mb-2">
+        <div className="w-full flex justify-between text-[14px] font-thin">
           <div
             style={{
               width: "100%",
               display: "flex",
-              justifyContent: "space-between",
+              justifyContent: "end",
+              alignItems: "center",
             }}
           >
-            <div
-              style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "end",
-                alignItems: "center",
-              }}
-            >
-              {t("total")} :{" "}
-            </div>
+            {t("totalAmount")} :{" "}
+          </div>
 
-            <div
-              style={{
-                width: "60%",
-                display: "flex",
-                justifyContent: "end",
-                alignItems: "center",
-              }}
-            >
-              {moneyCurrency(total)} {storeDetail?.firstCurrency}
-            </div>
+          <div
+            style={{
+              width: "60%",
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            {moneyCurrency(meberData?.moneyReceived)}{" "}
+            {storeDetail?.firstCurrency}
+          </div>
+        </div>
+        <div className="w-full flex justify-between text-[14px] font-thin">
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            {t("change")} :{" "}
+          </div>
+
+          <div
+            style={{
+              width: "60%",
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            {moneyCurrency(meberData?.moneyChange)} {storeDetail?.firstCurrency}
+          </div>
+        </div>
+        <div className="w-full flex justify-between text-[16px] font-bold">
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            {t("totals")} :{" "}
+          </div>
+          <div
+            style={{
+              width: "60%",
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            {moneyCurrency(total)} {storeDetail?.firstCurrency}
           </div>
         </div>
       </div>
@@ -271,7 +339,15 @@ export default function BillForCheckOutCafe80({
           />
         </Img>
       </div>
-    </Container>
+      {storeDetail?.isStatusCafe && (
+        <hr className="border-b border-dashed border-gray-600" />
+      )}
+      {storeDetail?.isStatusCafe && (
+        <div className="text-center text-[12px] font-thin">
+          LOVE LIFE AI-CHA
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -282,12 +358,12 @@ const Name = styled.div`
 const Price = styled.div`
   display: flex;
 `;
-const Container = styled.div`
-  margin: 10px;
-  width: 100%;
-  margin-left: -8px;
-  /* maxwidth: 80mm; */
-`;
+// const Container = styled.div`
+//   margin: 10px;
+//   width: 100%;
+//   margin-left: -8px;
+//   /* maxwidth: 80mm; */
+// `;
 const Img = styled.div`
   width: 200px;
   height: 200px;

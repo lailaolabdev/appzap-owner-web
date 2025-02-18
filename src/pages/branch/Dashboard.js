@@ -23,14 +23,13 @@ import convertNumber from "../../helpers/convertNumber";
 import PieChart from "./PieChart";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { DonutChart } from "./DonutChart";
+import { Card } from "../../components/ui/Card";
 
 export default function Dashboard() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const { width, height } = useWindowDimensions2();
   const limitData = 4;
   // state
@@ -150,9 +149,11 @@ export default function Dashboard() {
   return (
     <div
       style={{
-        padding: 10,
-        overflow: "auto",
+        padding: "16px 16px 24px 16px",
+        overflowY: "auto",
         maxHeight: "100vh",
+        height: "calc(100vh - 64px)",
+        backgroundColor: "#f8f8f8",
       }}
     >
       <div style={{ height: 10 }} />
@@ -171,13 +172,13 @@ export default function Dashboard() {
         }}
       >
         <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
-          <CardHeader>
-            <div className="box-search">
+          <div className="flex w-full justify-between gap-4 lg:flex-row flex-col">
+            <div className="flex items-center gap-2 flex-1 max-w-[480px] min-w-80">
               <Form.Control
                 placeholder={t("name_branch")}
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
-                className="input-search"
+                className=""
                 onKeyPress={(event) => {
                   if (event.key === "Enter") {
                     GetAllBranchData();
@@ -187,13 +188,18 @@ export default function Dashboard() {
               <Button
                 onClick={() => GetAllBranchData()}
                 variant="primary"
-                style={{ display: "flex", gap: 10, alignItems: "center" }}
+                style={{
+                  display: "flex",
+                  gap: 10,
+                  alignItems: "center",
+                  whiteSpace: "nowrap",
+                }}
               >
                 <FaSearch /> {t("search")}
               </Button>
             </div>
 
-            <div className="box-date-filter">
+            <div className="flex items-center gap-2">
               <span>ເລືອກວັນທີ : </span>
               <Button
                 variant="outline-primary"
@@ -217,124 +223,140 @@ export default function Dashboard() {
                   display: "flex",
                   gap: 10,
                   alignItems: "center",
-                  marginLeft: 25,
                 }}
               >
                 <FaPlusCircle /> {t("add")}
               </Button>
             </div>
-          </CardHeader>
+          </div>
           <div style={{ flex: 1 }} />
         </div>
 
-        <p style={{ fontWeight: "bold", fontSize: 18, color: COLOR_APP }}>
-          {`${t("total_branch")} (${t("all_recieve")}
-            ${convertNumber(TotalInCome())} ${t("lak")})`}
-        </p>
         {loadingData ? (
           <Loading />
         ) : branchInCome?.length > 0 ? (
           <>
-            <CardBody>
-              <div id="sub-card-body-left">
-                <table
-                  style={{ width: width > 900 ? "60%" : "100%" }}
-                  className="table-bordered"
-                >
-                  <tr style={{ backgroundColor: COLOR_APP, color: "white" }}>
-                    {/* <th style={{ textAlign: "left" }}>ລຳດັບ</th> */}
-                    <th style={{ textAlign: "center" }}>ຊື່ຮ້ານ</th>
-                    <th style={{ textAlign: "center" }}>ລາຍຮັບທັງໝົດ</th>
-                    <th style={{ textAlign: "center" }}>ຈັດການ</th>
-                  </tr>
-                  {branchInCome?.length > 0 &&
-                    branchInCome?.map((data, index) => (
-                      <tr key={data._id}>
-                        {/* <td style={{ textAlign: "left" }}>{index + 1}</td> */}
-                        <td style={{ textAlign: "center" }}>
-                          {data?.storeId?.name}
-                        </td>
-                        <td style={{ textAlign: "center" }}>
-                          {convertNumber(data?.totalAmount)} {t("lak")}
-                        </td>
-                        <td
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 pb-3">
+              <Card className="bg-white rounded-xl overflow-hidden p-4">
+                <h2 className="text-lg font-bold">ລາຍຮັບທັງໝົດ</h2>
+                <h3 className="text-xl font-bold">
+                  <span className="text-color-app text-3xl font-bold font-inter">
+                    {convertNumber(TotalInCome())}
+                  </span>{" "}
+                  <span className="text-lg font-bold">{t("lak")}</span>
+                </h3>
+              </Card>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <DonutChart
+                className="bg-white rounded-xl"
+                chartConfig={{
+                  income: { label: "ສາຂາ" },
+                  ...branchInCome.reduce(
+                    (config, branch, index) => ({
+                      ...config,
+                      [branch.storeId.name]: {
+                        label: branch.storeId.name,
+                        color: `hsl(var(--chart-${(index % 9) + 1}))`,
+                      },
+                    }),
+                    {}
+                  ),
+                }}
+                chartData={branchInCome.map((branch, index) => ({
+                  branch: branch.storeId.name,
+                  income: branch.totalAmount,
+                  fill: `hsl(var(--chart-${(index % 9) + 1}))`,
+                }))}
+              />
+
+              <Card className="bg-white rounded-xl overflow-hidden">
+                <div className="border rounded-md relative h-full">
+                  <div className="overflow-y-auto max-h-[640px] overscroll-none">
+                    <table className="w-full rounded-2xl">
+                      <tr className="text-white bg-color-app hover:bg-color-app hover:text-white sticky top-0">
+                        {/* <th style={{ textAlign: "left" }}>ລຳດັບ</th> */}
+                        <th
                           style={{
                             textAlign: "center",
+                            fontSize: "18px",
                             fontWeight: "bold",
                           }}
                         >
-                          <Button
-                            onClick={() =>
-                              navigate(`/branch/detail/${data?.storeId?._id}`, {
-                                state: { storeId: data?.storeId?._id },
-                              })
-                            }
-                            variant="primary"
-                            style={{ marginLeft: 10, fontWeight: "bold" }}
-                          >
-                            <FaEllipsisH />
-                          </Button>
-                          <Button
-                            onClick={() => handleShowPopup(data)}
-                            variant="primary"
-                            style={{ marginLeft: 10, fontWeight: "bold" }}
-                            hidden={data?.storeId?._id === storeDetail?._id}
-                          >
-                            <FaTrash />
-                          </Button>
-                        </td>
+                          ຊື່ຮ້ານ
+                        </th>
+                        <th
+                          style={{
+                            textAlign: "center",
+                            fontSize: "18px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          ລາຍຮັບທັງໝົດ
+                        </th>
+                        <th
+                          style={{
+                            textAlign: "center",
+                            fontSize: "18px",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          ຈັດການ
+                        </th>
                       </tr>
-                    ))}
-                  <tr>
-                    <td
-                      style={{
-                        textAlign: "center",
-                        fontWeight: "bold",
-                        backgroundColor: "#f8f8f8",
-                      }}
-                      colSpan={3}
-                    >
-                      <ReactPaginate
-                        previousLabel={
-                          <span className="glyphicon glyphicon-chevron-left">
-                            {"ກ່ອນໜ້າ"}
-                          </span>
-                        }
-                        nextLabel={
-                          <span className="glyphicon glyphicon-chevron-right">
-                            {"ຕໍ່ໄປ"}
-                          </span>
-                        }
-                        breakLabel={
-                          <Pagination.Item disabled>...</Pagination.Item>
-                        }
-                        breakClassName={"break-me"}
-                        pageCount={paginationTotal} // Replace with the actual number of pages
-                        marginPagesDisplayed={1}
-                        pageRangeDisplayed={3}
-                        onPageChange={(e) => {
-                          setPaginations(e?.selected + 1);
-                        }}
-                        containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
-                        pageClassName={"page-item"}
-                        pageLinkClassName={"page-link"}
-                        activeClassName={"active"}
-                        previousClassName={"page-item"}
-                        nextClassName={"page-item"}
-                        previousLinkClassName={"page-link"}
-                        nextLinkClassName={"page-link"}
-                      />
-                    </td>
-                  </tr>
-                </table>
-              </div>
-              <div id="sub-card-body-right">
-                <PieChart
-                  DatabranchInCome={branchInCome}
-                  TotalInCome={TotalInCome}
-                />
-              </div>
-            </CardBody>
+                      {branchInCome?.length > 0 &&
+                        branchInCome?.map((data, index) => (
+                          <tr key={data._id}>
+                            {/* <td style={{ textAlign: "left" }}>{index + 1}</td> */}
+                            <td
+                              style={{ textAlign: "start", padding: "0 24px" }}
+                            >
+                              {data?.storeId?.name}
+                            </td>
+                            <td
+                              style={{ textAlign: "center", padding: "0 16px" }}
+                            >
+                              {convertNumber(data?.totalAmount)} {t("lak")}
+                            </td>
+                            <td
+                              style={{
+                                textAlign: "start",
+                                fontWeight: "bold",
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: 4,
+                              }}
+                            >
+                              <Button
+                                onClick={() =>
+                                  navigate(
+                                    `/branch/detail/${data?.storeId?._id}`,
+                                    {
+                                      state: { storeId: data?.storeId?._id },
+                                    }
+                                  )
+                                }
+                                variant="primary"
+                                style={{ marginLeft: 10, fontWeight: "bold" }}
+                              >
+                                <FaEllipsisH />
+                              </Button>
+                              <Button
+                                onClick={() => handleShowPopup(data)}
+                                variant="primary"
+                                style={{ marginLeft: 10, fontWeight: "bold" }}
+                                hidden={data?.storeId?._id === storeDetail?._id}
+                              >
+                                <FaTrash />
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                    </table>
+                  </div>
+                </div>
+              </Card>
+            </div>
           </>
         ) : (
           <div

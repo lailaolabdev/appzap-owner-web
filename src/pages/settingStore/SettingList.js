@@ -18,8 +18,10 @@ import {
   faBuilding,
   faBuildingColumns,
   faBox,
+  faClock,
+  faDesktop,
 } from "@fortawesome/free-solid-svg-icons";
-
+// import { faRegClock } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
 import styled from "styled-components";
@@ -30,7 +32,7 @@ import { MdPassword } from "react-icons/md";
 import Axios from "axios";
 import Swal from "sweetalert2";
 import { fontMap } from "../../utils/font-map";
-
+import { useStoreStore } from "../../zustand/storeStore";
 export default function SettingList() {
   const {
     t,
@@ -40,6 +42,7 @@ export default function SettingList() {
   const navigate = useNavigate();
   const [clickCount, setClickCount] = useState(0);
   const [showDeletem, setShowDelete] = useState(false);
+  const { storeDetail } = useStoreStore();
 
   const data = [
     {
@@ -81,6 +84,7 @@ export default function SettingList() {
       subTitle: t("zone_setting_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faTh} />,
       path: `/settingStore/settingZone/${params?.id}`,
+      isCafe: storeDetail?.isStatusCafe,
     },
     {
       id: "1b76514a-d0e2-4808-89d1-3c66bc46d8ce",
@@ -88,6 +92,7 @@ export default function SettingList() {
       subTitle: t("table_setting_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faTable} />,
       path: `/settingStore/settingTable/${params?.id}`,
+      isCafe: storeDetail?.isStatusCafe,
     },
     {
       id: "1cb62d9b-01bd-419b-a60e-9b5b43133d7a",
@@ -102,6 +107,7 @@ export default function SettingList() {
       subTitle: t("stok_manage_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faBoxes} />,
       path: `/settingStore/stock/limit/40/page/1/${params?.id}`,
+      isCafe: storeDetail?.isStatusCafe,
     },
     {
       id: "0f90941b-c594-4365-a279-a995868ede2a",
@@ -118,6 +124,7 @@ export default function SettingList() {
         <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faVolumeUp} />
       ),
       path: `/audio`,
+      isCafe: storeDetail?.isStatusCafe,
     },
     {
       id: "64bf476a-cbb6-43e1-abe1-29d4bdce7683",
@@ -156,6 +163,7 @@ export default function SettingList() {
       subTitle: t("banner_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faImages} />,
       path: `/settingStore/banner`,
+      isCafe: storeDetail?.isStatusCafe,
     },
     {
       id: "f962968d-1bed-48da-9049-92551dcd7102",
@@ -163,6 +171,7 @@ export default function SettingList() {
       subTitle: t("pin_desc"),
       icon: <MdPassword style={{ fontSize: "1.7rem" }} />,
       path: `/PIN`,
+      isCafe: storeDetail?.isStatusCafe,
     },
     {
       id: "f962968d-1bed-48da-9049-86351dcd7102",
@@ -170,13 +179,20 @@ export default function SettingList() {
       subTitle: "",
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faBox} />,
       path: `/settingStore/delivery/${params?.id}`,
+      isCafe: storeDetail?.isStatusCafe,
     },
 
     // {
     //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
-    //   title: "ຈັດການເມນູພື້ນຖານຂອງຮ້ານ",
-    //   icon: <FontAwesomeIcon style={{fontSize: "1.7rem"}} icon={faUtensils} />,
-    //   path: `/food-setting/limit/40/page/1`,
+    //   title: "ການຕັ້ງຄ່າກ່ຽວກັບ 2 ໜ້າຈໍ",
+    //   icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDesktop} />,
+    //   path: "/setting-screen",
+    // },
+    // {
+    //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
+    //   title: "ຈັດການກະ",
+    //   icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faClock} />,
+    //   path: "/shift",
     // },
   ];
 
@@ -234,38 +250,42 @@ export default function SettingList() {
           gridAutoRows: "200px",
         }}
       >
-        {data.map((e) => (
-          <ItemBox onClick={() => navigate(e.path)} key={e.id}>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <div>{e.icon}</div>
+        {data
+          ?.filter((e) => !e.isCafe)
+          ?.map((e) => (
+            <ItemBox onClick={() => navigate(e.path)} key={e.id}>
               <div
-                style={{ fontWeight: "bold", textAlign: "center" }}
-                className={fontMap[language]}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
               >
-                {e.title}
+                <div>{e.icon}</div>
+                <div
+                  style={{ fontWeight: "bold", textAlign: "center" }}
+                  className={fontMap[language]}
+                >
+                  {e.title}
+                </div>
+                <div
+                  style={{ fontSize: 10, textAlign: "center" }}
+                  className={fontMap[language]}
+                >
+                  {e?.subTitle}
+                </div>
               </div>
-              <div
-                style={{ fontSize: 10, textAlign: "center" }}
-                className={fontMap[language]}
-              >
-                {e?.subTitle}
-              </div>
-            </div>
+            </ItemBox>
+          ))}
+        {!storeDetail?.isStatusCafe && (
+          <ItemBox onClick={clickDeleteHistoryStore}>
+            <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDatabase} />
+            <span className={fontMap[language]}>
+              {t("clear_restaurant_data")}
+            </span>
           </ItemBox>
-        ))}
-        <ItemBox onClick={clickDeleteHistoryStore}>
-          <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDatabase} />
-          <span className={fontMap[language]}>
-            {t("clear_restaurant_data")}
-          </span>
-        </ItemBox>
+        )}
       </Box>
       <PopUpConfirm
         open={showDeletem}

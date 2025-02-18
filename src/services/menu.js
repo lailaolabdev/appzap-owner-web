@@ -126,3 +126,63 @@ export const updateMenuStockAmount = async (id, data) => {
     return error;
   }
 };
+
+export const deleteMenuData = async (menuId) => {
+  try {
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu/delete/${menuId}`;
+    const res = await axios.delete(url, {
+      headers: await getHeaders(),
+    });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const addMenuOption = async (id, optionId) => {
+  try {
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu/${id}/menu-option/${optionId}/add`;
+    const res = await axios.post(url, {
+      headers: await getHeaders(),
+    });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const deleteMenuOption = async (id, optionId) => {
+  try {
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu/${id}/menu-option/${optionId}/remove`;
+    const res = await axios.delete(url, {
+      headers: await getHeaders(),
+    });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getMenuOptions = async (id) => {
+  try {
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu/${id}/menu-options`;
+    const res = await axios.get(url, {
+      headers: await getHeaders(),
+    });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getMenuOptionByStoreId = async (id) => {
+  try {
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/restaurant/${id}/menu-options`;
+    const res = await axios.get(url, {
+      headers: await getHeaders(),
+    });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};

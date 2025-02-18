@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Select from "react-select";
 import { useTranslation } from "react-i18next";
 import { COLOR_APP, COLOR_APP_CANCEL } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,6 +15,10 @@ import {
   Tabs,
   Spinner,
 } from "react-bootstrap";
+import {
+  BsFillCalendarWeekFill,
+  BsFillCalendarEventFill,
+} from "react-icons/bs";
 import { Formik } from "formik";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Axios from "axios";
@@ -34,9 +39,10 @@ import moment from "moment";
 import PopUpDetaillBillFark from "../../components/popup/PopUpDetaillBillFark";
 import { convertBillFarkStatus } from "../../helpers/convertBillFarkStatus";
 import EmptyImage from "../../image/empty-removebg.png";
-
 import { useStoreStore } from "../../zustand/storeStore";
-
+import PopUpSetStartAndEndDate from "./../../components/popup/PopUpSetStartAndEndDate";
+import { useShiftStore } from "../../zustand/ShiftStore";
+import { getAllShift } from "../../services/shift";
 export default function FarkPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -49,36 +55,101 @@ export default function FarkPage() {
   const [billFarkData, setBillFarkData] = useState();
   const [selectBillFark, setSelectBillFark] = useState();
   const [popup, setPopup] = useState();
-  console.log("totalPagination", totalPagination);
-  // store
-  const { storeDetail } = useStoreStore()
+  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
+  const [startTime, setStartTime] = useState("00:00:00");
+  const [endTime, setEndTime] = useState("23:59:59");
+
+  const [shiftData, setShiftData] = useState([]);
+  const [shiftId, setShiftId] = useState([]);
+
+  // provider
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
+  const { profile } = useStore();
+  const { shiftCurrent } = useShiftStore();
+
+  const fetchShift = async () => {
+    await getAllShift()
+      .then((res) => {
+        setShiftData(res?.data?.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const optionsData = [
+    {
+      value: {
+        shiftID: "ALL",
+      },
+      label: t("all_shifts"),
+    },
+    ...(shiftData ?? []).map((item) => {
+      return {
+        value: {
+          shiftID: item._id,
+        },
+        label: item.shiftName,
+      };
+    }),
+  ];
+
+  const handleSearchInput = (option) => {
+    if (option?.value?.shiftID === "ALL") {
+      setShiftId(null);
+      getData();
+    } else {
+      setShiftId(option?.value?.shiftID);
+    }
+  };
 
   // useEffect
   useEffect(() => {
     getData();
+    fetchShift();
   }, []);
 
   // useEffect
   useEffect(() => {
     getData();
-  }, [pagination]);
+  }, [pagination, startDate, endDate, shiftId, searchCode]);
   // function
   const getData = async () => {
     setIsLoading(true);
     try {
       const { DATA, TOKEN } = await getLocalData();
-      let findby = "?";
+      let findBy = "?";
+      if (profile?.data?.role === "APPZAP_ADMIN") {
+        findBy += `skip=${(pagination - 1) * limitData}&`;
+        findBy += `limit=${limitData}&`;
+        findBy += `storeId=${storeDetail?._id}&`;
+        findBy += `startDate=${startDate}&`;
+        findBy += `endDate=${endDate}&`;
+        findBy += `startTime=${startTime}&`;
+        findBy += `endTime=${endTime}&`;
 
-      if (searchCode) {
-        findby += `code=${searchCode}&`;
+        if (shiftId) {
+          findBy += `shiftId=${shiftId}&`;
+        }
+      } else {
+        findBy += `skip=${(pagination - 1) * limitData}&`;
+        findBy += `limit=${limitData}&`;
+        findBy += `storeId=${storeDetail?._id}&`;
+        findBy += `startDate=${startDate}&`;
+        findBy += `endDate=${endDate}&`;
+        findBy += `startTime=${startTime}&`;
+        findBy += `endTime=${endTime}&`;
+        if (shiftCurrent[0]) {
+          findBy += `shiftId=${shiftCurrent[0]?._id}&`;
+        }
       }
 
-      findby += `skip=${(pagination - 1) * limitData}&`;
-      findby += `limit=${limitData}&`;
-      findby += `storeId=${storeDetail?._id}`;
-      const data = await getBillFarks(findby, TOKEN);
+      if (searchCode) {
+        findBy += `code=${searchCode}&`;
+      }
 
-      console.log("getBillFarks", data);
+      const data = await getBillFarks(findBy, TOKEN);
 
       setBillFarkData(data?.data);
       // console.log(data);
@@ -109,15 +180,56 @@ export default function FarkPage() {
             title={t("all_deposit")}
             style={{ paddingTop: 20 }}
           >
-            <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
-              <Form.Control
-                style={{ maxWidth: 220 }}
-                placeholder={t("search_bill_code")}
-                onChange={(e) => setSearchCode(e.target.value)}
-              />
-              <Button variant="primary" onClick={getData}>
-                {t("search")}
-              </Button>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                gap: 10,
+                padding: "10px 0",
+              }}
+            >
+              <div>
+                <Form.Control
+                  style={{ maxWidth: 180 }}
+                  placeholder={t("search_bill_code")}
+                  onChange={(e) => setSearchCode(e.target.value)}
+                />
+                {/* <Button variant="primary" onClick={getData}>
+                  {t("search")}
+                </Button> */}
+              </div>
+              <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <Button
+                    variant="outline-primary"
+                    size="small"
+                    style={{ display: "flex", gap: 10, alignItems: "center" }}
+                    onClick={() => setPopup({ popupfiltter: true })}
+                  >
+                    <BsFillCalendarWeekFill />
+                    <div>
+                      {startDate} {startTime}
+                    </div>{" "}
+                    ~{" "}
+                    <div>
+                      {endDate} {endTime}
+                    </div>
+                  </Button>
+                </div>
+                {profile?.data?.role === "APPZAP_ADMIN"
+                  ? storeDetail?.isShift && (
+                      <div className="flex gap-1 items-center">
+                        <span>{t("chose_shift")} : </span>
+                        <Select
+                          placeholder={t("chose_shift")}
+                          className="w-40 border-orange-500"
+                          options={optionsData}
+                          onChange={handleSearchInput}
+                        />
+                      </div>
+                    )
+                  : ""}
+              </div>
             </div>
 
             <Card border="primary" style={{ margin: 0 }}>
@@ -161,7 +273,7 @@ export default function FarkPage() {
                     <td colSpan={9} style={{ textAlign: "center" }}>
                       <Spinner animation="border" variant="warning" />
                     </td>
-                  ) : (
+                  ) : billFarkData?.length > 0 ? (
                     billFarkData?.map((e, i) => (
                       <tr
                         onClick={() => {
@@ -194,6 +306,16 @@ export default function FarkPage() {
                         </td>
                       </tr>
                     ))
+                  ) : (
+                    <>
+                      <tr>
+                        <td colSpan={6}>
+                          <p className="flex justify-center items-center font-bold">
+                            ບໍ່ມີຂໍ້ມູນ
+                          </p>
+                        </td>
+                      </tr>
+                    </>
                   )}
                 </table>
               </Card.Body>
@@ -207,10 +329,14 @@ export default function FarkPage() {
               >
                 <ReactPaginate
                   previousLabel={
-                    <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+                    <span className="glyphicon glyphicon-chevron-left">
+                      {"ກ່ອນໜ້າ"}
+                    </span>
                   }
                   nextLabel={
-                    <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+                    <span className="glyphicon glyphicon-chevron-right">
+                      {"ຕໍ່ໄປ"}
+                    </span>
                   }
                   breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
                   breakClassName={"break-me"}
@@ -233,76 +359,6 @@ export default function FarkPage() {
               </div>
             </Card>
           </Tab>
-          <Tab
-            disabled
-            eventKey="currency-list"
-            title={t("deposit_history")}
-            style={{ paddingTop: 20 }}
-          >
-            <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
-              <Form.Control
-                style={{ maxWidth: 220 }}
-                placeholder={t("search_bill_code")}
-              />
-              <Button variant="primary">{t("search")}</Button>
-            </div>
-
-            <Card border="secondary" bg="light" style={{ margin: 0 }}>
-              <Card.Header
-                style={{
-                  fontSize: 18,
-                  fontWeight: "bold",
-                }}
-              >
-                <IoBeerOutline /> {t("deposit_history")}
-              </Card.Header>
-              <Card.Body style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%" }}>
-                  <tr>
-                    <th style={{ textWrap: "nowrap" }}>#</th>
-                    <th style={{ textWrap: "nowrap" }}>{t("bill_no")}</th>
-                    <th style={{ textWrap: "nowrap" }}>{t("order_anount")}</th>
-                    <th style={{ textWrap: "nowrap" }}>{t("status")}</th>
-                    <th style={{ textWrap: "nowrap" }}>{t("date_add")}</th>
-                    <th style={{ textWrap: "nowrap" }}>{t("expired")}</th>
-                    <th style={{ textWrap: "nowrap" }}>{t("date_pick_up")}</th>
-                  </tr>
-                  <tr>
-                    <td style={{ textAlign: "start", textWrap: "nowrap" }}>
-                      1
-                    </td>
-                    <td style={{ textAlign: "start", textWrap: "nowrap" }}>
-                      1
-                    </td>
-                    <td style={{ textAlign: "start", textWrap: "nowrap" }}>
-                      1
-                    </td>
-                    <td style={{ textAlign: "start", textWrap: "nowrap" }}>
-                      <div>
-                        <Button
-                          variant="dark"
-                          bg="dark"
-                          disabled
-                          style={{ backgroundColor: "green" }}
-                        >
-                          {t("deposit")}
-                        </Button>
-                      </div>
-                    </td>
-                    <td style={{ textAlign: "start", textWrap: "nowrap" }}>
-                      1
-                    </td>
-                    <td style={{ textAlign: "start", textWrap: "nowrap" }}>
-                      1
-                    </td>
-                    <td style={{ textAlign: "start", textWrap: "nowrap" }}>
-                      1
-                    </td>
-                  </tr>
-                </table>
-              </Card.Body>
-            </Card>
-          </Tab>
         </Tabs>
       </div>
       <PopUpDetaillBillFark
@@ -317,6 +373,19 @@ export default function FarkPage() {
           setSelectBillFark();
           getData();
         }}
+      />
+
+      <PopUpSetStartAndEndDate
+        open={popup?.popupfiltter}
+        onClose={() => setPopup()}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        setStartTime={setStartTime}
+        startTime={startTime}
+        setEndDate={setEndDate}
+        setEndTime={setEndTime}
+        endTime={endTime}
+        endDate={endDate}
       />
     </>
   );

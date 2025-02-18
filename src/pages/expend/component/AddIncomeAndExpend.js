@@ -33,6 +33,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { COLOR_APP } from "../../../constants";
+import { useShiftStore } from "../../../zustand/ShiftStore";
 
 export default function AddIncomeAndExpend() {
   const navigate = useNavigate();
@@ -40,6 +41,8 @@ export default function AddIncomeAndExpend() {
   const [imageLoadingMany, setImageLoadingMany] = useState(0);
   const [imgArr, setImgArr] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { shiftCurrent } = useShiftStore();
 
   const createExpend = async (data, setSubmitting) => {
     try {
@@ -60,6 +63,7 @@ export default function AddIncomeAndExpend() {
           accountId: _localData?.DATA?.storeId,
           platform: "APPZAPP",
           typeStatus: "EXPEND",
+          shiftId: shiftCurrent[0]?._id,
           expendImages: imgArr,
           createdBy: _localData?.DATA?._id,
           createdByName: _localData?.DATA?.firstname,

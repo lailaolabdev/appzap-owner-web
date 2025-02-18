@@ -23,6 +23,7 @@ import { getCountBills } from "../../services/bill";
 import { COLOR_APP } from "../../constants";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { useShiftStore } from "../../zustand/ShiftStore";
 
 const limitData = 50;
 
@@ -32,6 +33,8 @@ export default function DashboardFinance({
   startTime,
   endTime,
   selectedCurrency,
+  setCountIsDebtTrue,
+  shiftId,
 }) {
   const [currency, setCurrency] = useState();
   const navigate = useNavigate();
@@ -52,27 +55,20 @@ export default function DashboardFinance({
 
   const [pagination, setPagination] = useState(1);
   const [totalPagination, setTotalPagination] = useState();
+  const [getDataDashboardFinance, setGetDataDashboardFinance] = useState([]);
+  const [totalTranferAndPayLast, setTotalTranferAndPayLast] = useState(0);
 
   const handleClose = () => setShow(false);
   const { profile } = useStore();
   const { storeDetail } = useStoreStore();
+  const { shiftCurrent } = useShiftStore();
 
   // console.log("data", data);
 
   const getPaginationCountData = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
-      const query =
-        "?storeId=" +
-        params?.storeId +
-        "&dateFrom=" +
-        startDate +
-        "&dateTo=" +
-        endDate +
-        "&timeFrom=" +
-        startTime +
-        "&timeTo=" +
-        endTime;
+      const query = `?storeId=${params?.storeId}&dateFrom=${startDate}&dateTo=${endDate}&timeFrom=${startTime}&timeTo=${endTime}`;
       const _data = await getCountBills(query, TOKEN);
       if (_data.error) throw new Error("error");
       setTotalPagination(Math.ceil(_data?.count / limitData));
@@ -104,8 +100,6 @@ export default function DashboardFinance({
   const handleShow = (item) => {
     setShow(true);
     setDataModal(item);
-
-    console.log("item", item);
   };
 
   const getCurrency = async () => {
@@ -156,31 +150,48 @@ export default function DashboardFinance({
 
   useEffect(() => {
     getPaginationCountData();
-  }, [endDate, startDate, selectedCurrency]);
+  }, [endDate, startDate, selectedCurrency, shiftId]);
 
   useEffect(() => {
     _fetchFinanceData();
-  }, [endDate, startDate, selectedCurrency, pagination, totalPagination]);
+  }, [
+    endDate,
+    startDate,
+    selectedCurrency,
+    shiftId,
+    pagination,
+    totalPagination,
+  ]);
 
   const _fetchFinanceData = async () => {
     setIsLoading(true);
     const headers = await getHeaders(accessToken);
+
+    let findby = "?";
+
+    if (profile?.data?.role === "APPZAP_ADMIN") {
+      findby += `storeId=${params?.storeId}&`;
+      findby += `startDate=${startDate}&`;
+      findby += `endDate=${endDate}&`;
+      findby += `startTime=${startTime}&`;
+      findby += `endTime=${endTime}&`;
+
+      if (shiftId) {
+        findby += `shiftId=${shiftId}&`;
+      }
+    } else {
+      findby += `storeId=${params?.storeId}&`;
+      findby += `startDate=${startDate}&`;
+      findby += `endDate=${endDate}&`;
+      findby += `startTime=${startTime}&`;
+      findby += `endTime=${endTime}&`;
+      if (shiftCurrent[0]) {
+        findby += `shiftId=${shiftCurrent[0]?._id}&`;
+      }
+    }
+
     const getDataDashBoard = await axios.get(
-      END_POINT_SEVER +
-        "/v3/bills?storeId=" +
-        params?.storeId +
-        "&startDate=" +
-        startDate +
-        "&endDate=" +
-        endDate +
-        "&startTime=" +
-        startTime +
-        "&endTime=" +
-        endTime +
-        "&skip=" +
-        (pagination - 1) * limitData +
-        "&limit=" +
-        limitData,
+      `${END_POINT_SEVER}/v7/bills${findby}`,
       {
         headers: headers,
       }
@@ -195,6 +206,8 @@ export default function DashboardFinance({
     setData(_formatJson);
     setIsLoading(false);
   };
+
+  //console.log("data: ", data)
 
   useEffect(() => {
     let _disCountDataKib = 0;
@@ -363,6 +376,94 @@ export default function DashboardFinance({
     TotalCalculate = baseTotal ?? 0 - dataModal?.change ?? 0;
   }
 
+  useEffect(() => {
+    const filteredData = data?.checkOut?.filter((item) => !item.isDebt) || [];
+    setGetDataDashboardFinance(filteredData);
+  }, [data]);
+
+  useEffect(() => {
+    setCountIsDebtTrue(
+      data?.checkOut?.filter((item) => item?.isDebt === true).length
+    );
+  }, [data]);
+
+  const mapOrderData = (orderId, formatMenuName, orderStatus) => {
+    if (!orderId || !Array.isArray(orderId)) return [];
+
+    return orderId.map((item, index) => ({
+      index: index + 1,
+      menuName: formatMenuName
+        ? formatMenuName(item?.name || "", item?.options || [])
+        : "-",
+      quantity: item?.quantity || 0,
+      status: item?.status || "UNKNOWN",
+      statusColor: getStatusColor(item?.status),
+      createdBy: item?.createdBy?.firstname || "-",
+      totalPrice: (() => {
+        try {
+          const calculatedPrice =
+            item?.totalPrice ||
+            ((item?.price || 0) + (item?.totalOptionPrice || 0)) *
+              (item?.quantity || 0);
+
+          return new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+            calculatedPrice
+          );
+        } catch {
+          return "0";
+        }
+      })(),
+      deliveryCode: item?.deliveryCode || "-",
+      createdAt: item?.createdAt
+        ? moment(item.createdAt).format("DD/MM/YYYY HH:mm")
+        : "-",
+      updatedAt: item?.updatedAt
+        ? moment(item.updatedAt).format("DD/MM/YYYY HH:mm")
+        : "-",
+    }));
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "WAITING":
+        return "#2d00a8";
+      case "DOING":
+        return "#c48a02";
+      case "SERVED":
+        return "green";
+      case "PAID":
+        return COLOR_APP;
+      case "PRINTBILL":
+        return "blue";
+      case "CART":
+      case "FEEDBACK":
+        return "#00496e";
+      default:
+        return "#bd0d00";
+    }
+  };
+
+  const calculateTotalAmount = (orderData) => {
+    try {
+      return orderData.reduce((total, item) => {
+        const price = parseFloat(item.totalPrice.replace(/,/g, "")) || 0;
+        return total + price;
+      }, 0);
+    } catch {
+      return 0;
+    }
+  };
+  const orderData = mapOrderData(
+    dataModal?.orderId,
+    formatMenuName,
+    orderStatus
+  );
+  const totalPriceAmount = calculateTotalAmount(orderData);
+
+  useEffect(() => {
+    setTotalTranferAndPayLast(dataModal?.totalTranferAndPayLast);
+  }, [dataModal]);
+
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <Loading />}
@@ -469,7 +570,7 @@ export default function DashboardFinance({
             </tr>
           </thead>
           <tbody>
-            {data?.checkOut?.map((item, index) => (
+            {getDataDashboardFinance?.map((item, index) => (
               <tr
                 key={item?._id}
                 onClick={() => {
@@ -527,15 +628,37 @@ export default function DashboardFinance({
                     : ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                     ? new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
-                      }).format(_countAmount(item?.orderId))
+                      }).format(
+                        isNaN(_countAmount(item?.orderId))
+                          ? 0
+                          : _countAmount(item?.orderId)
+                      )
                     : new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
                       }).format(
-                        item?.billAmount +
-                          item?.taxAmount +
-                          item?.serviceChargeAmount -
-                          item?.point
+                        item?.isDebtAndPay
+                          ? item?.payAmount + item?.transferAmount
+                          : item?.isDebtPayment
+                          ? item?.payAmount +
+                            item?.transferAmount -
+                            item?.totalTranferAndPayLast
+                          : isNaN(
+                              item?.billAmount +
+                                item?.taxAmount +
+                                item?.serviceChargeAmount -
+                                item?.point
+                            )
+                          ? item?.billAmount
+                          : item?.billAmount +
+                            item?.taxAmount +
+                            item?.serviceChargeAmount -
+                            item?.point
                       )}{" "}
+                  {item?.isDebtPayment && (
+                    <span className=" text-blue-500">
+                      ( + {moneyCurrency(item?.totalTranferAndPayLast)}){" "}
+                    </span>
+                  )}
                   {storeDetail?.firstCurrency}
                 </td>
                 <td>
@@ -594,7 +717,9 @@ export default function DashboardFinance({
                     ? t("point")
                     : item?.paymentMethod === "CASH_TRANSFER_POINT"
                     ? t("transfercashpoint")
-                    : t("transfercash")}
+                    : t("transfercash")}{" "}
+                  {item?.isDebtAndPay === true ? "(ຕິດໜີ້)" : ""}
+                  {item?.isDebtPayment === true ? "(ຈາກການຊຳລະໜີ້)" : ""}
                 </td>
                 <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
                 <td>{item?.fullnameStaffCheckOut ?? "-"}</td>
@@ -648,11 +773,18 @@ export default function DashboardFinance({
                 <div className="flex flex-row items-center text-green-500 gap-2">
                   <FaCircleCheck className="text-green-500 text-5xl" />{" "}
                   <div className="flex flex-col gap-1">
-                    <span>
+                    {/* <span>
                       ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
                       {`${new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
                       }).format(TotalBefore)} ${storeDetail?.firstCurrency}`}
+                    </span> */}
+                    <span>
+                      ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
+                      {new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(totalPriceAmount)}{" "}
+                      {storeDetail?.firstCurrency}
                     </span>
                     <span>
                       ເງິນທີ່ໄດ້ຮັບມາຈານການປ້ອນ (
@@ -667,9 +799,24 @@ export default function DashboardFinance({
                       ) ={" "}
                       {`${new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
-                      }).format(TotalCalculate)} ${
-                        storeDetail?.firstCurrency
-                      }`}{" "}
+                      }).format(
+                        dataModal?.isDebtPayment
+                          ? totalTranferAndPayLast
+                          : TotalCalculate
+                      )} ${storeDetail?.firstCurrency}`}{" "}
+                    </span>
+                    {dataModal?.isDebtPayment === true && (
+                      <span>
+                        {`ຍອດເງິນລວມທັງຫມົດທີຊຳລະກ່ອນຫນ້ານີ້ = ${moneyCurrency(
+                          TotalCalculate - totalTranferAndPayLast
+                        )}`}{" "}
+                        {storeDetail?.firstCurrency}
+                      </span>
+                    )}
+                    <span>
+                      ເງິນທີ່ຍັງຄ້າງຊຳລະ ={" "}
+                      {moneyCurrency(dataModal?.remainingAmount)}{" "}
+                      {storeDetail?.firstCurrency}
                     </span>
                   </div>
                 </div>
@@ -697,18 +844,22 @@ export default function DashboardFinance({
                 ""
               )}
             </div>
-            <Button
-              disabled={
-                disabledEditBill ||
-                selectOrder?.status === "ACTIVE" ||
-                profile?.data?.role != "APPZAP_ADMIN"
-              }
-              onClick={handleEditBill}
-            >
-              {selectOrder?.status === "ACTIVE"
-                ? t("editingTheBill")
-                : t("billEditing")}
-            </Button>
+            {!storeDetail?.isStatusCafe && (
+              <Button
+                disabled={
+                  disabledEditBill ||
+                  selectOrder?.status === "ACTIVE" ||
+                  profile?.data?.role != "APPZAP_ADMIN" ||
+                  dataModal?.isDebtPayment === true ||
+                  dataModal?.isDebtAndPay === true
+                }
+                onClick={handleEditBill}
+              >
+                {selectOrder?.status === "ACTIVE"
+                  ? t("editingTheBill")
+                  : t("billEditing")}
+              </Button>
+            )}
           </div>
           <Table striped bordered hover size="sm" style={{ fontSize: 15 }}>
             <thead>
@@ -721,58 +872,29 @@ export default function DashboardFinance({
                 <th>{t("price")}</th>
                 {storeDetail?.isDelivery && <th>DC Code</th>}
                 <th>{t("time")}</th>
-                <th>ເວລາອັບເດດ</th>
+                {/* <th>ເວລາອັບເດດ</th> */}
               </tr>
             </thead>
             <tbody>
-              {dataModal?.orderId?.map((item, index) => (
-                <tr key={1 + index}>
-                  <td>{index + 1}</td>
-                  <td>{formatMenuName(item?.name, item?.options)}</td>
-                  <td>{item?.quantity}</td>
-                  <td
-                    style={{
-                      color:
-                        item?.status === "WAITING"
-                          ? "#2d00a8"
-                          : item?.status === "DOING"
-                          ? "#c48a02"
-                          : item?.status === "SERVED"
-                          ? "green"
-                          : item?.status === "PAID"
-                          ? COLOR_APP
-                          : item?.status === "PRINTBILL"
-                          ? "blue"
-                          : item?.status === "CART"
-                          ? "#00496e"
-                          : item?.status === "FEEDBACK"
-                          ? "#00496e"
-                          : "#bd0d00",
-                    }}
-                  >
-                    {orderStatus(item?.status)}
+              {mapOrderData(
+                dataModal?.orderId,
+                formatMenuName,
+                orderStatus
+              ).map((item) => (
+                <tr key={item.index}>
+                  <td>{item.index}</td>
+                  <td>{item.menuName}</td>
+                  <td>{item.quantity}</td>
+                  <td style={{ color: item.statusColor }}>
+                    {orderStatus(item.status)}
                   </td>
-                  <td>{item?.createdBy ? item?.createdBy?.firstname : "-"}</td>
-                  <td>
-                    {new Intl.NumberFormat("ja-JP", {
-                      currency: "JPY",
-                    }).format(
-                      item?.totalPrice ??
-                        (item?.price + (item?.totalOptionPrice ?? 0)) *
-                          item?.quantity
-                    )}
-                  </td>
-
-                  <td style={{ textAlign: "center" }}>
-                    {item?.deliveryCode ? item?.deliveryCode : "-"}
-                  </td>
-
-                  <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
-                  <td>
-                    {item?.updatedAt
-                      ? moment(item?.updatedAt).format("DD/MM/YYYY HH:mm")
-                      : "-"}
-                  </td>
+                  <td>{item.createdBy}</td>
+                  <td>{item.totalPrice}</td>
+                  {storeDetail?.isDelivery && (
+                    <td style={{ textAlign: "center" }}>{item.deliveryCode}</td>
+                  )}
+                  <td>{item.createdAt}</td>
+                  {/* <td>{item.updatedAt}</td> */}
                 </tr>
               ))}
             </tbody>

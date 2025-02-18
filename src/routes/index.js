@@ -83,7 +83,14 @@ import ManageCounterList from "../pages/manageCounter/manageCounter";
 import StockCreate from "../pages/stock/StockCreate";
 import StockCreateCategory from "../pages/stock/StockCreateCategory";
 import ReportStocks from "../pages/report/ReportStocks";
+import ShiftList from "../pages/shift/Shift";
+import ShiftOpenPages from "../pages/shift/ShiftOpenPages";
+import SecondScreen from "../pages/secondScreen/SecondScreen";
+import MainScreen from "../pages/secondScreen/MainScreen";
 
+import MemberPage from "../pages/member/MemberPage";
+import DashboardPage from "../pages/dashboardnew/DashboardPage";
+import SettingMemberPointPage from "../pages/member/SettingMemberPointPage";
 function Router() {
   return useRoutes([
     {
@@ -120,6 +127,10 @@ function Router() {
     {
       path: "/create/members",
       element: <CreateMemberPageWithDebt />,
+    },
+    {
+      path: "/second-screen",
+      element: <SecondScreen />,
     },
     {
       path: "/",
@@ -230,6 +241,14 @@ function Router() {
           element: <FoodList />,
         },
         {
+          path: "/shift",
+          element: <ShiftList />,
+        },
+        {
+          path: "/shift-open-pages",
+          element: <ShiftOpenPages />,
+        },
+        {
           path: "/food-setting/food-type/limit/:limit/page/:page",
           element: <FoodTypeList />,
         },
@@ -333,6 +352,27 @@ function Router() {
           path: "/settingStore/settingZone/:id",
           element: <ZoneList />,
         },
+        {
+          path: "/setting-screen",
+          element: <MainScreen />,
+        },
+        {
+          path: "/member/crm",
+          element: <MemberPage />,
+        },
+        {
+          path: "/DashboardPage",
+          element: <DashboardPage />,
+        },
+        {
+          path: "/DashboardPage",
+          element: <DashboardPage />,
+        },
+        {
+          path: "/point-seting",
+          element: <SettingMemberPointPage />,
+        },
+
         OrderRoutes,
         PrinterRoutes,
         DesignRoutes,
