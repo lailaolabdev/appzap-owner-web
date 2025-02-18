@@ -144,7 +144,7 @@ export default function AddIncomeAndExpend() {
   };
   return (
     <div style={{ padding: 20 }}>
-      <TitleComponent fontSize={"20px"} title="ລົງບັນຊີລາຍຈ່າຍປະຈຳວັນ" />
+      <TitleComponent fontSize={"20px"} title={t("daily_expenses")} />
 
       {isLoading ? (
         <div>
@@ -282,7 +282,7 @@ export default function AddIncomeAndExpend() {
                     <Col xs={12} sm={6} md={6}>
                       <Form.Group>
                         <Form.Label style={{ fontWeight: "bold" }}>
-                          ຜູ້ຮັບ
+                          {t("reciver")}
                         </Form.Label>
                         <Form.Control
                           type="text"
@@ -309,7 +309,7 @@ export default function AddIncomeAndExpend() {
                           allowNegative={false}
                           // value={values.priceLAK}
                           type="text"
-                          placeholder={t("print_money_lak")}
+                          placeholder={`${t("print_money_lak")}...`}
                           customInput={Form.Control}
                           name="priceLAK"
                           onChange={handleChange}
@@ -330,7 +330,7 @@ export default function AddIncomeAndExpend() {
                           allowNegative={false}
                           // value={values.priceTHB}
                           type="text"
-                          placeholder={t("print_money_thb")}
+                          placeholder={`${t("print_money_thb")}...`}
                           name="priceTHB"
                           onChange={handleChange}
                           customInput={Form.Control}
@@ -351,7 +351,7 @@ export default function AddIncomeAndExpend() {
                           allowNegative={false}
                           // value={values.priceUSD}
                           type="text"
-                          placeholder={t("print_money_usd")}
+                          placeholder={`${t("print_money_usd")}...`}
                           name="priceUSD"
                           onChange={handleChange}
                           customInput={Form.Control}
@@ -372,7 +372,7 @@ export default function AddIncomeAndExpend() {
                           allowNegative={false}
                           // value={values.priceCNY}
                           type="text"
-                          placeholder={t("print_money_cny")}
+                          placeholder={`${t("print_money_cny")}...`}
                           name="priceCNY"
                           onChange={handleChange}
                           customInput={Form.Control}
@@ -413,7 +413,7 @@ export default function AddIncomeAndExpend() {
                       name="detail"
                       isInvalid={!!errors.detail}
                       value={values.detail}
-                      placeholder={t("fill_paid_detail")}
+                      placeholder={`${t("fill_paid_detail")}...`}
                     />
                   </Form.Group>
                   <Form.Group>
@@ -432,7 +432,7 @@ export default function AddIncomeAndExpend() {
 
                   <Form.Group>
                     <Form.Label style={{ fontWeight: "bold" }} xs={12} sm="3">
-                      {t("upload_bill_image")}
+                      {t("upload_receipt")}
                     </Form.Label>
 
                     <Row>
@@ -515,7 +515,7 @@ export default function AddIncomeAndExpend() {
                   }}
                 >
                   <ButtonComponent
-                    title={"ປິດອອກ"}
+                    title={t("close_out")}
                     width="150px"
                     handleClick={() =>
                       navigate("/expends/limit/40/skip/1", { replace: true })
@@ -526,7 +526,7 @@ export default function AddIncomeAndExpend() {
                   <ButtonComponent
                     icon={faSave}
                     type="button"
-                    title={"ບັນທຶກ"}
+                    title={t("save")}
                     width="350px"
                     handleClick={() => handleSubmit()}
                     colorbg={"#fb6e3b"}
