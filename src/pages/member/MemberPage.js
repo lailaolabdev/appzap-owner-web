@@ -522,10 +522,6 @@ export default function MemberPage() {
   return (
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
-        <Breadcrumb>
-          <Breadcrumb.Item>{t("report")}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t("report_member")}</Breadcrumb.Item>
-        </Breadcrumb>
         <Alert
           key="warning"
           variant="warning"

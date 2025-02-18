@@ -115,12 +115,21 @@ export default function Sidenav({ location, navigate, onToggle }) {
       system: "reportManagement",
       role: "APPZAP_COUNTER",
     },
+
     {
       title: `${t("report_new")}`,
       key: "DashboardPage",
       typeStore: "",
       icon: faChartLine,
       hidden: !storeDetail?.hasPOS,
+      system: "reportManagement",
+      role: "APPZAP_COUNTER",
+    },
+    {
+      title: `${t("report_p_c")}`,
+      key: "IncomeExpendExport",
+      icon: faChartBar,
+      typeStore: "",
       system: "reportManagement",
       role: "APPZAP_COUNTER",
     },

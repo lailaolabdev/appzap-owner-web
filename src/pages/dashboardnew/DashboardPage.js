@@ -302,7 +302,7 @@ export default function DashboardPage() {
         });
 
         // Create a Blob from the response data
-       // console.log("response", response.data);
+        // console.log("response", response.data);
         const fileBlob = new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
@@ -643,7 +643,7 @@ export default function DashboardPage() {
                         <div style={{ fontWeight: 700 }}>{t("point")}</div>
                       ),
                       qty:
-                        moneyReport?.successAmount?.transferCashPointCount || 0,
+                        moneyReport?.successAmount?.transfercashpointCount || 0,
                       amount: moneyReport?.successAmount?.point || 0,
                       unit: t("point"),
                     },

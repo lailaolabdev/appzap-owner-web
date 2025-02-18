@@ -91,6 +91,8 @@ import MainScreen from "../pages/secondScreen/MainScreen";
 import MemberPage from "../pages/member/MemberPage";
 import DashboardPage from "../pages/dashboardnew/DashboardPage";
 import SettingMemberPointPage from "../pages/member/SettingMemberPointPage";
+import ChartPage from "../pages/chart-report/ChartPage";
+import IncomeExpendExport from "../pages/dashboardnew/IncomeExpendReport";
 function Router() {
   return useRoutes([
     {
@@ -362,11 +364,12 @@ function Router() {
         },
         {
           path: "/DashboardPage",
-          element: <DashboardPage />,
+          // element: <DashboardPage />,
+          element: <ChartPage />,
         },
         {
-          path: "/DashboardPage",
-          element: <DashboardPage />,
+          path: "/IncomeExpendExport",
+          element: <IncomeExpendExport />,
         },
         {
           path: "/point-seting",

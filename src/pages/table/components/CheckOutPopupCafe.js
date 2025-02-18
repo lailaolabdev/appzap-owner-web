@@ -148,12 +148,12 @@ export default function CheckOutPopupCafe({
     let moneyReceived = "";
     let moneyChange = "";
     moneyReceived = `${
-      selectCurrency === "LAK"
+      selectCurrency?.name === "LAK"
         ? moneyCurrency(
             (Number.parseFloat(cash) || 0) + (Number.parseFloat(transfer) || 0)
           )
         : moneyCurrency(Number.parseFloat(cashCurrency) || 0)
-    } ${selectCurrency}`;
+    } ${selectCurrency?.name}`;
     moneyChange = `${moneyCurrency(
       (Number.parseFloat(cash) || 0) +
         (Number.parseFloat(transfer) || 0) -
@@ -205,13 +205,13 @@ export default function CheckOutPopupCafe({
               ? totalBill
               : 0)
     );
-  }, [cash, transfer, selectCurrency]);
+  }, [cash, transfer, selectCurrency?.name]);
 
   useEffect(() => {
     if (!open) return;
-    if (selectCurrency !== "LAK") {
+    if (selectCurrency?.name !== "LAK") {
       const _currencyData = currencyList.find(
-        (e) => e.currencyCode === selectCurrency
+        (e) => e.currencyCode === selectCurrency?.name
       );
       setRateCurrency(_currencyData?.buy || 1);
     } else {
@@ -219,7 +219,7 @@ export default function CheckOutPopupCafe({
       setCash();
       setRateCurrency(1);
     }
-  }, [selectCurrency, selectCurrency]);
+  }, [selectCurrency?.name, selectCurrency?.name]);
   useEffect(() => {
     if (!open) return;
     const amount = cashCurrency * rateCurrency;
@@ -423,6 +423,10 @@ export default function CheckOutPopupCafe({
     getDataCurrency();
     getMembersData();
     setMemberDataSearch();
+    setSelectCurrency({
+      id: "LAK",
+      name: "LAK",
+    });
   }, []);
 
   useEffect(() => {
@@ -596,7 +600,7 @@ export default function CheckOutPopupCafe({
   const onChangeCurrencyInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setCashCurrency(value);
-      if (selectCurrency != "LAK") {
+      if (selectCurrency?.name != "LAK") {
         if (!value) {
           setCash();
         } else {
@@ -609,7 +613,7 @@ export default function CheckOutPopupCafe({
   const onChangeCashInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setCash(value);
-      if (selectCurrency != "LAK") {
+      if (selectCurrency?.name != "LAK") {
         if (!value) {
           setCashCurrency();
         } else {
@@ -648,23 +652,6 @@ export default function CheckOutPopupCafe({
     });
   };
 
-  // const handleChangeCurrencie = (e) => {
-  //   if (e.target.value === "LAK") {
-  //     setSelectCurrency({
-  //       id: "LAK",
-  //       name: "LAK",
-  //     });
-  //     return;
-  //   }
-  //   const selectedCurrencie = currencyList.find(
-  //     (item) => item?._id === e?.target?.value
-  //   );
-  //   setSelectCurrency({
-  //     id: selectedCurrencie._id,
-  //     name: selectedCurrencie.currencyName,
-  //   });
-  // };
-
   useEffect(() => {
     const fetchAllBanks = async () => {
       try {
@@ -698,6 +685,7 @@ export default function CheckOutPopupCafe({
     const selectedCurrencie = currencyList.find(
       (item) => item?._id === e?.target?.value
     );
+
     setSelectCurrency({
       id: selectedCurrencie._id,
       name: selectedCurrencie.currencyName,
@@ -759,13 +747,13 @@ export default function CheckOutPopupCafe({
                     )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
-              <span hidden={selectCurrency === "LAK"}>
+              <span hidden={selectCurrency?.name === "LAK"}>
                 {" "}
                 <BiTransfer />{" "}
               </span>
               <span
                 style={{ color: COLOR_APP, fontWeight: "bold" }}
-                hidden={selectCurrency === "LAK"}
+                hidden={selectCurrency?.name === "LAK"}
               >
                 {moneyCurrency(
                   (dataBill
@@ -776,9 +764,12 @@ export default function CheckOutPopupCafe({
                     ? totalBill
                     : 0) / rateCurrency
                 )}{" "}
-                {selectCurrency}
+                {selectCurrency?.name}
               </span>
-              <span style={{ fontSize: 14 }} hidden={selectCurrency === "LAK"}>
+              <span
+                style={{ fontSize: 14 }}
+                hidden={selectCurrency?.name === "LAK"}
+              >
                 {" "}
                 (ອັດຕາແລກປ່ຽນ: {convertNumber(rateCurrency)})
               </span>
@@ -791,8 +782,8 @@ export default function CheckOutPopupCafe({
                 marginBottom: 10,
               }}
             >
-              <InputGroup hidden={selectCurrency == "LAK"}>
-                <InputGroup.Text>{selectCurrency}</InputGroup.Text>
+              <InputGroup hidden={selectCurrency?.name == "LAK"}>
+                <InputGroup.Text>{selectCurrency?.name}</InputGroup.Text>
                 <Form.Control
                   type="text"
                   placeholder="0"
@@ -805,7 +796,7 @@ export default function CheckOutPopupCafe({
                   }}
                   size="lg"
                 />
-                <InputGroup.Text>{selectCurrency}</InputGroup.Text>
+                <InputGroup.Text>{selectCurrency?.name}</InputGroup.Text>
               </InputGroup>
               <div hidden={tab === "point"} className="flxe flex-col gap-2">
                 <div className="mb-2">
@@ -1018,10 +1009,10 @@ export default function CheckOutPopupCafe({
                 }}
                 onClick={() => {
                   setCash();
-                  // setSelectCurrency({
-                  //   id: "LAK",
-                  //   name: "LAK",
-                  // });
+                  setSelectCurrency({
+                    id: "LAK",
+                    name: "LAK",
+                  });
                   setRateCurrency(1);
                   setTransfer(transferCal);
                   setTab("transfer");
@@ -1039,10 +1030,10 @@ export default function CheckOutPopupCafe({
                 }}
                 onClick={() => {
                   setCash();
-                  // setSelectCurrency({
-                  //   id: "LAK",
-                  //   name: "LAK",
-                  // });
+                  setSelectCurrency({
+                    id: "LAK",
+                    name: "LAK",
+                  });
                   setRateCurrency(1);
                   setTransfer();
                   setTab("cash_transfer");
@@ -1072,27 +1063,15 @@ export default function CheckOutPopupCafe({
                     setForcus("CASH_TRANSFER_POINT");
                   }}
                 >
-                  {t("transfercashpoint")}
+                  {t("cash_transfer_point")}
                 </Button>
               )}
               <div style={{ flex: 1 }} />
-              {/* <Form.Control
-                hidden={tab !== "cash"}
-                as="select"
-                style={{ width: 80 }}
-                value={selectCurrency?.id}
-                onChange={handleChangeCurrencie}
-              >
-                <option value="LAK">{storeDetail?.firstCurrency}</option>
-                {currencyList?.map((e) => (
-                  <option value={e?.currencyCode}>{e?.currencyCode}</option>
-                ))}
-              </Form.Control> */}
               <Form.Control
                 hidden={tab !== "cash"}
                 as="select"
                 style={{ width: 80 }}
-                value={selectCurrency?.id}
+                value={selectCurrency?.name?.id}
                 onChange={handleChangeCurrencie}
               >
                 <option value="LAK">{storeDetail?.firstCurrency}</option>

@@ -300,7 +300,7 @@ export default function IncomeExpendExport() {
         headers: headers,
       })
         .then((res) => {
-          // console.log("IncomeGraphData", res?.data);
+          console.log("IncomeGraphData", res?.data);
           setIncomeGraphData(res?.data);
           setIsLoading(false);
         })
