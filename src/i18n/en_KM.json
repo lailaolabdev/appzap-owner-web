@@ -1003,6 +1003,7 @@
   "bill_not_pay": "វិក្កយបត្រមិនទាន់បង់",
   "total_tax_service_charge": "សរុបថ្លៃសេវាកម្ម និងពន្ធ",
   "export_stock": "នាំចេញស្តុក",
+  "fail_to_delete_stock": "លុបស្តុកមិនបានជោគជ័យ",
   "manage_counter": "គ្រប់គ្រងការចោល",
   "_manage": "គ្រប់គ្រង",
   "edit_number_of_day": "កែសម្រួលចំនួនថ្ងៃ",

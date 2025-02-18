@@ -56,11 +56,13 @@ export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
               if (res.status < 300) {
                 callback(res.data);
                 successAdd(
-                  `ລົບສະຕ໊ອກ ${data?.name} (${values?.quantity}) ສຳເລັດ`
+                  `${t("delete_stock")} ${data?.name} (${values?.quantity}) ${t(
+                    "complete"
+                  )}`
                 );
               }
             } catch (err) {
-              errorAdd(`ລົບສະຕ໊ອກ ບໍ່ສຳເລັດ`);
+              errorAdd(t("fail_to_delete_stock"));
               console.log("error:", err);
             }
             onClose();
