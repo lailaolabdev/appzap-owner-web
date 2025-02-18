@@ -746,61 +746,52 @@ export default function Sidenav({ location, navigate, onToggle }) {
         ) : (
           ""
         )} */}
-            {storeDetail?.isStatusCafe ? null : (
-              <>
-                <NavItem eventKey="songlist">
-                  <NavIcon>
-                    <FontAwesomeIcon
-                      className={
-                        openTableData.length > 0 ? "scale-animation" : ""
-                      }
-                      icon={faMusic}
-                      style={{
-                        color: UN_SELECTED_TAB_TEXT,
-                      }}
-                    />
-                  </NavIcon>
-                  <NavText>
-                    <b
-                      style={{
-                        color: UN_SELECTED_TAB_TEXT,
-                      }}
-                      className={fontMap[language]}
-                    >
-                      {t("require_music")}
-                    </b>
-                  </NavText>
-                </NavItem>
-
-                <NavItem eventKey="supplier">
-                  <NavIcon>
-                    <FontAwesomeIcon
-                      className={
-                        openTableData.length > 0 ? "scale-animation" : ""
-                      }
-                      icon={faShoppingCart}
-                      style={{
-                        color: UN_SELECTED_TAB_TEXT,
-                      }}
-                    />
-                  </NavIcon>
-                  <NavText
-                    style={{
-                      color: UN_SELECTED_TAB_TEXT,
-                    }}
-                  >
-                    <b
-                      style={{
-                        color: COLOR_GRAY,
-                      }}
-                      className={fontMap[language]}
-                    >
-                      {t("market")}
-                    </b>
-                  </NavText>
-                </NavItem>
-              </>
-            )}
+            <NavItem eventKey="songlist">
+              <NavIcon>
+                <FontAwesomeIcon
+                  className={openTableData.length > 0 ? "scale-animation" : ""}
+                  icon={faMusic}
+                  style={{
+                    color: UN_SELECTED_TAB_TEXT,
+                  }}
+                />
+              </NavIcon>
+              <NavText>
+                <b
+                  style={{
+                    color: UN_SELECTED_TAB_TEXT,
+                  }}
+                  className={fontMap[language]}
+                >
+                  {t("require_music")}
+                </b>
+              </NavText>
+            </NavItem>
+            <NavItem eventKey="supplier">
+              <NavIcon>
+                <FontAwesomeIcon
+                  className={openTableData.length > 0 ? "scale-animation" : ""}
+                  icon={faShoppingCart}
+                  style={{
+                    color: UN_SELECTED_TAB_TEXT,
+                  }}
+                />
+              </NavIcon>
+              <NavText
+                style={{
+                  color: UN_SELECTED_TAB_TEXT,
+                }}
+              >
+                <b
+                  style={{
+                    color: COLOR_GRAY,
+                  }}
+                  className={fontMap[language]}
+                >
+                  {t("market")}
+                </b>
+              </NavText>
+            </NavItem>
           </SideNav.Nav>
         )}
       </SideNav>
