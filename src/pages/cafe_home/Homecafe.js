@@ -559,6 +559,8 @@ function Homecafe() {
     });
 
     handleClose();
+    setAddComments("");
+    setEditComments("");
   };
 
   const AlertMessage = () => {
