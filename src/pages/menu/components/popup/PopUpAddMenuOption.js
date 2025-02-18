@@ -206,7 +206,7 @@ function PopUpAddMenuOption({
                     {loadingOptionId === option._id ? (
                       <Spinner animation="border" size="sm" />
                     ) : (
-                      "ລຶບ"
+                      t("delete")
                     )}
                   </Button>
                 ) : (
