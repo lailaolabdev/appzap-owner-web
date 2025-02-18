@@ -1011,6 +1011,7 @@
   "number_of_day": "จำนวนวัน",
   "please_enter_the_number_of_day": "กรุณากรอกจำนวนวัน",
   "current_stock": "สต็อกปัจจุบัน",
+  "fail_to_delete_stock": "ลบสต็อกไม่สำเร็จ",
   "quantity_to_add": "จำนวนที่ต้องการเพิ่ม ( + )",
   "fill_quantity_to_add": " กรุณาป้อนจำนวนที่ต้องการเพิ่ม",
   "quantity_to_add_incorrect": "จำนวนที่ต้องการเพิ่มไม่ถูกต้อง",

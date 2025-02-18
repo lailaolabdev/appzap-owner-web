@@ -51,11 +51,13 @@ export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
               if (res.status < 300) {
                 callback(res.data);
                 successAdd(
-                  `ເພີ່ມສະຕ໊ອກ ${data?.name} (${values?.quantity}) ສຳເລັດ`
+                  `${t("add_stock")} ${data?.name} (${values?.quantity}) ${t(
+                    "complete"
+                  )}`
                 );
               }
             } catch (err) {
-              errorAdd(`ເພີ່ມສະຕ໊ອກ ບໍ່ສຳເລັດ`);
+              errorAdd(t("fail_to_add_stock"));
               console.log("error:", err);
             }
             onClose();
