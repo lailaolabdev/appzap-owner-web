@@ -1,7 +1,6 @@
 import ReactApexChart from "react-apexcharts";
 
 export default function IncomeExpendatureChart({ graphData }) {
-
   return (
     <div id="chart">
       <ReactApexChart

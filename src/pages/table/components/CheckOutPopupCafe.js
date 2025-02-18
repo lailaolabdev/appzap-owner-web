@@ -1070,16 +1070,15 @@ export default function CheckOutPopupCafe({
                     setForcus("CASH_TRANSFER_POINT");
                   }}
                 >
-                  {t("transfercashpoint")}
+                  {t("cash_transfer_point")}
                 </Button>
               )}
               <div style={{ flex: 1 }} />
-
               <Form.Control
                 hidden={tab !== "cash"}
                 as="select"
                 style={{ width: 80 }}
-                value={selectCurrency?.id}
+                value={selectCurrency?.name?.id}
                 onChange={handleChangeCurrencie}
               >
                 <option value="LAK">{storeDetail?.firstCurrency}</option>
