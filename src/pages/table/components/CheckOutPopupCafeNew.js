@@ -1364,7 +1364,7 @@ export default function CheckOutPopupCafeNew({
                         setForcus("CASH_TRANSFER_POINT");
                       }}
                     >
-                      {t("transfercashpoint")}
+                      {t("cash_transfer_point")}
                     </Button>
                   )}
                 </>

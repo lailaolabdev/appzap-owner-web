@@ -10,6 +10,7 @@ import CreateMemberPage from "../pages/member/CreateMemberPage";
 import SettingMemberPointPage from "../pages/member/SettingMemberPointPage";
 import ReportStocks from "../pages/report/ReportStocks";
 import ChildStores from "../pages/child_store/ChildStorePage";
+import ChartPage from "../pages/chart-report/ChartPage";
 
 // eslint-disable-next-line
 export default {
@@ -18,7 +19,8 @@ export default {
   children: [
     {
       path: "/reports/sales-report",
-      element: <DashboardPage />,
+      // element: <DashboardPage />,
+      element: <ChartPage />,
     },
     {
       path: "income-expend-report",

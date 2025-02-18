@@ -87,7 +87,16 @@ export const getMoneyReport = async (storeId, findBy, tableIds) => {
     return error;
   }
 };
-
+export const getMoneyReportChart = async (storeId, findBy, tableIds) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v7/report-money/chart/${storeId}${findBy}`;
+    const res = await axios.post(url, { tableIds }, { headers: _header });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
 
 export const getDebtReport = async (findby, token) => {
   try {
@@ -160,7 +169,7 @@ export const getCurrencyReport = async (storeId, findBy) => {
 export const getDeliveryReport = async (storeId, findBy) => {
   try {
     const _header = await getHeaders();
-    const url = `${END_POINT_APP}/v4/delivery-report/${storeId}${findBy}`;
+    const url = `${END_POINT_APP}/v7/delivery-report/${storeId}${findBy}`;
     const res = await axios.post(url, { headers: _header });
     return res.data;
   } catch (error) {

@@ -261,7 +261,7 @@
   "latest30days": "30ວັນລ່າສຸດ",
   "transfercash": "ຈ່າຍເງິນສົດ + ໂອນ",
   "Do_you_want_to_make_a_payment": " ທ່ານຕ້ອງການຊຳລະບໍ່",
-  "transfercashpoint": "ຈ່າຍເງິນສົດ + ໂອນ + ພ໋ອຍ",
+  "cash_transfer_point": "ຈ່າຍເງິນສົດ + ໂອນ + ພ໋ອຍ",
   "sound_manage": "ຈັດການສຽງ",
   "currency_manage": "ຈັດການເລດເງິນ",
   "staffCheckBill": "ພະນັກງານເຊັກບິນ",
@@ -1139,5 +1139,6 @@
   "setting_point": "ຕັ້ງຄ່າການໃຫ້ຄະແນນ",
   "recive_point": "ຮັບພ໋ອຍ",
   "used_point": "ພ໋ອຍທີ່ໃຊ້",
-  "queue no": "ຄິວທີ່"
+  "queue no": "ຄິວທີ່",
+  "report_currency": "ລາຍງານການໃຊ້ສະກຸນເງິນ"
 }

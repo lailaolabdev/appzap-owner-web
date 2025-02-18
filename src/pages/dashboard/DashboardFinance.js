@@ -716,7 +716,7 @@ export default function DashboardFinance({
                     : item?.paymentMethod === "POINT"
                     ? t("point")
                     : item?.paymentMethod === "CASH_TRANSFER_POINT"
-                    ? t("transfercashpoint")
+                    ? t("cash_transfer_point")
                     : t("transfercash")}{" "}
                   {item?.isDebtAndPay === true ? "(ຕິດໜີ້)" : ""}
                   {item?.isDebtPayment === true ? "(ຈາກການຊຳລະໜີ້)" : ""}

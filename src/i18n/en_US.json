@@ -187,7 +187,7 @@
   "addOrder": "Add order",
   "TableHasNoOrder": "This table has no orders yet",
   "transfercash": "Transfer + Cash payment",
-  "transfercashpoint": "Transfer + Cash + Point",
+  "cash_transfer_point": "Transfer + Cash + Point",
   "sound_manage": "Sound Management",
   "currency_manage": "Manage Currency Rates",
   "customerName": "Customer Name",
@@ -1018,5 +1018,6 @@
   "setting_point": "Setting Point",
   "recive_point": "Recive point",
   "used_point": "Used point",
-  "queue no": "Queue No"
+  "queue no": "Queue No",
+  "report_currency": "Report currency"
 }
