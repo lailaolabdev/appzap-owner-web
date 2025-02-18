@@ -71,7 +71,6 @@ export default function Dashboard() {
   const [changeText, setChangeText] = useState("CLICK1");
   const [countIsDebtTrue, setCountIsDebtTrue] = useState(0);
 
-
   const [shifts, setShift] = useState([]);
   const [shiftId, setShiftId] = useState(null);
 
@@ -131,7 +130,6 @@ export default function Dashboard() {
     return findBy;
   };
 
-
   // function
   const getReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
@@ -160,7 +158,6 @@ export default function Dashboard() {
     const data = await getCountBillsV7(storeDetail?._id, findByData());
     setCountAllBillReport(data);
   };
-
 
   const getCountBillActiveReportData = async () => {
     let findBy = "?";
@@ -353,20 +350,20 @@ export default function Dashboard() {
               <div className={fontMap[language]}>
                 {t("numberOfBill")}
                 {" : "}
-                {countAllBillReport?.count - countIsDebtTrue || 0} ບິນ
+                {countAllBillReport?.count - countIsDebtTrue || 0} {t("bill")}
               </div>
               <div className={fontMap[language]}>
                 {t("total_will_get")}
                 {" : "}
                 {convertNumber(
                   totalBillActiveReport?.total +
-                    salesInformationReport?.totalSales 
+                    salesInformationReport?.totalSales
                 )}
               </div>
               <div className={fontMap[language]}>
                 {t("outstandingDebt")}
                 {" : "}
-                {convertNumber(countBillActiveReport?.count)} ບິນ
+                {convertNumber(countBillActiveReport?.count)} {t("bill")}
               </div>
               <div className={fontMap[language]}>
                 {t("money_crash")}
@@ -392,7 +389,8 @@ export default function Dashboard() {
               <div className={fontMap[language]}>
                 {t("numberOfBill")}
                 {" : "}
-                {convertNumber(moneyReport?.successAmount?.numberOfBills)} ບິນ
+                {convertNumber(moneyReport?.successAmount?.numberOfBills)}{" "}
+                {t("bill")}
               </div>
               <div className={fontMap[language]}>
                 {t("totalBalance")}
@@ -432,7 +430,8 @@ export default function Dashboard() {
                 {t("cashDiscount")}
                 {" : "}
                 {convertNumber(promotionReport?.[0]?.totalSaleAmount)}|
-                {convertNumber(promotionReport?.[0]?.count)}ບິນ
+                {convertNumber(promotionReport?.[0]?.count)}
+                {t("bill")}
               </div>
             </Card.Body>
           </Card>
@@ -452,7 +451,7 @@ export default function Dashboard() {
               <div className={fontMap[language]}>
                 {t("numberOfBill")}
                 {" : "}
-                {convertNumber(countBillActiveReport?.count)} ບິນ
+                {convertNumber(countBillActiveReport?.count)} {t("bill")}
               </div>
               <div className={fontMap[language]}>
                 {t("money_crash")}

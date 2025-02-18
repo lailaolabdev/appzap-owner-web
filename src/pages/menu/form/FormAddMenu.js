@@ -3,11 +3,15 @@ import { Spinner, Form, Button } from "react-bootstrap";
 import { Formik } from "formik";
 import axios from "axios";
 import { COLOR_APP } from "../../../constants";
-import { getLocalData, END_POINT_SEVER_TABLE_MENU } from "../../../constants/api";
+import {
+  getLocalData,
+  END_POINT_SEVER_TABLE_MENU,
+} from "../../../constants/api";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDoubleRight, faTrash } from "@fortawesome/free-solid-svg-icons";
 import PopUpAddMenuStocks from "../components/popup/PopUpAddMenuStocks";
 import { getHeaders } from "../../../services/auth";
+import { useTranslation } from "react-i18next";
 
 // ---------------------------------------------- //
 export default function FormAddMenu() {
@@ -22,6 +26,7 @@ export default function FormAddMenu() {
   const [menuStocks, setMenuStocks] = useState([]);
   const [file, setFile] = useState();
   const [imageLoading, setImageLoading] = useState("");
+  const { t } = useTranslation();
 
   const ImageThumb = ({ image }) => {
     return (
@@ -175,19 +180,19 @@ export default function FormAddMenu() {
         validate={(values) => {
           const errors = {};
           if (!values.name) {
-            errors.name = "ກະລຸນາປ້ອນຊື່ອາຫານ...";
+            errors.name = t("please_fill_menu_name");
           }
           if (!values.price) {
-            errors.price = "ກະລຸນາປ້ອນລາຄາ...";
+            errors.price = t("please_fill_price");
           }
           if (!values.quantity) {
-            errors.quantity = "ກະລຸນາປ້ອນ...";
+            errors.quantity = t("please_fill");
           }
           if (!values.categoryId) {
-            errors.categoryId = "ກະລຸນາປ້ອນ...";
+            errors.categoryId = t("please_fill");
           }
           if (!values.unit) {
-            errors.unit = "ກະລຸນາປ້ອນ...";
+            errors.unit = t("please_fill");
           }
           return errors;
         }}
@@ -253,17 +258,19 @@ export default function FormAddMenu() {
               </label>
               {/* progass */}
               {imageLoading ? (
-                <div className="progress" style={{ height: 20 }}>
+                <div className="progress" style={{ height: "20px" }}>
                   <div
                     className="progress-bar"
                     role="progressbar"
                     style={{
                       width: `${imageLoading}%`,
                       backgroundColor: COLOR_APP,
+                      height: "100%", // Ensure the progress bar fills the container height
                     }}
                     aria-valuenow={imageLoading}
                     aria-valuemin="0"
                     aria-valuemax="100"
+                    aria-label={`Loading progress: ${imageLoading}%`} // Add an accessible label
                   >
                     {imageLoading}%
                   </div>
@@ -273,7 +280,7 @@ export default function FormAddMenu() {
               )}
             </div>
             <Form.Group>
-              <Form.Label>ລຳດັບ</Form.Label>
+              <Form.Label>{t("no")}</Form.Label>
               <Form.Control
                 type="text"
                 name="sort"
@@ -282,7 +289,7 @@ export default function FormAddMenu() {
               />
             </Form.Group>
             <Form.Group controlId="exampleForm.ControlSelect1">
-              <Form.Label>ປະເພດອາຫານ</Form.Label>
+              <Form.Label>{t("food_type")}</Form.Label>
               <Form.Control
                 as="select"
                 name="categoryId"
@@ -297,7 +304,7 @@ export default function FormAddMenu() {
                 }}
               >
                 <option selected={true} disabled={true} value="">
-                  ເລືອກປະເພດອາຫານ
+                  {t("choose_food_type")}
                 </option>
                 {Categorys?.map((item, index) => {
                   return <option value={item?._id}>{item?.name}</option>;
@@ -307,7 +314,7 @@ export default function FormAddMenu() {
             <div class="form-row">
               <div class="col-3">
                 <div class="form-group">
-                  <label>ສະຖານະເປີດ/ປິດ</label>
+                  <label>{t("close_open_status")}</label>
                 </div>
               </div>
               <div class="col-9">
@@ -323,7 +330,7 @@ export default function FormAddMenu() {
                         onChange={() => setFieldValue("isOpened", true)}
                       />
                       <label class="custom-control-label" for="open">
-                        ເປີດ
+                        {t("open")}
                       </label>
                     </div>
                     <div class="custom-control custom-radio custom-control-inline">
@@ -336,7 +343,7 @@ export default function FormAddMenu() {
                         onChange={() => setFieldValue("isOpened", true)}
                       />
                       <label class="custom-control-label" for="off">
-                        ປິດ
+                        {t("close")}
                       </label>
                     </div>
                   </div>
@@ -344,14 +351,14 @@ export default function FormAddMenu() {
               </div>
             </div>
             <Form.Group controlId="exampleForm.ControlInput1">
-              <Form.Label>ຊື່ອາຫານ</Form.Label>
+              <Form.Label>{t("food_name")}</Form.Label>
               <Form.Control
                 type="text"
                 name="name"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.name}
-                placeholder="ຊື່ອາຫານ..."
+                placeholder={t("food_name")}
                 style={{
                   border:
                     errors.name && touched.name && errors.name
@@ -361,14 +368,14 @@ export default function FormAddMenu() {
               />
             </Form.Group>
             <Form.Group controlId="exampleForm.ControlInput1">
-              <Form.Label>ລາຄາ</Form.Label>
+              <Form.Label>{t("price")}</Form.Label>
               <Form.Control
                 type="number"
                 name="price"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.price}
-                placeholder="ລາຄາ..."
+                placeholder={t("price_")}
                 style={{
                   border:
                     errors.price && touched.price && errors.price
@@ -378,14 +385,14 @@ export default function FormAddMenu() {
               />
             </Form.Group>
             <Form.Group controlId="exampleForm.ControlInput1">
-              <Form.Label>ຈຳນວນ</Form.Label>
+              <Form.Label>{t("qty")}</Form.Label>
               <Form.Control
                 type="number"
                 name="quantity"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.quantity}
-                placeholder="ລາຄາ..."
+                placeholder={t("price_")}
                 style={{
                   border:
                     errors.quantity && touched.quantity && errors.quantity
@@ -395,14 +402,14 @@ export default function FormAddMenu() {
               />
             </Form.Group>
             <Form.Group controlId="exampleForm.ControlInput1">
-              <Form.Label>ຫົວໜ່ວຍ</Form.Label>
+              <Form.Label>{t("unit")}</Form.Label>
               <Form.Control
                 type="text"
                 name="unit"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.unit}
-                placeholder="ລາຄາ..."
+                placeholder={t("price_")}
                 style={{
                   border:
                     errors.unit && touched.unit && errors.unit
@@ -412,14 +419,14 @@ export default function FormAddMenu() {
               />
             </Form.Group>
             <Form.Group controlId="exampleForm.ControlInput1">
-              <Form.Label>ໝາຍເຫດ</Form.Label>
+              <Form.Label>{t("note")}</Form.Label>
               <Form.Control
                 type="text"
                 name="detail"
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.detail}
-                placeholder="ໝາຍເຫດ..."
+                placeholder={t("note_")}
               />
             </Form.Group>
 
@@ -431,17 +438,16 @@ export default function FormAddMenu() {
               }}
             >
               <div>
-                <div style={{ textAlign: "center" }}>ສະຕ໊ອກທັງໝົດ</div>
+                <div style={{ textAlign: "center" }}>{t("all_stock")}</div>
                 <div className="col-sm-12">
                   <table className="table table-hover">
                     <thead className="thead-light">
                       <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">ຊື່ສິນຄ້າ</th>
-                        <th scope="col">ໝວດໝູ່ສິນຄ້າ</th>
+                        <th scope="col">{t("product_name")}</th>
+                        <th scope="col">{t("product_type")}</th>
                         {/* <th scope='col'>ສະຖານະ</th> */}
-                        <th scope="col">ຈຳນວນສະຕ໊ອກ</th>
-                        <th scope="col">ຈັດການຂໍ້ມູນ</th>
+                        <th scope="col">{t("quantity_desired")}</th>
+                        <th scope="col">{t("manage_data")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -489,17 +495,17 @@ export default function FormAddMenu() {
                 </div>
               </div>
               <div>
-                <div style={{ textAlign: "center" }}>ສະຕ໊ອກທີຕ້ອງການ</div>
+                <div style={{ textAlign: "center" }}>{t("stoke_needed")}</div>
                 <div className="col-sm-12">
                   <table className="table table-hover">
                     <thead className="thead-light">
                       <tr>
                         <th scope="col">#</th>
-                        <th scope="col">ຊື່ສິນຄ້າ</th>
-                        <th scope="col">ໝວດໝູ່ສິນຄ້າ</th>
+                        <th scope="col">{t("product_name")}</th>
+                        <th scope="col">{t("product_type")}</th>
                         {/* <th scope='col'>ສະຖານະ</th> */}
-                        <th scope="col">ຈຳນວນທີຕ້ອງການ</th>
-                        <th scope="col">ຈັດການຂໍ້ມູນ</th>
+                        <th scope="col">{t("quantity_desired")}</th>
+                        <th scope="col">{t("manage_data")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -546,7 +552,7 @@ export default function FormAddMenu() {
               </div>
             </div>
             <Button variant="danger" onClick={() => {}}>
-              ຍົກເລີກ
+              {t("cancel")}
             </Button>
             <Button
               style={{
@@ -556,7 +562,7 @@ export default function FormAddMenu() {
               }}
               onClick={() => handleSubmit()}
             >
-              ບັນທືກ
+              {t("save")}
             </Button>
           </form>
         )}

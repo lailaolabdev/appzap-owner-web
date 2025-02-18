@@ -435,7 +435,7 @@ export default function ShiftList() {
                                 </span>
                               ) : (
                                 <span className="text-red-500 font-bold">
-                                  {t("close")}
+                                  {t("close_shift")}
                                 </span>
                               )}
                             </td>
@@ -515,7 +515,7 @@ export default function ShiftList() {
                 </Card.Header>
                 <Card.Body style={{ overflowX: "auto" }}>
                   <div className="flex items-center gap-2">
-                    <div>ເລືອກວັນທີ : </div>
+                    <div>{t("select_date")} : </div>
                     <Button
                       variant="outline-primary"
                       size="small"
@@ -608,12 +608,12 @@ export default function ShiftList() {
                     <ReactPaginate
                       previousLabel={
                         <span className="glyphicon glyphicon-chevron-left">
-                          {"ກ່ອນໜ້າ"}
+                          {t("previous")}
                         </span>
                       }
                       nextLabel={
                         <span className="glyphicon glyphicon-chevron-right">
-                          {"ຕໍ່ໄປ"}
+                          {t("next")}
                         </span>
                       }
                       breakLabel={
@@ -982,7 +982,7 @@ export default function ShiftList() {
                         </div>
                         <div className="mt-4">
                           <p>
-                            ທ່ານຕ້ອງການເປິດກະ {shifData?.shiftName} ແມ່ນບໍ່ ?{" "}
+                            ທ່ານຕ້ອງການເປິດກະ {shifData?.shiftName} ແມ່ນບໍ່?{" "}
                           </p>
                         </div>
                       </div>

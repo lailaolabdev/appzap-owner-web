@@ -473,7 +473,9 @@ export default function ReportStocks() {
                       <th style={{ textAlign: "center" }}>
                         {t("total_amount")}
                       </th>
-                      <th style={{ textAlign: "right" }}>{t("manage_data")}</th>
+                      <th style={{ textAlign: "right" }}>
+                        {t("manage_stock")}
+                      </th>
                     </tr>
                     {stocks?.map((item, index) => (
                       <tr key={index}>

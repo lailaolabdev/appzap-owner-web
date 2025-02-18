@@ -311,7 +311,7 @@ export default function FarkPage() {
                       <tr>
                         <td colSpan={6}>
                           <p className="flex justify-center items-center font-bold">
-                            ບໍ່ມີຂໍ້ມູນ
+                            {t("no_data") + "..."}
                           </p>
                         </td>
                       </tr>
@@ -330,12 +330,12 @@ export default function FarkPage() {
                 <ReactPaginate
                   previousLabel={
                     <span className="glyphicon glyphicon-chevron-left">
-                      {"ກ່ອນໜ້າ"}
+                      {t("previous")}
                     </span>
                   }
                   nextLabel={
                     <span className="glyphicon glyphicon-chevron-right">
-                      {"ຕໍ່ໄປ"}
+                      {t("next")}
                     </span>
                   }
                   breakLabel={<Pagination.Item disabled>...</Pagination.Item>}

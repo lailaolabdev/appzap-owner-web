@@ -445,7 +445,7 @@ export default function Categorylist() {
                   <Form.Control
                     type="number"
                     name="sort"
-                    placeholder={t("no_")}
+                    placeholder={`${t("no")}..`}
                     value={values?.sort}
                     onChange={handleChange}
                   />
@@ -458,7 +458,7 @@ export default function Categorylist() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name}
-                    placeholder={t("type_name")}
+                    placeholder={`${t("type_name")}...`}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
@@ -473,7 +473,7 @@ export default function Categorylist() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_en}
-                    placeholder={t("type_name_en")}
+                    placeholder={`${t("type_name_en")}...`}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
@@ -487,7 +487,7 @@ export default function Categorylist() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_cn}
-                    placeholder={t("type_name_cn")}
+                    placeholder={`${t("type_name_cn")}...`}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
@@ -501,7 +501,7 @@ export default function Categorylist() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_kr}
-                    placeholder={t("type_name_kr")}
+                    placeholder={`${t("type_name_kr")}...`}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
@@ -516,11 +516,11 @@ export default function Categorylist() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.note}
-                    placeholder={t("note")}
+                    placeholder={`${t("note")}...`}
                   />
                 </Form.Group>
                 <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>{t("categories")}</Form.Label>
+                  <Form.Label>{t("food_title")}</Form.Label>
                   <Form.Control
                     as="select"
                     name="categoryTypeId"
@@ -601,7 +601,7 @@ export default function Categorylist() {
                   <Form.Control
                     type="number"
                     name="sort"
-                    placeholder={t("no")}
+                    placeholder={`${t("no")}..`}
                     value={values.sort}
                     onChange={handleChange}
                   />
@@ -614,7 +614,7 @@ export default function Categorylist() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name}
-                    placeholder={t("food_type")}
+                    placeholder={`${t("food_type")}...`}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
@@ -629,7 +629,7 @@ export default function Categorylist() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_en}
-                    placeholder={t("type_name_en")}
+                    placeholder={`${t("type_name_en")}...`}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
@@ -643,7 +643,7 @@ export default function Categorylist() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_cn}
-                    placeholder={t("type_name_cn")}
+                    placeholder={`${t("type_name_cn")}...`}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
@@ -657,7 +657,7 @@ export default function Categorylist() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name_kr}
-                    placeholder={t("type_name_kr")}
+                    placeholder={`${t("type_name_kr")}...`}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>
@@ -671,7 +671,7 @@ export default function Categorylist() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.note}
-                    placeholder={t("note")}
+                    placeholder={`${t("note")}...`}
                   />
                 </Form.Group>
 

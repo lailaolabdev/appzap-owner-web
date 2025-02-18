@@ -27,10 +27,7 @@ import { useStoreStore } from "../../zustand/storeStore";
 export default function Dashboard() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const { width, height } = useWindowDimensions2();
   const limitData = 4;
   // state
@@ -174,7 +171,7 @@ export default function Dashboard() {
           <CardHeader>
             <div className="box-search">
               <Form.Control
-                placeholder={t("name_branch")}
+                placeholder={`${t("name_branch")}...`}
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
                 className="input-search"
@@ -194,7 +191,7 @@ export default function Dashboard() {
             </div>
 
             <div className="box-date-filter">
-              <span>ເລືອກວັນທີ : </span>
+              <span>{t("select_date")} : </span>
               <Button
                 variant="outline-primary"
                 size="small"
@@ -243,9 +240,11 @@ export default function Dashboard() {
                 >
                   <tr style={{ backgroundColor: COLOR_APP, color: "white" }}>
                     {/* <th style={{ textAlign: "left" }}>ລຳດັບ</th> */}
-                    <th style={{ textAlign: "center" }}>ຊື່ຮ້ານ</th>
-                    <th style={{ textAlign: "center" }}>ລາຍຮັບທັງໝົດ</th>
-                    <th style={{ textAlign: "center" }}>ຈັດການ</th>
+                    <th style={{ textAlign: "center" }}>
+                      {t("restaurant_name")}
+                    </th>
+                    <th style={{ textAlign: "center" }}>{t("all_recieve")}</th>
+                    <th style={{ textAlign: "center" }}>{t("manage")}</th>
                   </tr>
                   {branchInCome?.length > 0 &&
                     branchInCome?.map((data, index) => (
@@ -297,12 +296,12 @@ export default function Dashboard() {
                       <ReactPaginate
                         previousLabel={
                           <span className="glyphicon glyphicon-chevron-left">
-                            {"ກ່ອນໜ້າ"}
+                            {t("previous")}
                           </span>
                         }
                         nextLabel={
                           <span className="glyphicon glyphicon-chevron-right">
-                            {"ຕໍ່ໄປ"}
+                            {t("next")}
                           </span>
                         }
                         breakLabel={

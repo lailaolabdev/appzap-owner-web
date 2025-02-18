@@ -164,8 +164,14 @@ export default function NavBar() {
             </Dropdown.Toggle>
             <Dropdown.Menu className="dropdown-menu-right">
               <Dropdown.Item
-                style={{ color: "#909090" }}
+                style={{
+                  color: "#909090",
+                  textAlign: "center", // Center the text
+                  transition: "color 0.3s",
+                }}
                 onClick={() => _onLogout()}
+                onMouseEnter={(e) => (e.target.style.color = "red")} // Hover on mouse enter
+                onMouseLeave={(e) => (e.target.style.color = "#909090")} // Reset color on mouse leave
               >
                 {t("log_out")}
               </Dropdown.Item>

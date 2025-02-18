@@ -418,19 +418,19 @@ export default function FarkCreatePage() {
           >
             <Form.Label>{t("customer_name")}</Form.Label>
             <Form.Control
-              placeholder={t("customer_name")}
+              placeholder={`${t("customer_name")}...`}
               value={customerName}
               onChange={(e) => setCustomerName(e?.target.value)}
             />
             <Form.Label>{t("ctm_tel")}</Form.Label>
             <Form.Control
-              placeholder={t("ctm_tel")}
+              placeholder={`${t("ctm_tel")}...`}
               value={customerPhone}
               onChange={(e) => setCustomerPhone(e?.target.value)}
             />
             <Form.Label>{t("exp_date")}</Form.Label>
             <Form.Control
-              placeholder={t("exp_date")}
+              placeholder={`${t("exp_date")}...`}
               type="date"
               value={expirDate}
               onChange={(e) => setexpirDate(e?.target.value)}

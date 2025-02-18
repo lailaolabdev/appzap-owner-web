@@ -78,7 +78,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.name}
-                  placeholder={t("restaurant_name")}
+                  placeholder={`${t("restaurant_name")}...`}
                   isInvalid={errors.name && touched.name && errors.name}
                 />
               </Form.Group>
@@ -100,7 +100,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.adminName}
-                  placeholder={t("restaurant_owner")}
+                  placeholder={`${t("restaurant_owner")}...`}
                   isInvalid={
                     errors.adminName && touched.adminName && errors.adminName
                   }
@@ -115,7 +115,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                   onBlur={handleBlur}
                   value={values.detail}
                   isInvalid={errors.detail && touched.detail && errors.detail}
-                  placeholder="ຂໍ້ມູນທີ່ຢູ່..."
+                  placeholder={`${t("location")}...`}
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
@@ -129,7 +129,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                   isInvalid={
                     errors.whatsapp && touched.whatsapp && errors.whatsapp
                   }
-                  placeholder="whatsapp..."
+                  placeholder={`${t("WhatsApp")}...`}
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
@@ -141,7 +141,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                   onBlur={handleBlur}
                   value={values.phone}
                   isInvalid={errors.phone && touched.phone && errors.phone}
-                  placeholder={t("tel")}
+                  placeholder={`${t("tel")}...`}
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
@@ -153,7 +153,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.note}
-                placeholder="ຕົວຢາງເປີດບໍລິການ ວັນຈັນ - ວັນທິດ ເວລາ 9:00 - 9:30..."
+                placeholder={`${t("service_hours_example")}...`}
               ></Form.Control>
             </Modal.Body>
             <Modal.Footer>

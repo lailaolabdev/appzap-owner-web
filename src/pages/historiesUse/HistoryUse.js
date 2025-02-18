@@ -269,7 +269,7 @@ export default function HistoryUse() {
             onClick={() => setFiltterModele("historyServiceChange")}
           >
             <FontAwesomeIcon icon={faHistory} />{" "}
-            <div style={{ width: 8 }}></div> {t("history service change")}
+            <div style={{ width: 8 }}></div> {t("history_service_charge")}
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -507,11 +507,11 @@ export default function HistoryUse() {
                   </th>
                   <th style={{ textWrap: "nowrap" }} scope="col">
                     {filtterModele === "historyServiceChange"
-                      ? "ຍອດບິນ"
+                      ? t("billamount")
                       : t("cause")}
                   </th>
                   {filtterModele === "historyServiceChange" && (
-                    <th>vat ({taxPercent}%)</th>
+                    <th>VAT ({taxPercent}%)</th>
                   )}
                   {filtterModele === "historyServiceChange" && (
                     <th>{t("total_Amount_of_Money")}</th>

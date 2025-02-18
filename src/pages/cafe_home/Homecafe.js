@@ -1903,7 +1903,7 @@ function Homecafe() {
           </Form.Group>
           <div className="mt-3">
             <strong>
-              ລາຄາລວມອ໋ອບຊັນ:{" "}
+              {t("total_price_with_options")}:{" "}
               {moneyCurrency(
                 calculateTotalPrice(selectedItem, selectedOptionsArray)
               )}{" "}
@@ -1913,8 +1913,8 @@ function Homecafe() {
           <Form.Group className="mt-3">
             <Form.Label>
               {selectedItem?.note === ""
-                ? "ຄອມເມັ້ນລົດຊາດອາຫານ"
-                : "ແກ້ໄຂຄອມເມັ້ນ"}
+                ? t("comment_taste")
+                : t("edit_comment")}
             </Form.Label>
             <Form.Control
               ref={selectedItem?.note === "" ? inputRef : null}
@@ -1922,7 +1922,7 @@ function Homecafe() {
               rows={3}
               value={addComments}
               onChange={(e) => setAddComments(e.target.value)}
-              placeholder="ປ້ອນຄຳອະທິບາຍ..."
+              placeholder={t("fill_desc")}
               className="w-100"
             />
           </Form.Group>

@@ -3069,7 +3069,7 @@ export default function TableList() {
                   }}
                   className={fontMap[language]}
                 >
-                  ( Smart-Menu && Self-Ordering)
+                  (Smart Menu & Self-Ordering)
                 </p>
                 <div style={{ height: 30 }} />
                 <Button

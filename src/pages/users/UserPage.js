@@ -9,7 +9,7 @@ import Axios from "axios";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
 import { Breadcrumb, Tab, Tabs } from "react-bootstrap";
 import Box from "../../components/Box";
-import { MdAssignmentAdd } from "react-icons/md";
+import { MdAssignmentAdd, MdSettings } from "react-icons/md";
 import { BsImages } from "react-icons/bs";
 import Loading from "../../components/Loading";
 import ImageSlider from "../../components/ImageSlider";
@@ -57,7 +57,7 @@ export default function UserPage() {
   const [popup, setPopup] = useState();
 
   // store
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const storeId = storeDetail._id;
   //console.log("storeId:", storeId)
 
@@ -120,7 +120,7 @@ export default function UserPage() {
       >
         <Breadcrumb>
           <Breadcrumb.Item>{t("staff")}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t("staff_report")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("staff_setting")}</Breadcrumb.Item>
         </Breadcrumb>
 
         {/* <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
@@ -147,23 +147,30 @@ export default function UserPage() {
             <span>
               <IoPeople /> {t("staff_report")}
             </span>
-            <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
               <Button
                 variant="dark"
                 bg="dark"
-                style={{marginRight:'5px'}}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  marginRight: "5px",
+                }}
                 onClick={() =>
                   navigate(`/user/manage-counter/${storeDetail?._id}`)
                 }
               >
+                <MdSettings style={{ marginRight: "6px" }} />{" "}
                 {t("manage_counter")}
               </Button>
               <Button
                 variant="dark"
                 bg="dark"
                 onClick={() => setPopup({ PopUpCreateUser: true })}
+                style={{ display: "flex", alignItems: "center" }}
               >
-                <MdAssignmentAdd /> {t("add_list")}
+                <MdAssignmentAdd style={{ marginRight: "6px" }} />{" "}
+                {t("add_list")}
               </Button>
             </div>
           </Card.Header>
@@ -277,7 +284,7 @@ export default function UserPage() {
                             setPopup({ PopUpConfirmDeletion: true });
                           }}
                         >
-                          {t("delete")}
+                          {t("remove")}
                         </Button>
                       </div>
                     </td>

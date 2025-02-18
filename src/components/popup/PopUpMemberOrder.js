@@ -13,6 +13,7 @@ import ReactPaginate from "react-paginate";
 import { FaUser } from "react-icons/fa";
 import { getLocalData } from "../../constants/api";
 import { getMembers, getMemberAllCount } from "../../services/member.service";
+import { useTranslation } from "react-i18next";
 
 import { useStoreStore } from "../../zustand/storeStore";
 
@@ -27,11 +28,9 @@ export default function PopUpMemberOrder({
   const [paginationMember, setPaginationMember] = useState(1);
   const [totalPaginationMember, setTotalPaginationMember] = useState(0);
   const limitData = 20; // Set your limit value
+  const { t } = useTranslation();
 
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
 
   const getMembersData = async () => {
     try {
@@ -62,7 +61,7 @@ export default function PopUpMemberOrder({
   };
 
   const handleMemberClick = async (member) => {
-    setStoreDetail({selectedMemberID: member._id });
+    setStoreDetail({ selectedMemberID: member._id });
     onSelectMember(member._id);
     setData(member.name);
     onClose();
@@ -79,20 +78,20 @@ export default function PopUpMemberOrder({
   return (
     <Modal show={open} onHide={onClose}>
       <Modal.Header closeButton>
-        <Modal.Title>ເລືອກຊື່ສະມາຊິກ</Modal.Title>
+        <Modal.Title>{t("select_member")}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Row className="mb-3">
           <Col>
             <Form.Control
-              placeholder="ຄົ້ນຫາຊື່ສະມາຊິກ"
+              placeholder={t("search_member")}
               value={filterValue}
               onChange={(e) => setFilterValue(e.target.value)}
             />
           </Col>
           <Col xs="auto">
             <Button onClick={getMembersData} variant="primary">
-              ຄົ້ນຫາ
+              {t("search")}
             </Button>
           </Col>
         </Row>
@@ -114,10 +113,14 @@ export default function PopUpMemberOrder({
       <Modal.Footer className="d-flex justify-content-center align-items-center">
         <ReactPaginate
           previousLabel={
-            <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+            <span className="glyphicon glyphicon-chevron-left">
+              {t("previous")}
+            </span>
           }
           nextLabel={
-            <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+            <span className="glyphicon glyphicon-chevron-right">
+              {t("next")}
+            </span>
           }
           breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
           breakClassName={"break-me"}

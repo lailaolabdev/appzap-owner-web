@@ -78,19 +78,19 @@ export default function PopUpMemberEdit({
 
   return (
     <Modal show={open} onHide={onClose}>
-      <Modal.Header closeButton>ເລືອກໝວດໝູ່</Modal.Header>
+      <Modal.Header closeButton>{t("select_category")}</Modal.Header>
       <Modal.Body>
         <div className="mb-3">
-          <Form.Label>ຊື່ສະມາຊິກ</Form.Label>
+          <Form.Label>{t("member_name")}</Form.Label>
           <Form.Control
-            placeholder="ຊື່ສະມາຊິກ"
+            placeholder={t("member_name")}
             value={formData?.name}
             onChange={handleChange}
             name="name"
           />
         </div>
         <div className="mb-3">
-          <Form.Label>ເບີໂທ</Form.Label>
+          <Form.Label>{t("tel")}</Form.Label>
           <InputGroup>
             <InputGroup.Text id="phone-addon1">020</InputGroup.Text>
             <Form.Control
@@ -153,10 +153,10 @@ export default function PopUpMemberEdit({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose}>
-          ປິດ
+          {t("close")}
         </Button>
         <Button variant="primary" onClick={handleSave}>
-          ອັບເດດສະມາຊີກ
+          {t("update_member")}
         </Button>
       </Modal.Footer>
     </Modal>

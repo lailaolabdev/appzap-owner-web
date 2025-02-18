@@ -21,18 +21,16 @@ import { Breadcrumb, Nav, Tab, Tabs } from "react-bootstrap";
 import Box from "../../components/Box";
 import { MdAssignmentAdd } from "react-icons/md";
 import { BsCurrencyExchange } from "react-icons/bs";
+import { FaMoneyBillAlt } from "react-icons/fa";
 import Loading from "../../components/Loading";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
-import {useStoreStore} from "../../zustand/storeStore"
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function CurrencyList() {
   const { t } = useTranslation();
   // zustand state store
-  const {
-    storeDetail, 
-    fetchStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, fetchStoreDetail, updateStoreDetail } = useStoreStore();
 
   const [getTokken, setgetTokken] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -224,7 +222,7 @@ export default function CurrencyList() {
                   fontWeight: "bold",
                 }}
               >
-                <BsCurrencyExchange /> {t("m_ccrc")}
+                <FaMoneyBillAlt /> {t("m_ccrc")}
               </Card.Header>
               <Card.Body>
                 <table style={{ width: "100%" }}>
@@ -232,7 +230,7 @@ export default function CurrencyList() {
                     <th>{t("m_ccrc")}</th>
                     {/* <th>ຕົວຫຍໍ້ສະກຸນເງິນຫຼັກ</th> */}
                     <th>{t("mn_number")}</th>
-                    <th>{t("manage_data")}</th>
+                    <th>{t("manage_main_crc")}</th>
                   </tr>
                   <tr>
                     <td className="text-left">{storeDetail?.firstCurrency}</td>
@@ -263,10 +261,15 @@ export default function CurrencyList() {
                 }}
               >
                 <span>
-                  <BsCurrencyExchange /> {t("m_ccrc")}
+                  <BsCurrencyExchange /> {t("exchange_rate")}
                 </span>
-                <Button variant="dark" bg="dark" onClick={handleShowAdd}>
-                  <MdAssignmentAdd /> {t("add_ccrc")}
+                <Button
+                  variant="dark"
+                  bg="dark"
+                  onClick={handleShowAdd}
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
+                  <MdAssignmentAdd /> {t("add_exchangeRate")}
                 </Button>
               </Card.Header>
               <Card.Body style={{ overflowX: "auto" }}>
@@ -274,10 +277,10 @@ export default function CurrencyList() {
                   <tr>
                     <th>#</th>
                     <th style={{ textWrap: "nowrap" }}>{t("ccrc")}</th>
-                    <th style={{ textWrap: "nowrap" }}>{t("short_ccrc")}</th>
+                    <th style={{ textWrap: "nowrap" }}>{t("crc_code")}</th>
                     <th style={{ textWrap: "nowrap" }}>{t("buy_cost")}</th>
                     <th style={{ textWrap: "nowrap" }}>{t("sale_cost")}</th>
-                    <th style={{ textWrap: "nowrap" }}>{t("manage_data")}</th>
+                    <th style={{ textWrap: "nowrap" }}>{t("manage_rate")}</th>
                     {/* <th style={{ textAlign: "left" }}>ວັນທີ່</th>
                         <th style={{ textAlign: "center" }}>ຍອດອໍເດີ</th>
                         <th style={{ textAlign: "center" }}>ຍອດບິນ</th>
@@ -721,14 +724,22 @@ export default function CurrencyList() {
         <Modal show={showDelete} onHide={handleCloseDelete}>
           <Modal.Header closeButton></Modal.Header>
           <Modal.Body>
-            <div style={{ textAlign: "center" }}>
-              <div>{t("sure_to_delect_crc")}</div>
+            <div
+              style={{
+                textAlign: "center",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <div>{t("delete_currency")}</div>
               <div
-                style={{ color: "red" }}
+                style={{ color: "red", margin: "0 5px" }}
               >{`${dataDelete?.currencyName} (${dataDelete?.currencyCode})`}</div>
               <div>{t("realy")} ?</div>
             </div>
           </Modal.Body>
+
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseDelete}>
               {t("cancel")}

@@ -9,12 +9,12 @@ import { useStoreStore } from "../../zustand/storeStore";
 export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
   const { t } = useTranslation();
   // state
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
 
   return (
     <Modal show={open} onHide={onClose} keyboard={false}>
       <Modal.Header closeButton>
-        <Modal.Title>{t('add_printer')}</Modal.Title>
+        <Modal.Title>{t("add_printer")}</Modal.Title>
       </Modal.Header>
       <Formik
         enableReinitialize={true}
@@ -40,14 +40,15 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
           if (!values.ip) {
             errors.ip = "-";
           }
-          if (!values.cutPaper) { // Validate new field
+          if (!values.cutPaper) {
+            // Validate new field
             errors.cutPaper = "-";
           }
 
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
-          onSubmit(values).then((e) => { });
+          onSubmit(values).then((e) => {});
         }}
       >
         {({
@@ -64,7 +65,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
             <Modal.Body>
               <Form.Group>
                 <Form.Label>
-                  {t('printer_name')} <span style={{ color: "red" }}>*</span>
+                  {t("printer_name")} <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control
                   type="text"
@@ -72,13 +73,13 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values?.name}
-                  placeholder={t('printer_name')}
+                  placeholder={t("printer_name")}
                   isInvalid={errors?.name}
                 />
               </Form.Group>
               <Form.Group>
                 <Form.Label>
-                  {t('papper_size')} <span style={{ color: "red" }}>*</span>
+                  {t("papper_size")} <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control
                   as="select"
@@ -89,7 +90,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
                   isInvalid={errors?.width}
                 >
                   <option value="" disabled>
-                    {t('chose_papper_size')}
+                    {t("chose_papper_size")}
                   </option>
                   <option value="80mm">80mm</option>
                   <option value="58mm">58mm</option>
@@ -98,7 +99,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
 
               <Form.Group>
                 <Form.Label>
-                  {t('printer_type')} <span style={{ color: "red" }}>*</span>
+                  {t("printer_type")} <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control
                   as="select"
@@ -116,7 +117,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
                   isInvalid={errors?.type}
                 >
                   <option value="" disabled>
-                    {t('chose_papper_size')}
+                    {t("select_printer_type")}
                   </option>
                   <option value="ETHERNET">ETHERNET</option>
                   <option value="BLUETOOTH">BLUETOOTH</option>
@@ -126,7 +127,8 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
               {values?.type !== "USB" ? (
                 <Form.Group>
                   <Form.Label>
-                    IP or BT <span style={{ color: "red" }}>*</span>
+                    IP Address or Bluetooth{" "}
+                    <span style={{ color: "red" }}>*</span>
                   </Form.Label>
                   <Form.Control
                     type="text"
@@ -143,7 +145,8 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
               )}
               <Form.Group>
                 <Form.Label>
-                  {t("billCutPaperTitle")} <span style={{ color: "red" }}>*</span>
+                  {t("billCutPaperTitle")}{" "}
+                  <span style={{ color: "red" }}>*</span>
                 </Form.Label>
                 <Form.Control
                   as="select"
@@ -170,7 +173,7 @@ export default function PopUpAddPrinter({ open, onClose, onSubmit, value }) {
                 }}
                 onClick={() => handleSubmit()}
               >
-                {t('save_menu')}
+                {t("save")}
               </Button>
             </Modal.Footer>
           </form>
