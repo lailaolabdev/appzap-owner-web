@@ -58,7 +58,7 @@ export default function PopUpRole({
                 setError(t("please_enter_name_of_role"));
                 return;
             }
-            await createPermissionRole({ data: mutationPayload });
+            await createPermissionRole( mutationPayload );
             Swal.fire({
                 icon: 'success',
                 title: t("success"),

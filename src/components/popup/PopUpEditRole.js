@@ -83,6 +83,7 @@ export default function PopUpEditRole({
         setHasChanges(hasChanged);
     };
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -102,7 +103,11 @@ export default function PopUpEditRole({
             };
 
             await updatePermissionRole(roleData._id, updatePayload).then((data) => {
-                setProfile(data)
+                setProfile({
+                    accessToken: profile?.accessToken ,
+                    data: data.data,
+                    refreshToken: profile?.refreshToken
+                })
             });
 
             Swal.fire({

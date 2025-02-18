@@ -10,6 +10,7 @@ import PopUpEditRole from "../../components/popup/PopUpEditRole";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
+import { useStoreStore } from '../../zustand/storeStore';
 import { getPermissionRoles, updatePermissionRole, deletePermissionRole, createPermissionRole } from "../../services/permissionRole";
 
 
@@ -22,10 +23,11 @@ const ManagementRole = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedRole, setSelectedRole] = useState(null);
+    const {storeDetail} = useStoreStore();
 
     const getDataPermissionRole = async () => {
         try {
-            const permissionData = await getPermissionRoles();
+            const permissionData = await getPermissionRoles(storeDetail?._id);
             setDataPermision(permissionData);
         } catch (err) {
             console.error("Error fetching permission roles:", err);
@@ -41,7 +43,7 @@ const ManagementRole = () => {
     const handleDelete = async (id) => {
         try {
             setLoading(true);
-            await deletePermissionRole(id);
+            await deletePermissionRole(id ,storeDetail?._id);
             getDataPermissionRole();
             setDeletePopup(null);
             Swal.fire({

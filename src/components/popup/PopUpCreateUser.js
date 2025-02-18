@@ -44,7 +44,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
 
   const getDataPermissionRole = async () => {
     try {
-      const permissionData = await getPermissionRoles();
+      const permissionData = await getPermissionRoles(storeDetail?._id);
       setDataPermision(permissionData);
     } catch (err) {
       console.error("Error fetching permission roles:", err);
