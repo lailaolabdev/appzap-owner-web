@@ -91,6 +91,7 @@ import MainScreen from "../pages/secondScreen/MainScreen";
 import MemberPage from "../pages/member/MemberPage";
 import DashboardPage from "../pages/dashboardnew/DashboardPage";
 import SettingMemberPointPage from "../pages/member/SettingMemberPointPage";
+import Distcount from "../pages/promotion/components/Distcount";
 function Router() {
   return useRoutes([
     {
@@ -143,6 +144,10 @@ function Router() {
         {
           path: "/promotion",
           element: <Promotion />,
+        },
+        {
+          path: "/promotion/discount/:type",
+          element: <Distcount />,
         },
         {
           path: "/settingStore/storeDetail/:id",
