@@ -558,13 +558,11 @@ const MainScreen = () => {
                       }}
                     >
                       <Form.Label htmlFor={"switch-open"}>
-                        {UseSlideImage[0]?.isOpenSecondScreen
-                          ? t("oppen")
-                          : t("close")}
+                        {isToggledOpenTwoScreen ? t("oppen") : t("close")}
                       </Form.Label>
                       <Form.Check
                         type="switch"
-                        checked={UseSlideImage[0]?.isOpenSecondScreen}
+                        checked={isToggledOpenTwoScreen}
                         id={"switch-open"}
                         // onChange={(e) => toggleOpen(e)}
                         onChange={(e) => handleOpenTwoScreen(e)}
@@ -590,12 +588,12 @@ const MainScreen = () => {
                       }}
                     >
                       <Form.Label htmlFor={"switch-audio-"}>
-                        {UseSlideImage[0]?.showTitle ? t("oppen") : t("close")}
+                        {isToggled ? t("oppen") : t("close")}
                       </Form.Label>
                       <Form.Check
                         type="switch"
                         disabled={profile?.data?.role !== "APPZAP_ADMIN"}
-                        checked={UseSlideImage[0]?.showTitle}
+                        checked={isToggled}
                         id={"switch-title"}
                         // onChange={toggle}
                         onChange={(e) => handleUseShowTitle(e)}
@@ -621,12 +619,12 @@ const MainScreen = () => {
                       }}
                     >
                       <Form.Label htmlFor={"switch-slide"}>
-                        {UseSlideImage[0]?.showSlide ? t("oppen") : t("close")}
+                        {isToggledSlide ? t("oppen") : t("close")}
                       </Form.Label>
                       <Form.Check
                         type="switch"
                         disabled={profile?.data?.role !== "APPZAP_ADMIN"}
-                        checked={UseSlideImage[0]?.showSlide}
+                        checked={isToggledSlide}
                         id={"slide"}
                         // onChange={toggleSlide}
                         onChange={(e) => handleUseShowSlide(e)}
@@ -652,13 +650,13 @@ const MainScreen = () => {
                       }}
                     >
                       <Form.Label htmlFor={"switch-table"}>
-                        {UseSlideImage[0]?.showTable ? t("oppen") : t("close")}
+                        {isToggledTable ? t("oppen") : t("close")}
                       </Form.Label>
                       <Form.Check
                         // disabled={true}
                         disabled={profile?.data?.role !== "APPZAP_ADMIN"}
                         type="switch"
-                        checked={UseSlideImage[0]?.showTable}
+                        checked={isToggledTable}
                         id={"table"}
                         // onChange={toggleTable}
                         onChange={(e) => handleUseShowTable(e)}
