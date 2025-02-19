@@ -6,14 +6,14 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import PopUpShowSales from "../components/popup/PopUpShowSales";
 import { END_POINT_SEVER } from "../constants/api";
 import { useStoreStore } from "../zustand/storeStore";
-import { 
+import {
   fetchSalesData,
   addStoreId,
   updateSalesClick,
   updateViews,
-  updateStoreAvailability
-} from '../services/showSales';
-import {handleTimeShowSales} from "../helpers/handleTimeShowSales"
+  updateStoreAvailability,
+} from "../services/showSales";
+import { handleTimeShowSales } from "../helpers/handleTimeShowSales";
 
 export default function MainLayout({ children }) {
   const [expanded, setExpanded] = useState();
@@ -33,7 +33,7 @@ export default function MainLayout({ children }) {
   const [hasUpdatedViews, setHasUpdatedViews] = useState(false);
 
   const storeId = storeDetail?._id;
-  const allIdOfSelectStore = salesData?.selectedStores?.map(id => id._id);
+  const allIdOfSelectStore = salesData?.selectedStores?.map((id) => id._id);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -50,11 +50,16 @@ export default function MainLayout({ children }) {
 
   const handleaddStoreId = async (id, isAvailable) => {
     try {
-      const updatedData = await addStoreId(id, isAvailable, salesData?._id, storeId);
+      const updatedData = await addStoreId(
+        id,
+        isAvailable,
+        salesData?._id,
+        storeId
+      );
       if (updatedData) {
         setSalesData(updatedData);
         const isUpdateSuccessful = updatedData.selectedStores?.some(
-          store => store._id === id && store.isAvailable === isAvailable
+          (store) => store._id === id && store.isAvailable === isAvailable
         );
         if (!isUpdateSuccessful) {
           console.error("Store addStoreId failed to reflect in data");
@@ -95,16 +100,16 @@ export default function MainLayout({ children }) {
 
   useEffect(() => {
     let updateIntervalId = null;
-  
+
     if (!isLoading && salesData && storeDetail) {
       const targetStore = salesData?.selectedStores?.find(
-        store => store.storeId === storeId || store.storeId === null
+        (store) => store.storeId === storeId || store.storeId === null
       );
-  
+
       const isUnavailableStore = salesData?.selectedStores?.some(
-        store => store.storeId === storeId && store.isAvailable === false
+        (store) => store.storeId === storeId && store.isAvailable === false
       );
-  
+
       if (targetStore && !isUnavailableStore) {
         const { shouldShow, updateInterval } = handleTimeShowSales({
           salesData,
@@ -113,24 +118,24 @@ export default function MainLayout({ children }) {
           daysCounter,
           handleUpdateStoreAvailability,
           setDaysCounter,
-          setHasUpdatedForNone
+          setHasUpdatedForNone,
         });
-        
+
         updateIntervalId = updateInterval;
         setSelectId(targetStore._id);
-  
+
         // เช็คว่าควรแสดง popup และยังไม่เคย update views
         if (shouldShow && !hasUpdatedViews) {
           updateViews(salesData?._id);
           setHasUpdatedViews(true); // mark ว่า update แล้ว
         }
-  
+
         setPopup({ PopUpShowSales: targetStore.isAvailable && shouldShow });
       } else {
         setPopup({ PopUpShowSales: false });
       }
     }
-  
+
     return () => {
       if (updateIntervalId) {
         clearTimeout(updateIntervalId);
@@ -140,7 +145,7 @@ export default function MainLayout({ children }) {
 
   useEffect(() => {
     setHasUpdatedViews(false);
-  }, [salesData?.selectedStores?.map(id => id.isAvailable)]);
+  }, [salesData?.selectedStores?.map((id) => id.isAvailable)]);
 
   useEffect(() => {
     setDaysCounter(0);
@@ -186,7 +191,7 @@ export default function MainLayout({ children }) {
           position: "relative",
         }}
       >
-        {!isLoading && storeDetail && (
+        {/* {!isLoading && storeDetail && (
           <PopUpShowSales
             open={popup?.PopUpShowSales}
             onClose={() => {
@@ -198,7 +203,7 @@ export default function MainLayout({ children }) {
             handleaddStoreId={handleaddStoreId}
             handleUpdateSalesClick={handleUpdateSalesClick}
           />
-        )}
+        )} */}
         <Outlet />
       </div>
     </Box>
