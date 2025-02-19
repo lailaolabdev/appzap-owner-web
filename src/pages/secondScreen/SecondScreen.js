@@ -113,7 +113,7 @@ const SecondScreen = () => {
   return (
     <>
       <div className="h-screen w-screen">
-        {UseSlideImage[0]?.showTitle && (
+        {isToggled && (
           <TypeEffect
             storeDetail={storeDetail}
             textEffect={UseSlideImage[0]?.name}
@@ -123,16 +123,14 @@ const SecondScreen = () => {
         {UseSlideImage[0]?.isPublished ? (
           <div
             className={`${
-              UseSlideImage[0]?.showTitle ? "pt-2" : "p-6"
+              isToggled ? "pt-2" : "p-6"
             } flex gap-2 flex-row items-center justify-center`}
           >
             {/* Swiper Image Slider */}
-            {UseSlideImage[0]?.showSlide && !UseSlideImage[0]?.showTable ? (
+            {isToggledSlide && !isToggledTable ? (
               <div
                 className={` ${
-                  UseSlideImage[0]?.showTitle
-                    ? "w-[1300px] h-[580px]"
-                    : "w-[1300px] h-[625px]"
+                  isToggled ? "w-[1300px] h-[580px]" : "w-[1300px] h-[625px]"
                 } 2xl:w-[1200px] 2xl:h-[875px] bg-white rounded-lg shadow-lg p-4 overflow-hidden`}
               >
                 <Swiper
@@ -154,12 +152,10 @@ const SecondScreen = () => {
                   ))}
                 </Swiper>
               </div>
-            ) : UseSlideImage[0]?.showSlide ? (
+            ) : isToggledSlide ? (
               <div
                 className={` ${
-                  UseSlideImage[0]?.showTitle
-                    ? "w-[820px] h-[580px]"
-                    : "w-[820px] h-[625px]"
+                  isToggled ? "w-[820px] h-[580px]" : "w-[820px] h-[625px]"
                 } 2xl:w-[1200px] 2xl:h-[875px] bg-white rounded-lg shadow-lg p-4 overflow-hidden`}
               >
                 <Swiper
@@ -186,7 +182,7 @@ const SecondScreen = () => {
             )}
 
             {/* Table Section */}
-            {UseSlideImage[0]?.showTable && !UseSlideImage[0]?.showSlide ? (
+            {isToggledTable && !isToggledSlide ? (
               <div className="w-[1300px] h-[580px] 2xl:h-[980px] bg-white rounded-lg shadow-lg p-4 overflow-hidden">
                 <div className="w-full h-[400px] 2xl:h-[700px] overflow-y-auto">
                   <Table
@@ -282,12 +278,10 @@ const SecondScreen = () => {
                   </div>
                 </div>
               </div>
-            ) : UseSlideImage[0]?.showTable ? (
+            ) : isToggledTable ? (
               <div
                 className={`${
-                  UseSlideImage[0]?.showTitle
-                    ? "w-[520px] h-[580px]"
-                    : "w-[820px] h-[625px]"
+                  isToggled ? "w-[520px] h-[580px]" : "w-[820px] h-[625px]"
                 } 2xl:w-[680px] 2xl:h-[875px] bg-white rounded-lg shadow-lg p-4 overflow-hidden`}
               >
                 {/* Table Section */}
@@ -418,7 +412,7 @@ const SecondScreen = () => {
           // Case when UseSlideImage is NOT published
           <div
             className={`flex justify-center items-center ${
-              UseSlideImage[0]?.showTitle ? "pt-0" : "pt-10"
+              isToggled ? "pt-0" : "pt-10"
             }`}
           >
             <div className="w-[1300px] h-[580px] 2xl:h-[980px] bg-white rounded-lg shadow-lg p-4 overflow-hidden">
