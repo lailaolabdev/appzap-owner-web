@@ -98,7 +98,7 @@ const PreviewSlide = () => {
   return (
     <>
       <div className="h-[320px] w-[310px]">
-        {UseSlideImage[0]?.showTitle && (
+        {isToggled && (
           <h2 className="text-[14px] font-bold text-center text-orange-500">
             {storeDetail?.name}
           </h2>
@@ -106,15 +106,13 @@ const PreviewSlide = () => {
         {UseSlideImage[0]?.isPublished === true ? (
           <div
             className={`${
-              UseSlideImage[0]?.showTitle ? "pt-2" : "p-6"
+              isToggled ? "pt-2" : "p-6"
             } flex gap-4 flex-row items-center justify-center`}
           >
-            {UseSlideImage[0]?.showSlide && (
+            {isToggledSlide && (
               <div
                 className={` ${
-                  UseSlideImage[0]?.showTitle
-                    ? "w-[250px] h-[80px]"
-                    : "w-[250px] h-[80px]"
+                  isToggled ? "w-[250px] h-[80px]" : "w-[250px] h-[80px]"
                 } rounded-md`}
               >
                 <Swiper
@@ -144,10 +142,10 @@ const PreviewSlide = () => {
                 </Swiper>
               </div>
             )}
-            {UseSlideImage[0]?.showTable && (
+            {isToggledTable && (
               <div
                 className={` ${
-                  UseSlideImage[0]?.showTitle
+                  isToggled
                     ? "w-[250px] h-[80px]"
                     : "w-[250px] h-[80px] border-1 border-slate-400"
                 }`}

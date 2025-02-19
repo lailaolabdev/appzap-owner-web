@@ -105,21 +105,22 @@ export const useSocketState = ({ setRunSound }) => {
     };
     const useSlideImage = async (data) => {
       setUseSlideImage(data?.data);
+      console.log("useSlideImage socket", data?.data);
     };
     const showTable = async (data) => {
-      // console.log("socket showTable", data?.data?.showTable);
+      console.log("socket showTable", data?.data?.showTable);
       SettoggleTable(data?.data?.showTable);
     };
     const showSlide = async (data) => {
-      // console.log("socket showSlide", data?.data?.showSlide);
+      console.log("socket showSlide", data?.data?.showSlide);
       SettoggleSlide(data?.data?.showSlide);
     };
     const showTitle = async (data) => {
-      // console.log("socket showTitle", data?.data?.showTitle);
+      console.log("socket showTitle", data?.data?.showTitle);
       Settoggle(data?.data?.showTitle);
     };
     const OpenTwoScreen = async (data) => {
-      // console.log("socket OpenTwoScreen", data?.data?.isOpenSecondScreen);
+      console.log("socket OpenTwoScreen", data?.data?.isOpenSecondScreen);
       SettoggleOpenTwoScreen(data?.data?.isOpenSecondScreen);
     };
     const ImageSlidData = async (data) => {
