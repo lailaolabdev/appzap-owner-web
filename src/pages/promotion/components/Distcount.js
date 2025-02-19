@@ -22,23 +22,25 @@ const Distcount = () => {
                 <label htmlFor="">ຊື່ໂປຣໂມຊັນ</label>
                 <input
                   type="text"
-                  className="w-[560px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
+                  className="w-[578px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label htmlFor="">ຊື່ໂປຣໂມຊັນ</label>
+                <label htmlFor="">ລະຫັດໂປຣໂມຊັນ</label>
                 <input
                   type="text"
-                  className="w-[560px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
+                  className="w-[578px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                 />
               </div>
             </div>
             <div className="mt-2">
               <div className="flex flex-col gap-2">
-                <label htmlFor="">ຊື່ໂປຣໂມຊັນ</label>
-                <input
+                <label htmlFor="">ລາຍລະອຽດ</label>
+                <textarea
                   type="text"
-                  className="w-[350px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
+                  rows={5}
+                  cols={10}
+                  className="w-full border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md resize-none"
                 />
               </div>
             </div>
