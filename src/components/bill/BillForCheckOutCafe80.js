@@ -103,6 +103,11 @@ export default function BillForCheckOutCafe80({
 
   return (
     <div className="p-1 bg-white rounded-lg shadow-md w-[285px] ml-[-12px]">
+      <div className="flex flex-col mb-2 items-center ">
+        <span className="">{t("queue no")}</span>
+        <span className="text-[18px] font-bold">{data || 0}</span>
+      </div>
+      <hr className="border-b border-dashed border-gray-600" />
       <div className=" flex justify-center relative">
         <div className="flex gap-2 items-center">
           {base64Image ? (
@@ -118,9 +123,9 @@ export default function BillForCheckOutCafe80({
             ""
           )}
         </div>
-        <span className="text-[18px] font-bold absolute top-8 right-4">
+        {/* <span className="text-[18px] font-bold absolute top-8 right-4">
           No {data || 0}
-        </span>
+        </span> */}
       </div>
       <div className="text-center font-bold my-4">{storeDetail?.name}</div>
       {/* <div style={{ textAlign: "center" }}>{selectedTable?.tableName}</div> */}
@@ -330,6 +335,14 @@ export default function BillForCheckOutCafe80({
           />
         </Img>
       </div>
+      {storeDetail?.isStatusCafe && (
+        <hr className="border-b border-dashed border-gray-600" />
+      )}
+      {storeDetail?.isStatusCafe && (
+        <div className="text-center text-[12px] font-thin">
+          LOVE LIFE AI-CHA
+        </div>
+      )}
     </div>
   );
 }
