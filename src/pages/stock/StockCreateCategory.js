@@ -143,7 +143,7 @@ export default function StockCreateCategory() {
             <input
               id="formStockTypeName"
               type="text"
-              placeholder={t("stock_type_name")}
+              placeholder={`${t("stock_type_name")}...`}
               value={stockTypeName}
               onChange={(e) => setStockTypeName(e.target.value)}
               required
@@ -161,7 +161,7 @@ export default function StockCreateCategory() {
             <textarea
               id="formNote"
               rows={3}
-              placeholder={t("note")}
+              placeholder={`${t("note")}...`}
               value={note}
               onChange={(e) => setNote(e.target.value)}
               className="px-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"

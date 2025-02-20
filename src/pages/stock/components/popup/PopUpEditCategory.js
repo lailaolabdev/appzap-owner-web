@@ -51,7 +51,7 @@ export default function PopUpEditCategory({ onClose, data, open, callback }) {
         validate={(values) => {
           const errors = {};
           if (!values.name) {
-            errors.name = "ກະລຸນາປ້ອນຊື່ປະເພດສະຕ໊ອກ...";
+            errors.name = t("fill_stock_type_name");
           }
           return errors;
         }}
@@ -81,7 +81,7 @@ export default function PopUpEditCategory({ onClose, data, open, callback }) {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.name}
-                  placeholder={t("stock_type_name")}
+                  placeholder={`${t("stock_type_name")}...`}
                 />
               </Form.Group>
               <div style={{ color: "red" }}>
@@ -95,7 +95,7 @@ export default function PopUpEditCategory({ onClose, data, open, callback }) {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.note}
-                  placeholder={t("note")}
+                  placeholder={`${t("note")}...`}
                 />
               </Form.Group>
             </Modal.Body>

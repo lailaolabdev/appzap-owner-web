@@ -241,7 +241,7 @@ export default function ReservationList() {
                 style={{ color: "white" }}
                 onClick={() => setPopup((prev) => ({ ...prev, add: true }))}
               >
-                <span className={fontMap[language]}>{t("addBooking")}</span>
+                <span className={fontMap[language]}>+ {t("addBooking")}</span>
               </ButtonPrimary>
             </div>
           </div>

@@ -83,7 +83,7 @@ export default function CreateMemberPage() {
               <div className="mb-3">
                 <Form.Label>{t("member_name")}</Form.Label>
                 <Form.Control
-                  placeholder={t("member_name")}
+                  placeholder={`${t("member_name")}...`}
                   value={formData?.name}
                   onChange={(e) => {
                     setFormData((prev) => ({

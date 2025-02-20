@@ -173,7 +173,7 @@ export default function CategoryType() {
             <span className={fontMap[language]}>{t("restaurant_setting")}</span>
           </Breadcrumb.Item>
           <Breadcrumb.Item active>
-            <span className={fontMap[language]}>{t("menu")}</span>
+            <span className={fontMap[language]}>{t("categoryType")}</span>
           </Breadcrumb.Item>
         </Breadcrumb>
         <Nav variant="tabs" defaultActiveKey="/settingStore/category-type">
@@ -213,7 +213,7 @@ export default function CategoryType() {
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={() => setPopup({ popUpAddCategoryType: true })}
           >
-            {t("create_category")}
+            + {t("create_category")}
           </Button>{" "}
         </div>
         <div style={{ height: 20 }}></div>
@@ -326,7 +326,7 @@ export default function CategoryType() {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.name}
-                    placeholder={t("food_category")}
+                    placeholder={`${t("food_category")}...`}
                   />
                 </Form.Group>
                 <div style={{ color: "red" }}>

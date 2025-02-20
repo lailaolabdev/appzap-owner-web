@@ -637,21 +637,28 @@ export default function MemberPage() {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                padding: 10,
+                padding: "12px 16px",
               }}
             >
               <span>{t("all_point")}</span>
-
               <Button
                 variant="dark"
                 bg="dark"
                 onClick={() =>
                   navigate("/reports/members-report/setting-point")
                 }
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "8px 12px",
+                }}
               >
-                <FaCoins /> {t("point_setting")}
+                <FaCoins />
+                {t("point_setting")}
               </Button>
             </Card.Header>
+
             <Card.Body>
               <div
                 style={{
@@ -837,19 +844,25 @@ export default function MemberPage() {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                padding: 10,
+                padding: "12px 16px",
               }}
             >
               <span>{t("member_list")}</span>
-
               <Button
                 variant="dark"
                 bg="dark"
                 onClick={() =>
                   navigate("/reports/members-report/create-member")
                 }
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "8px 12px",
+                }}
               >
-                <MdAssignmentAdd /> {t("add_member")}
+                <MdAssignmentAdd />
+                {t("add_member")}
               </Button>
             </Card.Header>
             <Card.Body>

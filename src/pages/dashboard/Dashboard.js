@@ -310,11 +310,11 @@ export default function Dashboard() {
           </Button>
           {profile?.data?.role === "APPZAP_ADMIN"
             ? storeDetail?.isShift && (
-                <div className="flex gap-1 items-center">
+                <div className="flex items-center gap-2 whitespace-nowrap">
                   <span>{t("chose_shift")} : </span>
                   <Select
-                    placeholder={t("plachoder_shift")}
-                    className="w-64 border-orange-500"
+                    placeholder={`${t("plachoder_shift")}...`}
+                    className="min-w-[170px] w-full border-orange-500"
                     options={optionsData}
                     onChange={handleSearchInput}
                   />
