@@ -205,7 +205,7 @@ export default function CurrencyList() {
       >
         <Breadcrumb>
           <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t("money_number_setting")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("currency_manage")}</Breadcrumb.Item>
         </Breadcrumb>
         <Tabs defaultActiveKey="currency-list">
           <Tab

@@ -455,7 +455,7 @@ export default function DashboardPage() {
           </div>
           {profile?.data?.role === "APPZAP_ADMIN"
             ? storeDetail?.isShift && (
-                <div className="flex gap-1 items-center">
+                <div className="flex items-center gap-2 whitespace-nowrap">
                   {/* <span>{t("chose_shift")} : </span> */}
                   <Select
                     placeholder={t("chose_shift")}

@@ -308,7 +308,7 @@ export default function Categorylist() {
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={handleShow}
           >
-            {t("addFoodType")}
+            + {t("addFoodType")}
           </Button>{" "}
         </div>
         <div style={{ height: 20 }}></div>

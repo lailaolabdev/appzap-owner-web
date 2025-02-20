@@ -196,7 +196,7 @@ export default function ZoneList() {
             style={{ display: "flex", alignItems: "center", gap: "8px" }}
           >
             <MdAssignmentAdd />
-            {t("add_list")}
+            {t("fill_zone")}
           </Button>
         </Card.Header>
         <Card.Body>

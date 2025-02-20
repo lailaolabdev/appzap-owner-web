@@ -706,7 +706,7 @@ export default function ShiftList() {
                       type="text"
                       name="shiftName"
                       onChange={handleChange}
-                      placeholder={t("shift_name")}
+                      placeholder={`${t("shift_name")}...`}
                       isInvalid={!!errors.shiftName && touched.shiftName}
                     />
                     <Form.Control.Feedback type="invalid">
@@ -834,7 +834,7 @@ export default function ShiftList() {
                       name="shiftName"
                       value={values.shiftName}
                       onChange={handleChange}
-                      placeholder={t("shift_name")}
+                      placeholder={`${t("shift_name")}...`}
                       isInvalid={!!errors.shiftName && touched.shiftName}
                     />
                     <Form.Control.Feedback type="invalid">

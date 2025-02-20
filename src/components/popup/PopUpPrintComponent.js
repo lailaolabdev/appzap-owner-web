@@ -395,10 +395,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           </div>
           {profile?.data?.role === "APPZAP_ADMIN"
             ? storeDetail?.isShift && (
-                <div className="flex gap-1 items-center">
+                <div className="flex items-center gap-2 whitespace-nowrap">
                   <Select
                     placeholder={t("chose_shift")}
-                    className="w-36 border-orange-500"
+                    className="min-w-[170px] w-full border-orange-500"
                     options={optionsData}
                     onChange={handleSearchInput}
                   />
@@ -606,7 +606,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
             value={selectPrinter}
             onChange={(e) => setSelectPrinter(e.target.value)}
           >
-            <option value={"select"}>{"-- ເລືອກປີ້ນເຕີ --"}</option>
+            <option value={"select"}>--{t("selectPrinter")}--</option>
             {printers?.map((e) => (
               <option key={e?._id} value={JSON.stringify(e)}>
                 {e?.name}

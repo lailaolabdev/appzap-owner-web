@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
+import { useTranslation } from "react-i18next";
+
 export default function DateTimeComponent({ onChange, value }) {
+  const { t } = useTranslation();
   const [day, setDay] = useState("");
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
@@ -30,7 +33,7 @@ export default function DateTimeComponent({ onChange, value }) {
         onChange={(e) => setDay(e.target.value)}
         value={day}
       >
-        <option value="">{day ? day : "ວັນ"}</option>
+        <option value="">{day ? day : t("day")}</option>
         {[...new Array(31)].map((e, i) => (
           <option value={i + 1}>{i + 1}</option>
         ))}
@@ -40,7 +43,7 @@ export default function DateTimeComponent({ onChange, value }) {
         onChange={(e) => setMonth(e.target.value)}
         value={month}
       >
-        <option value="">{month ? month : "ເດືອນ"}</option>
+        <option value="">{month ? month : t("month")}</option>
         {[...new Array(12)].map((e, i) => (
           <option value={i + 1}>{i + 1}</option>
         ))}
@@ -50,7 +53,7 @@ export default function DateTimeComponent({ onChange, value }) {
         onChange={(e) => setYear(e.target.value)}
         value={year}
       >
-        <option value="">{year ? year : "ປີ"}</option>
+        <option value="">{year ? year : t("year")}</option>
         {[...new Array(150)].map((e, i) => (
           <option value={2024 - i}>{2024 - i}</option>
         ))}

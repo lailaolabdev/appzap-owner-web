@@ -1516,7 +1516,7 @@ export default function MenuList() {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.detail}
-                      placeholder={t("note")}
+                      placeholder={`${t("note")}...`}
                     />
                   </Form.Group>
                 </Modal.Body>
@@ -2007,7 +2007,7 @@ export default function MenuList() {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.detail}
-                      placeholder={t("note")}
+                      placeholder={`${t("note")}...`}
                     />
                   </Form.Group>
                 </Modal.Body>
