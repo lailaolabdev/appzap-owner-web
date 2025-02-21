@@ -64,10 +64,11 @@ export default function SettingList() {
   const [hasMangeBanner, setHasMangeBanner] = useState(false);
   const [hasHistory, setHasHistoryUsed] = useState(false);
   const [hasClearHistory, setHasClearHistory] = useState(false);
+  const [hasStoreDetail, setHasStoreDetail] = useState(false);
 
   const permissionRole = profile?.data?.permissionRoleId ;
   const profileRole = profile?.data?.role ;
-  const appzapStaff = "APPZAP_STAFF";
+  const appzapStaff = ["APPZAP_DEALER", "APPZAP_ADMIN", "APPZAP_KITCHEN", "APPZAP_COUNTER", "APPZAP_STAFF"];
   const appzapAdmin = "APPZAP_ADMIN";
 
   useEffect(() => {
@@ -88,7 +89,8 @@ export default function SettingList() {
       { set: setHasMangeSecondScreen, check: "CONFIGURE_SECOND_SCREEN" },
       { set: setHasMangeBanner, check: "MANAGE_BANNER" },
       { set: setHasHistoryUsed, check: "HISTORY_USED" },
-      { set: setHasClearHistory, check: "CLRAR_HISTORY" }
+      { set: setHasClearHistory, check: "CLRAR_HISTORY" },
+      { set: setHasStoreDetail, check: "CONFIGURE_STORE_DETAIL" },
     ];
   
     permissionMap.forEach(({ set, check }) => {
@@ -103,6 +105,7 @@ export default function SettingList() {
       subTitle: t("restaurant_setting_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faCogs} />,
       path: `/settingStore/storeDetail/${params?.id}`,
+      hidden: !hasStoreDetail && appzapStaff.includes(profileRole),
     },
     {
       id: "0f83cb87-fc96-4212-b67d-2af6f33ed937",
@@ -110,7 +113,7 @@ export default function SettingList() {
       subTitle: t("employee_manage_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faUsers} />,
       path: `/user`,
-      hidden: (!hasMangeStaff && profileRole === appzapStaff),
+      hidden: (!hasMangeStaff && appzapStaff.includes(profileRole)),
     },
     // {
     //   id: "0f83cb87-fc96-4212-b67d-2af6f33ed937",
@@ -130,7 +133,7 @@ export default function SettingList() {
         <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faUtensils} />
       ),
       path: `/settingStore/menu/limit/40/page/1/${params?.id}`,
-      hidden: !hasMangeMenu && profileRole === appzapStaff,
+      hidden: !hasMangeMenu && appzapStaff.includes(profileRole),
     },
     {
       id: "ab2dd4fe-d0e2-4808-89d1-ae6307b8abce",
@@ -138,7 +141,7 @@ export default function SettingList() {
       subTitle: t("zone_setting_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faTh} />,
       path: `/settingStore/settingZone/${params?.id}`,
-      hidden: !hasMangeZone && profileRole === appzapStaff,
+      hidden: !hasMangeZone && appzapStaff.includes(profileRole),
     },
     {
       id: "1b76514a-d0e2-4808-89d1-3c66bc46d8ce",
@@ -146,7 +149,7 @@ export default function SettingList() {
       subTitle: t("table_setting_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faTable} />,
       path: `/settingStore/settingTable/${params?.id}`,
-      hidden: !hasMangeTable && profileRole === appzapStaff,
+      hidden: !hasMangeTable && appzapStaff.includes(profileRole),
     },
     {
       id: "1cb62d9b-01bd-419b-a60e-9b5b43133d7a",
@@ -154,7 +157,7 @@ export default function SettingList() {
       subTitle: t("activity_history_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faHistory} />,
       path: `/historyUse/${params?.id}`,
-      hidden: !hasHistory && profileRole === appzapStaff,
+      hidden: !hasHistory && appzapStaff.includes(profileRole),
     },
     {
       id: "42e27d60-6f12-446a-aa8f-ae6307b8ab34",
@@ -162,7 +165,7 @@ export default function SettingList() {
       subTitle: t("stok_manage_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faBoxes} />,
       path: `/settingStore/stock/limit/40/page/1/${params?.id}`,
-      hidden: !hasMangeStock && profileRole === appzapStaff,
+      hidden: !hasMangeStock && appzapStaff.includes(profileRole),
     },
     {
       id: "0f90941b-c594-4365-a279-a995868ede2a",
@@ -170,7 +173,7 @@ export default function SettingList() {
       subTitle: t("printer_setting_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faPrint} />,
       path: `/printer`,
-      hidden: !hasMangePrinter && profileRole === appzapStaff,
+      hidden: !hasMangePrinter && appzapStaff.includes(profileRole),
     },
     {
       id: "a2233469-a0b3-4247-9247-6282e2bafc1b",
@@ -180,7 +183,7 @@ export default function SettingList() {
         <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faVolumeUp} />
       ),
       path: `/audio`,
-      hidden: !hasMangeSound && profileRole === appzapStaff,
+      hidden: !hasMangeSound && appzapStaff.includes(profileRole),
     },
     {
       id: "64bf476a-cbb6-43e1-abe1-29d4bdce7683",
@@ -188,7 +191,7 @@ export default function SettingList() {
       subTitle: t("pos_config_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faStore} />,
       path: `/config`,
-      hidden: !hasMangePos && profileRole === appzapStaff,
+      hidden: !hasMangePos && appzapStaff.includes(profileRole),
     },
     // {
     //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
@@ -204,7 +207,7 @@ export default function SettingList() {
         <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDollarSign} />
       ),
       path: `/settingStore/currency/${params?.id}`,
-      hidden: !hasMangeCurrency && profileRole === appzapStaff,
+      hidden: !hasMangeCurrency && appzapStaff.includes(profileRole),
     },
     {
       id: "a84952ca-c02b-91a0-fa30-2930ab39f01b",
@@ -214,7 +217,7 @@ export default function SettingList() {
         <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faBuilding} />
       ),
       path: `/settingStore/bank/${params?.id}`,
-      hidden: !hasMangeBanks && profileRole === appzapStaff,
+      hidden: !hasMangeBanks && appzapStaff.includes(profileRole),
     },
     {
       id: "a84952ca-c02b-91a0-fa30-2930ab39f01b",
@@ -222,7 +225,7 @@ export default function SettingList() {
       subTitle: t("manage_role"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faUserShield} />,
       path: `/settingStore/role`,
-      hidden: !hasMangeRole && profileRole === appzapStaff,
+      hidden: !hasMangeRole && appzapStaff.includes(profileRole),
     },
     {
       id: "f962968d-1bed-48da-9049-92551dcd7101",
@@ -230,7 +233,7 @@ export default function SettingList() {
       subTitle: t("banner_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faImages} />,
       path: `/settingStore/banner`,
-      hidden: !hasMangeBanner && profileRole === appzapStaff,
+      hidden: !hasMangeBanner && appzapStaff.includes(profileRole),
     },
     {
       id: "f962968d-1bed-48da-9049-92551dcd7102",
@@ -238,7 +241,7 @@ export default function SettingList() {
       subTitle: t("pin_desc"),
       icon: <MdPassword style={{ fontSize: "1.7rem" }} />,
       path: `/PIN`,
-      hidden: !hasMangePin && profileRole === appzapStaff,
+      hidden: !hasMangePin && appzapStaff.includes(profileRole),
     },
     {
       id: "f962968d-1bed-48da-9049-86351dcd7102",
@@ -246,7 +249,7 @@ export default function SettingList() {
       subTitle: "",
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faBox} />,
       path: `/settingStore/delivery/${params?.id}`,
-      hidden: !hasMangeDelivery && profileRole === appzapStaff,
+      hidden: !hasMangeDelivery && appzapStaff.includes(profileRole),
     },
 
     {
@@ -254,7 +257,7 @@ export default function SettingList() {
       title: "ການຕັ້ງຄ່າກ່ຽວກັບ 2 ໜ້າຈໍ",
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDesktop} />,
       path: "/setting-screen",
-      hidden: !hasMangeSecondScreen && profileRole === appzapStaff,
+      hidden: !hasMangeSecondScreen && appzapStaff.includes(profileRole),
     },
     // {
     //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
@@ -347,7 +350,7 @@ export default function SettingList() {
             </ItemBox>
           ))}
         {
-          (hasClearHistory && profileRole === appzapStaff) || (profileRole === appzapAdmin) ? <ItemBox onClick={clickDeleteHistoryStore}>
+          (hasClearHistory && appzapStaff.includes(profileRole)) || (profileRole === appzapAdmin) ? <ItemBox onClick={clickDeleteHistoryStore}>
             <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDatabase} />
             <span className={fontMap[language]}>
               {t("clear_restaurant_data")}

@@ -8,6 +8,7 @@ export const PermissionsConfig = () => {
             reportTypes: {
                 label: t('1. ປະເພດລາຍງານຂໍ້ມູນ'),
                 permissions: {
+                    [t('table_status')]: 'TABLE_STATUS',
                     [t('statistic_money')]: 'FINANCIAL_STATISTICS',
                     [t('report_new')]: 'REPORT_NEW',
                     [t('debt_report')]: 'REPORT_INDEBTED',
@@ -38,7 +39,7 @@ export const PermissionsConfig = () => {
             settings: {
                 label: t('3. ປະເພດການຕັ້ງຄ່າ'),
                 permissions: {
-                    [t('restaurant_settings')]: 'CONFIGURE_STORE',
+                    [t('shop_setting')]: 'SHOP_SETING',
                     [t('zone_setting')]: 'CONFIGURE_ZONE',
                     [t('setting_table')]: 'CONFIGURE_TABLE',
                     [t('printer_setting')]: 'CONFIGURE_PRINTER',
@@ -53,6 +54,7 @@ export const PermissionsConfig = () => {
                 permissions: {
                     [t('transaction_history')]: 'HISTORY_USED',
                     [t('clear_restaurant_data')]: 'CLRAR_HISTORY',
+                    
                 }
             }
         }

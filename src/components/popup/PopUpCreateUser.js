@@ -14,13 +14,14 @@ import { createUser } from "../../services/user";
 import { getPermissionRoles } from "../../services/permissionRole";
 import { useStoreStore } from "../../zustand/storeStore";
 import { useStore } from "../../store";
+import { convertRole } from "../../helpers/convertRole";
 
 export const preventNegativeValues = (e) =>
   ["e", "E", "+", "-"].includes(e.key) && e.preventDefault();
 export default function PopUpCreateUser({ open, onClose, callback }) {
   const { t } = useTranslation();
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [formData, setFormData] = useState({ role: "APPZAP_STAFF" });
+  const [formData, setFormData] = useState({ role: "APPZAP_DEALER" });
   const [dataPermission, setDataPermision] = useState([])
   const { storeDetail } = useStoreStore()
 
@@ -28,7 +29,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
   useEffect(() => {
     if (!open) {
       setButtonDisabled(false);
-      setFormData({ role: "APPZAP_STAFF" });
+      setFormData({ role: "APPZAP_DEALER" });
       getDataPermissionRole()
     }
   }, [open]);
@@ -89,7 +90,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
               <option value="">{t("chose_policy_type")}</option>
               {dataPermission.map((role) => (
                 <option key={role._id} value={role._id}>
-                  {role.roleName}
+                  {convertRole(role.roleName)}
                 </option>
               ))}
             </select>

@@ -8,9 +8,12 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { getPermissionRoles } from "../../services/permissionRole";
 import { useStoreStore } from "../../zustand/storeStore";
 import Swal from "sweetalert2";
+import { convertRole } from "../../helpers/convertRole";
+import { useStore } from "../../store";
 
 export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
     const { t } = useTranslation();
+    const {profile} = useStore();
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const [formData, setFormData] = useState({});
     const [initialData, setInitialData] = useState({});
@@ -27,6 +30,7 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
         permissionRoleId: "",
     });
 
+
     useEffect(() => {
         if (open && userData) {
             const initialFormData = {
@@ -34,7 +38,7 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
                 lastname: userData.lastname,
                 phone: userData.phone,
                 userId: userData.userId,
-                role: userData.role || "APPZAP_STAFF",
+                role: userData.role || "APPZAP_DEALER",
                 permissionRoleId: userData.permissionRoleId?._id || "",
                 password: ""
             };
@@ -106,7 +110,7 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
                 lastname: formData.lastname,
                 phone: formData.phone,
                 userId: formData.userId,
-                role: 'APPZAP_STAFF',
+                role: profile?.data?.role === "APPZAP_ADMIN" ? "APPZAP_ADMIN" :  'APPZAP_DEALER',
                 permissionRoleId: String(formData.permissionRoleId),
                 storeId: storeDetail?._id,
             };
@@ -196,7 +200,7 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
                             <option value="">{t("chose_policy_type")}</option>
                             {dataPermission.map((role) => (
                                 <option key={role._id} value={role._id}>
-                                    {role.roleName}
+                                    {convertRole(role.roleName)}
                                 </option>
                             ))}
                         </select>

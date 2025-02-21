@@ -59,7 +59,7 @@ export default function StoreDetail() {
 
   const permissionRole = profile?.data?.permissionRoleId;
   const profileRole = profile?.data?.role;
-  const appzapStaff = "APPZAP_STAFF";
+  const appzapStaff = "APPZAP_DEALER";
   const appzapAdmin = "APPZAP_ADMIN";
 
   useEffect(() => {

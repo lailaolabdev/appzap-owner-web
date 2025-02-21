@@ -59,7 +59,7 @@ export default function UserPage() {
 
   // store
   const { storeDetail } = useStoreStore()
-  const appzapStaff = "APPZAP_STAFF";
+  const appzapStaff = "APPZAP_DEALER";
 
 
   // useEffect
@@ -258,7 +258,7 @@ export default function UserPage() {
                       <div>{e?.phone}</div>
                     </td>
                     <td style={{ textAlign: "start" }}>
-                      {e?.role === appzapStaff ? e?.permissionRoleId?.roleName || convertRole(e?.role) : convertRole(e?.role)}
+                      {e?.role === appzapStaff ? convertRole(e?.permissionRoleId?.roleName) || "---" : convertRole(e?.role)}
                     </td>
                     <td style={{ textAlign: "start" }}>
                       <div style={{ display: "flex", gap: 10 }}>

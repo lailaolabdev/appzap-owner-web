@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import { useStoreStore } from '../../zustand/storeStore';
+import { convertRole } from '../../helpers/convertRole';
 import { getPermissionRoles, updatePermissionRole, deletePermissionRole, createPermissionRole } from "../../services/permissionRole";
 
 
@@ -98,7 +99,7 @@ const ManagementRole = () => {
                         {dataPermission.map((item, index) => (
                             <tr key={item.id} className="hover:bg-gray-50">
                                 <td className="px-6 py-2">{index + 1}</td>
-                                <td className="px-6 py-2">{item?.roleName}</td>
+                                <td className="px-6 py-2">{convertRole(item?.roleName)}</td>
                                 <td className="px-6 py-2">{item?.note}</td>
                                 <td className="px-6 py-2 ">
                                     <div className="flex justify-center items-center gap-2">
