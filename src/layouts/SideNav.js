@@ -74,6 +74,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const [hasTableStatus, setHasTableStatus] = useState(false);
   const [hasShopSetting, setHasShopSetting] = useState(false);
   const [profileRole ,setProfileRole] = useState(profile?.data?.role || null);
+  const [firstFoundPermission, setFirstFoundPermission] = useState("");
+  const [path ,setPath ]= useState("")
+
   
 
   const [selected, setSelectStatus] = useState(
@@ -95,10 +98,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
     const fetchBooking = async () => {
       await fetchBookingByStatus("WAITING");
     };
-
     fetchBooking();
   }, [fetchBookingByStatus]);
-
   const UN_SELECTED_TAB_TEXT = "#606060";
   const {
     t,
@@ -107,36 +108,34 @@ export default function Sidenav({ location, navigate, onToggle }) {
  
 
   const appzapStaff = ["APPZAP_DEALER", "APPZAP_ADMIN", "APPZAP_KITCHEN", "APPZAP_COUNTER", "APPZAP_STAFF"];
-
   const appzapAdmin = "APPZAP_ADMIN";
 
 
   useEffect(() => {
-  if (profile?.data?.permissionRoleId?.permissions) {
-    const permissions = profile?.data?.permissionRoleId?.permissions;
-    const permissionMap = [
-      { set: setHasReportStock, check: "MANAGE_STOCK" },
-      { set: setHasTableStatus, check: "TABLE_STATUS" },
-      { set: setHasReportDebt, check: "REPORT_INDEBTED" },
-      { set: setHasBranches, check: "MANAGE_BRANCHES" },
-      { set: setHasOrders, check: "MANAGE_ORDERS" },
-      { set: setHasCafe, check: "MANAGE_CAFE" },
-      { set: setHasCuctomrRequests, check: "MANAGE_CUSTOMER_REQUESTS" },
-      { set: setHasMarketing, check: "MANAGE_MARKETING" },
-      { set: setHasMenu, check: "MANAGE_MENU" },
-      { set: setHasExpenses, check: "MANAGE_EXPENSES" },
-      { set: setHasRevervation, check: "MANAGE_RESERVATIONS" },
-      { set: setHasProductExpress, check: "MANAGE_PRODUCT_EXPRESS" },
-      { set: setHasFinancialStatistics, check: "FINANCIAL_STATISTICS" },
-      { set: setHasReportNew, check: "REPORT_NEW" },
-      { set: setHasShopSetting, check: "SHOP_SETING" },
-    ];
-
-    permissionMap.forEach(({ set, check }) => {
-      set(permissions.includes(check));
-    });
-  }
-}, [profile?.data?.permissionRoleId?.permissions, profile]);
+    if (profile?.data?.permissionRoleId?.permissions) {
+      const permissions = profile?.data?.permissionRoleId?.permissions;
+      const permissionMap = [
+        { set: setHasTableStatus, check: "TABLE_STATUS" },
+        { set: setHasOrders, check: "MANAGE_ORDERS" },
+        { set: setHasReportStock, check: "MANAGE_STOCK" },
+        { set: setHasCafe, check: "MANAGE_CAFE" },
+        { set: setHasExpenses, check: "MANAGE_EXPENSES" },
+        { set: setHasRevervation, check: "MANAGE_RESERVATIONS" },
+        { set: setHasMenu, check: "MANAGE_MENU" },
+        { set: setHasReportNew, check: "REPORT_NEW" },
+        { set: setHasFinancialStatistics, check: "FINANCIAL_STATISTICS" },
+        { set: setHasBranches, check: "MANAGE_BRANCHES" },
+        { set: setHasShopSetting, check: "SHOP_SETING" },
+        { set: setHasProductExpress, check: "MANAGE_PRODUCT_EXPRESS" },
+        { set: setHasReportDebt, check: "REPORT_INDEBTED" },
+        { set: setHasCuctomrRequests, check: "MANAGE_CUSTOMER_REQUESTS" },
+        { set: setHasMarketing, check: "MANAGE_MARKETING" },
+      ];
+      permissionMap.forEach(({ set, check }) => {
+        set(permissions.includes(check));
+      });
+    }
+  }, [profile?.data?.permissionRoleId?.permissions, profile,storeDetail]);
 
 
   const itemList = [
@@ -260,7 +259,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
     .filter((e) => e.title) // Filter out items with empty title
 
     .filter((e) => {
-      const verify = role(profile?.data?.role, profile?.data);
+      const verify = role(profile?.data?.role, profile?.data,"","",path);
       return verify?.[e?.system] ?? false;
     })
     .filter((e) => !e?.hidden)
@@ -286,7 +285,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
   ]
     .filter((e) => e.title) // Filter out items with empty title
     .filter((e) => {
-      const verify = role(profile?.data?.role, profile?.data);
+      const verify = role(profile?.data?.role, profile?.data,"","",path);
       return verify?.[e?.system] ?? false;
     })
     .filter((e) => !e?.hidden);
@@ -335,13 +334,13 @@ export default function Sidenav({ location, navigate, onToggle }) {
     },
   ]
     .filter((e) => {
-      const verify = role(profile?.data?.role, profile?.data);
+      const verify = role(profile?.data?.role, profile?.data,"","",path);
       return verify?.[e?.system] ?? false;
     })
     .filter((e) => !e?.hidden);
 
   const listForRole = itemList.filter((e) => {
-    const verify = role(profile?.data?.role, profile?.data);
+    const verify = role(profile?.data?.role, profile?.data,"","",path);
     return verify?.[e?.system] ?? false;
   });
 

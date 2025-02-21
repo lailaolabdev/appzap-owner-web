@@ -110,7 +110,7 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
                 lastname: formData.lastname,
                 phone: formData.phone,
                 userId: formData.userId,
-                role: profile?.data?.role === "APPZAP_ADMIN" ? "APPZAP_ADMIN" :  'APPZAP_DEALER',
+                role: 'APPZAP_DEALER',
                 permissionRoleId: String(formData.permissionRoleId),
                 storeId: storeDetail?._id,
             };
@@ -152,6 +152,8 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
         }
     };
 
+    console.log("userData:", userData)
+
     return (
         <Modal show={open} onHide={onClose}>
             <Modal.Header closeButton>{t("edit")}</Modal.Header>
@@ -190,6 +192,7 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
                         <select
                             className={`form-control ${showErrors && errors.permissionRoleId ? 'is-invalid' : ''}`}
                             value={formData?.permissionRoleId || ""}
+                            disabled={userData?.role === "APPZAP_ADMIN"}
                             onChange={(e) =>
                                 setFormData((prev) => ({
                                     ...prev,
