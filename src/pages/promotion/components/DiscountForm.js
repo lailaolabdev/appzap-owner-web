@@ -144,11 +144,10 @@ const DiscountForm = () => {
     });
   };
 
-  console.log("Selected Menus: ", formData.selectedMenus);
-
   const getTotalDiscountPrice = () => {
     let total = 0;
 
+    // biome-ignore lint/complexity/noForEach: <explanation>
     formData.selectedMenus.forEach((menuId) => {
       const menu = menus.find((menu) => menu._id === menuId);
       total += calculateDiscount(menu.price);

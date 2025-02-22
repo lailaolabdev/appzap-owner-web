@@ -3,10 +3,18 @@ import { getLocalData, END_POINT_APP } from "../constants/api";
 import { getHeaders } from "./auth";
 import { values } from "lodash";
 
-export const GetAllPromotion = async (findby) => {
+export const GetAllPromotion = async (textSearch, status) => {
   const { DATA } = await getLocalData();
+  let findBy = "";
+  if (textSearch) {
+    findBy = `&name=${textSearch}`;
+  }
+  if (status) {
+    findBy = `&status=${status}`;
+  }
+
   return await axios.get(
-    `${END_POINT_APP}/v7/promotions?storeId=${DATA?.storeId}`,
+    `${END_POINT_APP}/v7/promotions?storeId=${DATA?.storeId}${findBy}`,
     {
       headers: await getHeaders(),
     }
