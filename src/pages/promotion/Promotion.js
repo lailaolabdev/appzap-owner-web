@@ -19,6 +19,9 @@ import { BiCookie } from "react-icons/bi";
 import { GetAllPromotion, DeletePromotion } from "../../services/promotion";
 import { moneyCurrency } from "../../helpers";
 import { useStoreStore } from "../../zustand/storeStore";
+import Loading from "../../components/Loading";
+
+import Swal from "sweetalert2";
 const Promotion = () => {
   const { t } = useTranslation();
   const { storeDetail } = useStoreStore();
@@ -26,14 +29,27 @@ const Promotion = () => {
   const [selectedCard, setSelectedCard] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [promotion, setPromotion] = useState([]);
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleteData, setDeleteData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [textSearch, setTextSearch] = useState("");
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [textSearch, status]);
+
   const fetchData = async () => {
-    const { data } = await GetAllPromotion();
+    setIsLoading(true);
+    const { data } = await GetAllPromotion(textSearch, status);
     setPromotion(data);
+    setIsLoading(false);
   };
+
   const handleOpenModal = () => {
     setOpenModal(true);
   };
@@ -96,11 +112,40 @@ const Promotion = () => {
     }
   };
 
-  const handleDeletePromotion = async (id) => {
-    const isDelete = window.confirm("Do you want to delete this promotion?");
-    if (isDelete) {
-      await DeletePromotion(id);
-      fetchData();
+  const handleCloseDelete = () => setShowDelete(false);
+  const handleShowDelete = (data) => {
+    setDeleteData(data);
+    setShowDelete(true);
+  };
+
+  const _confirmDelete = async () => {
+    setIsLoading(true);
+    try {
+      await DeletePromotion(deleteData?._id).then((res) => {
+        if (res.status) {
+          Swal.fire({
+            icon: "success",
+            title: t("delete_data_success"),
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          handleCloseDelete();
+          fetchData();
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: t("error"),
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          fetchData();
+          handleCloseDelete();
+        }
+      });
+    } catch (error) {
+      console.error("Error deleting bank:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -120,15 +165,19 @@ const Promotion = () => {
           </button>
         </div>
         <div className="flex flex-row gap-2 items-center overflow-hidden bg-white px-4 py-3">
-          <select className="w-[200px] border h-[40px] p-2 focus:outline-none focus-visible:outline-none rounded-md">
+          <select
+            onChange={(e) => setStatus(e.target.value)}
+            className="w-[200px] border h-[40px] p-2 focus:outline-none focus-visible:outline-none rounded-md"
+          >
             <option selected disabled>
               ເລຶອກສະຖະນະໂປຣໂມຊັນ
             </option>
-            <option value={"ALL"}>ທັງໝົດ</option>
+            {/* <option value={"ALL"}>ທັງໝົດ</option> */}
             <option value={"ACTIVE"}>ເປີດ</option>
             <option value={"INACTIVE"}>ປິດ</option>
           </select>
           <input
+            onChange={(e) => setTextSearch(e.target.value)}
             className="w-[350px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
             type="text"
             placeholder="ຄົ້ນຫາ....."
@@ -151,7 +200,10 @@ const Promotion = () => {
                 <th className="text-[18px] font-bold text-center">ສະຖານະ</th>
                 <th className="text-[18px] font-bold text-center">ຈັດການ</th>
               </tr>
-              {promotion?.length > 0 &&
+
+              {isLoading ? (
+                <Loading />
+              ) : promotion?.length > 0 ? (
                 promotion?.map((data, index) => (
                   <tr key={data?._id} className="border-b text-center">
                     <td style={{ textAlign: "left" }}>{index + 1}</td>
@@ -191,14 +243,23 @@ const Promotion = () => {
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleDeletePromotion(data?._id)}
+                        onClick={() => handleShowDelete(data)}
                         className="bg-red-500 hover:bg-red-400 text-[14px] p-2 w-[60px] rounded-md text-white"
                       >
                         ລົບ
                       </button>
                     </td>
                   </tr>
-                ))}
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6">
+                    <div className="text-center py-2">
+                      ຍັງບໍ່ມີລາຍການໂປຣໂມຊັນ
+                    </div>
+                  </td>
+                </tr>
+              )}
             </table>
           </div>
         </div>
@@ -253,6 +314,29 @@ const Promotion = () => {
           >
             {t("ຖັດໄປ")}
           </button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Delete Modal */}
+      <Modal
+        show={showDelete}
+        onHide={handleCloseDelete}
+        backdrop="static"
+        keyboard={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>ລົບລາຍການໂປຣໂມຊັນ</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>ທ່ານຢືນຢັນບໍ່ວ່າຈະລຶບ {deleteData?.name} ອອກຈາກລະບົບ?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseDelete}>
+            {t("cancel")}
+          </Button>
+          <Button variant="danger" onClick={_confirmDelete}>
+            {"ລຶບ"}
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>
