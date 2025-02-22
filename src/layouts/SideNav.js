@@ -312,7 +312,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "settingStore",
       typeStore: "",
       icon: faCogs,
-      hidden:(!hasShopSetting && appzapStaff.includes(profileRole)) || !storeDetail?.hasPOS,
+      hidden:(!hasShopSetting && appzapStaff.includes(profileRole) && (profileRole !== "APPZAP_ADMIN")) || !storeDetail?.hasPOS,
       system: "settingManagement",
     },
 
@@ -644,7 +644,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           ""
         )} */}
           {
-            (hasCuctomrRequests && appzapStaff.includes(profileRole)) || (profileRole === appzapAdmin) ? <NavItem eventKey="songlist">
+            (hasCuctomrRequests && appzapStaff.includes(profileRole)) || (profileRole && hasCuctomrRequests) ? <NavItem eventKey="songlist">
               <NavIcon>
                 <FontAwesomeIcon
                   className={openTableData.length > 0 ? "scale-animation" : ""}
@@ -668,7 +668,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
           }
 
           {
-            (hasMarketing && appzapStaff.includes(profileRole)) || (profileRole === appzapAdmin) ? (
+            (hasMarketing && appzapStaff.includes(profileRole)) || (profileRole && hasMarketing) ? (
               <NavItem eventKey="supplier">
                 <NavIcon>
                   <FontAwesomeIcon

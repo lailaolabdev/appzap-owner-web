@@ -225,7 +225,7 @@ export default function SettingList() {
       subTitle: t("manage_role"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faUserShield} />,
       path: `/settingStore/role`,
-      hidden: !hasMangeRole && appzapStaff.includes(profileRole),
+      hidden: !hasMangeRole && appzapStaff.includes(profileRole) && (profileRole !== "APPZAP_ADMIN"),
     },
     {
       id: "f962968d-1bed-48da-9049-92551dcd7101",
@@ -350,7 +350,7 @@ export default function SettingList() {
             </ItemBox>
           ))}
         {
-          (hasClearHistory && appzapStaff.includes(profileRole)) || (profileRole === appzapAdmin) ? <ItemBox onClick={clickDeleteHistoryStore}>
+          (hasClearHistory && appzapStaff.includes(profileRole)) || (profileRole && hasClearHistory) ? <ItemBox onClick={clickDeleteHistoryStore}>
             <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDatabase} />
             <span className={fontMap[language]}>
               {t("clear_restaurant_data")}

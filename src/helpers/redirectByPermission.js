@@ -136,7 +136,7 @@ export const redirectByPermission = (user, setPath, storeDetail) => {
             break;
         }
       } else {
-        setPath("tables");
+        setPath("");
       }
     }
   };

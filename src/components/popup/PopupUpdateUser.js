@@ -152,8 +152,6 @@ export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
         }
     };
 
-    console.log("userData:", userData)
-
     return (
         <Modal show={open} onHide={onClose}>
             <Modal.Header closeButton>{t("edit")}</Modal.Header>
