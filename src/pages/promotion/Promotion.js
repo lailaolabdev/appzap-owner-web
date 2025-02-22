@@ -78,9 +78,16 @@ const Promotion = () => {
     setIsLoading(false);
   };
 
-  const handleOpenModal = () => {
-    setOpenModal(true);
-  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+  // const fetchData = async () => {
+  //   const { data } = await GetAllPromotion();
+  //   setPromotion(data);
+  // };
+  // const handleOpenModal = () => {
+  //   setOpenModal(true);
+  // };
 
   const cards = [
     {
