@@ -91,7 +91,9 @@ import MainScreen from "../pages/secondScreen/MainScreen";
 import MemberPage from "../pages/member/MemberPage";
 import DashboardPage from "../pages/dashboardnew/DashboardPage";
 import SettingMemberPointPage from "../pages/member/SettingMemberPointPage";
-import Distcount from "../pages/promotion/components/Distcount";
+import DiscountForm from "../pages/promotion/components/DiscountForm";
+import BuyXGetYForm from "../pages/promotion/components/BuyXGetYForm";
+import EditDiscountForm from "../pages/promotion/components/EditDiscountForm";
 function Router() {
   return useRoutes([
     {
@@ -147,7 +149,15 @@ function Router() {
         },
         {
           path: "/promotion/discount/:type",
-          element: <Distcount />,
+          element: <DiscountForm />,
+        },
+        {
+          path: "/promotion/discount/edit/:promotionId",
+          element: <EditDiscountForm />,
+        },
+        {
+          path: "/promotion/buyXGetX/:type",
+          element: <BuyXGetYForm />,
         },
         {
           path: "/settingStore/storeDetail/:id",

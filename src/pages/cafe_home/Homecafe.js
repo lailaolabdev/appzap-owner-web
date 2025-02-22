@@ -113,6 +113,9 @@ function Homecafe() {
   const { shiftCurrent } = useShiftStore();
   const { setSelectedMenus, SelectedMenus, clearSelectedMenus } =
     useMenuSelectStore();
+
+  console.log("SelectedMenus", SelectedMenus);
+
   const sliderRef = useRef();
   useEffect(() => {
     const storedState = localStorage.getItem("menuSlected");
@@ -390,6 +393,20 @@ function Homecafe() {
   const addToCart = async (menu) => {
     const _menuOptions = _checkMenuOption(menu);
 
+    const calculateDiscount = () => {
+      if (!menu?.price || !menu?.promotionId) {
+        console.error("Invalid menu: missing price or promotionId");
+        return 0; // Or handle the error appropriately
+      }
+
+      const discountAmount =
+        menu?.promotionId?.discountType === "PERCENTAGE"
+          ? (menu?.price * menu?.promotionId?.discountValue) / 100
+          : menu?.promotionId?.discountValue;
+
+      return menu?.price - discountAmount;
+    };
+
     // If there is no menu options in the selected menu
     if (_menuOptions.length === 0) {
       // Menu has no options, add to cart immediately
@@ -397,10 +414,11 @@ function Homecafe() {
         id: menu._id,
         name: menu.name,
         quantity: 1,
-        price: menu.price,
+        price: calculateDiscount(),
         categoryId: menu?.categoryId,
         printer: menu?.categoryId?.printer,
         shiftId: shiftCurrent[0]?._id,
+        discount: menu?.promotionId?.discountValue,
         note: "",
         isWeightMenu: menu?.isWeightMenu,
       };
@@ -489,7 +507,7 @@ function Homecafe() {
       (sum, option) => sum + option.price * option.quantity,
       0
     );
-    return menu.price + optionsTotalPrice;
+    return calculateDiscount(menu) + optionsTotalPrice;
   };
 
   const handleConfirmOptions = () => {
@@ -506,19 +524,34 @@ function Homecafe() {
       (total, option) => total + option.price * option.quantity,
       0
     );
-    const quantity = 1;
+
+    const calculateDiscount = () => {
+      if (!selectedItem?.price || !selectedItem?.promotionId) {
+        console.error("Invalid selectedItem: missing price or promotionId");
+        return 0; // Or handle the error appropriately
+      }
+
+      const discountAmount =
+        selectedItem?.promotionId?.discountType === "PERCENTAGE"
+          ? (selectedItem?.price * selectedItem?.promotionId?.discountValue) /
+            100
+          : selectedItem?.promotionId?.discountValue;
+
+      return selectedItem?.price - discountAmount;
+    };
 
     const data = {
       id: selectedItem._id,
       name: selectedItem.name,
-      quantity: quantity,
-      price: selectedItem.price,
+      quantity: 1,
+      price: calculateDiscount(),
       categoryId: selectedItem?.categoryId,
       printer: selectedItem?.categoryId?.printer,
       note: addComments,
       menuOptions: selectedItem.menuOptions,
       options: filteredOptions,
       shiftId: shiftCurrent[0]?._id,
+      discount: selectedItem?.promotionId?.discountValue,
       totalOptionPrice: totalOptionPrice,
       isWeightMenu: selectedItem?.isWeightMenu,
     };
@@ -903,7 +936,7 @@ function Homecafe() {
       }
     });
 
-    console.log("base64ArrayAndPrinter", base64ArrayAndPrinter);
+    // console.log("base64ArrayAndPrinter", base64ArrayAndPrinter);
 
     return base64ArrayAndPrinter;
   };
@@ -1028,7 +1061,7 @@ function Homecafe() {
         dataUrls.push(dataUrl);
       }
     }
-    console.log("dataUrls", dataUrls);
+
     for (const _ref of printDate) {
       const _printer = printers.find((e) => {
         return e?._id === orderSelect?.[_index]?.printer;
@@ -1208,6 +1241,20 @@ function Homecafe() {
     setEditingRowId(null); // Exit editing mode
   };
 
+  const calculateDiscount = (data) => {
+    if (!data?.price || !data?.promotionId) {
+      console.error("Invalid data: missing price or promotionId");
+      return 0; // Or handle the error appropriately
+    }
+
+    const discountAmount =
+      data?.promotionId?.discountType === "PERCENTAGE"
+        ? (data?.price * data?.promotionId?.discountValue) / 100
+        : data?.promotionId?.discountValue;
+
+    return data?.price - discountAmount;
+  };
+
   return (
     <div>
       <CafeContent
@@ -1299,23 +1346,39 @@ function Homecafe() {
                           alt=""
                           className="absolute top-0 left-0 w-full h-full object-cover"
                         />
+                        {data?.promotionId?.discountValue && (
+                          <span className="rounded-bl-lg absolute text-center top-0 right-0 bg-color-app text-white w-[45px] h-[30px] text-[16px]">
+                            <span>
+                              {" "}
+                              {data?.promotionId?.discountValue}{" "}
+                              {data?.promotionId?.discountType === "PERCENTAGE"
+                                ? "%"
+                                : "kip"}
+                            </span>
+                          </span>
+                        )}
                       </div>
                       <div className="bg-white h-full text-gray-700 relative px-2 py-1">
                         <span className="text-sm">{data?.name}</span>
                         <br />
-                        <span className="text-color-app font-medium text-base font-inter">
-                          {moneyCurrency(data?.price)}{" "}
-                          {storeDetail?.firstCurrency}
-                        </span>
-                        <br />
-                        <span
-                          className={cn(
-                            "text-[13px] text-gray-500",
-                            fontMap[language]
-                          )}
-                        >
-                          {t("amount_exist")} : {data?.quantity || 0}
-                        </span>
+                        {data?.promotionId?.discountValue ? (
+                          <div className="flex justify-between">
+                            <span className="text-color-app font-medium text-base">
+                              {/* {moneyCurrency(data?.price)}  */}
+                              {calculateDiscount(data)}{" "}
+                              {storeDetail?.firstCurrency}
+                            </span>
+                            <span className="text-[13px] text-gray-500 line-through text-end mt-4">
+                              {moneyCurrency(data?.price)}{" "}
+                              {storeDetail?.firstCurrency}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-color-app font-medium text-base">
+                            {moneyCurrency(data?.price)}
+                            {storeDetail?.firstCurrency}
+                          </span>
+                        )}
                       </div>
                     </div>
                   );
@@ -1904,7 +1967,9 @@ function Homecafe() {
         <Modal.Header closeButton>
           <Modal.Title>
             <div style={{ fontSize: 24 }}>
-              {selectedItem?.name} ({moneyCurrency(selectedItem?.price)} LAK)
+              {selectedItem?.name} (
+              {moneyCurrency(calculateDiscount(selectedItem))}{" "}
+              {storeDetail?.firstCurrency})
             </div>
             <div style={{ fontSize: 18 }}>
               {t("menu_option")}:
@@ -1941,7 +2006,7 @@ function Homecafe() {
               >
                 <div>
                   <strong>{option.name}</strong> - {moneyCurrency(option.price)}{" "}
-                  LAK
+                  {storeDetail?.firstCurrency}
                 </div>
                 <div className="d-flex align-items-center">
                   <Button
@@ -1975,7 +2040,7 @@ function Homecafe() {
               {moneyCurrency(
                 calculateTotalPrice(selectedItem, selectedOptionsArray)
               )}{" "}
-              LAK
+              {storeDetail?.firstCurrency}
             </strong>
           </div>
           <Form.Group className="mt-3">
