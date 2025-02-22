@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 import {
   Card,
   CardContent,
@@ -15,12 +16,24 @@ import { PiBowlFoodBold } from "react-icons/pi";
 import { IoFastFoodOutline } from "react-icons/io5";
 import { LuPartyPopper } from "react-icons/lu";
 import { BiCookie } from "react-icons/bi";
+import { GetAllPromotion, DeletePromotion } from "../../services/promotion";
+import { moneyCurrency } from "../../helpers";
+import { useStoreStore } from "../../zustand/storeStore";
 const Promotion = () => {
   const { t } = useTranslation();
+  const { storeDetail } = useStoreStore();
   const navigate = useNavigate();
   const [selectedCard, setSelectedCard] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [promotion, setPromotion] = useState([]);
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const fetchData = async () => {
+    const { data } = await GetAllPromotion();
+    setPromotion(data);
+  };
   const handleOpenModal = () => {
     setOpenModal(true);
   };
@@ -33,31 +46,31 @@ const Promotion = () => {
       icon: <CiDiscount1 className="text-[80px]" />,
       description: "ການຫຼຸດລາຄາຕາມລາຍການ ຫຼື ໝວດໝູ່",
     },
+    // {
+    //   id: 2,
+    //   title: "Bundle Menu",
+    //   type: "Bundle_Menu",
+    //   icon: <PiBowlFoodBold className="text-[80px]" />,
+    //   description:
+    //     "ການລວມສິນຄ້າຫຼາຍອັນເຂົ້ານຳກັນແລ້ວຂາຍເປັນເຊັດ (ແບບຕັັ້ງລາຄາໃໝ່)",
+    // },
+    // {
+    //   id: 3,
+    //   title: "Bundle Set for Discount Menu",
+    //   type: "Bundle_Set_for_Discount_Menu",
+    //   icon: <IoFastFoodOutline className="text-[80px]" />,
+    //   description:
+    //     "ການລວມລາຄາຂອງສິນຄ້າຫຼາຍອັນເຂົ້ານຳກັນແລ້ວຂາຍເປັນເຊັດໃນລາຄາທີ່ຖຶກກວ່າ",
+    // },
+    // {
+    //   id: 4,
+    //   title: "Bundle Set for Menu Free",
+    //   type: "Bundle_Set_for_Menu_Free",
+    //   icon: <LuPartyPopper className="text-[80px]" />,
+    //   description: "ການລວມສິນຄ້າຫຼາຍອັນເຂົ້ານຳກັນແລ້ວຂາຍເປັນເຊັດໂດຍມີການແຖມຟຣີ",
+    // },
     {
       id: 2,
-      title: "Bundle Menu",
-      type: "Bundle_Menu",
-      icon: <PiBowlFoodBold className="text-[80px]" />,
-      description:
-        "ການລວມສິນຄ້າຫຼາຍອັນເຂົ້ານຳກັນແລ້ວຂາຍເປັນເຊັດ (ແບບຕັັ້ງລາຄາໃໝ່)",
-    },
-    {
-      id: 3,
-      title: "Bundle Set for Discount Menu",
-      type: "Bundle_Set_for_Discount_Menu",
-      icon: <IoFastFoodOutline className="text-[80px]" />,
-      description:
-        "ການລວມລາຄາຂອງສິນຄ້າຫຼາຍອັນເຂົ້ານຳກັນແລ້ວຂາຍເປັນເຊັດໃນລາຄາທີ່ຖຶກກວ່າ",
-    },
-    {
-      id: 4,
-      title: "Bundle Set for Menu Free",
-      type: "Bundle_Set_for_Menu_Free",
-      icon: <LuPartyPopper className="text-[80px]" />,
-      description: "ການລວມສິນຄ້າຫຼາຍອັນເຂົ້ານຳກັນແລ້ວຂາຍເປັນເຊັດໂດຍມີການແຖມຟຣີ",
-    },
-    {
-      id: 5,
       title: "Buy 1 Get 1 Free",
       type: "Buy_1_Get_1_Free",
       icon: <BiCookie className="text-[80px]" />,
@@ -69,11 +82,35 @@ const Promotion = () => {
     setSelectedCard(card);
   };
 
+  const handleChangePagePromotion = (type) => {
+    if (type === "Discount") {
+      navigate(`/promotion/discount/${selectedCard?.type}`);
+    } else if (type === "Bundle_Menu") {
+      navigate("/promotion/bundle-menu");
+    } else if (type === "Bundle_Set_for_Discount_Menu") {
+      navigate("/promotion/bundle-set-for-discount-menu");
+    } else if (type === "Bundle_Set_for_Menu_Free") {
+      navigate("/promotion/bundle-set-for-menu-free");
+    } else if (type === "Buy_1_Get_1_Free") {
+      navigate(`/promotion/buyXgetX/${selectedCard?.type}`);
+    }
+  };
+
+  const handleDeletePromotion = async (id) => {
+    const isDelete = window.confirm("Do you want to delete this promotion?");
+    if (isDelete) {
+      await DeletePromotion(id);
+      fetchData();
+    }
+  };
+
   return (
     <div className="p-2 bg-gray-50 h-full w-full">
       <Card className="bg-white rounded-xl h-full overflow-hidden mt-2">
         <div className="flex flex-row justify-between items-center overflow-hidden bg-white px-4 py-3">
-          <CardTitle className="text-xl">ລາຍການຂອງໂປຣໂມຊັນ (10)</CardTitle>
+          <CardTitle className="text-xl">
+            ລາຍການຂອງໂປຣໂມຊັນ ({promotion?.length}) ລາຍການ
+          </CardTitle>
           <button
             type="button"
             onClick={handleOpenModal}
@@ -98,97 +135,81 @@ const Promotion = () => {
           />
         </div>
         <div className="border rounded-md  mx-4 my-2">
-          <div className="overflow-y-auto max-h-[640px] overscroll-none">
+          <div className="overflow-y-auto max-h-[640px]">
             <table className="w-full rounded-2xl">
-              <tr className="text-gray-500 sticky top-0">
-                <th style={{ textAlign: "left" }}>ລຳດັບ</th>
-                <th
-                  style={{
-                    textAlign: "center",
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                  }}
-                >
+              <tr className="bg-orange-500 text-white sticky hover:bg-orange-600  top-0 border-b">
+                <th className="text-[18px] font-bold text-center">ລຳດັບ</th>
+                <th className="text-[18px] font-bold text-start">
                   ຊື່ໂປຣໂມຊັນ
                 </th>
-                <th
-                  style={{
-                    textAlign: "center",
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                  }}
-                >
+                <th className="text-[18px] font-bold text-center">
                   ໄລຍະເວລາການໃຊ້ງານ
                 </th>
-                <th
-                  style={{
-                    textAlign: "center",
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                  }}
-                >
+                <th className="text-[18px] font-bold text-center">
                   ຈຳນວນສ່ວນຫຼຸດ
                 </th>
-                <th
-                  style={{
-                    textAlign: "center",
-                    fontSize: "18px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  ສະຖານະ
-                </th>
+                <th className="text-[18px] font-bold text-center">ສະຖານະ</th>
+                <th className="text-[18px] font-bold text-center">ຈັດການ</th>
               </tr>
-              {/* {branchInCome?.length > 0 &&
-                branchInCome?.map((data, index) => ( */}
-              <tr>
-                {/* <td style={{ textAlign: "left" }}>{index + 1}</td> */}
-                <td style={{ textAlign: "start", padding: "0 24px" }}>aaaa</td>
-                <td style={{ textAlign: "center", padding: "0 16px" }}>
-                  fffff{" "}
-                </td>
-                <td
-                  style={{
-                    textAlign: "start",
-                    fontWeight: "bold",
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: 4,
-                  }}
-                >
-                  {/* <Button
+              {promotion?.length > 0 &&
+                promotion?.map((data, index) => (
+                  <tr key={data?._id} className="border-b text-center">
+                    <td style={{ textAlign: "left" }}>{index + 1}</td>
+                    <td style={{ textAlign: "start", padding: "0 24px" }}>
+                      {data?.name}
+                    </td>
+                    <td style={{ textAlign: "center", padding: "0 16px" }}>
+                      {moment(data?.validFrom).format("DD-MM-YYYY")} -{" "}
+                      {moment(data?.validUntil).format("DD-MM-YYYY")}
+                    </td>
+                    <td style={{ textAlign: "center", padding: "0 16px" }}>
+                      {moneyCurrency(data?.discountValue)}{" "}
+                      {data?.discountType === "PERCENTAGE"
+                        ? "%"
+                        : storeDetail?.firstCurrency}
+                    </td>
+                    <td className="text-[18px] font-bold text-center">
+                      <span
+                        className={`px-2 py-1 rounded-md ${
+                          data?.status === "ACTIVE"
+                            ? "bg-green-500 text-white"
+                            : "bg-red-500 text-white"
+                        }`}
+                      >
+                        {data?.status === "ACTIVE" ? "ເປີດ" : "ປິດ"}
+                      </span>
+                    </td>
+                    <td className="flex gap-2 justify-center text-[18px] font-bold">
+                      <button
+                        type="button"
                         onClick={() =>
-                          navigate(`/branch/detail/${data?.storeId?._id}`, {
-                            state: { storeId: data?.storeId?._id },
-                          })
+                          navigate(`/promotion/discount/edit/${data?._id}`)
                         }
-                        variant="primary"
-                        style={{ marginLeft: 10, fontWeight: "bold" }}
+                        className="bg-color-app hover:bg-orange-400 text-[14px] p-2 w-[60px] rounded-md text-white"
                       >
-                        <FaEllipsisH />
-                      </Button> */}
-                  {/* <Button
-                        onClick={() => handleShowPopup(data)}
-                        variant="primary"
-                        style={{ marginLeft: 10, fontWeight: "bold" }}
-                        hidden={data?.storeId?._id === storeDetail?._id}
+                        ແກ້ໄຂ
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeletePromotion(data?._id)}
+                        className="bg-red-500 hover:bg-red-400 text-[14px] p-2 w-[60px] rounded-md text-white"
                       >
-                        <FaTrash />
-                      </Button> */}
-                </td>
-              </tr>
-              {/* ))} */}
+                        ລົບ
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </table>
           </div>
         </div>
       </Card>
 
-      <Modal show={openModal} size="lg" onHide={() => setOpenModal(false)}>
+      <Modal show={openModal} size="md" onHide={() => setOpenModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>{t("ເລຶອກໂປຣໂມຊັນ")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4 dmd:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-4">
+          <div className="grid grid-cols-1 place-content-center place-items-center gap-1 md:grid-cols-2 lg:grid-cols-2 dmd:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2">
             {cards.map((card) => (
               <Card
                 key={card.id}
@@ -215,16 +236,20 @@ const Promotion = () => {
         <Modal.Footer className="d-flex justify-content-center">
           <button
             type="button"
+            onClick={() => setOpenModal(false)}
             className="bg-red-500 w-[150px] hover:bg-red-400 text-[14px] p-2 rounded-md text-white"
           >
             {t("cancel")}
           </button>
           <button
             type="button"
-            onClick={() =>
-              navigate(`/promotion/discount/${selectedCard?.type}`)
-            }
-            className="bg-color-app w-[150px] hover:bg-orange-400 text-[14px] p-2 rounded-md text-white"
+            disabled={!selectedCard}
+            onClick={() => handleChangePagePromotion(selectedCard?.type)}
+            className={`${
+              !selectedCard
+                ? "bg-orange-300 "
+                : "bg-color-app  hover:bg-orange-400 "
+            } w-[150px] text-[14px] p-2 rounded-md text-white`}
           >
             {t("ຖັດໄປ")}
           </button>
