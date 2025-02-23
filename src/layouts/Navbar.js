@@ -37,7 +37,7 @@ export default function NavBar() {
   // ref
   const soundPlayer = useRef();
 
-  const { clearStoreDetail } = useStoreStore();
+  const { clearStoreDetail, storeDetail } = useStoreStore();
   const { clearMenus } = useMenuStore();
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function NavBar() {
     //   i18n.changeLanguage(lang);
 
     // }
-    getClaimAmountData()
+    getClaimAmountData();
   }, []);
 
   const _onLogout = () => {
@@ -88,19 +88,18 @@ export default function NavBar() {
     }
   }, []);
 
-
-
   const getClaimAmountData = async () => {
     try {
       const { DATA } = await getLocalData();
-      const _res = await axios.get(`${END_POINT_SERVER_SHOWSALES}/v5/claim-payments?status=UNCLAIMED&storeId=${DATA?.storeId}`);
-      console.log("_res.data")
-      console.log(_res.data)
-      setClaimableAmount(_res?.data?.totalAmount)
+      const _res = await axios.get(
+        `${END_POINT_SERVER_SHOWSALES}/v5/claim-payments?status=UNCLAIMED&storeId=${DATA?.storeId}`
+      );
+      console.log("_res.data");
+      console.log(_res.data);
+      setClaimableAmount(_res?.data?.totalAmount);
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
-
   };
 
   return (
@@ -121,14 +120,18 @@ export default function NavBar() {
         <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
         <div style={{ flexGrow: 1 }} />
 
-
-        <div className="mr-[30px]" style={{ cursor: "pointer" }} onClick={async () => {
-          const { DATA } = await getLocalData();
-          navigate(`/historyUse/${DATA?.storeId}`)
-        }}>
-          <div style={{ backgroundColor: "#eeeeee", borderRadius: 12, padding: 2, paddingRight: 16, paddingLeft: 16, flexDirection: "column", display: "flex", justifyItems: "center", alignItems: "center" }}>
-            <p style={{ margin: 0 }}> ຍອດເງິນ</p>
-            <p style={{ margin: 0, fontSize: 20, fontWeight: "bold" }}>  {claimableAmount} ກີບ</p>
+        <div
+          className="mr-2 md:mr-5 cursor-pointer"
+          onClick={async () => {
+            const { DATA } = await getLocalData();
+            navigate(`/historyUse/${DATA?.storeId}`);
+          }}
+        >
+          <div className="bg-gray-300 rounded-lg px-2 flex flex-col items-center">
+            <p className="m-0 text-sm md:text-base">ຍອດເງິນ</p>
+            <p className="m-0 text-lg md:text-lg font-bold">
+              {claimableAmount} ກີບ
+            </p>
           </div>
         </div>
 
@@ -136,7 +139,6 @@ export default function NavBar() {
           notifyFilterToggle={notifyFilterToggle}
           setNotifyFilterToggle={setNotifyFilterToggle}
         />
-
 
         <div className="mr-[30px]">
           {/* ໃຊ້ value={selectedLanguage} ເພື່ອສະແດງພາສາປັດຈຸບັນ */}
@@ -183,10 +185,10 @@ export default function NavBar() {
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
                 {userData
                   ? (userData?.data?.firstname
-                    ? userData?.data?.firstname
-                    : "") +
-                  " " +
-                  (userData?.data?.lastname ? userData?.data?.lastname : "")
+                      ? userData?.data?.firstname
+                      : "") +
+                    " " +
+                    (userData?.data?.lastname ? userData?.data?.lastname : "")
                   : ""}
               </Box>
             </Dropdown.Toggle>

@@ -351,7 +351,7 @@ export default function ReportStocks() {
         }}
       >
         <div style={{ width: "30%", position: "relative" }}>
-          <div
+          {/* <div
             style={{
               position: "absolute",
               top: "2em",
@@ -363,7 +363,7 @@ export default function ReportStocks() {
               icon={faSearch}
               className="text-color-app py-2.5"
             />
-          </div>
+          </div> */}
           <Form.Label>{t("search")}</Form.Label>
           <InputGroup>
             <Form.Control
