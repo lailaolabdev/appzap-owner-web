@@ -81,7 +81,7 @@ export default function ReportLayout() {
               <MdOutlinePieChartOutline style={{ fontSize: 35 }} />
               <strong>{t("report_sell")}</strong>
             </div>
-            {/* <div
+            <div
               onKeyDown={() => {}}
               className="menu-report-stocks mt-1"
               style={{
