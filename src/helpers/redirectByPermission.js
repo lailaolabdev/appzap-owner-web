@@ -1,11 +1,10 @@
-export const redirectByPermission = (user, setPath, storeDetail) => {
-    if (user?.data?.data?.role === "APPZAP_DEALER") {
-      const permissions = user?.data?.data?.permissionRoleId?.permissions || [];
-      const firstFoundPermission = permissions.find(p =>
-        [
-          "REPORT_SALES_SUMMARY", 
-      "TABLE_STATUS", 
-      "REPORT_INCOME_EXPENSE", 
+export const redirectByPermission = (user, storeDetail) => {
+  const permissions = user?.data?.data?.permissionRoleId?.permissions || [];
+  const firstFoundPermission = permissions.find(p =>
+    [
+      "REPORT_SALES_SUMMARY",
+      "TABLE_STATUS",
+      "REPORT_INCOME_EXPENSE",
       "REPORT_STOCK",
       "REPORT_INDEBTED",
       "REPORT_NEW",
@@ -39,105 +38,45 @@ export const redirectByPermission = (user, setPath, storeDetail) => {
       "HISTORY_USED",
       "CLRAR_HISTORY",
       "SHOP_SETING",
-        ].includes(p)
-      );
-  
-      if (firstFoundPermission) {
-        switch (firstFoundPermission) {
-          case "TABLE_STATUS":
-            setPath("tables");
-            break;
-          case "MANAGE_ORDERS":
-            setPath("orders");
-            break;
-          case "MANAGE_STOCK":
-            setPath("stock");
-            break;
-          case "MANAGE_CAFE":
-            setPath("cafe");
-            break;
-          case "MANAGE_RESERVATIONS":
-            setPath("reservations");
-            break;
-          case "MANAGE_MENU":
-            setPath("menu");
-            break;
-          case "FINANCIAL_STATISTICS":
-            setPath(`report/${storeDetail?._id}`);
-            break;
-          case "REPORT_NEW":
-            setPath("reports/sales-report");
-            break;
-          case "MANAGE_BRANCHES":
-            setPath("branch");
-            break;
-          case "SHOP_SETING":
-            setPath(`settingStore/${storeDetail?._id}`);
-            break;
-          case "MANAGE_PRODUCT_EXPRESS":
-            setPath("fark");
-            break;
-          case "REPORT_INDEBTED":
-            setPath("debt");
-            break;
-          case "MANAGE_CUSTOMER_REQUESTS":
-            window.location.href = "https://dtf6wpulhnd0r.cloudfront.net/store/songs/61d8019f9d14fc92d015ee8e?token=...";
-            return;
-          case "MANAGE_MARKETING":
-            window.location.href = "https://supplier.appzap.la/";
-            return;
-          case "MANAGE_STAFF":
-            setPath("user");
-            return;
-          case "CONFIGURE_ZONE":
-            setPath(`settingStore/settingZone/${storeDetail?._id}`);
-            return;
-          case "CONFIGURE_TABLE":
-            setPath(`settingStore/settingTable/${storeDetail?._id}`);
-            return;
-          case "HISTORY_USED":
-            setPath(`historyUse/${storeDetail?._id}`);
-            return;
-          case "CONFIGURE_PRINTER":
-            setPath("printer");
-            return;
-          case "MANAGE_SOUND":
-            setPath("audio");
-            return;
-          case "CONFIGURE_POS":
-            setPath("config");
-            return;
-          case "MANAGE_CURRENCY_RATES":
-            setPath(`settingStore/currency/${storeDetail?._id}`);
-            return;
-          case "MANAGE_BANKS":
-            setPath(`settingStore/bank/${storeDetail?._id}`);
-            return;
-          case "MANAGE_ROLES":
-            setPath(`settingStore/role`);
-            return;
-          case "MANAGE_BANNER":
-            setPath(`settingStore/banner`);
-            return;
-          case "CONFIGURE_PIN":
-            setPath(`PIN`);
-            return;
-          case "MANAGE_DELIVERY":
-            setPath(`settingStore/delivery/${storeDetail?._id}`);
-            return;
-          case "CONFIGURE_SECOND_SCREEN":
-            setPath(`setting-screen`);
-            return;
-          case "CONFIGURE_STORE_DETAIL":
-            setPath(`settingStore/storeDetail/${storeDetail?._id}`);
-            return;
-          default:
-            setPath("tables");
-            break;
-        }
-      } else {
-        setPath("");
-      }
-    }
-  };
-  
+    ].includes(p)
+  );
+
+  if (!firstFoundPermission) return "";
+
+  switch (firstFoundPermission) {
+    case "TABLE_STATUS": return "tables";
+    case "MANAGE_ORDERS": return "orders";
+    case "MANAGE_STOCK": return "stock";
+    case "MANAGE_CAFE": return "cafe";
+    case "MANAGE_RESERVATIONS": return "reservations";
+    case "MANAGE_MENU": return "menu";
+    case "FINANCIAL_STATISTICS": return `report/${storeDetail?._id}`;
+    case "REPORT_NEW": return "reports/sales-report";
+    case "MANAGE_BRANCHES": return "branch";
+    case "SHOP_SETING": return `settingStore/${storeDetail?._id}`;
+    case "MANAGE_PRODUCT_EXPRESS": return "fark";
+    case "REPORT_INDEBTED": return "debt";
+    case "MANAGE_CUSTOMER_REQUESTS":
+      window.location.href = "https://dtf6wpulhnd0r.cloudfront.net/store/songs/61d8019f9d14fc92d015ee8e?token=...";
+      return "";
+    case "MANAGE_MARKETING":
+      window.location.href = "https://supplier.appzap.la/";
+      return "";
+    case "MANAGE_STAFF": return "user";
+    case "CONFIGURE_ZONE": return `settingStore/settingZone/${storeDetail?._id}`;
+    case "CONFIGURE_TABLE": return `settingStore/settingTable/${storeDetail?._id}`;
+    case "HISTORY_USED": return `historyUse/${storeDetail?._id}`;
+    case "CONFIGURE_PRINTER": return "printer";
+    case "MANAGE_SOUND": return "audio";
+    case "CONFIGURE_POS": return "config";
+    case "MANAGE_CURRENCY_RATES": return `settingStore/currency/${storeDetail?._id}`;
+    case "MANAGE_BANKS": return `settingStore/bank/${storeDetail?._id}`;
+    case "MANAGE_ROLES": return `settingStore/role`;
+    case "MANAGE_BANNER": return `settingStore/banner`;
+    case "CONFIGURE_PIN": return `PIN`;
+    case "MANAGE_DELIVERY": return `settingStore/delivery/${storeDetail?._id}`;
+    case "CONFIGURE_SECOND_SCREEN": return `setting-screen`;
+    case "CONFIGURE_STORE_DETAIL": return `settingStore/storeDetail/${storeDetail?._id}`;
+    default: return "tables";
+  }
+};

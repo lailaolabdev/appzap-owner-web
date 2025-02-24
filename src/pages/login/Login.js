@@ -50,16 +50,19 @@ function Login() {
       setIsLoading(true);
       const user = await axios.post(`${END_POINT}/v3/admin/login`, values);
 
-      await redirectByPermission(user, setPath, storeDetail);
-       
+      let path = redirectByPermission(user, storeDetail);
+
       const { defaultPath } = role(
         user?.data?.data?.role,
         user?.data?.data,
         storeDetail,
         shiftCurrent,
-        path,
+        path = user?.data?.data?.role === "APPZAP_DEALER" ? path : "",
       );
+
       if (defaultPath) {
+
+        console.log("4")
         // localStorage.setItem(USER_KEY, JSON.stringify(user?.data));
         setProfile(user?.data);
         // zustand store

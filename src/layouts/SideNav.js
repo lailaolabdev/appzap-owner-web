@@ -75,7 +75,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const [hasShopSetting, setHasShopSetting] = useState(false);
   const [profileRole ,setProfileRole] = useState(profile?.data?.role || null);
   const [firstFoundPermission, setFirstFoundPermission] = useState("");
-  const [path ,setPath ]= useState("")
 
   
 
@@ -259,7 +258,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
     .filter((e) => e.title) // Filter out items with empty title
 
     .filter((e) => {
-      const verify = role(profile?.data?.role, profile?.data,"","",path);
+      const verify = role(profile?.data?.role, profile?.data);
       return verify?.[e?.system] ?? false;
     })
     .filter((e) => !e?.hidden)
@@ -285,7 +284,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
   ]
     .filter((e) => e.title) // Filter out items with empty title
     .filter((e) => {
-      const verify = role(profile?.data?.role, profile?.data,"","",path);
+      const verify = role(profile?.data?.role, profile?.data);
       return verify?.[e?.system] ?? false;
     })
     .filter((e) => !e?.hidden);
@@ -334,13 +333,13 @@ export default function Sidenav({ location, navigate, onToggle }) {
     },
   ]
     .filter((e) => {
-      const verify = role(profile?.data?.role, profile?.data,"","",path);
+      const verify = role(profile?.data?.role, profile?.data);
       return verify?.[e?.system] ?? false;
     })
     .filter((e) => !e?.hidden);
 
   const listForRole = itemList.filter((e) => {
-    const verify = role(profile?.data?.role, profile?.data,"","",path);
+    const verify = role(profile?.data?.role, profile?.data);
     return verify?.[e?.system] ?? false;
   });
 
