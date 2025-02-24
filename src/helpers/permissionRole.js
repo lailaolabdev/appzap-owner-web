@@ -17,7 +17,13 @@ export const PermissionsConfig = () => {
             productManagement: {
                 label: t('2. ປະເພດການຈັດການ'),
                 permissions: {
-                    [t('stock_manage')]: 'MANAGE_STOCK',
+                    [t('stock_manage')]: {
+                        code: 'MANAGE_STOCK',
+                        options: {
+                            edit: 'CAN_EDIT',
+                            viewOnly: 'VIEW_ONLY'
+                        }
+                    },
                     [t('employeeManage')]: 'MANAGE_STAFF',
                     [t('manage_role')]: 'MANAGE_ROLES',
                     [t('menuManage')]: 'MANAGE_MENU',
@@ -65,7 +71,8 @@ export const PermissionsConfig = () => {
         const initialState = {
             accountName: '',
             note: '',
-            canAccessAllSystems: false
+            canAccessAllSystems: false,
+            stockManageOption: 'VIEW_ONLY' // เพิ่ม default option สำหรับ stock management
         };
 
         Object.keys(permissionsConfig.permissionsCategories).forEach(categoryKey => {
@@ -79,12 +86,28 @@ export const PermissionsConfig = () => {
     };
 
     const transformPermissions = (formData) => {
-        return Object.entries(permissionsConfig.permissionsCategories)
-            .flatMap(([categoryKey, category]) => 
-                Object.entries(category.permissions)
-                    .filter(([key]) => formData[categoryKey][key])
-                    .map(([, permissionValue]) => permissionValue)
-            );
+        const permissions = [];
+        
+        // วนลูปผ่านทุกหมวดหมู่และสิทธิ์
+        Object.entries(permissionsConfig.permissionsCategories).forEach(([categoryKey, category]) => {
+            Object.entries(category.permissions).forEach(([key, permission]) => {
+                // ตรวจสอบว่ามีการเลือกสิทธิ์นี้หรือไม่
+                if (formData[categoryKey][key]) {
+                    // กรณีพิเศษสำหรับ stock_manage
+                    if (key === t('stock_manage')) {
+                        // เพิ่ม MANAGE_STOCK ปกติ
+                        permissions.push(permission.code);
+                        // เพิ่ม option ที่เลือก
+                        permissions.push(`${permission.code}_${formData.stockManageOption}`);
+                    } else {
+                        // สิทธิ์อื่นๆ ให้ทำงานตามปกติ
+                        permissions.push(typeof permission === 'string' ? permission : permission.code);
+                    }
+                }
+            });
+        });
+        
+        return permissions;
     };
 
     const createInputChangeHandler = (setFormData) => (e) => {

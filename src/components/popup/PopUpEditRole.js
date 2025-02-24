@@ -33,16 +33,30 @@ export default function PopUpEditRole({
         if (roleData) {
             initialState.accountName = roleData.roleName;
             initialState.note = roleData.note;
-
             Object.entries(permissionsConfig.permissionsCategories).forEach(([categoryKey, category]) => {
                 Object.entries(category.permissions).forEach(([permKey, permValue]) => {
-                    initialState[categoryKey][permKey] = roleData.permissions.includes(permValue);
+                    const permission = typeof permValue === 'string' ? permValue : permValue.code;
+                    
+
+                    initialState[categoryKey][permKey] = roleData.permissions.includes(permission);
+                    
+                    // ສຳລັບ stock_manage ໄຫ້ກວດແຕ່ MANAGE_STOCK ເທົານັ້ນ (ບໍ່ຕ້ອງກວດ MANAGE_STOCK_CAN_EDIT)
+                    if (permKey === t('stock_manage')) {
+                        initialState[categoryKey][permKey] = roleData.permissions.includes('MANAGE_STOCK');
+                        
+                        if (roleData.permissions.includes('MANAGE_STOCK_CAN_EDIT')) {
+                            initialState.stockManageOption = 'CAN_EDIT';
+                        } else if (roleData.permissions.includes('MANAGE_STOCK_VIEW_ONLY')) {
+                            initialState.stockManageOption = 'VIEW_ONLY';
+                        }
+                    }
                 });
             });
-
+    
             const allPermissions = Object.values(permissionsConfig.permissionsCategories).flatMap(
                 category => Object.values(category.permissions)
-            );
+            ).map(perm => typeof perm === 'string' ? perm : perm.code);
+            
             initialState.canAccessAllSystems = allPermissions.every(
                 perm => roleData.permissions.includes(perm)
             );
@@ -77,12 +91,20 @@ export default function PopUpEditRole({
         checkForChanges(newFormData);
     };
 
+    const handleOptionChange = (e) => {
+        const newFormData = {
+            ...formData,
+            stockManageOption: e.target.value
+        };
+        setFormData(newFormData);
+        checkForChanges(newFormData);
+    };
+
     const checkForChanges = (currentFormData) => {
         if (!initialFormData) return;
         const hasChanged = JSON.stringify(currentFormData) !== initialFormData;
         setHasChanges(hasChanged);
     };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -104,7 +126,7 @@ export default function PopUpEditRole({
 
             await updatePermissionRole(roleData._id, updatePayload).then((data) => {
                 setProfile({
-                    accessToken: profile?.accessToken ,
+                    accessToken: profile?.accessToken,
                     data: data.data,
                     refreshToken: profile?.refreshToken
                 })
@@ -180,19 +202,30 @@ export default function PopUpEditRole({
                     {Object.entries(permissionsConfig.permissionsCategories).map(([categoryKey, category]) => (
                         <div key={categoryKey} className="space-y-4 mt-4">
                             <h2 className="text-lg font-bold">{category.label}</h2>
-                            {Object.entries(category.permissions).map(([permKey]) => (
-                                <label
-                                    key={permKey}
-                                    className="flex items-center font-medium space-x-2 pl-4 cursor-pointer"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        checked={formData[categoryKey][permKey]}
-                                        onChange={() => handleCheckboxChange(categoryKey, permKey)}
-                                        className="rounded"
-                                    />
-                                    <span>{permKey}</span>
-                                </label>
+                            {Object.entries(category.permissions).map(([permKey, permission]) => (
+                                <div key={permKey} className="pl-4">
+                                    <label className="flex items-center font-medium space-x-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData[categoryKey][permKey]}
+                                            onChange={() => handleCheckboxChange(categoryKey, permKey)}
+                                            className="rounded"
+                                        />
+                                        <span>{permKey}</span>
+                                    </label>
+                                    {permKey === t('stock_manage') && formData[categoryKey][permKey] && (
+                                        <div className="ml-6 mt-2">
+                                            <select
+                                                value={formData.stockManageOption}
+                                                onChange={handleOptionChange}
+                                                className="p-2 border rounded-md"
+                                            >
+                                                <option value="VIEW_ONLY">{t("not_can_edit")}</option>
+                                                <option value="CAN_EDIT">{t("can_edit")}</option>
+                                            </select>
+                                        </div>
+                                    )}
+                                </div>
                             ))}
                         </div>
                     ))}

@@ -14,7 +14,6 @@ export default function PopUpRole({
     const [error, setError] = useState('');
     const { storeDetail } = useStoreStore();
     
-    // First, get all the helpers from PermissionsConfig
     const {
         permissionsConfig,
         createInitialState,
@@ -23,14 +22,39 @@ export default function PopUpRole({
         createCheckboxChangeHandler
     } = PermissionsConfig();
 
-    // Then, initialize state and handlers using the helpers
     const [formData, setFormData] = useState(createInitialState());
 
     const handleInputChange = createInputChangeHandler(setFormData);
     const handleCheckboxChange = createCheckboxChangeHandler(setFormData);
 
-    // Calculate permissions after handlers are defined
-    const permissions = transformPermissions(formData);
+    const handleOptionChange = (e) => {
+        setFormData(prev => ({
+            ...prev,
+            stockManageOption: e.target.value
+        }));
+    };
+
+    // ກຳນົດ permissions ທີຖືກຕອງໂດຍບໍ່ຊຳຄ່າ
+    const permissions = useMemo(() => {
+        // ຮັບ permissions ຈາກ transformPermissions
+        const basePermissions = transformPermissions(formData);
+        
+        // ກອງເອົາສະເພາະ permissions ທີບໍ່ກ່ຽວຂອງກັບ MANAGE_STOCK
+        const filteredPermissions = basePermissions.filter(
+            perm => !perm.startsWith("MANAGE_STOCK_")
+        );
+        
+        // ຖ້າມີ MANAGE_STOCK ໄຫ້ເພີ່ມ permission ຕາມຕົວເລືອກ
+        if (filteredPermissions.includes("MANAGE_STOCK")) {
+            if (formData.stockManageOption === "CAN_EDIT") {
+                return [...filteredPermissions, "MANAGE_STOCK_CAN_EDIT"];
+            } else if (formData.stockManageOption === "VIEW_ONLY") {
+                return [...filteredPermissions, "MANAGE_STOCK_VIEW_ONLY"];
+            }
+        }
+        
+        return filteredPermissions;
+    }, [formData, transformPermissions]);
     
     const mutationPayload = {
         roleName: formData.accountName,
@@ -58,7 +82,7 @@ export default function PopUpRole({
                 setError(t("please_enter_name_of_role"));
                 return;
             }
-            await createPermissionRole( mutationPayload );
+            await createPermissionRole(mutationPayload);
             Swal.fire({
                 icon: 'success',
                 title: t("success"),
@@ -127,19 +151,30 @@ export default function PopUpRole({
                     {Object.entries(permissionsConfig.permissionsCategories).map(([categoryKey, category]) => (
                         <div key={categoryKey} className="space-y-4 mt-4">
                             <h2 className="text-lg font-bold">{category.label}</h2>
-                            {Object.entries(category.permissions).map(([permKey]) => (
-                                <label
-                                    key={permKey}
-                                    className="flex items-center font-medium space-x-2 pl-4 cursor-pointer"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        checked={formData[categoryKey][permKey]}
-                                        onChange={() => handleCheckboxChange(categoryKey, permKey)}
-                                        className="rounded"
-                                    />
-                                    <span>{permKey}</span>
-                                </label>
+                            {Object.entries(category.permissions).map(([permKey, permission]) => (
+                                <div key={permKey} className="pl-4">
+                                    <label className="flex items-center font-medium space-x-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData[categoryKey][permKey]}
+                                            onChange={() => handleCheckboxChange(categoryKey, permKey)}
+                                            className="rounded"
+                                        />
+                                        <span>{permKey}</span>
+                                    </label>
+                                    {permKey === t('stock_manage') && formData[categoryKey][permKey] && (
+                                        <div className="ml-6 mt-2">
+                                            <select
+                                                value={formData.stockManageOption}
+                                                onChange={handleOptionChange}
+                                                className="p-2 border rounded-md"
+                                            >
+                                                <option value="VIEW_ONLY">{t("not_can_edit")}</option>
+                                                <option value="CAN_EDIT">{t("can_edit")}</option>
+                                            </select>
+                                        </div>
+                                    )}
+                                </div>
                             ))}
                         </div>
                     ))}

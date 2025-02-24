@@ -52,6 +52,8 @@
   "p_fill_code_forget": "Did you foget your password ?",
   "please_enter_name": "Please enter name",
   "please_enter_phone": "Place enter phone number",
+  "can_edit": " Can edit",
+  "not_can_edit": " Can not edit",
   "please_select_rol": "Please select role",
   "please_enter_userId": "Please enter userID",
   "closeTable": "Close table",
