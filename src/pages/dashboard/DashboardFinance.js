@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import moment from "moment";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import ReactPaginate from "react-paginate";
-import { Table, Modal, Button, Pagination } from "react-bootstrap";
+import { Table, Modal, Button, Pagination, Spinner } from "react-bootstrap";
 import * as _ from "lodash";
 import { FaCheckDouble, FaCircleCheck } from "react-icons/fa6";
 import { BsFillExclamationTriangleFill } from "react-icons/bs";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
-import { _statusCheckBill, orderStatus, moneyCurrency } from "./../../helpers";
+import {
+  _statusCheckBill,
+  base64ToBlob,
+  orderStatus,
+  moneyCurrency,
+} from "./../../helpers";
 import { useTranslation } from "react-i18next";
 import { stringify } from "query-string";
 import AnimationLoading from "../../constants/loading";
@@ -20,10 +25,20 @@ import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
 import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
 import Loading from "../../components/Loading";
 import { getCountBills } from "../../services/bill";
-import { COLOR_APP } from "../../constants";
 
 import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
+
+import {
+  BLUETOOTH_PRINTER_PORT,
+  COLOR_APP,
+  ETHERNET_PRINTER_PORT,
+  USB_PRINTER_PORT,
+} from "../../constants";
+import Swal from "sweetalert2";
+import html2canvas from "html2canvas";
+import printFlutter from "../../helpers/printFlutter";
+import BillForCheckOut80 from "../../components/bill/BillForCheckOut80";
 
 const limitData = 50;
 
@@ -52,6 +67,7 @@ export default function DashboardFinance({
   const [dataModal, setDataModal] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [disabledEditBill, setDisabledEditBill] = useState(false);
+  const [printBillLoading, setPrintBillLoading] = useState(false);
 
   const [pagination, setPagination] = useState(1);
   const [totalPagination, setTotalPagination] = useState();
@@ -59,11 +75,19 @@ export default function DashboardFinance({
   const [totalTranferAndPayLast, setTotalTranferAndPayLast] = useState(0);
 
   const handleClose = () => setShow(false);
-  const { profile } = useStore();
-  const { storeDetail } = useStoreStore();
+  const {
+    profile,
+    dataBill,
+    selectedTable,
+    printers,
+    printerCounter,
+    dataPrint,
+  } = useStore();
   const { shiftCurrent } = useShiftStore();
+  const { storeDetail } = useStoreStore();
 
-  // console.log("data", data);
+  console.log("storedetail", storeDetail);
+  console.log("data", dataBill);
 
   const getPaginationCountData = async () => {
     try {
@@ -74,6 +98,99 @@ export default function DashboardFinance({
       setTotalPagination(Math.ceil(_data?.count / limitData));
     } catch (err) {
       console.log(err);
+    }
+  };
+  const [widthBill80, setWidthBill80] = useState(80);
+  let bill80Ref = useRef(null);
+
+  console.log({ bill80Ref });
+  console.log({ widthBill80 });
+
+  const onPrintBill = async (isPrintBill) => {
+    try {
+      setPrintBillLoading(true);
+      // let _dataBill = {
+      //   ...dataBill,
+      //   typePrint: "PRINT_BILL_CHECKOUT",
+      // };
+      // saveServiceChargeDetails();
+      // await _createHistoriesPrinter(_dataBill);
+      let urlForPrinter = "";
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
+
+      console.log({ printerBillData });
+      let dataImageForPrint;
+      dataImageForPrint = await html2canvas(bill80Ref.current, {
+        useCORS: true,
+        scrollX: 10,
+        scrollY: 0,
+        scale: 530 / widthBill80,
+      });
+      if (printerBillData?.type === "ETHERNET") {
+        urlForPrinter = ETHERNET_PRINTER_PORT;
+      }
+      if (printerBillData?.type === "BLUETOOTH") {
+        urlForPrinter = BLUETOOTH_PRINTER_PORT;
+      }
+      if (printerBillData?.type === "USB") {
+        urlForPrinter = USB_PRINTER_PORT;
+      }
+
+      console.log({ dataImageForPrint });
+
+      const _file = await base64ToBlob(dataImageForPrint.toDataURL());
+      var bodyFormData = new FormData();
+      bodyFormData.append("ip", printerBillData?.ip);
+      bodyFormData.append("port", "9100");
+      bodyFormData.append("isdrawer", isPrintBill);
+      bodyFormData.append("image", _file);
+      bodyFormData.append("beep1", 1);
+      bodyFormData.append("beep2", 9);
+      bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
+
+      console.log({ bodyFormData });
+
+      await printFlutter(
+        {
+          drawer: false,
+          paper: printerBillData?.width === "58mm" ? 400 : 500,
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
+
+      setPrintBillLoading(false);
+      await Swal.fire({
+        icon: "success",
+        title: `${t("checkbill_success")}`,
+        showConfirmButton: false,
+        timer: 1800,
+      });
+      // setMenuItemDetailModal(false);
+    } catch (err) {
+      console.log("err printer", err);
+      setPrintBillLoading(false);
+      await Swal.fire({
+        icon: "error",
+        title: `${t("print_fial")}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return err;
     }
   };
 
@@ -366,6 +483,7 @@ export default function DashboardFinance({
 
     return finalPrice;
   };
+  console.log("storeDetail", storeDetail);
 
   let TotalAmount = 0;
   if (dataModal?.paymentMethod === "CASH") {
@@ -435,6 +553,9 @@ export default function DashboardFinance({
     );
   }, [data]);
 
+  // console.log("order_id", orderId);
+  // console.log("order_status", orderStatus);
+
   const mapOrderData = (orderId, formatMenuName, orderStatus) => {
     if (!orderId || !Array.isArray(orderId)) return [];
 
@@ -501,6 +622,10 @@ export default function DashboardFinance({
       return 0;
     }
   };
+
+  console.log("dataModal", dataModal);
+  console.log("orderStatus", orderStatus);
+
   const orderData = mapOrderData(
     dataModal?.orderId,
     formatMenuName,
@@ -896,22 +1021,27 @@ export default function DashboardFinance({
                 ""
               )}
             </div>
-            {!storeDetail?.isStatusCafe && (
-              <Button
-                disabled={
-                  disabledEditBill ||
-                  selectOrder?.status === "ACTIVE" ||
-                  profile?.data?.role != "APPZAP_ADMIN" ||
-                  dataModal?.isDebtPayment === true ||
-                  dataModal?.isDebtAndPay === true
-                }
-                onClick={handleEditBill}
-              >
-                {selectOrder?.status === "ACTIVE"
-                  ? t("editingTheBill")
-                  : t("billEditing")}
+            <div className="">
+              {!storeDetail?.isStatusCafe && (
+                <Button
+                  disabled={
+                    disabledEditBill ||
+                    selectOrder?.status === "ACTIVE" ||
+                    profile?.data?.role != "APPZAP_ADMIN" ||
+                    dataModal?.isDebtPayment === true ||
+                    dataModal?.isDebtAndPay === true
+                  }
+                  onClick={handleEditBill}
+                >
+                  {selectOrder?.status === "ACTIVE"
+                    ? t("editingTheBill")
+                    : t("billEditing")}
+                </Button>
+              )}
+              <Button className="ml-2" onClick={() => onPrintBill()}>
+                Print
               </Button>
-            )}
+            </div>
           </div>
           <Table striped bordered hover size="sm" style={{ fontSize: 15 }}>
             <thead>
@@ -1054,6 +1184,17 @@ export default function DashboardFinance({
           </Button>
         </Modal.Footer>
       </Modal>
+      <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
+        <BillForCheckOut80
+          // orderPayBefore={orderPayBefore}
+          storeDetail={storeDetail}
+          selectedTable={selectedTable}
+          dataBill={dataModal}
+          totalBillBillForCheckOut80={totalAfter}
+          // taxPercent={taxPercent}
+          profile={profile}
+        />
+      </div>
     </div>
   );
 }

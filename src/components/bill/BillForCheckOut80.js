@@ -130,6 +130,8 @@ export default function BillForCheckOut80({
     }
   };
 
+  // console.log("storeDetail ", storeDetail);
+
   const imageUrl = URL_PHOTO_AW3 + storeDetail?.image;
   const imageUrl2 = URL_PHOTO_AW3 + storeDetail?.printer?.logo;
 
