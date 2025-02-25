@@ -55,8 +55,12 @@ export default function FarkPage() {
   const [billFarkData, setBillFarkData] = useState();
   const [selectBillFark, setSelectBillFark] = useState();
   const [popup, setPopup] = useState();
-  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
-  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
+  const [startDate, setStartDate] = useState(
+    moment().startOf("month").format("YYYY-MM-DD")
+  );
+  const [endDate, setEndDate] = useState(
+    moment().endOf("month").format("YYYY-MM-DD")
+  );
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
 
