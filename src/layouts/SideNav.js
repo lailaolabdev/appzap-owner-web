@@ -106,7 +106,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
   } = useTranslation();
  
 
-  const appzapStaff = ["APPZAP_DEALER", "APPZAP_ADMIN", "APPZAP_KITCHEN", "APPZAP_COUNTER", "APPZAP_STAFF"];
+  const appzapStaff = ["APPZAP_COUNTER", "APPZAP_ADMIN", "APPZAP_KITCHEN", "APPZAP_DEALER", "APPZAP_STAFF"];
   const appzapAdmin = "APPZAP_ADMIN";
 
 
@@ -135,7 +135,6 @@ export default function Sidenav({ location, navigate, onToggle }) {
       });
     }
   }, [profile?.data?.permissionRoleId?.permissions, profile,storeDetail]);
-
 
   const itemList = [
     {
