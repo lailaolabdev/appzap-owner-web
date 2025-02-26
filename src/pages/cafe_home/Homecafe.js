@@ -1727,17 +1727,6 @@ function Homecafe() {
                           alt=""
                           className="absolute top-0 left-0 w-full h-full object-cover"
                         />
-                        {data?.promotionId?.discountValue && (
-                          <span className="rounded-bl-lg absolute text-center top-0 right-0 bg-color-app text-white w-[45px] h-[30px] text-[16px]">
-                            <span>
-                              {" "}
-                              {data?.promotionId?.discountValue}{" "}
-                              {data?.promotionId?.discountType === "PERCENTAGE"
-                                ? "%"
-                                : "kip"}
-                            </span>
-                          </span>
-                        )}
                       </div>
                       <div className="bg-white h-full text-gray-700 relative px-2 py-1">
                         <span className="text-sm">{data?.name}</span>
