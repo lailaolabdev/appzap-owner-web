@@ -319,6 +319,50 @@ export default function DashboardFinance({
     return `${formattedValue} ${currency}`;
   };
 
+  const calculateDiscount = (menu) => {
+    console.log("calculateDiscount", menu);
+
+    if (
+      !menu ||
+      !menu.totalPrice ||
+      !Array.isArray(menu.promotionId) ||
+      menu.promotionId.length === 0
+    ) {
+      return menu?.totalPrice || 0;
+    }
+
+    let finalPrice = menu.totalPrice;
+
+    // biome-ignore lint/complexity/noForEach: <explanation>
+    menu.promotionId.forEach((promotion) => {
+      if (
+        !promotion ||
+        !promotion.discountType ||
+        promotion.discountValue == null
+      ) {
+        console.error("Invalid promotion data", promotion);
+        return;
+      }
+
+      let discountAmount = 0;
+
+      if (promotion.discountType === "PERCENTAGE") {
+        if (promotion.discountValue < 0 || promotion.discountValue > 100) {
+          console.warn("Invalid discount percentage:", promotion.discountValue);
+          return;
+        }
+        discountAmount = (finalPrice * promotion.discountValue) / 100;
+      } else if (promotion.discountType === "FIXED_AMOUNT") {
+        discountAmount = promotion.discountValue;
+      }
+
+      // Apply the discount
+      finalPrice = Math.max(finalPrice - discountAmount, 0);
+    });
+
+    return finalPrice;
+  };
+
   let TotalAmount = 0;
   if (dataModal?.paymentMethod === "CASH") {
     TotalAmount =
@@ -889,7 +933,8 @@ export default function DashboardFinance({
                     {orderStatus(item.status)}
                   </td>
                   <td>{item.createdBy}</td>
-                  <td>{item.totalPrice}</td>
+                  <td>{calculateDiscount(item)}</td>
+
                   {storeDetail?.isDelivery && (
                     <td style={{ textAlign: "center" }}>{item.deliveryCode}</td>
                   )}

@@ -49,6 +49,7 @@ import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json, useNavigate, useParams } from "react-router-dom";
 import { getBillCafe, getBills } from "../../services/bill";
+import { GetAllPromotion } from "../../services/promotion";
 import { useStore } from "../../store";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import BillForChef58 from "../../components/bill/BillForChef58";
@@ -102,6 +103,7 @@ function Homecafe() {
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
   const [bill, setBill] = useState(0);
+  const [promotion, setPromotion] = useState([]);
 
   const [isMobile, setIsMobile] = useState(
     window.matchMedia("(max-width: 767px)").matches
@@ -113,8 +115,6 @@ function Homecafe() {
   const { shiftCurrent } = useShiftStore();
   const { setSelectedMenus, SelectedMenus, clearSelectedMenus } =
     useMenuSelectStore();
-
-  console.log("SelectedMenus", SelectedMenus);
 
   const sliderRef = useRef();
   useEffect(() => {
@@ -247,8 +247,6 @@ function Homecafe() {
     isMenuLoading,
   } = useMenuStore();
 
-  // Get Menus & Categories, and persist it in localstorage.
-  // Only no data in localstorage then fetch, if when to clear data just logout
   useEffect(() => {
     const fetchData = async () => {
       if (storeDetail?._id) {
@@ -390,67 +388,196 @@ function Homecafe() {
     }
   };
 
+  // const addToCart = async (menu) => {
+  //   const _menuOptions = _checkMenuOption(menu);
+  //   let updatedSelectedMenus = [...SelectedMenus];
+
+  //   if (_menuOptions.length > 0) {
+  //     setMenuOptions(_menuOptions);
+  //     setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
+  //     setSelectedOptionsArray({
+  //       [menu._id]: _menuOptions.map((option) => ({ ...option, quantity: 0 })),
+  //     });
+  //     handleShow();
+  //     return;
+  //   }
+
+  //   const finalPrice = calculateDiscount(menu);
+
+  //   const mainMenuData = {
+  //     id: menu._id,
+  //     name: menu.name,
+  //     quantity: 1,
+  //     price: finalPrice,
+  //     priceDiscount: Math.max(menu?.price - finalPrice, 0),
+  //     categoryId: menu?.categoryId,
+  //     printer: menu?.categoryId?.printer,
+  //     shiftId: shiftCurrent[0]?._id,
+  //     discount: menu.promotionId?.reduce(
+  //       (sum, promo) => sum + (promo.discountValue || 0),
+  //       0
+  //     ),
+  //     note: "",
+  //     isWeightMenu: menu?.isWeightMenu,
+  //   };
+
+  //   const existingMenuIndex = updatedSelectedMenus.findIndex(
+  //     (item) => item.id === menu._id
+  //   );
+  //   if (existingMenuIndex !== -1) {
+  //     updatedSelectedMenus[existingMenuIndex].quantity += 1;
+  //   } else {
+  //     updatedSelectedMenus.push(mainMenuData);
+  //   }
+
+  //   // ✅ Handle BUY_X_GET_Y promotions and ensure free items match their mainMenuId
+  //   // biome-ignore lint/complexity/noForEach: <explanation>
+  //   menu.promotionId?.forEach((promotion) => {
+  //     if (
+  //       promotion?.type === "BUY_X_GET_Y" &&
+  //       promotion.freeItems?.length > 0
+  //     ) {
+  //       // biome-ignore lint/complexity/noForEach: <explanation>
+  //       promotion.freeItems.forEach((freeItem) => {
+  //         const freeItemId = freeItem?._id?._id || freeItem?._id;
+  //         const freeItemName = freeItem?._id?.name || "Unknown";
+  //         const mainMenuId = freeItem?.mainMenuId?._id;
+
+  //         if (mainMenuId && mainMenuId !== menu._id) {
+  //           console.log(
+  //             `❌ Free item ${freeItemName} incorrect Main Menu ${menu.name}`
+  //           );
+  //           return;
+  //         }
+
+  //         const existingFreeItemIndex = updatedSelectedMenus.findIndex(
+  //           (item) =>
+  //             item.id === freeItemId &&
+  //             item.isFree &&
+  //             item.mainMenuId === menu._id
+  //         );
+
+  //         if (existingFreeItemIndex !== -1) {
+  //           updatedSelectedMenus[existingFreeItemIndex].quantity +=
+  //             promotion.getQuantity;
+  //         } else {
+  //           const freeItemData = {
+  //             id: freeItemId,
+  //             name: freeItemName,
+  //             price: 0,
+  //             quantity: 1,
+  //             categoryId: menu?.categoryId,
+  //             printer: menu?.categoryId?.printer,
+  //             shiftId: shiftCurrent[0]?._id,
+  //             isWeightMenu: menu?.isWeightMenu,
+  //             isFree: true,
+  //             mainMenuId: menu._id,
+  //           };
+  //           updatedSelectedMenus.push(freeItemData);
+  //         }
+  //       });
+  //     }
+  //   });
+
+  //   setSelectedMenus(updatedSelectedMenus);
+  // };
+
   const addToCart = async (menu) => {
     const _menuOptions = _checkMenuOption(menu);
+    let updatedSelectedMenus = [...SelectedMenus];
 
-    const calculateDiscount = () => {
-      if (!menu?.price || !menu?.promotionId) {
-        console.error("Invalid menu: missing price or promotionId");
-        return 0; // Or handle the error appropriately
-      }
-
-      const discountAmount =
-        menu?.promotionId?.discountType === "PERCENTAGE"
-          ? (menu?.price * menu?.promotionId?.discountValue) / 100
-          : menu?.promotionId?.discountValue;
-
-      return menu?.price - discountAmount;
-    };
-
-    // If there is no menu options in the selected menu
-    if (_menuOptions.length === 0) {
-      // Menu has no options, add to cart immediately
-      const data = {
-        id: menu._id,
-        name: menu.name,
-        quantity: 1,
-        price: calculateDiscount(),
-        categoryId: menu?.categoryId,
-        printer: menu?.categoryId?.printer,
-        shiftId: shiftCurrent[0]?._id,
-        discount: menu?.promotionId?.discountValue,
-        note: "",
-        isWeightMenu: menu?.isWeightMenu,
-      };
-
-      const existingMenuIndex = SelectedMenus.findIndex(
-        (item) => item.id === menu._id
-      );
-
-      if (existingMenuIndex !== -1) {
-        // Menu is already in selectedMenu, increase the quantity
-        const updatedMenu = [...SelectedMenus];
-        updatedMenu[existingMenuIndex].quantity += 1;
-        setSelectedMenu(updatedMenu);
-        setSelectedMenus(updatedMenu);
-      } else {
-        // Menu is not in selectedMenu, add it
-        setSelectedMenu([...SelectedMenus, data]);
-        setSelectedMenus([...SelectedMenus, data]);
-      }
-
-      // setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
+    if (_menuOptions.length > 0) {
+      setMenuOptions(_menuOptions);
+      setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
+      setSelectedOptionsArray({
+        [menu._id]: _menuOptions.map((option) => ({ ...option, quantity: 0 })),
+      });
+      handleShow();
       return;
     }
 
-    // Menu has options, show popup
-    setMenuOptions(_menuOptions);
-    setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
-    setSelectedOptionsArray({
-      [menu._id]: _menuOptions.map((option) => ({ ...option, quantity: 0 })),
+    const activePromotions =
+      menu.promotionId?.filter((promo) => promo.status === "ACTIVE") || [];
+
+    const finalPrice = calculateDiscount(menu);
+
+    const mainMenuData = {
+      id: menu._id,
+      name: menu.name,
+      quantity: 1,
+      price: finalPrice,
+      priceDiscount: Math.max(menu?.price - finalPrice, 0),
+      categoryId: menu?.categoryId,
+      printer: menu?.categoryId?.printer,
+      shiftId: shiftCurrent[0]?._id,
+      discount: activePromotions.reduce(
+        (sum, promo) => sum + (promo.discountValue || 0),
+        0
+      ),
+      note: "",
+      isWeightMenu: menu?.isWeightMenu,
+    };
+
+    const existingMenuIndex = updatedSelectedMenus.findIndex(
+      (item) => item.id === menu._id
+    );
+    if (existingMenuIndex !== -1) {
+      updatedSelectedMenus[existingMenuIndex].quantity += 1;
+    } else {
+      updatedSelectedMenus.push(mainMenuData);
+    }
+
+    // biome-ignore lint/complexity/noForEach: <explanation>
+    activePromotions.forEach((promotion) => {
+      if (
+        promotion?.type === "BUY_X_GET_Y" &&
+        promotion.freeItems?.length > 0
+      ) {
+        // biome-ignore lint/complexity/noForEach: <explanation>
+        promotion.freeItems.forEach((freeItem) => {
+          const freeItemId = freeItem?._id?._id || freeItem?._id;
+          const freeItemName = freeItem?._id?.name || "Unknown";
+          const mainMenuId = freeItem?.mainMenuId?._id;
+
+          if (mainMenuId && mainMenuId !== menu._id) {
+            console.log(
+              `❌ Free item ${freeItemName} ไม่ตรงกับ Main Menu ${menu.name}`
+            );
+            return;
+          }
+
+          const existingFreeItemIndex = updatedSelectedMenus.findIndex(
+            (item) =>
+              item.id === freeItemId &&
+              item.isFree &&
+              item.mainMenuId === menu._id
+          );
+
+          if (existingFreeItemIndex !== -1) {
+            updatedSelectedMenus[existingFreeItemIndex].quantity +=
+              promotion.getQuantity;
+          } else {
+            const freeItemData = {
+              id: freeItemId,
+              name: freeItemName,
+              price: 0,
+              quantity: promotion.getQuantity,
+              categoryId: menu?.categoryId,
+              printer: menu?.categoryId?.printer,
+              shiftId: shiftCurrent[0]?._id,
+              isWeightMenu: menu?.isWeightMenu,
+              isFree: true,
+              mainMenuId: menu._id,
+            };
+            updatedSelectedMenus.push(freeItemData);
+          }
+        });
+      }
     });
-    handleShow();
+
+    setSelectedMenus(updatedSelectedMenus);
   };
+
   const handleAddOption = (menuId, option) => {
     setSelectedOptionsArray((prevOptions) => {
       const menuOptions = prevOptions[menuId] || [];
@@ -510,6 +637,132 @@ function Homecafe() {
     return calculateDiscount(menu) + optionsTotalPrice;
   };
 
+  // const handleConfirmOptions = () => {
+  //   const filteredOptions =
+  //     selectedOptionsArray[selectedItem._id]?.filter(
+  //       (option) => option.quantity >= 1
+  //     ) || [];
+
+  //   const sortedFilteredOptionsForComparison = sortOptionsById([
+  //     ...filteredOptions,
+  //   ]);
+
+  //   const totalOptionPrice = filteredOptions.reduce(
+  //     (total, option) => total + option.price * option.quantity,
+  //     0
+  //   );
+
+  //   const finalPrice = calculateDiscount(selectedItem);
+
+  //   const mainMenuData = {
+  //     id: selectedItem._id,
+  //     name: selectedItem.name,
+  //     quantity: 1,
+  //     price: finalPrice,
+  //     priceDiscount: Math.max(selectedItem?.price - finalPrice, 0),
+  //     categoryId: selectedItem?.categoryId,
+  //     printer: selectedItem?.categoryId?.printer,
+  //     note: addComments,
+  //     menuOptions: selectedItem.menuOptions,
+  //     options: filteredOptions,
+  //     shiftId: shiftCurrent[0]?._id,
+  //     discount: selectedItem?.promotionId?.reduce(
+  //       (sum, promo) => sum + (promo.discountValue || 0),
+  //       0
+  //     ),
+  //     totalOptionPrice: totalOptionPrice,
+  //     totalPrice: finalPrice + totalOptionPrice,
+  //     isWeightMenu: selectedItem?.isWeightMenu,
+  //   };
+
+  //   setSelectedMenu((prevMenu) => {
+  //     let updatedMenu = [...prevMenu];
+
+  //     const existingMenuIndex = updatedMenu.findIndex((item) => {
+  //       const sortedItemOptionsForComparison = item.options
+  //         ? sortOptionsById([...item.options])
+  //         : [];
+  //       return (
+  //         item.id === selectedItem._id &&
+  //         JSON.stringify(sortedItemOptionsForComparison) ===
+  //           JSON.stringify(sortedFilteredOptionsForComparison)
+  //       );
+  //     });
+
+  //     if (existingMenuIndex !== -1) {
+  //       updatedMenu[existingMenuIndex].quantity += 1;
+  //       updatedMenu[existingMenuIndex].options = filteredOptions;
+  //       updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
+  //       updatedMenu[existingMenuIndex].totalPrice =
+  //         updatedMenu[existingMenuIndex].price *
+  //           updatedMenu[existingMenuIndex].quantity +
+  //         totalOptionPrice;
+
+  //       console.log(
+  //         "🆙 Updated Existing Menu:",
+  //         updatedMenu[existingMenuIndex]
+  //       );
+  //     } else {
+  //       updatedMenu.push(mainMenuData);
+  //     }
+
+  //     if (selectedItem.promotionId?.length > 0) {
+  //       // biome-ignore lint/complexity/noForEach: <explanation>
+  //       selectedItem.promotionId.forEach((promotion) => {
+  //         if (
+  //           promotion.type === "BUY_X_GET_Y" &&
+  //           promotion.freeItems?.length > 0
+  //         ) {
+  //           // biome-ignore lint/complexity/noForEach: <explanation>
+  //           promotion.freeItems.forEach((freeItem) => {
+  //             const freeItemId = freeItem?._id?._id || freeItem?._id;
+  //             const freeItemName = freeItem?._id?.name || "Unknown";
+  //             const mainMenuId = freeItem?.mainMenuId?._id;
+
+  //             if (mainMenuId && mainMenuId !== selectedItem._id) {
+  //               console.log(
+  //                 `❌ Free item ${freeItemName} incorrect Main Menu ${selectedItem.name}`
+  //               );
+  //               return;
+  //             }
+
+  //             const existingFreeItemIndex = updatedMenu.findIndex(
+  //               (item) =>
+  //                 item.id === freeItemId &&
+  //                 item.isFree &&
+  //                 item.mainMenuId === selectedItem._id
+  //             );
+
+  //             if (existingFreeItemIndex !== -1) {
+  //               updatedMenu[existingFreeItemIndex].quantity +=
+  //                 promotion.getQuantity;
+  //             } else {
+  //               updatedMenu.push({
+  //                 id: freeItemId,
+  //                 name: freeItemName,
+  //                 price: 0,
+  //                 quantity: 1,
+  //                 categoryId: selectedItem?.categoryId,
+  //                 printer: selectedItem?.categoryId?.printer,
+  //                 shiftId: shiftCurrent[0]?._id,
+  //                 isWeightMenu: selectedItem?.isWeightMenu,
+  //                 isFree: true,
+  //                 mainMenuId: selectedItem._id,
+  //               });
+  //             }
+  //           });
+  //         }
+  //       });
+  //     }
+
+  //     return updatedMenu;
+  //   });
+
+  //   handleClose();
+  //   setAddComments("");
+  //   setEditComments("");
+  // };
+
   const handleConfirmOptions = () => {
     const filteredOptions =
       selectedOptionsArray[selectedItem._id]?.filter(
@@ -525,40 +778,37 @@ function Homecafe() {
       0
     );
 
-    const calculateDiscount = () => {
-      if (!selectedItem?.price || !selectedItem?.promotionId) {
-        console.error("Invalid selectedItem: missing price or promotionId");
-        return 0; // Or handle the error appropriately
-      }
+    const activePromotions =
+      selectedItem.promotionId?.filter((promo) => promo.status === "ACTIVE") ||
+      [];
 
-      const discountAmount =
-        selectedItem?.promotionId?.discountType === "PERCENTAGE"
-          ? (selectedItem?.price * selectedItem?.promotionId?.discountValue) /
-            100
-          : selectedItem?.promotionId?.discountValue;
+    const finalPrice = calculateDiscount(selectedItem);
 
-      return selectedItem?.price - discountAmount;
-    };
-
-    const data = {
+    const mainMenuData = {
       id: selectedItem._id,
       name: selectedItem.name,
       quantity: 1,
-      price: calculateDiscount(),
+      price: finalPrice,
+      priceDiscount: Math.max(selectedItem?.price - finalPrice, 0),
       categoryId: selectedItem?.categoryId,
       printer: selectedItem?.categoryId?.printer,
       note: addComments,
       menuOptions: selectedItem.menuOptions,
       options: filteredOptions,
       shiftId: shiftCurrent[0]?._id,
-      discount: selectedItem?.promotionId?.discountValue,
+      discount: activePromotions.reduce(
+        (sum, promo) => sum + (promo.discountValue || 0),
+        0
+      ),
       totalOptionPrice: totalOptionPrice,
+      totalPrice: finalPrice + totalOptionPrice,
       isWeightMenu: selectedItem?.isWeightMenu,
     };
 
     setSelectedMenu((prevMenu) => {
-      // Check if the menu item with the same ID and options already exists
-      const existingMenuIndex = prevMenu?.findIndex((item) => {
+      let updatedMenu = [...prevMenu];
+
+      const existingMenuIndex = updatedMenu.findIndex((item) => {
         const sortedItemOptionsForComparison = item.options
           ? sortOptionsById([...item.options])
           : [];
@@ -570,25 +820,70 @@ function Homecafe() {
       });
 
       if (existingMenuIndex !== -1) {
-        // Menu is already in selectedMenu, increase the quantity and update options
-        const updatedMenu = [...prevMenu];
         updatedMenu[existingMenuIndex].quantity += 1;
         updatedMenu[existingMenuIndex].options = filteredOptions;
-        updatedMenu[existingMenuIndex].totalOptionPrice =
-          filteredOptions.reduce(
-            (total, option) => total + option.price * option.quantity,
-            0
-          );
+        updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
         updatedMenu[existingMenuIndex].totalPrice =
           updatedMenu[existingMenuIndex].price *
             updatedMenu[existingMenuIndex].quantity +
-          updatedMenu[existingMenuIndex].totalOptionPrice;
-        return updatedMenu;
-        // biome-ignore lint/style/noUselessElse: <explanation>
+          totalOptionPrice;
+
+        console.log(
+          "🆙 Updated Existing Menu:",
+          updatedMenu[existingMenuIndex]
+        );
       } else {
-        // Menu is not in selectedMenu, add it
-        return [...prevMenu, data];
+        updatedMenu.push(mainMenuData);
       }
+
+      // biome-ignore lint/complexity/noForEach: <explanation>
+      activePromotions.forEach((promotion) => {
+        if (
+          promotion.type === "BUY_X_GET_Y" &&
+          promotion.freeItems?.length > 0
+        ) {
+          // biome-ignore lint/complexity/noForEach: <explanation>
+          promotion.freeItems.forEach((freeItem) => {
+            const freeItemId = freeItem?._id?._id || freeItem?._id;
+            const freeItemName = freeItem?._id?.name || "Unknown";
+            const mainMenuId = freeItem?.mainMenuId?._id;
+
+            if (!mainMenuId || mainMenuId !== selectedItem._id) {
+              console.log(
+                `❌ Free item ${freeItemName}  Main Menu ${selectedItem.name}`
+              );
+              return;
+            }
+
+            const existingFreeItemIndex = updatedMenu.findIndex(
+              (item) =>
+                item.id === freeItemId &&
+                item.isFree &&
+                item.mainMenuId === selectedItem._id
+            );
+
+            if (existingFreeItemIndex !== -1) {
+              updatedMenu[existingFreeItemIndex].quantity +=
+                promotion.getQuantity;
+            } else {
+              updatedMenu.push({
+                id: freeItemId,
+                name: freeItemName,
+                price: 0,
+                quantity: promotion.getQuantity,
+                categoryId: selectedItem?.categoryId,
+                printer: selectedItem?.categoryId?.printer,
+                shiftId: shiftCurrent[0]?._id,
+                isWeightMenu: selectedItem?.isWeightMenu,
+                isFree: true,
+                mainMenuId: selectedItem._id,
+              });
+            }
+          });
+        }
+      });
+
+      return updatedMenu;
     });
 
     handleClose();
@@ -617,9 +912,6 @@ function Homecafe() {
     }, 0);
   };
 
-  // console.log("TotalAmount", TotalAmount());
-  // console.log("TotalPrice", TotalPrice());
-
   const onRemoveFromCart = (id) => {
     const selectedMenuCopied = [...SelectedMenus];
     for (let i = 0; i < selectedMenuCopied.length; i++) {
@@ -641,7 +933,15 @@ function Homecafe() {
       setTaxPercent(_res?.data?.taxPercent);
     };
     getDataTax();
+    fetchDataProduction();
   }, []);
+
+  const fetchDataProduction = async () => {
+    setIsLoading(true);
+    const { data } = await GetAllPromotion();
+    setPromotion(data);
+    setIsLoading(false);
+  };
 
   const handleAddCommentInCart = () => {
     const dataArray = [];
@@ -766,6 +1066,7 @@ function Homecafe() {
 
   const convertHtmlToBase64 = (orderSelect) => {
     const base64ArrayAndPrinter = [];
+    // biome-ignore lint/complexity/noForEach: <explanation>
     orderSelect.forEach((data) => {
       if (data) {
         const canvas = document.createElement("canvas");
@@ -792,7 +1093,7 @@ function Homecafe() {
           for (let n = 0; n < words.length; n++) {
             let testLine = line + words[n] + " ";
             let metrics = context.measureText(testLine);
-            let testWidth = metrics.width;
+            const testWidth = metrics.width;
             if (testWidth > maxWidth && n > 0) {
               context.fillText(line, x, y);
               line = words[n] + " ";
@@ -850,6 +1151,7 @@ function Homecafe() {
         if (data.options && data.options.length > 0) {
           context.fillStyle = "#000";
           context.font = "24px NotoSansLao, Arial, sans-serif";
+          // biome-ignore lint/complexity/noForEach: <explanation>
           data.options.forEach((option) => {
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
@@ -1216,13 +1518,6 @@ function Homecafe() {
     i18n: { language },
   } = useTranslation();
 
-  // const handleQuantityChange = (e, row) => {
-  //   const updatedQuantity = Number.parseFloat(e.target.value) || 0; // Ensure it's a valid number
-  //   const updatedMenu = selectedMenu.map((item) =>
-  //     item.id === row.id ? { ...item, quantity: updatedQuantity } : item
-  //   );
-  //   setSelectedMenu(updatedMenu);
-  // };
   const handleQuantityChange = (e, row) => {
     const floatQuantity = Number.parseFloat(e.target.value) || 0; // Ensure it's a valid number
     const index = SelectedMenus.findIndex((item) => item.id === row.id); // Find the index of the item
@@ -1241,18 +1536,103 @@ function Homecafe() {
     setEditingRowId(null); // Exit editing mode
   };
 
-  const calculateDiscount = (data) => {
-    if (!data?.price || !data?.promotionId) {
-      console.error("Invalid data: missing price or promotionId");
-      return 0; // Or handle the error appropriately
+  // const calculateDiscount = (menu) => {
+  //   if (
+  //     !menu ||
+  //     !menu.price ||
+  //     !Array.isArray(menu.promotionId) ||
+  //     menu.promotionId.length === 0
+  //   ) {
+  //     return menu?.price || 0;
+  //   }
+
+  //   let finalPrice = menu.price;
+
+  //   // biome-ignore lint/complexity/noForEach: <explanation>
+  //   menu.promotionId.forEach((promotion) => {
+  //     if (
+  //       !promotion ||
+  //       !promotion.discountType ||
+  //       promotion.discountValue == null
+  //     ) {
+  //       console.error("Invalid promotion data", promotion);
+  //       return;
+  //     }
+
+  //     let discountAmount = 0;
+
+  //     if (promotion.discountType === "PERCENTAGE") {
+  //       if (promotion.discountValue < 0 || promotion.discountValue > 100) {
+  //         console.warn("Invalid discount percentage:", promotion.discountValue);
+  //         return;
+  //       }
+  //       discountAmount = (finalPrice * promotion.discountValue) / 100;
+  //     } else if (promotion.discountType === "FIXED_AMOUNT") {
+  //       discountAmount = promotion.discountValue;
+  //     }
+
+  //     // Apply the discount
+  //     finalPrice = Math.max(finalPrice - discountAmount, 0);
+  //   });
+
+  //   return finalPrice;
+  // };
+
+  const calculateDiscount = (menu) => {
+    if (
+      !menu ||
+      !menu.price ||
+      !Array.isArray(menu.promotionId) ||
+      menu.promotionId.length === 0
+    ) {
+      return menu?.price || 0;
     }
 
-    const discountAmount =
-      data?.promotionId?.discountType === "PERCENTAGE"
-        ? (data?.price * data?.promotionId?.discountValue) / 100
-        : data?.promotionId?.discountValue;
+    let finalPrice = menu.price;
 
-    return data?.price - discountAmount;
+    const activePromotions = menu.promotionId.filter(
+      (promotion) => promotion.status === "ACTIVE"
+    );
+
+    if (activePromotions.length === 0) {
+      return finalPrice;
+    }
+
+    // biome-ignore lint/complexity/noForEach: <explanation>
+    activePromotions.forEach((promotion) => {
+      if (
+        !promotion ||
+        !promotion.discountType ||
+        promotion.discountValue == null
+      ) {
+        console.error("Invalid promotion data", promotion);
+        return;
+      }
+
+      let discountAmount = 0;
+
+      if (promotion.discountType === "PERCENTAGE") {
+        if (promotion.discountValue < 0 || promotion.discountValue > 100) {
+          console.warn("Invalid discount percentage:", promotion.discountValue);
+          return;
+        }
+        discountAmount = (finalPrice * promotion.discountValue) / 100;
+      } else if (promotion.discountType === "FIXED_AMOUNT") {
+        if (promotion.discountValue < 0) {
+          console.warn(
+            "Invalid fixed discount amount:",
+            promotion.discountValue
+          );
+          return;
+        }
+        discountAmount = promotion.discountValue;
+      }
+
+      // ✅ คำนวณส่วนลดให้ราคาไม่ต่ำกว่า 0
+      finalPrice = Math.max(finalPrice - discountAmount, 0);
+    });
+
+    return finalPrice;
   };
 
   return (
@@ -1277,6 +1657,7 @@ function Homecafe() {
               className="w-full overflow-x-auto flex flex-row whitespace-nowrap p-2 gap-2 flex-1"
             >
               <button
+                type="button"
                 key={"category-all"}
                 className={cn(
                   `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
@@ -1290,10 +1671,12 @@ function Homecafe() {
                 {t("all")}
                 <div className="ml-12"></div>
               </button>
+              {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
               {menuCategories &&
-                menuCategories.map((data, index) => {
+                menuCategories?.map((data, index) => {
                   return (
                     <button
+                      type="button"
                       key={"category" + index}
                       className={cn(
                         `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
@@ -1346,36 +1729,144 @@ function Homecafe() {
                           alt=""
                           className="absolute top-0 left-0 w-full h-full object-cover"
                         />
-                        {data?.promotionId?.discountValue && (
-                          <span className="rounded-bl-lg absolute text-center top-0 right-0 bg-color-app text-white w-[45px] h-[30px] text-[16px]">
-                            <span>
-                              {" "}
-                              {data?.promotionId?.discountValue}{" "}
-                              {data?.promotionId?.discountType === "PERCENTAGE"
-                                ? "%"
-                                : "kip"}
-                            </span>
-                          </span>
-                        )}
                       </div>
                       <div className="bg-white h-full text-gray-700 relative px-2 py-1">
                         <span className="text-sm">{data?.name}</span>
                         <br />
-                        {data?.promotionId?.discountValue ? (
-                          <div className="flex justify-between">
-                            <span className="text-color-app font-medium text-base">
-                              {/* {moneyCurrency(data?.price)}  */}
-                              {calculateDiscount(data)}{" "}
-                              {storeDetail?.firstCurrency}
-                            </span>
-                            <span className="text-[13px] text-gray-500 line-through text-end mt-4">
-                              {moneyCurrency(data?.price)}{" "}
-                              {storeDetail?.firstCurrency}
-                            </span>
-                          </div>
+
+                        {/* {data?.promotionId?.length > 0 ? (
+                          data.promotionId.map((promotion, index) => {
+                            const filteredFreeItems =
+                              promotion?.freeItems?.filter(
+                                (freeItem) =>
+                                  freeItem?.mainMenuId?._id === data._id
+                              ) || [];
+
+                            return (
+                              <div
+                                key={promotion._id}
+                                className="flex flex-col"
+                              >
+                                {promotion?.discountValue ? (
+                                  <div className="flex flex-col">
+                                    <span className="text-color-app font-medium text-base">
+                                      {moneyCurrency(calculateDiscount(data))}{" "}
+                                      {storeDetail?.firstCurrency}
+                                    </span>
+
+                                    <div className="flex justify-between items-center">
+                                      <>
+                                        <span className="text-[14px] text-gray-500 line-through text-end">
+                                          {moneyCurrency(data?.price)}{" "}
+                                          {storeDetail?.firstCurrency}
+                                        </span>
+                                        <span className="flex flex-col text-center font-bold text-red-500 text-[12px] ">
+                                          <span>ສ່ວນຫຼຸດ</span>
+                                          <span>
+                                            {moneyCurrency(
+                                              promotion?.discountValue
+                                            )}{" "}
+                                            {promotion?.discountType ===
+                                            "PERCENTAGE"
+                                              ? "%"
+                                              : storeDetail?.firstCurrency}
+                                          </span>
+                                        </span>
+                                      </>
+                                    </div>
+                                  </div>
+                                ) : null}
+
+                               
+                                {filteredFreeItems.length > 0 && (
+                                  <>
+                                    <span className="text-color-app font-medium text-base">
+                                      {moneyCurrency(data?.price)}
+                                      {storeDetail?.firstCurrency}
+                                    </span>
+                                    <span className="flex flex-col font-bold text-red-500 text-[14px]">
+                                      {`ແຖມ ${filteredFreeItems.length} ລາຍການ`}
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            );
+                          })
                         ) : (
                           <span className="text-color-app font-medium text-base">
                             {moneyCurrency(data?.price)}
+                            {storeDetail?.firstCurrency}
+                          </span>
+                        )} */}
+                        {data?.promotionId?.length > 0 &&
+                        data.promotionId.some(
+                          (promotion) => promotion?.status === "ACTIVE"
+                        ) ? (
+                          data.promotionId
+                            .filter(
+                              (promotion) => promotion?.status === "ACTIVE"
+                            )
+                            .map((promotion, index) => {
+                              const filteredFreeItems =
+                                promotion?.freeItems?.filter(
+                                  (freeItem) =>
+                                    freeItem?.mainMenuId?._id === data._id
+                                ) || [];
+
+                              return (
+                                <div
+                                  key={promotion._id}
+                                  className="flex flex-col"
+                                >
+                                  {/* ส่วนลด */}
+                                  {promotion?.discountValue ? (
+                                    <div className="flex flex-col">
+                                      <span className="text-color-app font-medium text-base">
+                                        {moneyCurrency(calculateDiscount(data))}{" "}
+                                        {storeDetail?.firstCurrency}
+                                      </span>
+
+                                      <div className="flex justify-between items-center">
+                                        <>
+                                          <span className="text-[14px] text-gray-500 line-through text-end">
+                                            {moneyCurrency(data?.price)}{" "}
+                                            {storeDetail?.firstCurrency}
+                                          </span>
+                                          <span className="flex flex-col text-center font-bold text-red-500 text-[12px] ">
+                                            <span>ສ່ວນຫຼຸດ</span>
+                                            <span>
+                                              {moneyCurrency(
+                                                promotion?.discountValue
+                                              )}{" "}
+                                              {promotion?.discountType ===
+                                              "PERCENTAGE"
+                                                ? "%"
+                                                : storeDetail?.firstCurrency}
+                                            </span>
+                                          </span>
+                                        </>
+                                      </div>
+                                    </div>
+                                  ) : null}
+
+                                  {/* เมนูแถม */}
+                                  {filteredFreeItems.length > 0 && (
+                                    <>
+                                      <span className="text-color-app font-medium text-base">
+                                        {moneyCurrency(data?.price)}{" "}
+                                        {storeDetail?.firstCurrency}
+                                      </span>
+                                      <span className="flex flex-col font-bold text-red-500 text-[14px]">
+                                        {`ແຖມ ${filteredFreeItems.length} ລາຍການ`}
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
+                              );
+                            })
+                        ) : (
+                          <span className="text-color-app font-medium text-base">
+                            {moneyCurrency(data?.price)}{" "}
                             {storeDetail?.firstCurrency}
                           </span>
                         )}

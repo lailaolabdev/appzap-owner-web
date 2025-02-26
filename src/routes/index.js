@@ -94,6 +94,7 @@ import SettingMemberPointPage from "../pages/member/SettingMemberPointPage";
 import DiscountForm from "../pages/promotion/components/DiscountForm";
 import BuyXGetYForm from "../pages/promotion/components/BuyXGetYForm";
 import EditDiscountForm from "../pages/promotion/components/EditDiscountForm";
+import EditBuyXGetYForm from "../pages/promotion/components/EditBuyXGetYForm";
 function Router() {
   return useRoutes([
     {
@@ -158,6 +159,10 @@ function Router() {
         {
           path: "/promotion/buyXGetX/:type",
           element: <BuyXGetYForm />,
+        },
+        {
+          path: "/promotion/buyXGetX/edit/:promotionId",
+          element: <EditBuyXGetYForm />,
         },
         {
           path: "/settingStore/storeDetail/:id",

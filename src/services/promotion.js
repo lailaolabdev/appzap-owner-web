@@ -21,9 +21,19 @@ export const GetAllPromotion = async (textSearch, status) => {
   );
 };
 
-export const CreatePromotion = async (value) => {
+export const CreateDiscountPromotion = async (value) => {
   const { DATA } = await getLocalData();
-  return await axios.post(`${END_POINT_APP}/v7/promotions/create`, value, {
+  return await axios.post(
+    `${END_POINT_APP}/v7/promotions/discount/create`,
+    value,
+    {
+      headers: await getHeaders(),
+    }
+  );
+};
+export const CreateFreePromotion = async (value) => {
+  const { DATA } = await getLocalData();
+  return await axios.post(`${END_POINT_APP}/v7/promotions/free/create`, value, {
     headers: await getHeaders(),
   });
 };
@@ -38,10 +48,20 @@ export const GetOnePromotion = async (id) => {
   );
 };
 
-export const UpdatePromotion = async (id, value) => {
+export const UpdateDisCountPromotion = async (id, value) => {
   const { DATA } = await getLocalData();
   return await axios.put(
-    `${END_POINT_APP}/v7/promotions/${id}?storeId=${DATA?.storeId}`,
+    `${END_POINT_APP}/v7/promotions/discount/${id}?storeId=${DATA?.storeId}`,
+    value,
+    {
+      headers: await getHeaders(),
+    }
+  );
+};
+export const UpdateFreePromotion = async (id, value) => {
+  const { DATA } = await getLocalData();
+  return await axios.put(
+    `${END_POINT_APP}/v7/promotions/free/${id}?storeId=${DATA?.storeId}`,
     value,
     {
       headers: await getHeaders(),
@@ -59,11 +79,32 @@ export const RemoveMenuFromDiscount = async (promotionId, menuIds) => {
     }
   );
 };
+export const RemoveMenuFreeFromDiscount = async (promotionId, menuFreeIds) => {
+  const { DATA } = await getLocalData();
+  return await axios.put(
+    `${END_POINT_APP}/v7/promotions/remove-menus-free-promotionId/${promotionId}?storeId=${DATA?.storeId}`,
+    menuFreeIds,
+    {
+      headers: await getHeaders(),
+    }
+  );
+};
 
 export const DeletePromotion = async (id) => {
   const { DATA } = await getLocalData();
   return await axios.delete(
     `${END_POINT_APP}/v7/promotions/${id}?storeId=${DATA?.storeId}`,
+    {
+      headers: await getHeaders(),
+    }
+  );
+};
+
+export const UpdateStatusPromotion = async (promoId, value) => {
+  const { DATA } = await getLocalData();
+  return await axios.put(
+    `${END_POINT_APP}/v7/promotions/status/${promoId}?storeId=${DATA?.storeId}`,
+    value,
     {
       headers: await getHeaders(),
     }

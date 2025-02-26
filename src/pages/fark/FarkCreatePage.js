@@ -171,7 +171,7 @@ export default function FarkCreatePage() {
         customerPhone: customerPhone,
         endDate: expirDate,
         storeId: DATA?.storeId,
-        shiftId: shiftCurrent[0]?._id,
+        shiftId: shiftCurrent ? shiftCurrent[0]?._id : null,
       };
       const data = await createBillFark(_body, TOKEN);
       if (data.error) {
