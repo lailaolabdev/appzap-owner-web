@@ -1,9 +1,9 @@
 import axios from 'axios';
-import { END_POINT_SERVER_SHOWSALES, END_POINT_SEVER } from '../constants/api';
+import { END_POINT_SERVER_JUSTCAN, END_POINT_SEVER } from '../constants/api';
 
 export const fetchSalesData = async () => {
   try {
-    const response = await axios.get(`${END_POINT_SEVER}/v6/show-sales`);
+    const response = await axios.get(`${END_POINT_SERVER_JUSTCAN}/v6/show-sales`);
     
     if (response.data && response.data.length > 0) {
       return response.data[0];
@@ -17,7 +17,7 @@ export const fetchSalesData = async () => {
 
 export const addStoreId = async (id, isAvailable, salesId, storeId) => {
   try {
-    const response = await axios.put(`${END_POINT_SEVER}/v6/show-sales/add-store-id/${id}`
+    const response = await axios.put(`${END_POINT_SERVER_JUSTCAN}/v6/show-sales/add-store-id/${id}`
       ,
       {
         isAvailable,
@@ -40,7 +40,7 @@ export const addStoreId = async (id, isAvailable, salesId, storeId) => {
 
 export const updateStoreAvailability = async (salesId, storeIds, isAvailable) => {
   try {
-    const response = await axios.put(`${END_POINT_SEVER}/v6/store-availability/show-sales`, {
+    const response = await axios.put(`${END_POINT_SERVER_JUSTCAN}/v6/store-availability/show-sales`, {
       salesId,
       _id: storeIds,
       isAvailable,
@@ -56,7 +56,7 @@ export const updateStoreAvailability = async (salesId, storeIds, isAvailable) =>
 export const updateSalesClick = async (id) => {
   try {
     const response = await axios.put(
-      `${END_POINT_SEVER}/v6/show-sales/update-click/${id}`
+      `${END_POINT_SERVER_JUSTCAN}/v6/show-sales/update-click/${id}`
     );
     return response.data.clicks; 
   } catch (error) {
@@ -67,7 +67,7 @@ export const updateSalesClick = async (id) => {
 
 export const updateViews = async (id) => {
   try {
-    const response = await axios.put(`${END_POINT_SEVER}/v6/show-sales/update-views/${id}`);
+    const response = await axios.put(`${END_POINT_SERVER_JUSTCAN}/v6/show-sales/update-views/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error updating views:", error);
