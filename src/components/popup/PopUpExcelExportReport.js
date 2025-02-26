@@ -15,12 +15,7 @@ import { useStoreStore } from "../../zustand/storeStore";
 export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
   const { t } = useTranslation();
   // state
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
-
-  console.log(storeDetail?.start_date);
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
 
   const exportPromotion = async () => {
     setPopup({ exportReport: false });
@@ -44,7 +39,6 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
 
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
-
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -68,8 +62,6 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
 
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
-
-        
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -93,8 +85,6 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
 
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
-
-        
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -119,8 +109,6 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
 
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
-
-        
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -145,7 +133,6 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
 
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
-
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -169,7 +156,6 @@ export default function PopUpExcelExportReport({ open, onClose, setPopup }) {
 
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
-
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);

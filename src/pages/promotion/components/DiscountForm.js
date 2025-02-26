@@ -10,9 +10,11 @@ import {
 } from "../../../constants/api";
 import { moneyCurrency } from "../../../helpers";
 import { useStoreStore } from "../../../zustand/storeStore";
+import { useShiftStore } from "../../../zustand/ShiftStore";
+import { useMenuStore } from "../../../zustand/menuStore";
 import { errorAdd } from "../../../helpers/sweetalert";
 import {
-  CreatePromotion,
+  CreateDiscountPromotion,
   AddPromotionToMenu,
 } from "../../../services/promotion";
 const DiscountForm = () => {
@@ -28,13 +30,36 @@ const DiscountForm = () => {
   const { t } = useTranslation();
   const { storeDetail } = useStoreStore();
   const navigate = useNavigate();
-  const [menus, setMenus] = useState([]);
+  const [menuData, setMenuData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [filterName, setFilterName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectAllChecked, setSelectAllChecked] = useState(false);
   const [Categorys, setCategorys] = useState([]);
   const [filterCategory, setFilterCategory] = useState("All");
+
+  const { shiftCurrent } = useShiftStore();
+  const {
+    menus,
+    menuCategories,
+    getMenus,
+    getMenuCategories,
+    setMenus,
+    setMenuCategories,
+    isMenuLoading,
+  } = useMenuStore();
+
+  const fetchData = async () => {
+    if (storeDetail?._id) {
+      const storeId = storeDetail?._id;
+
+      const fetchedMenus = await getMenus(storeId);
+      setMenus(fetchedMenus); // Save to zustand store
+
+      const fetchedCategories = await getMenuCategories(storeId);
+      setMenuCategories(fetchedCategories); // Save to zustand store
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,7 +97,7 @@ const DiscountForm = () => {
           )
             .then((response) => response.json())
             .then((json) => {
-              setMenus(json);
+              setMenuData(json);
             });
           setIsLoading(false);
         } catch (err) {
@@ -115,7 +140,7 @@ const DiscountForm = () => {
       )
         .then((response) => response.json())
         .then((json) => {
-          setMenus(json);
+          setMenuData(json);
         });
       setIsLoading(false);
     } catch (err) {
@@ -149,7 +174,7 @@ const DiscountForm = () => {
 
     // biome-ignore lint/complexity/noForEach: <explanation>
     formData.selectedMenus.forEach((menuId) => {
-      const menu = menus.find((menu) => menu._id === menuId);
+      const menu = menuData.find((menu) => menu._id === menuId);
       total += calculateDiscount(menu.price);
     });
 
@@ -175,7 +200,6 @@ const DiscountForm = () => {
       !formData.name ||
       !formData.discountType ||
       !formData.discountValue ||
-      !formData.minPurchasePrice ||
       formData.selectedMenus.length === 0
     ) {
       errorAdd("ກະລຸນາຕື່ມຂໍ້ມຼນໃຫ້ຄົບ");
@@ -192,14 +216,16 @@ const DiscountForm = () => {
       validUntil: formData.validUntil,
       menuId: formData.selectedMenus,
       storeId: storeDetail?._id,
+      shiftId: shiftCurrent ? shiftCurrent[0]?._id : null,
       status: "ACTIVE",
     };
-    const response = await CreatePromotion(data);
+    const response = await CreateDiscountPromotion(data);
     if (response?.status === 200) {
       navigate("/promotion");
     } else {
       errorAdd("ສ່ວນຫຼຸດບໍ່ສໍາເລັດ");
     }
+    fetchData();
   };
   const openModal = () => {
     setModalOpen(true);
@@ -217,7 +243,7 @@ const DiscountForm = () => {
 
   // Select All Functionality
   const handleSelectAll = () => {
-    const allMenuIds = menus.map((menu) => menu._id);
+    const allMenuIds = menuData.map((menu) => menu._id);
     setFormData({ ...formData, selectedMenus: allMenuIds });
     setSelectAllChecked(true); // Check the "Select All" checkbox
   };
@@ -240,7 +266,7 @@ const DiscountForm = () => {
           <div className="flex gap-2">
             <Card className="bg-white w-[500px] rounded-xl h-[425px] overflow-hidden p-4">
               <div className="flex gap-4">
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 w-full">
                   <label htmlFor="name" className="mt-2">
                     ຊື່ໂປຣໂມຊັນ
                   </label>
@@ -250,9 +276,12 @@ const DiscountForm = () => {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="ຊື່ໂປຣໂມຊັນ"
-                    className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
+                    className="w-full h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   />
                 </div>
+              </div>
+
+              <div className="flex gap-4">
                 <div className="flex flex-col gap-2">
                   <label htmlFor="discountType" className="mt-2">
                     ເລຶອກປະເພດສ່ວນຫຼຸດ
@@ -270,22 +299,20 @@ const DiscountForm = () => {
                     <option value="FIXED_AMOUNT">ຈຳນວນເງິນ</option>
                   </select>
                 </div>
-              </div>
-
-              <div className="flex gap-4">
                 <div className="flex flex-col gap-2">
                   <label htmlFor="discountValue" className="mt-2">
-                    ລາຄາສ່ວນຫຼຸດ
+                    ຈຳນວນສ່ວນຫຼຸດ
                   </label>
                   <input
                     type="number"
+                    min={0}
                     name="discountValue"
                     value={formData.discountValue}
                     onChange={handleChange}
                     className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   />
                 </div>
-                <div className="flex flex-col gap-2">
+                {/* <div className="flex flex-col gap-2">
                   <label htmlFor="minPurchasePrice" className="mt-2">
                     ລາຄາຊື້ຂັ້ນຕ່ຳ
                   </label>
@@ -296,7 +323,7 @@ const DiscountForm = () => {
                     onChange={handleChange}
                     className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   />
-                </div>
+                </div> */}
               </div>
               <div className="flex gap-4">
                 <div className="flex flex-col gap-2">
@@ -362,35 +389,45 @@ const DiscountForm = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {formData.selectedMenus.map((menuId) => {
-                    const menu = menus.find((m) => m._id === menuId);
-                    return (
-                      <tr key={menu._id}>
-                        <td className="border-b p-2">{menu.name}</td>
-                        <td className="border-b p-2 text-ellipsis">
-                          {menu.categoryId?.name}
-                        </td>
-                        <td className="border-b p-2">"--"</td>
-                        <td className="border-b p-2">
-                          {moneyCurrency(menu.price)}{" "}
-                          {storeDetail?.firstCurrency}
-                        </td>
-                        <td className="border-b p-2">
-                          {moneyCurrency(calculateDiscount(menu.price))}{" "}
-                          {storeDetail?.firstCurrency}
-                        </td>
-                        <td className="border-b p-2">
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveMenu(menu._id)}
-                            className="bg-red-500 text-white p-2 w-[60px] rounded-md hover:bg-red-600"
-                          >
-                            ລົບ
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                  {formData?.selectedMenus?.length > 0 ? (
+                    formData?.selectedMenus?.map((menuId) => {
+                      const menu = menuData.find((m) => m._id === menuId);
+                      return (
+                        <tr key={menu._id}>
+                          <td className="border-b p-2">{menu.name}</td>
+                          <td className="border-b p-2 text-ellipsis">
+                            {menu.categoryId?.name}
+                          </td>
+                          <td className="border-b p-2">"--"</td>
+                          <td className="border-b p-2">
+                            {moneyCurrency(menu.price)}{" "}
+                            {storeDetail?.firstCurrency}
+                          </td>
+                          <td className="border-b p-2">
+                            {moneyCurrency(calculateDiscount(menu.price))}{" "}
+                            {storeDetail?.firstCurrency}
+                          </td>
+                          <td className="border-b p-2">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveMenu(menu._id)}
+                              className="bg-red-500 text-white p-2 w-[60px] rounded-md hover:bg-red-600"
+                            >
+                              ລົບ
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={6}>
+                        <p className="text-gray-500 text-center mt-40">
+                          ຍັງບໍ່ມີເມນູ
+                        </p>
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </Card>
@@ -470,8 +507,8 @@ const DiscountForm = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {menus?.length > 0 ? (
-                      menus.map((menu) => (
+                    {menuData?.length > 0 ? (
+                      menuData.map((menu) => (
                         <tr key={menu._id}>
                           <td className="border-b p-2">
                             <input

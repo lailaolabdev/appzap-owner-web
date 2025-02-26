@@ -39,7 +39,7 @@ export const useMenuStore = create(
 
       // Action to set menu data
       setMenus: (menusData) => {
-        console.log("Setting menus data:", menusData);
+        // console.log("Setting menus data:", menusData);
         set({ menus: menusData });
       },
 

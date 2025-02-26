@@ -16,12 +16,18 @@ import { PiBowlFoodBold } from "react-icons/pi";
 import { IoFastFoodOutline } from "react-icons/io5";
 import { LuPartyPopper } from "react-icons/lu";
 import { BiCookie } from "react-icons/bi";
-import { GetAllPromotion, DeletePromotion } from "../../services/promotion";
+import {
+  GetAllPromotion,
+  DeletePromotion,
+  UpdateStatusPromotion,
+} from "../../services/promotion";
 import { moneyCurrency } from "../../helpers";
 import { useStoreStore } from "../../zustand/storeStore";
+import { useMenuStore } from "../../zustand/menuStore";
 import Loading from "../../components/Loading";
 
 import Swal from "sweetalert2";
+import { errorAdd } from "../../helpers/sweetalert";
 const Promotion = () => {
   const { t } = useTranslation();
   const { storeDetail } = useStoreStore();
@@ -34,6 +40,28 @@ const Promotion = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [textSearch, setTextSearch] = useState("");
   const [status, setStatus] = useState("");
+
+  const {
+    menus,
+    menuCategories,
+    getMenus,
+    getMenuCategories,
+    setMenus,
+    setMenuCategories,
+    isMenuLoading,
+  } = useMenuStore();
+
+  const fetchDataMenu = async () => {
+    if (storeDetail?._id) {
+      const storeId = storeDetail?._id;
+
+      const fetchedMenus = await getMenus(storeId);
+      setMenus(fetchedMenus); // Save to zustand store
+
+      const fetchedCategories = await getMenuCategories(storeId);
+      setMenuCategories(fetchedCategories); // Save to zustand store
+    }
+  };
 
   useEffect(() => {
     fetchData();
@@ -60,7 +88,7 @@ const Promotion = () => {
       title: "Discount",
       type: "Discount",
       icon: <CiDiscount1 className="text-[80px]" />,
-      description: "ການຫຼຸດລາຄາຕາມລາຍການ ຫຼື ໝວດໝູ່",
+      description: "ການໃຫ້ສ່ວນຫຼຸດລາຄາຕາມລາຍການ",
     },
     // {
     //   id: 2,
@@ -111,6 +139,19 @@ const Promotion = () => {
       navigate(`/promotion/buyXgetX/${selectedCard?.type}`);
     }
   };
+  const handleChangePagePromotionEdit = (type, promotionId) => {
+    if (type === "DISCOUNT") {
+      navigate(`/promotion/discount/edit/${promotionId}`);
+    } else if (type === "Bundle_Menu") {
+      navigate("/promotion/bundle-menu");
+    } else if (type === "Bundle_Set_for_Discount_Menu") {
+      navigate("/promotion/bundle-set-for-discount-menu");
+    } else if (type === "Bundle_Set_for_Menu_Free") {
+      navigate("/promotion/bundle-set-for-menu-free");
+    } else if (type === "BUY_X_GET_Y") {
+      navigate(`/promotion/buyXGetX/edit/${promotionId}`);
+    }
+  };
 
   const handleCloseDelete = () => setShowDelete(false);
   const handleShowDelete = (data) => {
@@ -149,12 +190,31 @@ const Promotion = () => {
     }
   };
 
+  const handleUpdateStatus = async (e, promoId) => {
+    const _type = e?.target?.checked;
+    const isType = _type ? "ACTIVE" : "INACTIVE";
+
+    const data = {
+      status: isType,
+    };
+
+    try {
+      const response = await UpdateStatusPromotion(promoId, data);
+      if (response.data) {
+        fetchData();
+        fetchDataMenu();
+      }
+    } catch (error) {
+      errorAdd("ບໍ່ສາມາດເປິດໃຊ້ງານສະໄລສ໌ນີ້ໄດ້");
+    }
+  };
+
   return (
     <div className="p-2 bg-gray-50 h-full w-full">
       <Card className="bg-white rounded-xl h-full overflow-hidden mt-2">
         <div className="flex flex-row justify-between items-center overflow-hidden bg-white px-4 py-3">
           <CardTitle className="text-xl">
-            ລາຍການຂອງໂປຣໂມຊັນ ({promotion?.length}) ລາຍການ
+            ລາຍການຂອງໂປຣໂມຊັນ ({promotion?.length || 0}) ລາຍການ
           </CardTitle>
           <button
             type="button"
@@ -172,7 +232,7 @@ const Promotion = () => {
             <option selected disabled>
               ເລຶອກສະຖະນະໂປຣໂມຊັນ
             </option>
-            {/* <option value={"ALL"}>ທັງໝົດ</option> */}
+            <option value={""}>ທັງໝົດ</option>
             <option value={"ACTIVE"}>ເປີດ</option>
             <option value={"INACTIVE"}>ປິດ</option>
           </select>
@@ -191,11 +251,12 @@ const Promotion = () => {
                 <th className="text-[18px] font-bold text-start">
                   ຊື່ໂປຣໂມຊັນ
                 </th>
+                <th className="text-[18px] font-bold text-start">ປະເພດ</th>
                 <th className="text-[18px] font-bold text-center">
                   ໄລຍະເວລາການໃຊ້ງານ
                 </th>
                 <th className="text-[18px] font-bold text-center">
-                  ຈຳນວນສ່ວນຫຼຸດ
+                  ຈຳນວນສ່ວນຫຼຸດ/ແຖມ
                 </th>
                 <th className="text-[18px] font-bold text-center">ສະຖານະ</th>
                 <th className="text-[18px] font-bold text-center">ຈັດການ</th>
@@ -206,22 +267,27 @@ const Promotion = () => {
               ) : promotion?.length > 0 ? (
                 promotion?.map((data, index) => (
                   <tr key={data?._id} className="border-b text-center">
-                    <td style={{ textAlign: "left" }}>{index + 1}</td>
-                    <td style={{ textAlign: "start", padding: "0 24px" }}>
-                      {data?.name}
+                    <td className="text-left">{index + 1}</td>
+                    <td className="text-start">{data?.name}</td>
+                    <td className="text-start">
+                      {data?.type === "DISCOUNT" ? "ສ່ວນຫຼຸດ" : "ລາຍການແຖມ"}
                     </td>
-                    <td style={{ textAlign: "center", padding: "0 16px" }}>
+                    <td className="text-center">
                       {moment(data?.validFrom).format("DD-MM-YYYY")} -{" "}
                       {moment(data?.validUntil).format("DD-MM-YYYY")}
                     </td>
-                    <td style={{ textAlign: "center", padding: "0 16px" }}>
-                      {moneyCurrency(data?.discountValue)}{" "}
-                      {data?.discountType === "PERCENTAGE"
-                        ? "%"
-                        : storeDetail?.firstCurrency}
+                    <td className="text-center">
+                      {data?.freeItems?.length > 0
+                        ? `ແຖມ ${data.freeItems.length} ລາຍການ`
+                        : `${moneyCurrency(data?.discountValue)} ${
+                            data?.discountType === "PERCENTAGE"
+                              ? "%"
+                              : storeDetail?.firstCurrency
+                          }`}
                     </td>
+
                     <td className="text-[18px] font-bold text-center">
-                      <span
+                      {/* <span
                         className={`px-2 py-1 rounded-md ${
                           data?.status === "ACTIVE"
                             ? "bg-green-500 text-white"
@@ -229,13 +295,28 @@ const Promotion = () => {
                         }`}
                       >
                         {data?.status === "ACTIVE" ? "ເປີດ" : "ປິດ"}
-                      </span>
+                      </span> */}
+                      <div className="flex justify-start items-center gap-2">
+                        <Form.Label
+                          htmlFor={"switch-status"}
+                          className="text-[14px]"
+                        >
+                          {data?.status === "ACTIVE" ? t("oppen") : t("close")}
+                        </Form.Label>
+                        <Form.Check
+                          type="switch"
+                          checked={data?.status === "ACTIVE"}
+                          id={`switch-${index}`}
+                          onChange={(e) => handleUpdateStatus(e, data._id)}
+                        />
+                      </div>
                     </td>
                     <td className="flex gap-2 justify-center text-[18px] font-bold">
                       <button
                         type="button"
                         onClick={() =>
-                          navigate(`/promotion/discount/edit/${data?._id}`)
+                          // navigate(`/promotion/discount/edit/${data?._id}`)
+                          handleChangePagePromotionEdit(data?.type, data?._id)
                         }
                         className="bg-color-app hover:bg-orange-400 text-[14px] p-2 w-[60px] rounded-md text-white"
                       >

@@ -11,9 +11,10 @@ import {
 } from "../../../constants/api";
 import { moneyCurrency } from "../../../helpers";
 import { useStoreStore } from "../../../zustand/storeStore";
+import { useMenuStore } from "../../../zustand/menuStore";
 import { errorAdd } from "../../../helpers/sweetalert";
 import {
-  UpdatePromotion,
+  UpdateDisCountPromotion,
   GetOnePromotion,
   RemoveMenuFromDiscount,
 } from "../../../services/promotion";
@@ -33,13 +34,23 @@ const EditDiscountForm = () => {
   const { storeDetail } = useStoreStore();
   const navigate = useNavigate();
   const { promotionId } = useParams();
-  const [menus, setMenus] = useState([]);
+  const [menuData, setMenuData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [filterName, setFilterName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectAllChecked, setSelectAllChecked] = useState(false);
   const [Categorys, setCategorys] = useState([]);
   const [filterCategory, setFilterCategory] = useState("All");
+
+  const {
+    menus,
+    menuCategories,
+    getMenus,
+    getMenuCategories,
+    setMenus,
+    setMenuCategories,
+    isMenuLoading,
+  } = useMenuStore();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,7 +89,7 @@ const EditDiscountForm = () => {
           )
             .then((response) => response.json())
             .then((json) => {
-              setMenus(json);
+              setMenuData(json);
             });
           setIsLoading(false);
         } catch (err) {
@@ -121,7 +132,7 @@ const EditDiscountForm = () => {
       )
         .then((response) => response.json())
         .then((json) => {
-          setMenus(json);
+          setMenuData(json);
         });
       setIsLoading(false);
     } catch (err) {
@@ -155,9 +166,9 @@ const EditDiscountForm = () => {
   const calculateDiscount = (menuPrice) => {
     const discountAmount =
       formData.discountType === "PERCENTAGE"
-        ? (menuPrice * formData.discountValue) / 100
+        ? (menuPrice?.price * formData.discountValue) / 100
         : formData.discountValue;
-    return menuPrice - discountAmount;
+    return menuPrice?.price - discountAmount;
   };
 
   const handleMenuSelect = (e) => {
@@ -165,7 +176,7 @@ const EditDiscountForm = () => {
     const isChecked = e.target.checked;
 
     // Find the full menu object corresponding to the menuId
-    const selectedMenu = menus.find((menu) => menu._id === menuId);
+    const selectedMenu = menuData.find((menu) => menu._id === menuId);
 
     if (!selectedMenu) return; // Exit if the menu object is not found
 
@@ -192,18 +203,16 @@ const EditDiscountForm = () => {
 
     // biome-ignore lint/complexity/noForEach: <explanation>
     formData.selectedMenus.forEach((menuId) => {
-      const menu = menus.find((menu) => menu._id === menuId?._id) || [];
-      total += calculateDiscount(menu.price);
+      const menu = menuData.find((menu) => menu._id === menuId) || [];
+      total += calculateDiscount(menu);
     });
 
     return total;
   };
 
   useEffect(() => {
-    // คำนวณราคาหลังส่วนลดเมื่อ selectedMenus เปลี่ยน
     if (formData.selectedMenus.length > 0) {
       const totalPrice = getTotalDiscountPrice();
-      console.log("Total after discount: ", totalPrice);
     }
   }, [formData.selectedMenus]);
 
@@ -212,13 +221,31 @@ const EditDiscountForm = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const fetchData = async () => {
+    if (storeDetail?._id) {
+      const storeId = storeDetail?._id;
+
+      // Check if menuData and categories are already in the zustand store
+      if (!menus.length || !menuCategories.length) {
+        // If menuData or categories are not found, fetch them
+        if (!menus.length) {
+          const fetchedMenus = await getMenus(storeId);
+          setMenus(fetchedMenus); // Save to zustand store
+        }
+        if (!menuCategories.length) {
+          const fetchedCategories = await getMenuCategories(storeId);
+          setMenuCategories(fetchedCategories); // Save to zustand store
+        }
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
       !formData.name ||
       !formData.discountType ||
       !formData.discountValue ||
-      !formData.minPurchasePrice ||
       formData.selectedMenus.length === 0
     ) {
       errorAdd("ກະລຸນາຕື່ມຂໍ້ມຼນໃຫ້ຄົບ");
@@ -238,12 +265,13 @@ const EditDiscountForm = () => {
       status: "ACTIVE",
     };
 
-    const response = await UpdatePromotion(promotionId, data);
+    const response = await UpdateDisCountPromotion(promotionId, data);
     if (response?.status === 200) {
       navigate("/promotion");
     } else {
       errorAdd("ສ່ວນຫຼຸດບໍ່ສໍາເລັດ");
     }
+    fetchData();
   };
 
   const openModal = () => {
@@ -278,7 +306,7 @@ const EditDiscountForm = () => {
 
   // Select All Functionality
   const handleSelectAll = () => {
-    const allMenuIds = menus.map((menu) => menu._id);
+    const allMenuIds = menuData.map((menu) => menu._id);
     setFormData({ ...formData, selectedMenus: allMenuIds });
     setSelectAllChecked(true); // Check the "Select All" checkbox
   };
@@ -296,7 +324,7 @@ const EditDiscountForm = () => {
           <h2 className="text-lg font-bold">ໂປຣໂມຊັນສ່ວນຫຼຸດ</h2>
           <div className="flex gap-2">
             <Card className="bg-white w-[500px] rounded-xl h-[425px] overflow-hidden p-4">
-              <div className="flex gap-4">
+              <div className="w-full">
                 <div className="flex flex-col gap-2">
                   <label htmlFor="name" className="mt-2">
                     ຊື່ໂປຣໂມຊັນ
@@ -307,9 +335,12 @@ const EditDiscountForm = () => {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="ຊື່ໂປຣໂມຊັນ"
-                    className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
+                    className="w-full h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   />
                 </div>
+              </div>
+
+              <div className="flex gap-4">
                 <div className="flex flex-col gap-2">
                   <label htmlFor="discountType" className="mt-2">
                     ເລຶອກປະເພດສ່ວນຫຼຸດ
@@ -327,33 +358,32 @@ const EditDiscountForm = () => {
                     <option value="FIXED_AMOUNT">ຈຳນວນເງິນ</option>
                   </select>
                 </div>
-              </div>
-
-              <div className="flex gap-4">
                 <div className="flex flex-col gap-2">
                   <label htmlFor="discountValue" className="mt-2">
                     ລາຄາສ່ວນຫຼຸດ
                   </label>
                   <input
                     type="number"
+                    min={0}
                     name="discountValue"
                     value={formData.discountValue}
                     onChange={handleChange}
                     className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   />
                 </div>
-                <div className="flex flex-col gap-2">
+                {/* <div className="flex flex-col gap-2">
                   <label htmlFor="minPurchasePrice" className="mt-2">
                     ລາຄາຊື້ຂັ້ນຕ່ຳ
                   </label>
                   <input
                     type="number"
+                    min={0}
                     name="minPurchasePrice"
                     value={formData.minPurchasePrice}
                     onChange={handleChange}
                     className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   />
-                </div>
+                </div> */}
               </div>
               <div className="flex gap-4">
                 <div className="flex flex-col gap-2">
@@ -383,15 +413,18 @@ const EditDiscountForm = () => {
               </div>
             </Card>
 
-            <Card className="bg-white flex-1 p-4 h-[425px] overflow-auto rounded-xl">
-              <h3 className="font-semibold text-[18px]">ເມນູທີ່ເລຶອກທັງໝົດ</h3>
+            <Card className="bg-white flex-1 p-4  rounded-xl">
+              <h3 className="font-semibold text-[18px] mb-2 text-center">
+                ເມນູທີ່ເລຶອກທັງໝົດ
+              </h3>
+
               <div className="mb-4 flex justify-between items-center">
-                {formData.selectedMenus.length > 1 && (
+                {formData?.selectedMenus?.length > 1 && (
                   <div className="flex gap-2">
                     <button
                       type="button"
                       onClick={handleDeselectAll}
-                      className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                      className="bg-red-500 flex justify-center items-center h-[35px] text-white p-2 text-[14px] rounded-md hover:bg-red-600"
                     >
                       ຍົກເລິກທັງໝົດ
                     </button>
@@ -401,61 +434,70 @@ const EditDiscountForm = () => {
                   <button
                     type="button"
                     onClick={openModal}
-                    className="bg-orange-600 text-white p-2 rounded-md hover:bg-orange-700"
+                    className="bg-orange-600 flex justify-center items-center h-[35px] text-white p-2 text-[14px] rounded-md hover:bg-orange-700"
                   >
                     ເລຶອກເມນູ
                   </button>
                 </div>
               </div>
-              <table className="w-full mt-4">
-                <thead>
-                  <tr>
-                    <th className="border-b p-2">ຊື່ເມນູ</th>
-                    <th className="border-b p-2">ຊື່ປະເພດ</th>
-                    <th className="border-b p-2">ຕົ້ນທຶນ</th>
-                    <th className="border-b p-2">ລາຄາປົກກະຕິ</th>
-                    <th className="border-b p-2">ລາຄາໂປຣໂມຊັນ</th>
-                    <th className="border-b p-2">ລົບ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {formData.selectedMenus.map((menuId) => {
-                    let menu = [];
-                    if (menuId?._id) {
-                      menu = menus.find((m) => m._id === menuId?._id) || [];
-                    } else {
-                      menu = menus.find((m) => m._id === menuId) || [];
-                    }
-                    if (!menu) return null;
-                    return (
-                      <tr key={menu._id}>
-                        <td className="border-b p-2">{menu.name}</td>
-                        <td className="border-b p-2 text-ellipsis">
-                          {menu.categoryId?.name}
-                        </td>
-                        <td className="border-b p-2">"--"</td>
-                        <td className="border-b p-2">
-                          {moneyCurrency(menu.price)}{" "}
-                          {storeDetail?.firstCurrency}
-                        </td>
-                        <td className="border-b p-2">
-                          {moneyCurrency(calculateDiscount(menu.price))}{" "}
-                          {storeDetail?.firstCurrency}
-                        </td>
-                        <td className="border-b p-2">
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveMenu(menu._id)}
-                            className="bg-red-500 text-white p-2 w-[60px] rounded-md hover:bg-red-600"
-                          >
-                            ລົບ
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+              <div className="h-[250px] overflow-auto">
+                <table className="w-full mt-4">
+                  <thead>
+                    <tr>
+                      <th className="border-b p-2">ຊື່ເມນູ</th>
+                      <th className="border-b p-2">ຊື່ປະເພດ</th>
+                      <th className="border-b p-2">ຕົ້ນທຶນ</th>
+                      <th className="border-b p-2">ລາຄາປົກກະຕິ</th>
+                      <th className="border-b p-2">ລາຄາໂປຣໂມຊັນ</th>
+                      <th className="border-b p-2">ລົບ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {formData?.selectedMenus?.map((menuId) => {
+                      let menu = [];
+                      if (menuId?._id) {
+                        menu =
+                          menuData.find((m) => m._id === menuId?._id) || [];
+                      } else {
+                        menu = menuData.find((m) => m._id === menuId) || [];
+                      }
+                      if (!menu) return null;
+                      return (
+                        <tr key={menu._id}>
+                          <td className="border-b p-2">{menu.name}</td>
+                          <td className="border-b p-2 text-ellipsis">
+                            {menu.categoryId?.name}
+                          </td>
+                          <td className="border-b p-2">"--"</td>
+                          <td className="border-b p-2">
+                            {moneyCurrency(menu.price)}{" "}
+                            {storeDetail?.firstCurrency}
+                          </td>
+                          <td className="border-b p-2">
+                            {moneyCurrency(calculateDiscount(menu))}{" "}
+                            {storeDetail?.firstCurrency}
+                          </td>
+                          <td className="border-b p-2">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveMenu(menu._id)}
+                              className="bg-red-500 flex justify-center items-center text-white p-2 text-[14px] w-[50px] h-[30px] rounded-md hover:bg-red-600"
+                            >
+                              ລົບ
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div className="flex justify-end pr-[80px]">
+                <span className="text-[18px] text-orange-500 font-bold mt-2 text-end">
+                  ລາຄາໂປຣໂມຊັນທັງໝົດ : {moneyCurrency(getTotalDiscountPrice())}{" "}
+                  {storeDetail?.firstCurrency}
+                </span>
+              </div>
             </Card>
           </div>
           <div className="flex gap-2 justify-center items-center">
@@ -529,8 +571,8 @@ const EditDiscountForm = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {menus?.length > 0 ? (
-                      menus.map((menu) => (
+                    {menuData?.length > 0 ? (
+                      menuData?.map((menu) => (
                         <tr key={menu._id}>
                           <td className="border-b p-2">
                             <input

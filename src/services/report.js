@@ -21,12 +21,7 @@ export const getSalesInformationReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v7/sales-information-report/${storeId}${findBy}`;
-    const res = await axios.post(
-      url,
-      { tableIds },
-      { tableIds },
-      { headers: _header }
-    );
+    const res = await axios.post(url, { tableIds }, { headers: _header });
     return res.data;
   } catch (error) {
     return error;
@@ -88,7 +83,6 @@ export const getMoneyReport = async (storeId, findBy, tableIds) => {
   }
 };
 
-
 export const getDebtReport = async (findby, token) => {
   try {
     const _header = await getHeaders();
@@ -112,6 +106,22 @@ export const getPromotionReport = async (storeId, findBy, tableIds) => {
     return error;
   }
 };
+
+export const getPromotionReportDisCountAndFree = async (
+  storeId,
+  findBy,
+  tableIds
+) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v7/reports-promotion-discount-free/${storeId}${findBy}`;
+    const res = await axios.post(url, { tableIds }, { headers: _header });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const getBillReport = async (storeId, findBy, tableIds) => {
   try {
     const _header = await getHeaders();

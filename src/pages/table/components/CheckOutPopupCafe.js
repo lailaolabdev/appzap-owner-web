@@ -314,7 +314,9 @@ export default function CheckOutPopupCafe({
       memberPhone: memberDataSearch?.phone,
       statusPoint: statusPoint,
       fullnameStaffCheckOut:
-        `${profile.data.firstname} ${profile.data.lastname}` ?? "-",
+        `${profile.data.firstname ? profile.data.firstname : "--"} ${
+          profile.data.lastname ? profile.data.lastname : "--"
+        }` ?? "-",
       staffCheckOutId: profile.data._id,
     };
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-import { Card, Breadcrumb, Button } from "react-bootstrap";
+import { Card, Breadcrumb, Button, Modal } from "react-bootstrap";
 import { COLOR_APP, END_POINT } from "../../constants";
 import { getLocalData } from "../../constants/api";
 import {
@@ -23,6 +23,7 @@ import {
   getSalesInformationReport,
   getUserReport,
   getDeliveryReport,
+  getPromotionReportDisCountAndFree,
 } from "../../services/report";
 import { getAllShift } from "../../services/shift";
 import fileDownload from "js-file-download";
@@ -44,6 +45,7 @@ import PopUpChooseTableComponent from "../../components/popup/PopUpChooseTableCo
 import PopUpPrintMenuAndCategoryHistoryComponent from "../../components/popup/PopUpPrintMenuAndCategoryHistoryComponent";
 import { getBilldebts } from "../../services/debt";
 
+import { BsArrowDownRightSquare } from "react-icons/bs";
 import Loading from "../../components/Loading";
 import { errorAdd } from "../../helpers/sweetalert";
 import Axios from "axios";
@@ -64,6 +66,8 @@ export default function DashboardPage() {
   const [categoryReport, setCategoryReport] = useState();
   const [moneyReport, setMoneyReport] = useState();
   const [promotionReport, setPromotionReport] = useState();
+  const [promotionDiscountAndFreeReport, setPromotionDiscountAndFreeReport] =
+    useState();
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
   const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
   const [startTime, setStartTime] = useState("00:00:00");
@@ -77,6 +81,11 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
   const [deliveryReport, setDeliveryReport] = useState([]);
   const [debtReport, setDebtReport] = useState(null);
+
+  const [dataFreeItems, setDataFreeItems] = useState([]);
+  const [dataDiscountItems, setDataDiscountItems] = useState([]);
+  const [openModalFree, setOpenModalFree] = useState(false);
+  const [openModalDiscount, setOpenModalDiscount] = useState(false);
 
   const [shiftData, setShiftData] = useState([]);
   const [shiftId, setShiftId] = useState([]);
@@ -113,6 +122,7 @@ export default function DashboardPage() {
     getCategoryReportData();
     getBankBillName();
     getDeliveryReports();
+    getPromotionDiscountAndFreeReportData();
   }, [endDate, startDate, endTime, startTime, selectedTableIds, shiftId]);
 
   // function
@@ -247,6 +257,17 @@ export default function DashboardPage() {
     setPromotionReport(data);
     setLoading(false);
   };
+  const getPromotionDiscountAndFreeReportData = async () => {
+    setLoading(true);
+    const data = await getPromotionReportDisCountAndFree(
+      storeDetail?._id,
+      findByData(),
+      selectedTableIds
+    );
+    setPromotionDiscountAndFreeReport(data);
+    setLoading(false);
+  };
+
   const getCurrencyName = async () => {
     setLoading(true);
     // const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
@@ -302,7 +323,7 @@ export default function DashboardPage() {
         });
 
         // Create a Blob from the response data
-       // console.log("response", response.data);
+        // console.log("response", response.data);
         const fileBlob = new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
@@ -357,6 +378,7 @@ export default function DashboardPage() {
       getCategoryReportData();
       getBankBillName();
       getDeliveryReports();
+      getPromotionDiscountAndFreeReportData();
     } else {
       setShiftId(option?.value?.shiftID);
     }
@@ -376,6 +398,29 @@ export default function DashboardPage() {
   // const handleSearchInput = (option) => {
   //   setShiftId(option?.value?.id);
   // };
+
+  // console.log("promotionDiscountAndFreeReport", promotionDiscountAndFreeReport);
+
+  const handleGetDataFree = (data) => {
+    setOpenModalFree(true);
+    setDataFreeItems(data);
+  };
+  const handleGetDataDiscount = (data) => {
+    setOpenModalDiscount(true);
+    setDataDiscountItems(data);
+  };
+
+  const TotalPriceFreeItems = () => {
+    return dataFreeItems?.reduce((currentValue, nextValue) => {
+      return currentValue + nextValue.price;
+    }, 0);
+  };
+
+  const TotalPriceDicount = () => {
+    return dataDiscountItems?.reduce((currentValue, nextValue) => {
+      return currentValue + nextValue.priceDiscount;
+    }, 0);
+  };
 
   return (
     <div>
@@ -539,6 +584,39 @@ export default function DashboardPage() {
               {t("promotion")}
             </Card.Header>
             <Card.Body>
+              {!storeDetail?.isStatusCafe && (
+                <>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: 10,
+                      padding: "10px 0",
+                      borderBottom: `1px dotted ${COLOR_APP}`,
+                    }}
+                  >
+                    <div>{t("discount_bill")}</div>
+                    <div>{promotionReport?.[0]?.count || 0}</div>
+                  </div>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: 10,
+                      padding: "10px 0",
+                      borderBottom: `1px dotted ${COLOR_APP}`,
+                    }}
+                  >
+                    <div>{t("all_discount")}</div>
+                    <div>
+                      {moneyCurrency(
+                        promotionReport?.[0]?.totalSaleAmount || 0
+                      )}
+                      {storeDetail?.firstCurrency}
+                    </div>
+                  </div>
+                </>
+              )}
               <div
                 style={{
                   display: "grid",
@@ -548,8 +626,21 @@ export default function DashboardPage() {
                   borderBottom: `1px dotted ${COLOR_APP}`,
                 }}
               >
-                <div>{t("discount_bill")}</div>
-                <div>{promotionReport?.[0]?.count || 0}</div>
+                <div>ຈຳນວນເມນູທີ່ມີສ່ວນຫຼຸດ</div>
+                <div
+                  className="flex gap-2 items-center text-orange-500 cursor-pointer"
+                  onClick={() =>
+                    handleGetDataDiscount(
+                      promotionDiscountAndFreeReport?.discountedMenus
+                    )
+                  }
+                >
+                  {moneyCurrency(
+                    promotionDiscountAndFreeReport?.totalDiscountedItemCount ||
+                      0
+                  )}
+                  <BsArrowDownRightSquare />
+                </div>
               </div>
               <div
                 style={{
@@ -560,9 +651,50 @@ export default function DashboardPage() {
                   borderBottom: `1px dotted ${COLOR_APP}`,
                 }}
               >
-                <div>{t("all_discount")}</div>
+                <div>ລວມເປັນເງິນ(ເມນູສ່ວນຫຼຸດ)</div>
                 <div>
-                  {moneyCurrency(promotionReport?.[0]?.totalSaleAmount || 0)}
+                  {moneyCurrency(
+                    promotionDiscountAndFreeReport?.totalDiscountValue || 0
+                  )}
+                  {storeDetail?.firstCurrency}
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>ຈຳນວນເມນູທີ່ແຖມ</div>
+                <div
+                  className="flex gap-2 items-center text-orange-500 cursor-pointer"
+                  onClick={() =>
+                    handleGetDataFree(promotionDiscountAndFreeReport?.freeMenus)
+                  }
+                >
+                  {moneyCurrency(
+                    promotionDiscountAndFreeReport?.totalFreeItemCount || 0
+                  )}
+                  <BsArrowDownRightSquare />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>ລວມເປັນເງິນ(ເມນູທີ່ແຖມ)</div>
+                <div>
+                  {moneyCurrency(
+                    promotionDiscountAndFreeReport?.totalFreeMenuPrice || 0
+                  )}
                   {storeDetail?.firstCurrency}
                 </div>
               </div>
@@ -914,13 +1046,13 @@ export default function DashboardPage() {
             <Card.Body>
               <table style={{ width: "100%" }}>
                 <tr>
-                  <th style={{ textAlign: "left" }}>{t("no")}</th>
-                  <th style={{ textAlign: "center" }}>{t("code")}</th>
-                  <th style={{ textAlign: "center" }}>{t("ccrc")}</th>
-                  <th style={{ textAlign: "right" }}>{t("amount")}</th>
+                  <th className="text-left">{t("no")}</th>
+                  <th className="text-center">{t("code")}</th>
+                  <th className="text-center">{t("ccrc")}</th>
+                  <th className="text-right">{t("amount")}</th>
                 </tr>
                 {currencyList?.data?.map((e, index) => (
-                  <tr>
+                  <tr key={e?._id}>
                     <td style={{ textAlign: "left" }}>{index + 1}</td>
                     <td style={{ textAlign: "center" }}>
                       {e?.currency.currencyCode}
@@ -938,6 +1070,102 @@ export default function DashboardPage() {
           </Card>
         </Box>
       </Box>
+
+      <Modal
+        show={openModalFree}
+        size="md"
+        onHide={() => setOpenModalFree(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>{t("ລາຍການເມນູແຖມ")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <table style={{ width: "100%" }}>
+            <tr className="border-b">
+              <th className="text-left">{t("no")}</th>
+              <th className="text-left">{t("name")}</th>
+              <th className="text-right">{t("price")}</th>
+            </tr>
+            {dataFreeItems.length > 0 ? (
+              dataFreeItems?.map((m, index) => (
+                <tr key={m?._id} className="border-b">
+                  <td className="text-left">{index + 1}</td>
+                  <td className="text-left">{m?.name}</td>
+                  <td className="text-right">{moneyCurrency(m?.price)}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4}>
+                  <div className="flex justify-center">
+                    <p className="text-[16px] font-bold text-gray-900">
+                      ບໍ່ມີລາຍການ
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </table>
+          <div className="flex justify-end mt-2">
+            <p className="text-orange-500 text-[18px] pt-3 font-bold">
+              ລວມຈຳນວນລາຄາແຖມທັງໝົດ : {moneyCurrency(TotalPriceFreeItems())}{" "}
+              {storeDetail?.firstCurrency}
+            </p>
+          </div>
+        </Modal.Body>
+      </Modal>
+      <Modal
+        show={openModalDiscount}
+        size="lg"
+        onHide={() => setOpenModalDiscount(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>{t("ລາຍການເມນູສ່ວນຫຼຸດ")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <table style={{ width: "100%" }}>
+            <tr className="border-b">
+              <th className="text-left">{t("no")}</th>
+              <th className="text-left">{t("name")}</th>
+              <th className="text-right">{t("ລາຄາປົກກະຕິ")}</th>
+              <th className="text-right">{t("ລາຄາສ່ວນຫຼຸດ")}</th>
+              <th className="text-right">{t("ຈຳນວນທີ່ຫຼຸດ")}</th>
+            </tr>
+            {dataDiscountItems?.length > 0 ? (
+              dataDiscountItems?.map((m, index) => (
+                <tr key={m?._id} className="border-b">
+                  <td className="text-left">{index + 1}</td>
+                  <td className="text-left">{m?.name}</td>
+                  <td className="text-right">{moneyCurrency(m?.price)}</td>
+                  <td className="text-right">
+                    {moneyCurrency(Math.max(m?.price - m?.priceDiscount), 0)}
+                  </td>
+                  <td className="text-right">
+                    {moneyCurrency(m?.priceDiscount)}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6}>
+                  <div className="flex justify-center">
+                    <p className="text-[16px] font-bold text-gray-900">
+                      ບໍ່ມີລາຍການ
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </table>
+          <div className="flex justify-end mt-2">
+            <p className="text-orange-500 text-[18px] pt-3 font-bold">
+              ລວມຈຳນວນທີ່ຫຼຸດທັງໝົດ : {moneyCurrency(TotalPriceDicount())}{" "}
+              {storeDetail?.firstCurrency}
+            </p>
+          </div>
+        </Modal.Body>
+      </Modal>
+
       {/* popup */}
       <PopUpPrintComponent
         open={popup?.printReportSale}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Card } from "../../../components/ui/Card";
 import { Modal } from "react-bootstrap";
@@ -9,14 +10,20 @@ import {
   END_POINT_SEVER_TABLE_MENU,
 } from "../../../constants/api";
 import { useStoreStore } from "../../../zustand/storeStore";
-import { useShiftStore } from "../../../zustand/ShiftStore";
 import { useMenuStore } from "../../../zustand/menuStore";
 import { errorAdd } from "../../../helpers/sweetalert";
-import { CreateFreePromotion } from "../../../services/promotion";
+
+import {
+  UpdateFreePromotion,
+  GetOnePromotion,
+  RemoveMenuFromDiscount,
+  RemoveMenuFreeFromDiscount,
+} from "../../../services/promotion";
 import { moneyCurrency } from "../../../helpers";
+import Loading from "../../../components/Loading";
 import { FaRegTrashAlt } from "react-icons/fa";
 
-const BuyXGetYForm = () => {
+const EditBuyXGetYForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     buyQuantity: 1,
@@ -27,9 +34,10 @@ const BuyXGetYForm = () => {
   });
 
   const { t } = useTranslation();
+  const { promotionId } = useParams();
   const { storeDetail } = useStoreStore();
   const navigate = useNavigate();
-  const [MenuData, SetMenuData] = useState([]);
+  const [menuData, setMenuData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalFreeItemOpen, setModalFreeItemOpen] = useState(false);
   const [selectedMenuId, setSelectedMenuId] = useState(null);
@@ -37,8 +45,8 @@ const BuyXGetYForm = () => {
   const [filterCategory, setFilterCategory] = useState("All");
   const [filterName, setFilterName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingGetOne, setIsLoadingGetOne] = useState(false);
 
-  const { shiftCurrent } = useShiftStore();
   const {
     menus,
     menuCategories,
@@ -60,6 +68,71 @@ const BuyXGetYForm = () => {
       setMenuCategories(fetchedCategories); // Save to zustand store
     }
   };
+
+  useEffect(() => {
+    fetchPromotion();
+  }, [promotionId]);
+
+  // const fetchPromotion = async () => {
+  //   setIsLoadingGetOne(true);
+  //   try {
+  //     if (!promotionId) return;
+
+  //     const response = await GetOnePromotion(promotionId);
+  //     if (response?.status === 200) {
+  //       const promoData = response.data;
+
+  //       const mappedMenus = promoData.menuId.map((menu) => ({
+  //         _id: menu || [],
+  //         freeItems: promoData.freeItems || [],
+  //       }));
+
+  //       setFormData({
+  //         name: promoData.name,
+  //         buyQuantity: promoData.buyQuantity,
+  //         getQuantity: promoData.getQuantity,
+  //         validFrom: promoData.validFrom.split("T")[0],
+  //         validUntil: promoData.validUntil.split("T")[0],
+  //         selectedMenus: mappedMenus,
+  //       });
+  //     }
+  //     setIsLoadingGetOne(false);
+  //   } catch (err) {
+  //     setIsLoadingGetOne(false);
+  //     console.log(err);
+  //   }
+  // };
+
+  const fetchPromotion = async () => {
+    try {
+      if (!promotionId) return;
+
+      const response = await GetOnePromotion(promotionId);
+      if (response?.status === 200) {
+        const promoData = response.data;
+
+        const menuWithFreeItems = promoData.menuId.map((menu) => ({
+          _id: menu,
+          freeItems: promoData.freeItems
+            .filter((freeItem) => freeItem.mainMenuId === menu)
+            .map((freeItem) => freeItem?._id),
+        }));
+
+        setFormData({
+          name: promoData.name,
+          buyQuantity: promoData.buyQuantity,
+          getQuantity: promoData.getQuantity,
+          validFrom: promoData.validFrom.split("T")[0],
+          validUntil: promoData.validUntil.split("T")[0],
+          selectedMenus: menuWithFreeItems,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  console.log("formData?.selectedMenus", formData?.selectedMenus);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -97,7 +170,7 @@ const BuyXGetYForm = () => {
           )
             .then((response) => response.json())
             .then((json) => {
-              SetMenuData(json);
+              setMenuData(json);
             });
           setIsLoading(false);
         } catch (err) {
@@ -140,7 +213,7 @@ const BuyXGetYForm = () => {
       )
         .then((response) => response.json())
         .then((json) => {
-          SetMenuData(json);
+          setMenuData(json);
         });
       setIsLoading(false);
     } catch (err) {
@@ -178,56 +251,112 @@ const BuyXGetYForm = () => {
     const freeItemId = e.target.value;
     const isChecked = e.target.checked;
 
-    setFormData((prevState) => ({
-      ...prevState,
-      selectedMenus: prevState.selectedMenus.map((menu) => {
-        if (menu._id === menuId) {
-          if (isChecked && menu.freeItems.length >= prevState.getQuantity) {
-            errorAdd(
-              `ທ່ານສາມາດເລືອກເມນູແຖມໄດ້ສູງສຸດ ${prevState.getQuantity} ລາຍການ`
-            );
-            return menu;
-          }
-
-          return {
-            ...menu,
-            freeItems: isChecked
-              ? [...menu.freeItems, freeItemId]
-              : menu.freeItems.filter((id) => id !== freeItemId),
-          };
-        }
-        return menu;
-      }),
-    }));
-  };
-
-  const handleRemoveMenu = (menuId) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      selectedMenus: prevState.selectedMenus.filter(
-        (menu) => menu._id !== menuId
-      ),
-    }));
-  };
-
-  const handleRemoveFreeItem = (menuId, freeItemId) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      selectedMenus: prevState.selectedMenus.map((menu) =>
-        menu._id === menuId
-          ? {
-              ...menu,
-              freeItems: menu.freeItems.filter((id) => id !== freeItemId),
+    setFormData((prevState) => {
+      return {
+        ...prevState,
+        selectedMenus: prevState.selectedMenus.map((menu) => {
+          if (menu._id === menuId) {
+            if (isChecked && menu.freeItems.length >= prevState.getQuantity) {
+              errorAdd(
+                `ທ່ານສາມາດເລືອກເມນູແຖມໄດ້ສູງສຸດ ${prevState.getQuantity} ລາຍການ`
+              );
+              return menu;
             }
-          : menu
-      ),
-    }));
+
+            return {
+              ...menu,
+              freeItems: isChecked
+                ? [...menu.freeItems, freeItemId]
+                : menu.freeItems.filter((id) => id !== freeItemId),
+            };
+          }
+          return menu;
+        }),
+      };
+    });
+  };
+
+  // const handleRemoveMenu = async (menuId) => {
+  //   console.log("handleRemoveMenu", menuId);
+  //   if (menuId) {
+  //     await RemoveMenuFromDiscount(promotionId, menuId);
+  //     fetchPromotion();
+  //   }
+  //   setFormData((prevState) => ({
+  //     ...prevState,
+  //     selectedMenus: prevState.selectedMenus.filter(
+  //       (menu) => menu._id !== menuId
+  //     ),
+  //   }));
+  // };
+
+  const handleRemoveMenu = async (menuId) => {
+    if (!menuId) return;
+
+    const data = {
+      menuId: menuId,
+    };
+
+    try {
+      const response = await RemoveMenuFromDiscount(promotionId, data);
+
+      if (response?.status === 200) {
+        await fetchPromotion();
+
+        setFormData((prevState) => ({
+          ...prevState,
+          selectedMenus: prevState.selectedMenus.filter(
+            (menu) => menu._id !== menuId
+          ),
+        }));
+      } else {
+        console.error("Failed to remove menu");
+        errorAdd("ລົບຂໍ້ມູນບໍ່ສຳເລັດ");
+      }
+    } catch (err) {
+      console.error("Error removing menu:", err);
+      errorAdd("ເກີດຂໍ້ຜິດພາດ");
+    }
+  };
+
+  const handleRemoveFreeItem = async (menuId, freeItemId) => {
+    if (!freeItemId) return;
+
+    const data = {
+      menuFreeId: freeItemId,
+    };
+
+    try {
+      const response = await RemoveMenuFreeFromDiscount(promotionId, data);
+
+      if (response?.status === 200) {
+        await fetchPromotion();
+
+        setFormData((prevState) => ({
+          ...prevState,
+          selectedMenus: prevState.selectedMenus.map((menu) =>
+            menu._id === menuId
+              ? {
+                  ...menu,
+                  freeItems: menu.freeItems.filter((id) => id !== freeItemId),
+                }
+              : menu
+          ),
+        }));
+      } else {
+        console.error("Failed to remove free item");
+        errorAdd("ລົບຂໍ້ມູນບໍ່ສຳເລັດ");
+      }
+    } catch (err) {
+      console.error("Error removing free item:", err);
+      errorAdd("ເກີດຂໍ້ຜິດພາດ");
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || formData.selectedMenus.length === 0) {
-      errorAdd("ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບ");
+      errorAdd("ປ້ອນຂໍ້ມູນໃຫ້ຄົບ");
       return;
     }
 
@@ -248,15 +377,14 @@ const BuyXGetYForm = () => {
       menuId: formData.selectedMenus.map((menu) => menu._id),
       freeItems: formattedFreeItems,
       storeId: storeDetail?._id,
-      shiftId: shiftCurrent ? shiftCurrent[0]?._id : null,
       status: "ACTIVE",
     };
 
-    const response = await CreateFreePromotion(data);
+    const response = await UpdateFreePromotion(promotionId, data);
     if (response?.status === 200) {
       navigate("/promotion");
     } else {
-      errorAdd("ເພີ່ມບໍ່ໍ່ສຳເລັດ");
+      errorAdd("ເພີ່ມບໍ່ສຳເລັດ");
     }
     fetchData();
   };
@@ -271,7 +399,7 @@ const BuyXGetYForm = () => {
           return {
             ...menu,
             freeItems: isChecked
-              ? MenuData.map((m) => m._id).slice(0, prevState.getQuantity)
+              ? menuData.map((m) => m._id).slice(0, prevState.getQuantity)
               : [],
           };
         }
@@ -279,98 +407,89 @@ const BuyXGetYForm = () => {
       }),
     }));
   };
-  const handleSelectAllMainItems = (e) => {
-    const isChecked = e.target.checked;
-
-    setFormData((prevState) => ({
-      ...prevState,
-      selectedMenus: isChecked
-        ? MenuData.map((menu) => ({ _id: menu._id, freeItems: [] })) // Select all
-        : [], // Deselect all
-    }));
-  };
 
   return (
     <div className="p-2 bg-gray-50 h-full w-full">
-      <Card className="bg-white rounded-xl p-4">
-        <h2 className="text-lg font-bold">ໂປຣໂມຊັນຊື້ 1 ແຖມ 1</h2>
+      {isLoadingGetOne || isLoading ? (
+        <Loading />
+      ) : (
+        <Card className="bg-white rounded-xl p-4">
+          <h2 className="text-lg font-bold">ໂປຣໂມຊັນຊື້ 1 ແຖມ 1</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="flex gap-4">
+              <Card className="p-4">
+                <div className="w-full">
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="name" className="mt-2">
+                      ຊື່ໂປຣໂມຊັນ
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder="ຊື່ໂປຣໂມຊັນ"
+                      className="w-full h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="buyQuantity" className="mt-2">
+                      ຈຳນວນທີ່ຊື້
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      name="buyQuantity"
+                      value={formData.buyQuantity}
+                      onChange={handleChange}
+                      className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="getQuantity" className="mt-2">
+                      ຈຳນວນທີ່ແຖມ
+                    </label>
+                    <input
+                      type="number"
+                      min={0}
+                      name="getQuantity"
+                      value={formData.getQuantity}
+                      onChange={handleChange}
+                      className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
+                    />
+                  </div>
+                </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="flex gap-4">
-            <Card className="p-4">
-              <div className="w-full">
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="name" className="mt-2">
-                    ຊື່ໂປຣໂມຊັນ
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="ຊື່ໂປຣໂມຊັນ"
-                    className="w-full h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
-                  />
+                <div className="flex gap-4">
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="validFrom" className="mt-2">
+                      ວັນທີ່ເລີ່ມຕົ້ນ
+                    </label>
+                    <input
+                      type="date"
+                      name="validFrom"
+                      value={formData.validFrom}
+                      onChange={handleChange}
+                      className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="validUntil" className="mt-2">
+                      ວັນທີ່ສິ້ນສຸດ
+                    </label>
+                    <input
+                      type="date"
+                      name="validUntil"
+                      value={formData.validUntil}
+                      onChange={handleChange}
+                      className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="flex gap-4">
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="buyQuantity" className="mt-2">
-                    ຈຳນວນທີ່ຊື້
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    name="buyQuantity"
-                    value={formData.buyQuantity}
-                    onChange={handleChange}
-                    className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="getQuantity" className="mt-2">
-                    ຈຳນວນທີ່ແຖມ
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    name="getQuantity"
-                    value={formData.getQuantity}
-                    onChange={handleChange}
-                    className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="validFrom" className="mt-2">
-                    ວັນທີ່ເລີ່ມຕົ້ນ
-                  </label>
-                  <input
-                    type="date"
-                    name="validFrom"
-                    value={formData.validFrom}
-                    onChange={handleChange}
-                    className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="validUntil" className="mt-2">
-                    ວັນທີ່ສິ້ນສຸດ
-                  </label>
-                  <input
-                    type="date"
-                    name="validUntil"
-                    value={formData.validUntil}
-                    onChange={handleChange}
-                    className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
-                  />
-                </div>
-              </div>
-            </Card>
-            <Card className="p-2 flex-1 h-[400px] overflow-y-auto">
-              {formData.selectedMenus.length > 0 && (
+              </Card>
+              <Card className="p-2 flex-1 h-[400px] overflow-y-auto">
                 <button
                   type="button"
                   className="bg-orange-600 text-[14px] text-white p-2 rounded-lg hover:bg-orange-700 transition duration-200"
@@ -378,85 +497,87 @@ const BuyXGetYForm = () => {
                 >
                   ເລຶອກເມນູຫຼັກ
                 </button>
-              )}
-              {formData.selectedMenus.length > 0 ? (
-                formData.selectedMenus.map((menu) => (
-                  <Card key={menu._id} className="p-2 border mt-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-[16px] font-bold text-gray-800">
-                        {MenuData.find((m) => m._id === menu._id)?.name}
-                      </h3>
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          className="bg-orange-600 text-[12px] text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition duration-200"
-                          onClick={() => openModalFreeItem(menu._id)}
-                        >
-                          ເພີ່ມເມນູແຖມ
-                        </button>
-                        <button
-                          className="bg-red-600 text-[12px] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200"
-                          type="button"
-                          onClick={() => handleRemoveMenu(menu._id)}
-                        >
-                          ລົບ
-                        </button>
-                      </div>
-                    </div>
-                    {menu.freeItems.length > 0 && (
-                      <ul>
-                        {menu.freeItems.map((freeItemId) => (
-                          <li
-                            key={freeItemId}
-                            className="flex gap-2 items-center"
+
+                {formData.selectedMenus.length > 0 ? (
+                  formData.selectedMenus.map((menu) => (
+                    <Card key={menu._id} className="p-2 border mt-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-[16px] font-bold text-gray-800">
+                          {/* {menuData.find((m) => m._id === menu._id)?.name} */}
+                          {menuData.find((m) => m._id === menu._id)?.name ??
+                            "ບໍ່ມີຊື່ເມນູ"}
+                        </h3>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            className="bg-orange-600 text-[12px] text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition duration-200"
+                            onClick={() => openModalFreeItem(menu._id)}
                           >
-                            <span className="text-[14px] text-gray-800">
-                              {MenuData.find((m) => m._id === freeItemId)?.name}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleRemoveFreeItem(menu._id, freeItemId)
-                              }
+                            ເພີ່ມເມນູແຖມ
+                          </button>
+                          <button
+                            className="bg-red-600 text-[12px] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200"
+                            type="button"
+                            onClick={() => handleRemoveMenu(menu._id)}
+                          >
+                            ລົບ
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* แสดงเมนูแถม */}
+                      {menu.freeItems.length > 0 && (
+                        <ul>
+                          {menu.freeItems.map((freeItemId) => (
+                            <li
+                              key={freeItemId}
+                              className="flex gap-2 items-center"
                             >
-                              <FaRegTrashAlt className="  mt-2 text-[25px] text-red-500 p-1 rounded-lg hover:text-red-700  transition duration-200" />
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </Card>
-                ))
-              ) : (
-                <div className="flex flex-col items-center mt-44">
-                  <button
-                    type="button"
-                    className="bg-orange-600 text-[14px] text-white p-2 rounded-lg hover:bg-orange-700 transition duration-200"
-                    onClick={() => setModalOpen(true)}
-                  >
-                    ເລຶອກເມນູຫຼັກ
-                  </button>
-                </div>
-              )}
-            </Card>
-          </div>
-          <div className="flex gap-2 justify-center items-center">
-            <button
-              type="reset"
-              onClick={() => navigate("/promotion")}
-              className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition duration-200 mt-4"
-            >
-              ຍ້ອນກັບ
-            </button>
-            <button
-              type="submit"
-              className="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition duration-200 mt-4"
-            >
-              ບັນທຶກ
-            </button>
-          </div>
-        </form>
-      </Card>
+                              <span className="text-[14px] text-gray-800">
+                                {
+                                  menuData.find((m) => m._id === freeItemId)
+                                    ?.name
+                                }
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleRemoveFreeItem(menu._id, freeItemId)
+                                }
+                              >
+                                <FaRegTrashAlt className="  mt-2 text-[25px] text-red-500 p-1 rounded-lg hover:text-red-700  transition duration-200" />
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </Card>
+                  ))
+                ) : (
+                  <p className="text-gray-500 text-center mt-48">
+                    ຍັງບໍ່ມີເມນູຫຼັກ
+                  </p>
+                )}
+              </Card>
+            </div>
+            <div className="flex gap-2 justify-center items-center">
+              <button
+                type="reset"
+                onClick={() => navigate("/promotion")}
+                className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition duration-200 mt-4"
+              >
+                ຍ້ອນກັບ
+              </button>
+              <button
+                type="submit"
+                className="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition duration-200 mt-4"
+              >
+                ບັນທຶກ
+              </button>
+            </div>
+          </form>
+        </Card>
+      )}
 
       <Modal show={modalOpen} onHide={() => setModalOpen(false)} size="lg">
         <Modal.Header closeButton>
@@ -491,27 +612,15 @@ const BuyXGetYForm = () => {
             <table className="w-full">
               <thead>
                 <tr>
-                  <th className="border-b p-2 flex gap-2">
-                    <input
-                      type="checkbox"
-                      id="selectAllMainItems"
-                      checked={
-                        formData.selectedMenus.length === MenuData.length
-                      }
-                      onChange={handleSelectAllMainItems}
-                    />
-                    <label htmlFor="selectAllMainItems" className="mt-2">
-                      {t("ເລຶອກ")}
-                    </label>
-                  </th>
+                  <th className="border-b p-2">ເລຶອກ</th>
                   <th className="border-b p-2">ຊື່ເມນູ</th>
                   <th className="border-b p-2">ຊື່ປະເພດ</th>
                   <th className="border-b p-2">ລາຄາ</th>
                 </tr>
               </thead>
               <tbody>
-                {MenuData?.length > 0 ? (
-                  MenuData.map((menu) => (
+                {menuData?.length > 0 ? (
+                  menuData.map((menu) => (
                     <tr key={menu._id}>
                       <td className="border-b p-2">
                         <input
@@ -579,7 +688,7 @@ const BuyXGetYForm = () => {
             />
           </div>
           <div className="h-[400px] overflow-auto">
-            {/* {MenuData.map((menu) => (
+            {/* {menuData.map((menu) => (
               <div key={menu._id}>
                 <input
                   type="checkbox"
@@ -596,7 +705,7 @@ const BuyXGetYForm = () => {
             <table className="w-full">
               <thead>
                 <tr>
-                  <th className="border-b p-2 flex gap-2">
+                  <th className="border-b p-2 flex gap-2 items-center">
                     <input
                       type="checkbox"
                       id="selectAllFreeItems"
@@ -619,8 +728,8 @@ const BuyXGetYForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {MenuData?.length > 0 ? (
-                  MenuData.map((menu) => (
+                {menuData?.length > 0 ? (
+                  menuData.map((menu) => (
                     <tr key={menu._id}>
                       <td className="border-b p-2">
                         <input
@@ -663,4 +772,4 @@ const BuyXGetYForm = () => {
   );
 };
 
-export default BuyXGetYForm;
+export default EditBuyXGetYForm;
