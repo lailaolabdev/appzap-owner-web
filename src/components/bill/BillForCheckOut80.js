@@ -140,6 +140,9 @@ export default function BillForCheckOut80({
     });
   }, [imageUrl2]);
 
+  // console.log("storeDetail: ", storeDetail);
+  // console.log("storeDetail.textForBill: ", storeDetail?.textForBill);
+
   return (
     <Container>
       <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
@@ -443,6 +446,14 @@ export default function BillForCheckOut80({
           />
         </Img>
       </div>
+
+      {storeDetail?.textForBill?.trim().length > 0 && (
+        <div>
+          <div className="text-center text-[12px] font-thin">
+            {`(${storeDetail?.textForBill})`}
+          </div>
+        </div>
+      )}
     </Container>
   );
 }

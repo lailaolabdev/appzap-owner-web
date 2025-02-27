@@ -18,6 +18,7 @@
   "please_enter_the_bank_name": "กรุณาใส่ชื่อธนาคาร",
   "total_Amount_of_Money": "จำนวนเงินทั้งหมด",
   "bookingManage": "การจัดการการจอง",
+  "bill_footer_information": "ข้อมูลท้ายใบเสร็จ",
   "report": "รายงานการขาย",
   "historyOrder": "ประวัติการสั่งซื้อ",
   "static": "สถิติ",

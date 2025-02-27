@@ -21,6 +21,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
           phone: data?.phone,
           detail: data?.detail,
           note: data?.note,
+          textForBill: data?.textForBill,
           image: data?.image,
         }}
         validate={(values) => {
@@ -119,7 +120,7 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
-                <Form.Label>{t("WhatsApp")}</Form.Label>
+                <Form.Label>{t("WhatsAppss")}</Form.Label>
                 <Form.Control
                   type="text"
                   name="whatsapp"
@@ -142,6 +143,17 @@ export default function PopUpStoreEdit({ open, onClose, onSubmit, data }) {
                   value={values.phone}
                   isInvalid={errors.phone && touched.phone && errors.phone}
                   placeholder={t("tel")}
+                />
+              </Form.Group>
+              <Form.Group controlId="exampleForm.ControlInput1">
+                <Form.Label>{t("bill_footer_information")}</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="textForBill"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.textForBill}
+                  placeholder="..."
                 />
               </Form.Group>
               <Form.Group controlId="exampleForm.ControlInput1">
