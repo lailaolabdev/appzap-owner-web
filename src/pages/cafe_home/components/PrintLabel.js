@@ -8,6 +8,9 @@ export default function PrintLabel({ data, bill, totalPrice }) {
   return (
     <>
       <div className="py-2 px-4 bg-white rounded-lg shadow-md ">
+        <span className="flex justify-center font-bold text-lg">
+          {storeDetail?.name}
+        </span>
         <span className="flex items-center justify-between">
           <h5 className="font-bold">{bill?.name}</h5>
           <p className="pt-2 font-bold"># {data}</p>

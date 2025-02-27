@@ -70,20 +70,17 @@ import theme from "../../theme";
 import moment from "moment";
 import url from "socket.io-client/lib/url";
 import CheckOutPopupCafeNew from "../table/components/CheckOutPopupCafeNew";
+import { getAllStorePoints } from "../../services/member.service";
+import AnimationLoading from "../../constants/loading";
 
 function Homecafe() {
   const params = useParams();
-  const navigate = useNavigate();
-  const code = params?.code;
   const [billId, setBillId] = useState();
-  const tableId = params?.tableId;
   const [isLoading, setIsLoading] = useState(false);
-  const [disabledButton, setDisabledButton] = useState(false);
 
   const [selectedMenu, setSelectedMenu] = useState([]);
   const [selectedItem, setSelectedItem] = useState();
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [allSelectedMenu, setAllSelectedMenu] = useState([]);
   const [show, setShow] = useState(false);
   const [menuOptions, setMenuOptions] = useState([]);
   const [isPopup, setIsPupup] = useState(false);
@@ -230,12 +227,11 @@ function Homecafe() {
   const {
     printerCounter,
     printers,
-    selectedTable,
     setSelectedTable,
     getTableDataStore,
     profile,
   } = useStore();
-  const { storeDetail } = useStoreStore();
+  const { storeDetail, setStoreDetail } = useStoreStore();
   const [search, setSearch] = useState("");
 
   const {
@@ -245,6 +241,7 @@ function Homecafe() {
     getMenuCategories,
     setMenus,
     setMenuCategories,
+    isMenuLoading,
   } = useMenuStore();
 
   // Get Menus & Categories, and persist it in localstorage.
@@ -281,7 +278,25 @@ function Homecafe() {
 
   useEffect(() => {
     billData();
+    fetchPointsData();
   }, []);
+
+  const fetchPointsData = async () => {
+    try {
+      const data = await getAllStorePoints();
+      if (!data.error) {
+        const { DATA } = await getLocalData();
+        const filteredData = data.filter(
+          (point) => point.storeId === DATA.storeId
+        );
+        setStoreDetail({
+          pointStore: filteredData[0].money,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch points data: ", error);
+    }
+  };
 
   const billData = async () => {
     try {
@@ -544,6 +559,8 @@ function Homecafe() {
     });
 
     handleClose();
+    setAddComments("");
+    setEditComments("");
   };
 
   const AlertMessage = () => {
@@ -1071,7 +1088,6 @@ function Homecafe() {
     try {
       setIsLoading(true);
       const _dataBill = {
-        ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
       };
       await _createHistoriesPrinter(_dataBill);
@@ -1256,11 +1272,11 @@ function Homecafe() {
                 : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 px-2"
             }
           >
-            {isLoading ? (
+            {isLoading || isMenuLoading ? (
               <Loading />
             ) : afterSearch.length === 0 ? (
               <div className="w-full pt-36 flex justify-center items-center">
-                <p>ຍັງບໍ່ມີລາຍການນີ້</p>
+                {AnimationLoading()}
               </div>
             ) : (
               afterSearch?.map((data, index) => {
@@ -2054,7 +2070,6 @@ function Homecafe() {
         onPrintForCherLaBel={onPrintForCherLaBel}
         onPrintDrawer={onPrintDrawer}
         dataBill={SelectedMenus}
-        tableData={selectedTable}
         open={popup?.CheckOutType}
         onClose={() => setPopup()}
         setDataBill={setDataBill}
@@ -2070,6 +2085,7 @@ function Homecafe() {
           dataBill={SelectedMenus}
           taxPercent={taxPercent}
           profile={profile}
+          meberData={dataBill}
         />
       </div>
       {SelectedMenus?.map((val, i) => {

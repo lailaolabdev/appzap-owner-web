@@ -1,8 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import {
+  addMenu,
+  addMenuOption,
   createMenu,
   deleteMenuData,
+  deleteMenuOption,
+  getMenuOptionByStoreId,
+  getMenuOptions,
   getMenusByStoreId,
   updateCategoryMenu,
   updateMenu,
@@ -14,6 +19,7 @@ import {
   getCategories,
   updateCategory,
 } from "../services/menuCategory";
+import { get } from "lodash";
 
 export const useMenuStore = create(
   persist(
@@ -25,12 +31,17 @@ export const useMenuStore = create(
       isMenuLoading: false,
       isMenuCategoryLoading: false,
       staffCart: [],
+      menuOption: [],
+      option: [],
 
       // Action to set loading state
       setMenuLoading: (isLoading) => set({ isMenuLoading: isLoading }),
 
       // Action to set menu data
-      setMenus: (menusData) => set({ menus: menusData }),
+      setMenus: (menusData) => {
+        console.log("Setting menus data:", menusData);
+        set({ menus: menusData });
+      },
 
       // Action to set menu categories
       setMenuCategories: (categoriesData) =>
@@ -55,6 +66,54 @@ export const useMenuStore = create(
           const data = await getMenusByStoreId(storeId);
           set({ menus: data, isMenuLoading: false });
           return data;
+        } catch (error) {
+          console.error("Fetch menus error:", error.message);
+          set({ isMenuLoading: false });
+        }
+      },
+      //TODO: get menu option by store id
+      getMenusOptionByStoreId: async (storeId) => {
+        set({ isMenuLoading: true });
+        try {
+          const data = await getMenuOptions(storeId);
+          set({ option: data, isMenuLoading: false });
+          return data;
+        } catch (error) {
+          console.error("Fetch menus error:", error.message);
+          set({ isMenuLoading: false });
+        }
+      },
+      //TODO: delete menu option by store id
+      deleteMenuOption: async (menuId, optionId) => {
+        set({ isMenuLoading: true });
+        try {
+          const res = await deleteMenuOption(menuId, optionId);
+          set({ menus: res, isMenuLoading: false });
+          return res;
+        } catch (error) {
+          console.error("Fetch menus error:", error.message);
+          set({ isMenuLoading: false });
+        }
+      },
+      //TODO: Add menu option
+      addMunuOption: async (menuId, optionId) => {
+        set({ isMenuLoading: true });
+        try {
+          const res = await addMenuOption(menuId, optionId);
+          set({ menus: res, isMenuLoading: false });
+          return res;
+        } catch (error) {
+          console.error("Fetch menus error:", error.message);
+          set({ isMenuLoading: false });
+        }
+      },
+
+      getAllMenuOptione: async (storeId) => {
+        set({ isMenuLoading: true });
+        try {
+          const res = await getMenuOptionByStoreId(storeId);
+          set({ option: res, isMenuLoading: false });
+          return res;
         } catch (error) {
           console.error("Fetch menus error:", error.message);
           set({ isMenuLoading: false });

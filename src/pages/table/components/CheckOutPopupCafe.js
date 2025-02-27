@@ -147,14 +147,11 @@ export default function CheckOutPopupCafe({
     if (!open) return;
     let moneyReceived = "";
     let moneyChange = "";
-    moneyReceived = `${
-      selectCurrency?.name === "LAK"
-        ? moneyCurrency(
-            (Number.parseFloat(cash) || 0) + (Number.parseFloat(transfer) || 0)
-          )
-        : moneyCurrency(Number.parseFloat(cashCurrency) || 0)
-    } ${selectCurrency?.name}`;
-    moneyChange = `${moneyCurrency(
+    moneyReceived = cashCurrency
+      ? Number.parseFloat(cashCurrency) || 0
+      : (Number.parseFloat(cash) || 0) + (Number.parseFloat(transfer) || 0);
+
+    moneyChange =
       (Number.parseFloat(cash) || 0) +
         (Number.parseFloat(transfer) || 0) -
         (dataBill
@@ -164,18 +161,17 @@ export default function CheckOutPopupCafe({
           : totalBill > 0
           ? totalBill
           : 0) <=
-        0
+      0
         ? 0
         : (Number.parseFloat(cash) || 0) +
-            (Number.parseFloat(transfer) || 0) -
-            (dataBill
-              ? totalBill > 0
-                ? totalBill
-                : 0
-              : totalBill > 0
+          (Number.parseFloat(transfer) || 0) -
+          (dataBill
+            ? totalBill > 0
               ? totalBill
-              : 0)
-    )} ${storeDetail?.firstCurrency}`;
+              : 0
+            : totalBill > 0
+            ? totalBill
+            : 0);
 
     setDataBill((prev) => ({
       ...prev,
@@ -219,7 +215,7 @@ export default function CheckOutPopupCafe({
       setCash();
       setRateCurrency(1);
     }
-  }, [selectCurrency?.name, selectCurrency?.name]);
+  }, [selectCurrency?.id, selectCurrency?.name]);
   useEffect(() => {
     if (!open) return;
     const amount = cashCurrency * rateCurrency;
@@ -282,6 +278,15 @@ export default function CheckOutPopupCafe({
     const moneyChange = calculateReturnAmount();
     const Orders = dataBill?.map((itemOrder) => itemOrder);
 
+    let statusPoint = "";
+
+    if (storeDetail?.isCRM && tab === "cash_transfer_point") {
+      statusPoint = "REDEEM";
+    }
+    if (storeDetail?.isCRM && hasCRM) {
+      statusPoint = "EARN";
+    }
+
     const datas = {
       selectedBank: selectedBank.name,
       bankId: selectedBank.id,
@@ -307,6 +312,7 @@ export default function CheckOutPopupCafe({
       memberId: memberDataSearch?._id,
       memberName: memberDataSearch?.name,
       memberPhone: memberDataSearch?.phone,
+      statusPoint: statusPoint,
       fullnameStaffCheckOut:
         `${profile.data.firstname} ${profile.data.lastname}` ?? "-",
       staffCheckOutId: profile.data._id,
@@ -652,6 +658,23 @@ export default function CheckOutPopupCafe({
     });
   };
 
+  const handleChangeCurrencie = (e) => {
+    if (e.target.value === "LAK") {
+      setSelectCurrency({
+        id: "LAK",
+        name: "LAK",
+      });
+      return;
+    }
+    const selectedCurrencie = currencyList.find(
+      (item) => item?._id === e?.target?.value
+    );
+    setSelectCurrency({
+      id: selectedCurrencie._id,
+      name: selectedCurrencie.currencyName,
+    });
+  };
+
   useEffect(() => {
     const fetchAllBanks = async () => {
       try {
@@ -672,23 +695,6 @@ export default function CheckOutPopupCafe({
     setSelectedBank({
       id: selectedOption._id,
       name: selectedOption.bankName,
-    });
-  };
-  const handleChangeCurrencie = (e) => {
-    if (e.target.value === "LAK") {
-      setSelectCurrency({
-        id: "LAK",
-        name: "LAK",
-      });
-      return;
-    }
-    const selectedCurrencie = currencyList.find(
-      (item) => item?._id === e?.target?.value
-    );
-
-    setSelectCurrency({
-      id: selectedCurrencie._id,
-      name: selectedCurrencie.currencyName,
     });
   };
 
@@ -733,10 +739,11 @@ export default function CheckOutPopupCafe({
           {/* news---------------------------------------------------------------------------------------------------------------------- */}
           <div style={{ padding: 20 }}>
             <div
-              style={{
-                marginBottom: 10,
-                fontSize: 22,
-              }}
+              // style={{
+              //   marginBottom: 10,
+              //   fontSize: 22,
+              // }}
+              className="mb-[10px] text-[22px] flex gap-3 items-center"
             >
               <span>{t("bill_total")}: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
