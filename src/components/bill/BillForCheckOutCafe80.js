@@ -344,7 +344,7 @@ export default function BillForCheckOutCafe80({
       )}
       {storeDetail?.isStatusCafe && (
         <div className="text-center text-[12px] font-thin">
-          LOVE LIFE AI-CHA
+          LOVE LIFE DRINK Ai-CHA
         </div>
       )}
     </div>

@@ -518,14 +518,16 @@ function Homecafe() {
       isWeightMenu: menu?.isWeightMenu,
     };
 
-    const existingMenuIndex = updatedSelectedMenus.findIndex(
-      (item) => item.id === menu._id
-    );
-    if (existingMenuIndex !== -1) {
-      updatedSelectedMenus[existingMenuIndex].quantity += 1;
-    } else {
-      updatedSelectedMenus.push(mainMenuData);
-    }
+    // const existingMenuIndex = updatedSelectedMenus.findIndex(
+    //   (item) => item.id === menu._id
+    // );
+    // if (existingMenuIndex !== -1) {
+    //   updatedSelectedMenus[existingMenuIndex].quantity += 1;
+    // } else {
+
+    // }
+
+    updatedSelectedMenus.push(mainMenuData);
 
     // biome-ignore lint/complexity/noForEach: <explanation>
     activePromotions.forEach((promotion) => {
@@ -1328,6 +1330,8 @@ function Homecafe() {
   // console.log("bill80Ref CaFe",bill80Ref)
 
   const billForCherCancel80 = useRef([]);
+
+  console.log("billForCherCancel80", billForCherCancel80);
 
   if (billForCherCancel80.current.length !== arrLength) {
     // add or remove refs
