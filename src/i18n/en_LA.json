@@ -265,6 +265,7 @@
   "sound_manage": "ຈັດການສຽງ",
   "currency_manage": "ຈັດການເລດເງິນ",
   "staffCheckBill": "ພະນັກງານເຊັກບິນ",
+  "bill_footer_information": "ຂໍ້ມູນທ້າຍໃບບິນ",
   "billCutPaperTitle": "ຕັດເຈ້ຍຕາມເມນູ",
   "billCut": "ຕັດ",
   "billNoCut": "ບໍ່ຕັດ",

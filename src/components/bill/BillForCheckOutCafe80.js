@@ -32,9 +32,9 @@ export default function BillForCheckOutCafe80({
   const { t } = useTranslation();
   const [base64Image, setBase64Image] = useState("");
 
-  // console.log("storeDetail", storeDetail);
+  //console.log("storeDetail ", storeDetail);
   // console.log("profile",profile)
-  console.log("meberData", meberData);
+  //console.log("meberData", meberData);
 
   // useEffect
   useEffect(() => {
@@ -162,11 +162,11 @@ export default function BillForCheckOutCafe80({
                 <span style={{ fontWeight: "bold" }}>
                   {meberData?.memberPhone
                     ? `${meberData?.memberPhone} (${t(
-                        "point"
-                      )} : ${moneyCurrency(
-                        Number(meberData?.Point || 0) -
-                          Number(storeDetail?.point || 0)
-                      )})`
+                      "point"
+                    )} : ${moneyCurrency(
+                      Number(meberData?.Point || 0) -
+                      Number(storeDetail?.point || 0)
+                    )})`
                     : ""}
                 </span>
               </div>
@@ -347,6 +347,15 @@ export default function BillForCheckOutCafe80({
           LOVE LIFE AI-CHA
         </div>
       )}
+      {storeDetail?.textForBill?.trim().length > 0 && (
+        <div>
+          <div className="text-center text-[12px] font-thin">
+            {`(${storeDetail?.textForBill})`}
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 }

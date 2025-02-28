@@ -16,11 +16,13 @@ import { updateStore } from "../../services/store";
 import { useParams } from "react-router-dom";
 import StarRatings from "react-star-ratings";
 import { useTranslation } from "react-i18next";
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function StoreDetail() {
   const params = useParams();
   const { t } = useTranslation();
   const { getShift } = useShiftStore();
+  const { setStoreDetail } = useStoreStore();
 
   // State
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +33,7 @@ export default function StoreDetail() {
   const [getTokken, setgetTokken] = useState();
   const [popEditStroe, setPopEditStroe] = useState(false);
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,6 +54,7 @@ export default function StoreDetail() {
   //   await getShift(findBy);
   // };
 
+
   const getData = async (storeId) => {
     setIsLoading(true);
     await fetch(STORE + `/?id=${params?.id}`, {
@@ -60,6 +64,7 @@ export default function StoreDetail() {
       .then((json) => {
         setStore(json);
         setDataSwitch(json?.isOpen);
+        setStoreDetail(json);
       });
 
     await fetch(TABLES + `/?storeId=${storeId}&&`, {
