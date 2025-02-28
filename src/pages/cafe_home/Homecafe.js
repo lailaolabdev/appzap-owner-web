@@ -207,24 +207,23 @@ function Homecafe() {
   };
   const handleClose = () => setShow(false);
 
-  const handleSetQuantity = (int, data) => {
-    const dataArray = [];
-    for (const i of SelectedMenus) {
-      let _data = { ...i };
+  const handleSetQuantity = (int, data, index) => {
+    const updatedMenus = [...SelectedMenus];
 
+    if (index >= 0 && index < updatedMenus.length) {
+      let item = updatedMenus[index];
       if (
-        data?.id === i?.id &&
-        JSON.stringify(data?.options) === JSON.stringify(i?.options)
+        data?.id === item?.id &&
+        JSON.stringify(data?.options) === JSON.stringify(item?.options)
       ) {
-        _data = { ..._data, quantity: _data?.quantity + int };
-      }
-
-      if (_data.quantity > 0) {
-        dataArray.push(_data);
+        item.quantity += int;
+        if (item.quantity <= 0) {
+          updatedMenus.splice(index, 1);
+        }
       }
     }
-    setSelectedMenu(dataArray);
-    setSelectedMenus(dataArray);
+    setSelectedMenu(updatedMenus);
+    setSelectedMenus(updatedMenus);
   };
 
   const {
@@ -524,7 +523,7 @@ function Homecafe() {
     // if (existingMenuIndex !== -1) {
     //   updatedSelectedMenus[existingMenuIndex].quantity += 1;
     // } else {
-
+    //updatedSelectedMenus.push(mainMenuData);
     // }
 
     updatedSelectedMenus.push(mainMenuData);
@@ -1331,8 +1330,6 @@ function Homecafe() {
 
   const billForCherCancel80 = useRef([]);
 
-  console.log("billForCherCancel80", billForCherCancel80);
-
   if (billForCherCancel80.current.length !== arrLength) {
     // add or remove refs
     billForCherCancel80.current = Array(arrLength)
@@ -1609,7 +1606,6 @@ function Homecafe() {
         !promotion.discountType ||
         promotion.discountValue == null
       ) {
-        console.error("Invalid promotion data", promotion);
         return;
       }
 
@@ -1631,8 +1627,6 @@ function Homecafe() {
         }
         discountAmount = promotion.discountValue;
       }
-
-      // ✅ คำนวณส่วนลดให้ราคาไม่ต่ำกว่า 0
       finalPrice = Math.max(finalPrice - discountAmount, 0);
     });
 
@@ -1726,7 +1720,7 @@ function Homecafe() {
                       <div className="relative w-full pt-[75%] overflow-hidden">
                         <img
                           src={
-                            data?.images[0]
+                            data?.images?.length > 0
                               ? URL_PHOTO_AW3 + data?.images[0]
                               : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
                           }
@@ -1964,7 +1958,9 @@ function Homecafe() {
                                     border: "none",
                                     width: 25,
                                   }}
-                                  onClick={() => handleSetQuantity(-1, data)}
+                                  onClick={() =>
+                                    handleSetQuantity(-1, data, index)
+                                  }
                                 >
                                   -
                                 </button>
@@ -2027,7 +2023,9 @@ function Homecafe() {
                                     border: "none",
                                     width: 25,
                                   }}
-                                  onClick={() => handleSetQuantity(1, data)}
+                                  onClick={() =>
+                                    handleSetQuantity(1, data, index)
+                                  }
                                 >
                                   +
                                 </button>
@@ -2273,7 +2271,9 @@ function Homecafe() {
                                   border: "none",
                                   width: 25,
                                 }}
-                                onClick={() => handleSetQuantity(-1, data)}
+                                onClick={() =>
+                                  handleSetQuantity(-1, data, index)
+                                }
                               >
                                 -
                               </button>
@@ -2337,7 +2337,9 @@ function Homecafe() {
                                   border: "none",
                                   width: 25,
                                 }}
-                                onClick={() => handleSetQuantity(1, data)}
+                                onClick={() =>
+                                  handleSetQuantity(1, data, index)
+                                }
                               >
                                 +
                               </button>
