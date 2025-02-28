@@ -35,6 +35,8 @@ export default function BillForCheckOutCafe80({
   //console.log("storeDetail ", storeDetail);
   // console.log("profile",profile)
 
+  // console.log("meberData", meberData);
+  //console.log("meberData", meberData);
 
   // useEffect
   useEffect(() => {
@@ -162,11 +164,11 @@ export default function BillForCheckOutCafe80({
                 <span style={{ fontWeight: "bold" }}>
                   {meberData?.memberPhone
                     ? `${meberData?.memberPhone} (${t(
-                      "point"
-                    )} : ${moneyCurrency(
-                      Number(meberData?.Point || 0) -
-                      Number(storeDetail?.point || 0)
-                    )})`
+                        "point"
+                      )} : ${moneyCurrency(
+                        Number(meberData?.Point || 0) -
+                          Number(storeDetail?.point || 0)
+                      )})`
                     : ""}
                 </span>
               </div>
@@ -354,11 +356,6 @@ export default function BillForCheckOutCafe80({
           </div>
         </div>
       )}
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 07649b5 (update bill)
     </div>
   );
 }

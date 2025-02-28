@@ -9,7 +9,7 @@ import { useMenuStore } from "../../../zustand/menuStore";
 export default function PopUpOption({ open, onClose, data, onAddToCart }) {
   const [quantities, setQuantities] = useState({});
   const { staffCart, setStaffCart } = useMenuStore();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const [globalNote, setGlobalNote] = useState("");
 
   // Default fallback for missing data
@@ -17,10 +17,13 @@ export default function PopUpOption({ open, onClose, data, onAddToCart }) {
     name: "No Name Provided",
     price: 0,
     currency: "N/A",
-    menuOptions: [],
+    menuOptions: [], // Ensure menuOptions is always an array
   };
 
   const menuData = data || defaultData;
+
+  // Ensure menuOptions is always an array
+  const menuOptions = menuData.menuOptions || [];
 
   const handleQuantityChange = (optionId, change) => {
     setQuantities((prev) => ({
@@ -31,7 +34,7 @@ export default function PopUpOption({ open, onClose, data, onAddToCart }) {
 
   // Calculate the total price
   const calculateTotal = () => {
-    const optionTotal = menuData.menuOptions.reduce(
+    const optionTotal = menuOptions.reduce(
       (total, option) => total + (quantities[option._id] || 0) * option.price,
       0
     );
@@ -39,7 +42,7 @@ export default function PopUpOption({ open, onClose, data, onAddToCart }) {
   };
 
   const handleAddToCart = () => {
-    const selectedOptions = menuData.menuOptions
+    const selectedOptions = menuOptions
       .filter((option) => (quantities[option._id] || 0) > 0)
       .map((option) => ({
         _id: option._id,
@@ -51,12 +54,12 @@ export default function PopUpOption({ open, onClose, data, onAddToCart }) {
     const newOrder = {
       _id: menuData._id,
       name: menuData.name,
-      quantity: menuData?.quantity,
+      quantity: menuData.quantity,
       price: menuData.price,
-      categoryId: menuData?.categoryId,
-      printer: menuData?.categoryId?.printer,
-      note: globalNote.trim(), // Add global note
-      menuOptions: menuData?.menuOptions,
+      categoryId: menuData.categoryId,
+      printer: menuData.categoryId?.printer,
+      note: globalNote?.trim(), // Add global note
+      menuOptions: menuOptions,
       options: selectedOptions,
       totalOptionPrice: calculateTotal(),
     };
@@ -105,8 +108,8 @@ export default function PopUpOption({ open, onClose, data, onAddToCart }) {
       >
         <div style={{ fontWeight: "bold", textAlign: "start" }}>
           <div>
-            {menuData.menuOptions.length > 0
-              ? menuData.menuOptions.map((option) => (
+            {menuOptions.length > 0
+              ? menuOptions.map((option) => (
                   <div
                     key={option._id}
                     style={{
@@ -179,7 +182,7 @@ export default function PopUpOption({ open, onClose, data, onAddToCart }) {
         <div style={{ marginTop: "10px", fontWeight: "bold", color: "#555" }}>
           {t("menu_option")}:
           <div>
-            {menuData.menuOptions
+            {menuOptions
               .filter((option) => (quantities[option._id] || 0) > 0)
               .map((option) => (
                 <span
