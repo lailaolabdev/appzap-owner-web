@@ -17,7 +17,7 @@ import { useMenuStore } from "../zustand/menuStore";
 
 // sound
 import messageSound from "../sound/message.mp3";
-import { END_POINT_SERVER_SHOWSALES, getLocalData } from "../constants/api";
+import { END_POINT_SERVER_JUSTCAN, getLocalData } from "../constants/api";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -92,7 +92,7 @@ export default function NavBar() {
     try {
       const { DATA } = await getLocalData();
       const _res = await axios.get(
-        `${END_POINT_SERVER_SHOWSALES}/v5/claim-payments?status=UNCLAIMED&storeId=${DATA?.storeId}`
+        `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?status=UNCLAIMED&storeId=${DATA?.storeId}`
       );
       console.log("_res.data");
       console.log(_res.data);

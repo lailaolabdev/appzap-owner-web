@@ -7,7 +7,7 @@ import { Button, Dropdown, Nav } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { FaListCheck } from "react-icons/fa6";
 import { ButtonComponent } from "../../components";
-import { END_POINT_SERVER_SHOWSALES, END_POINT_SEVER, getLocalData } from "../../constants/api";
+import { END_POINT_SERVER_JUSTCAN, END_POINT_SEVER, getLocalData } from "../../constants/api";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
 
 export default function HistoryBankTransferClaim({ data }) {
@@ -27,7 +27,7 @@ export default function HistoryBankTransferClaim({ data }) {
         try {
             console.log("IAMWORK")
             const { DATA } = await getLocalData();
-            const _res = await axios.get(`${END_POINT_SERVER_SHOWSALES}/v5/claim-payments?storeId=${DATA?.storeId}`);
+            const _res = await axios.get(`${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${DATA?.storeId}`);
             // setTaxPercent(_res?.data?.taxPercent);
             console.log(_res?.data)
             setClaimData(_res?.data?.data)
@@ -67,7 +67,7 @@ export default function HistoryBankTransferClaim({ data }) {
 
             const { DATA } = await getLocalData();
             const _res = await axios.post(
-                END_POINT_SERVER_SHOWSALES + "/v5/claim-payment/create",
+                END_POINT_SERVER_JUSTCAN + "/v5/claim-payment/create",
                 {
                     storeId: DATA?.storeId,
                     billIds: _billIds
@@ -85,7 +85,7 @@ export default function HistoryBankTransferClaim({ data }) {
         try {
             const { DATA } = await getLocalData();
             const _res = await axios.post(
-                END_POINT_SERVER_SHOWSALES + "/v5/claim-payment/create-all",
+                END_POINT_SERVER_JUSTCAN + "/v5/claim-payment/create-all",
                 {
                     storeId: DATA?.storeId,
                 }
