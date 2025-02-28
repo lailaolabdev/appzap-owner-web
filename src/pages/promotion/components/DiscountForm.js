@@ -219,12 +219,19 @@ const DiscountForm = () => {
       shiftId: shiftCurrent ? shiftCurrent[0]?._id : null,
       status: "ACTIVE",
     };
-    const response = await CreateDiscountPromotion(data);
-    if (response?.status === 200) {
-      navigate("/promotion");
-    } else {
-      errorAdd("ສ່ວນຫຼຸດບໍ່ສໍາເລັດ");
-    }
+    await CreateDiscountPromotion(data)
+      .then((res) => {
+        navigate("/promotion");
+      })
+      .catch((err) => {
+        console.log("errors", err?.response?.data?.isExits);
+        if (err?.response?.data?.isExits) {
+          errorAdd("ລາຍການນີ້ຖຶກເພີ່ມໄປແລ້ວ");
+        } else {
+          errorAdd("ເພີ່ມບໍ່ສຳເລັດ");
+        }
+      });
+
     fetchData();
   };
   const openModal = () => {

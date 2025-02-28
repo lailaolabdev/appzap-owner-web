@@ -294,9 +294,9 @@ export default function CheckOutPopupCafe({
       storeId: profile.data.storeId,
       isCheckout: "true",
       status: "CHECKOUT",
-      payAmount: cash,
-      transferAmount: transfer,
-      billAmount: totalBill,
+      payAmount: matchRoundNumber(cash),
+      transferAmount: matchRoundNumber(transfer),
+      billAmount: matchRoundNumber(totalBill),
       paymentMethod: forcus,
       shiftId: shiftCurrent[0]?._id,
       taxAmount: null,
@@ -307,7 +307,7 @@ export default function CheckOutPopupCafe({
       phone: null,
       queue: bill,
       point: point,
-      change: moneyChange,
+      change: matchRoundNumber(moneyChange),
       isCafe: true,
       memberId: memberDataSearch?._id,
       memberName: memberDataSearch?.name,
@@ -796,7 +796,9 @@ export default function CheckOutPopupCafe({
                 <Form.Control
                   type="text"
                   placeholder="0"
-                  value={convertNumber(cashCurrency)}
+                  value={convertNumber(
+                    cashCurrency > 0 ? matchRoundNumber(cashCurrency) : 0
+                  )}
                   onClick={() => {
                     setSelectInput("inputCurrency");
                   }}
@@ -819,7 +821,9 @@ export default function CheckOutPopupCafe({
                       }
                       type="text"
                       placeholder="0"
-                      value={convertNumber(cash)}
+                      value={convertNumber(
+                        cash > 0 ? matchRoundNumber(cash) : 0
+                      )}
                       onClick={() => {
                         setSelectInput("inputCash");
                       }}
@@ -842,7 +846,9 @@ export default function CheckOutPopupCafe({
                       }
                       type="text"
                       placeholder="0"
-                      value={convertNumber(transfer)}
+                      value={convertNumber(
+                        transfer > 0 ? matchRoundNumber(transfer) : 0
+                      )}
                       onClick={() => {
                         setSelectInput("inputTransfer");
                       }}
@@ -1076,12 +1082,11 @@ export default function CheckOutPopupCafe({
                 </Button>
               )}
               <div style={{ flex: 1 }} />
-
               <Form.Control
                 hidden={tab !== "cash"}
                 as="select"
                 style={{ width: 80 }}
-                value={selectCurrency?.id}
+                value={selectCurrency?.name?.id}
                 onChange={handleChangeCurrencie}
               >
                 <option value="LAK">{storeDetail?.firstCurrency}</option>

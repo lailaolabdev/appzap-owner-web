@@ -566,7 +566,7 @@ export default function DashboardPage() {
                   }}
                 >
                   <div>{e?.title}</div>
-                  <div>{e?.amount}</div>
+                  <div>{e?.amount || 0}</div>
                 </div>
               ))}
             </Card.Body>
@@ -914,7 +914,7 @@ export default function DashboardPage() {
                   )}
                   <th style={{ textAlign: "center" }}>{t("discount")}</th>
                   <th style={{ textAlign: "center" }}>{t("debt")}</th>
-                  <th style={{ textAlign: "center" }}>{t("last_amount")}</th>
+                  {/* <th style={{ textAlign: "center" }}>{t("last_amount")}</th> */}
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
                 {reportData.map((e) => (
@@ -937,10 +937,10 @@ export default function DashboardPage() {
                       {moneyCurrency(debtReport?.totalRemainingAmount)}
                       {storeDetail?.firstCurrency}
                     </td>
-                    <td>
+                    {/* <td>
                       {moneyCurrency(e?.billBefore)}
                       {storeDetail?.firstCurrency}
-                    </td>
+                    </td> */}
                     <td style={{ textAlign: "right" }}>
                       {moneyCurrency(e?.billAmount)}
                       {storeDetail?.firstCurrency}

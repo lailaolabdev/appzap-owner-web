@@ -179,6 +179,7 @@ const Promotion = () => {
           });
           handleCloseDelete();
           fetchData();
+          fetchDataMenu();
         } else {
           Swal.fire({
             icon: "error",
@@ -187,6 +188,7 @@ const Promotion = () => {
             timer: 1500,
           });
           fetchData();
+          fetchDataMenu();
           handleCloseDelete();
         }
       });

@@ -562,7 +562,7 @@ function Homecafe() {
               id: freeItemId,
               name: freeItemName,
               price: 0,
-              quantity: promotion.getQuantity,
+              quantity: 1,
               categoryId: menu?.categoryId,
               printer: menu?.categoryId?.printer,
               shiftId: shiftCurrent[0]?._id,
@@ -871,7 +871,7 @@ function Homecafe() {
                 id: freeItemId,
                 name: freeItemName,
                 price: 0,
-                quantity: promotion.getQuantity,
+                quantity: 1,
                 categoryId: selectedItem?.categoryId,
                 printer: selectedItem?.categoryId?.printer,
                 shiftId: shiftCurrent[0]?._id,
@@ -1820,7 +1820,13 @@ function Homecafe() {
                                   {promotion?.discountValue ? (
                                     <div className="flex flex-col">
                                       <span className="text-color-app font-medium text-base">
-                                        {moneyCurrency(calculateDiscount(data))}{" "}
+                                        {moneyCurrency(
+                                          calculateDiscount(data) > 0
+                                            ? matchRoundNumber(
+                                                calculateDiscount(data)
+                                              )
+                                            : 0
+                                        )}{" "}
                                         {storeDetail?.firstCurrency}
                                       </span>
 
@@ -2031,7 +2037,13 @@ function Homecafe() {
                                 </button>
                               </td>
                               <td>
-                                <p>{moneyCurrency(itemPrice)}</p>
+                                <p>
+                                  {moneyCurrency(
+                                    itemPrice > 0
+                                      ? matchRoundNumber(itemPrice)
+                                      : 0
+                                  )}
+                                </p>
                               </td>
 
                               <td style={{ padding: 0, textAlign: "right" }}>
@@ -2346,7 +2358,13 @@ function Homecafe() {
                             </td>
 
                             <td>
-                              <p>{moneyCurrency(itemPrice)}</p>
+                              <p>
+                                {moneyCurrency(
+                                  itemPrice > 0
+                                    ? matchRoundNumber(itemPrice)
+                                    : 0
+                                )}
+                              </p>
                             </td>
 
                             <td style={{ padding: 0, textAlign: "right" }}>
