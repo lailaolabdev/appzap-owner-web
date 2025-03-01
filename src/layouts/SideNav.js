@@ -20,10 +20,8 @@ import {
   faUser,
   faBook,
   faMusic,
-  faUsers,
   faBeer,
   faShoppingCart,
-  faBox,
   faBoxes,
   faLayerGroup,
   faStoreAlt,
@@ -38,11 +36,9 @@ import "./sidenav.css";
 import { useStore } from "../store";
 import { useTranslation } from "react-i18next";
 import role from "../helpers/role";
-import { getLocalData, getToken } from "../constants/api";
-import { getCountOrderWaiting } from "../services/order";
+import { getToken } from "../constants/api";
 import _ from "lodash";
 import { fontMap } from "../utils/font-map";
-
 import { useStoreStore } from "../zustand/storeStore";
 import { useOrderStore } from "../zustand/orderStore";
 import { useBookingStore } from "../zustand/bookingStore";
@@ -61,6 +57,25 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const [status, setStatus] = useState(true);
   const [token, setToken] = useState();
   const [isTitle, setIsTitle] = useState(false);
+  const [hasReportStock, setHasReportStock] = useState(false);
+  const [hasReportDebt, setHasReportDebt] = useState(false);
+  const [hasBranches, setHasBranches] = useState(false);
+  const [hasOrders, setHasOrders] = useState(false);
+  const [hasCafe, setHasCafe] = useState(false);
+  const [hasCuctomrRequests, setHasCuctomrRequests] = useState(false);
+  const [hasMarketing, setHasMarketing] = useState(false);
+  const [hasMenu, setHasMenu] = useState(false);
+  const [hasExpenses, setHasExpenses] = useState(false);
+  const [hasReservation, setHasRevervation] = useState(false);
+  const [hasProductExpenses, setHasProductExpress] = useState(false);
+  const [hasFinancialstatistics, setHasFinancialStatistics] = useState(false);
+  const [hasReportNew, setHasReportNew] = useState(false);
+  const [hasTableStatus, setHasTableStatus] = useState(false);
+  const [hasShopSetting, setHasShopSetting] = useState(false);
+  const [firstFoundPermission, setFirstFoundPermission] = useState("");
+  const { profile } = useStore();
+  const [profileRole, setProfileRole] = useState(profile?.data?.role || null);
+
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
@@ -80,16 +95,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
     const fetchBooking = async () => {
       await fetchBookingByStatus("WAITING");
     };
-
     fetchBooking();
   }, [fetchBookingByStatus]);
-
   const UN_SELECTED_TAB_TEXT = "#606060";
   const {
     t,
     i18n: { language },
   } = useTranslation();
-  const { profile } = useStore();
+  // const { profile } = useStore();
   const { user } = useStore();
   const itemMenuForCafe = [
     {
@@ -202,6 +215,41 @@ export default function Sidenav({ location, navigate, onToggle }) {
     return e.role === profile?.data?.role;
   });
 
+  const appzapStaff = [
+    "APPZAP_COUNTER",
+    "APPZAP_ADMIN",
+    "APPZAP_KITCHEN",
+    "APPZAP_DEALER",
+    "APPZAP_STAFF",
+  ];
+  const appzapAdmin = "APPZAP_ADMIN";
+
+  useEffect(() => {
+    if (profile?.data?.permissionRoleId?.permissions) {
+      const permissions = profile?.data?.permissionRoleId?.permissions;
+      const permissionMap = [
+        { set: setHasTableStatus, check: "TABLE_STATUS" },
+        { set: setHasOrders, check: "MANAGE_ORDERS" },
+        { set: setHasReportStock, check: "MANAGE_STOCK" },
+        { set: setHasCafe, check: "MANAGE_CAFE" },
+        { set: setHasExpenses, check: "MANAGE_EXPENSES" },
+        { set: setHasRevervation, check: "MANAGE_RESERVATIONS" },
+        { set: setHasMenu, check: "MANAGE_MENU" },
+        { set: setHasReportNew, check: "REPORT_NEW" },
+        { set: setHasFinancialStatistics, check: "FINANCIAL_STATISTICS" },
+        { set: setHasBranches, check: "MANAGE_BRANCHES" },
+        { set: setHasShopSetting, check: "SHOP_SETING" },
+        { set: setHasProductExpress, check: "MANAGE_PRODUCT_EXPRESS" },
+        { set: setHasReportDebt, check: "REPORT_INDEBTED" },
+        { set: setHasCuctomrRequests, check: "MANAGE_CUSTOMER_REQUESTS" },
+        { set: setHasMarketing, check: "MANAGE_MARKETING" },
+      ];
+      permissionMap.forEach(({ set, check }) => {
+        set(permissions.includes(check));
+      });
+    }
+  }, [profile?.data?.permissionRoleId?.permissions, profile, storeDetail]);
+
   const itemList = [
     {
       title: `${t("table_status")}`,
@@ -212,8 +260,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
         : "tables",
       icon: faHome,
       typeStore: "",
-      hidden: !storeDetail?.hasPOS,
-      isCafe: storeDetail?.isStatusCafe,
+      hidden:
+        (!hasTableStatus && appzapStaff.includes(profileRole)) ||
+        !storeDetail?.hasPOS,
       system: "tableManagement",
     },
     {
@@ -221,9 +270,21 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "orders",
       typeStore: "",
       icon: faAddressCard,
-      hidden: !storeDetail?.hasPOS,
-      isCafe: storeDetail?.isStatusCafe,
+      hidden:
+        (!hasOrders && appzapStaff.includes(profileRole)) ||
+        !storeDetail?.hasPOS,
       system: "orderManagement",
+    },
+    {
+      title: t("stock_manage"),
+      key: "stock",
+      // icon: BsArchive,
+      icon: faBoxes,
+      typeStore: "",
+      hidden:
+        (!hasReportStock && appzapStaff.includes(profileRole)) ||
+        !storeDetail?.hasPOS,
+      system: "stockManagement",
     },
     {
       title: `${t("isCafe")}`,
@@ -233,28 +294,27 @@ export default function Sidenav({ location, navigate, onToggle }) {
           : "shift-open-pages"
         : "cafe",
       icon: faStoreAlt,
-      typeStore: storeDetail?.isStatusCafe
-        ? storeDetail?.isStatusCafe
-        : storeDetail?.isRestuarant,
-      hidden: !storeDetail?.hasPOS,
+      typeStore: storeDetail?.isRestuarant,
+      hidden:
+        (!hasCafe && appzapStaff.includes(profileRole)) || !storeDetail?.hasPOS,
       system: "tableManagement",
     },
-    // {
-    //   title: t("stock_manage"),
-    //   key: "stock",
-    //   icon: faBoxes,
-    //   typeStore: "",
-    //   hidden: !storeDetail?.hasPOS,
-    //   isCafe: storeDetail?.isStatusCafe,
-    //   system: "stockManagement",
-    // },
-
+    {
+      title: `${t("paid_manage")}`,
+      key: "expends",
+      icon: faBook,
+      typeStore: "",
+      system: "reportManagement",
+      hidden: !hasExpenses && appzapStaff.includes(profileRole),
+    },
     {
       title: `${t("booking_manage")}`,
       key: "reservations",
       icon: faList,
       typeStore: "",
-      hidden: !storeDetail?.isReservable,
+      hidden:
+        (!hasReservation && appzapStaff.includes(profileRole)) ||
+        !storeDetail?.isReservable,
       system: "reservationManagement",
     },
     {
@@ -262,7 +322,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "menu",
       typeStore: "",
       icon: faBoxOpen,
-      hidden: !storeDetail?.hasSmartMenu,
+      hidden:
+        (!hasMenu && appzapStaff.includes(profileRole)) ||
+        !storeDetail?.hasSmartMenu,
       system: "menuManagement",
     },
   ]
@@ -282,13 +344,16 @@ export default function Sidenav({ location, navigate, onToggle }) {
       icon: faLayerGroup,
       typeStore: "",
       system: "reportManagement",
+      hidden: !hasFinancialstatistics && appzapStaff.includes(profileRole),
     },
     {
       title: `${t("report_new")}`,
       key: "reports/sales-report",
       typeStore: "",
       icon: faChartLine,
-      hidden: !storeDetail?.hasPOS,
+      hidden:
+        (!hasReportNew && appzapStaff.includes(profileRole)) ||
+        !storeDetail?.hasPOS,
       system: "reportManagement",
     },
     {
@@ -319,6 +384,16 @@ export default function Sidenav({ location, navigate, onToggle }) {
       title: `${t("shift")}`,
       key: "shift",
       typeStore: "",
+      icon: faBuilding,
+      hidden:
+        (!hasBranches && appzapStaff.includes(profileRole)) ||
+        !storeDetail?.hasPOS,
+      system: "reportManagement",
+    },
+    {
+      title: `${t("shift")}`,
+      key: "shift",
+      typeStore: "",
       icon: faClock,
       hidden: !storeDetail?.isShift,
       system: "reportManagement",
@@ -328,7 +403,11 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "settingStore",
       typeStore: "",
       icon: faCogs,
-      hidden: !storeDetail?.hasPOS,
+      hidden:
+        (!hasShopSetting &&
+          appzapStaff.includes(profileRole) &&
+          profileRole !== "APPZAP_ADMIN") ||
+        !storeDetail?.hasPOS,
       system: "settingManagement",
     },
 
@@ -337,8 +416,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "fark",
       typeStore: "",
       icon: faBeer,
-      hidden: !storeDetail?.hasPOS,
-      isCafe: storeDetail?.isStatusCafe,
+      hidden:
+        (!hasProductExpenses && appzapStaff.includes(profileRole)) ||
+        !storeDetail?.hasPOS,
       system: "farkManagement",
     },
     {
@@ -346,8 +426,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "debt",
       typeStore: "",
       icon: faMoneyBill,
-      hidden: !storeDetail?.hasPOS,
-      isCafe: storeDetail?.isStatusCafe,
+      hidden:
+        (!hasReportDebt && appzapStaff.includes(profileRole)) ||
+        !storeDetail?.hasPOS,
       system: "reportManagement",
     },
   ]

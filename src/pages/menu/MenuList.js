@@ -1182,7 +1182,7 @@ export default function MenuList() {
                       onChange={handleChange}
                     />
                   </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlSelect1">
+                  {/* <Form.Group controlId="exampleForm.ControlSelect1">
                     <Form.Label>{t("food_type")}</Form.Label>
                     <Form.Control
                       as="select"
@@ -1206,7 +1206,7 @@ export default function MenuList() {
                         return <option value={item?._id}>{item?.name}</option>;
                       })}
                     </Form.Control>
-                  </Form.Group>
+                  </Form.Group> */}
 
                   {/* <Form.Group controlId="exampleForm.ControlSelect1">
                     <Form.Label>{t("type")}</Form.Label>
@@ -1677,7 +1677,7 @@ export default function MenuList() {
                       onChange={handleChange}
                     />
                   </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlSelect1">
+                  {/* <Form.Group controlId="exampleForm.ControlSelect1">
                     <Form.Label>{t("food_type")}</Form.Label>
                     <Form.Control
                       as="select"

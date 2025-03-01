@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react"; ///// Ton fix errors ////////
+import React, { useState, useMemo, useEffect } from "react"; ///// Ton fix errors ////////
 import { Form, Button, Carousel, Spinner } from "react-bootstrap";
 import packetJson from "../../../package.json";
 import ReactGA from "react-ga4";
@@ -15,6 +15,7 @@ import { toast } from "react-toastify"; ///// Ton fix errors ////////
 import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
 import { useMenuStore } from "../../zustand/menuStore";
+import { redirectByPermission } from "../../helpers/redirectByPermission";
 
 // style
 import "./login.css";
@@ -30,12 +31,16 @@ function Login() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordType, setIsPasswordType] = useState(true);
-  const { setProfile } = useStore();
+  const { setProfile, profile } = useStore();
   const { t } = useTranslation();
-
-  // zustand state store
+  const [firstFoundPermission, setFirstFoundPermission] = useState(null);
+  const [path, setPath] = useState("");
   const { storeDetail, fetchStoreDetail, updateStoreDetail } = useStoreStore();
   const { shiftCurrent } = useShiftStore();
+
+  // zustand state store
+  // const { storeDetail, fetchStoreDetail, updateStoreDetail } = useStoreStore();
+  // const { shiftCurrent } = useShiftStore();
   const { clearMenus } = useMenuStore();
 
   useMemo(() => {
@@ -49,14 +54,20 @@ function Login() {
       if (isLoading) return;
       setIsLoading(true);
       const user = await axios.post(`${END_POINT}/v3/admin/login`, values);
+
+      let path = redirectByPermission(user, storeDetail);
+
       const { defaultPath } = role(
         user?.data?.data?.role,
         user?.data?.data,
         storeDetail,
-        shiftCurrent
+        shiftCurrent,
+        (path = user?.data?.data?.role === "APPZAP_DEALER" ? path : "")
       );
+
       if (defaultPath) {
         clearMenus();
+        console.log("4");
         // localStorage.setItem(USER_KEY, JSON.stringify(user?.data));
         setProfile(user?.data);
         // zustand store

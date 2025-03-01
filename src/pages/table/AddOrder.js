@@ -824,6 +824,7 @@ function AddOrder() {
       printer: selectedItem?.categoryId?.printer,
       note: addComments,
       menuOptions: selectedItem.menuOptions,
+      shiftId: shiftCurrent[0]?._id,
       options: filteredOptions,
       shiftId: shiftCurrent[0]?._id,
       discount: activePromotions.reduce(

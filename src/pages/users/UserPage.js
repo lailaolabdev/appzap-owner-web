@@ -32,10 +32,10 @@ import {
 } from "../../services/user";
 import Spinner from "react-bootstrap/Spinner";
 import PopUpCreateUser from "../../components/popup/PopUpCreateUser";
+import PopUpUpdateUser from "../../components/popup/PopupUpdateUser";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
 import { useTranslation } from "react-i18next";
-
 import { useStoreStore } from "../../zustand/storeStore";
 
 const limitData = 10;
@@ -55,11 +55,12 @@ export default function UserPage() {
   const [userData, setUserData] = useState();
   const [selectUser, setSelectUser] = useState();
   const [popup, setPopup] = useState();
+  const { profile } = useStore();
 
   // store
   const { storeDetail } = useStoreStore()
-  const storeId = storeDetail._id;
-  //console.log("storeId:", storeId)
+  const appzapStaff = "APPZAP_DEALER";
+
 
   // useEffect
   useEffect(() => {
@@ -144,26 +145,17 @@ export default function UserPage() {
               padding: 10,
             }}
           >
-            <span>
+            <span className='flex items-center gap-1'>
               <IoPeople /> {t("staff_report")}
             </span>
             <div>
               <Button
                 variant="dark"
                 bg="dark"
-                style={{marginRight:'5px'}}
-                onClick={() =>
-                  navigate(`/user/manage-counter/${storeDetail?._id}`)
-                }
-              >
-                {t("manage_counter")}
-              </Button>
-              <Button
-                variant="dark"
-                bg="dark"
                 onClick={() => setPopup({ PopUpCreateUser: true })}
+                className='flex items-center gap-1'
               >
-                <MdAssignmentAdd /> {t("add_list")}
+               {t("add_list")}
               </Button>
             </div>
           </Card.Header>
@@ -266,11 +258,19 @@ export default function UserPage() {
                       <div>{e?.phone}</div>
                     </td>
                     <td style={{ textAlign: "start" }}>
-                      {convertRole(e?.role)}
+                      {e?.role === appzapStaff ? convertRole(e?.permissionRoleId?.roleName) || "---" : convertRole(e?.role)}
                     </td>
                     <td style={{ textAlign: "start" }}>
                       <div style={{ display: "flex", gap: 10 }}>
                         {/* <Button>ລັອກ</Button> */}
+                        <Button
+                          onClick={() => {
+                            setSelectUser(e);
+                            setPopup({ PopUpUpdateUser: true });
+                          }}
+                        >
+                          {t("edit")}
+                        </Button>
                         <Button
                           onClick={() => {
                             setSelectUser(e);
@@ -333,6 +333,17 @@ export default function UserPage() {
           setSelectUser();
         }}
         onSubmit={handleDeleteUser}
+      />
+      <PopUpUpdateUser
+        open={popup?.PopUpUpdateUser}
+        onClose={() => {
+          setPopup();
+          setSelectUser(); // เพิ่มการเคลียร์ selectUser
+        }}
+        callback={() => {
+          getData();
+        }}
+        userData={selectUser}
       />
       <PopUpCreateUser
         open={popup?.PopUpCreateUser}

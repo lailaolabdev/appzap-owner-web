@@ -13,6 +13,7 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { getHeaders } from "../../services/auth";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useStore } from "../../store";
 
 export default function Categorylist() {
   // state
@@ -25,6 +26,8 @@ export default function Categorylist() {
   const { t } = useTranslation();
   const [Categorys, setCategorys] = useState([]);
   const navigate = useNavigate();
+  const { profile } = useStore();
+  const [hasManageStockEdit, setHasManageStockEdit] = useState(false);
   // functions
   const _confirmeDelete = async () => {
     try {
@@ -71,6 +74,20 @@ export default function Categorylist() {
     }
   };
   // -------------------------------------------------------------------------- //
+
+  useEffect(() => {
+    if (profile?.data?.permissionRoleId?.permissions) {
+      const permissions = profile?.data?.permissionRoleId?.permissions;
+      const permissionMap = [
+        { set: setHasManageStockEdit, check: "MANAGE_STOCK_CAN_EDIT" },
+      ];
+      permissionMap.forEach(({ set, check }) => {
+        set(permissions.includes(check));
+      });
+    }
+  }, [profile?.data?.permissionRoleId?.permissions, profile]);
+
+
   useEffect(() => {
     const getData = async () => {
       getCategory();
@@ -83,13 +100,17 @@ export default function Categorylist() {
       <NavList ActiveKey="/settingStore/stock/category" />
       <div>
         <div className="col-sm-12 text-right">
-          <Button
-            className="col-sm-2"
-            style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={() => navigate("/settingStore/stock/addCategory")}
-          >
-            {t("add_stock_type")}
-          </Button>
+          {
+            hasManageStockEdit && (
+              <Button
+                className="col-sm-2"
+                style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+                onClick={() => navigate("/settingStore/stock/addCategory")}
+              >
+                {t("add_stock_type")}
+              </Button>
+            )
+          }
         </div>
         <div style={{ height: 20 }}></div>
         <div>
@@ -134,25 +155,32 @@ export default function Categorylist() {
                         <td>{item.name}</td>
                         <td>{item.note}</td>
                         <td style={{ textAlign: "right" }}>
-                          <Button
-                            variant="outline-primary"
-                            onClick={() => {
-                              setSelect(item);
-                              setPopEditCategory(true);
-                            }}
-                          >
-                            <FontAwesomeIcon icon={faEdit} />
-                          </Button>
-                          <span> </span>
-                          <Button
-                            variant="outline-danger"
-                            onClick={() => {
-                              setSelect(item);
-                              setPopConfirmDeletion(true);
-                            }}
-                          >
-                            <FontAwesomeIcon icon={faTrashAlt} />
-                          </Button>
+                          {
+                            hasManageStockEdit && (
+                              <div>
+                                <Button
+                                  variant="outline-primary"
+                                  onClick={() => {
+                                    setSelect(item);
+                                    setPopEditCategory(true);
+                                  }}
+                                >
+                                  <FontAwesomeIcon icon={faEdit} />
+                                </Button>
+                                <span> </span>
+                                <Button
+                                  variant="outline-danger"
+                                  onClick={() => {
+                                    setSelect(item);
+                                    setPopConfirmDeletion(true);
+                                  }}
+                                >
+                                  <FontAwesomeIcon icon={faTrashAlt} />
+                                </Button>
+                              </div>
+
+                            )
+                          }
                         </td>
                       </tr>
                     ))

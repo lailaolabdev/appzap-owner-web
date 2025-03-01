@@ -14,7 +14,7 @@ const data = {
  * @param {Object} user
  * @returns {data}
  */
-const role = (role, user, storeDetail, shiftCurrent) => {
+const role = (role, user, storeDetail, shiftCurrent, path) => {
   const getDefaultPath = () => {
     if (storeDetail?.isShift) {
       if (shiftCurrent?.[0]?.status === "OPEN") return "/tables";
@@ -103,14 +103,17 @@ const role = (role, user, storeDetail, shiftCurrent) => {
       };
     case "APPZAP_DEALER":
       return {
-        // defaultPath: "-PATH-",
-        // reportManagement: true,
-        // tableManagement: true,
-        // orderManagement: true,
-        // reservationManagement: true,
-        // menuManagement: true,
-        // settingManagement: true,
-        // themeManagement: true,
+        defaultPath: `/${path}`,
+        reportManagement: true,
+        tableManagement: true,
+        orderManagement: true,
+        reservationManagement: true,
+        menuManagement: true,
+        settingManagement: true,
+        themeManagement: true,
+        report: true,
+        stockManagement: true,
+        farkManagement: true,
       };
     case "APPZAP_KITCHEN":
       return {

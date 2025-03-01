@@ -115,7 +115,6 @@ function Homecafe() {
   const { shiftCurrent } = useShiftStore();
   const { setSelectedMenus, SelectedMenus, clearSelectedMenus } =
     useMenuSelectStore();
-
   const sliderRef = useRef();
   useEffect(() => {
     const storedState = localStorage.getItem("menuSlected");

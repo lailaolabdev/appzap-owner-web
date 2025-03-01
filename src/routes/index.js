@@ -87,6 +87,7 @@ import ShiftList from "../pages/shift/Shift";
 import ShiftOpenPages from "../pages/shift/ShiftOpenPages";
 import SecondScreen from "../pages/secondScreen/SecondScreen";
 import MainScreen from "../pages/secondScreen/MainScreen";
+import ManagementRole from "../pages/role/Role";
 
 import MemberPage from "../pages/member/MemberPage";
 import DashboardPage from "../pages/dashboardnew/DashboardPage";
@@ -231,6 +232,10 @@ function Router() {
         {
           path: "/settingStore/bank/:id",
           element: <BankList />,
+        },
+        {
+          path: "/settingStore/role",
+          element: <ManagementRole />,
         },
         {
           path: "/user/manage-counter/:id",

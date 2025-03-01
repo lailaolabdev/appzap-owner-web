@@ -1,5 +1,5 @@
 import jwtDecode from "jwt-decode";
-import { END_POINT_APP } from "../constants/api";
+import { END_POINT_APP ,USERS_UPDATE } from "../constants/api";
 import axios from "axios";
 import { errorAdd, successAdd } from "../helpers/sweetalert";
 
@@ -37,6 +37,8 @@ export const updateUser = async (billFarkId, data, token) => {
     return error;
   }
 };
+
+
 export const createUser = async (body, token) => {
   try {
     const url = `${END_POINT_APP}/v3/user/create`;
@@ -48,6 +50,22 @@ export const createUser = async (body, token) => {
   } catch (error) {
     errorAdd("ບໍ່ສຳເລັດ");
     return { error: true };
+  }
+};
+
+export const userUpdate = async (userId, data, token) => {
+  try {
+    const url = `${USERS_UPDATE}?id=${userId}`;
+    const res = await axios.put(
+      url,
+      data,  // ไม่ต้องครอบ data: data
+      {
+        headers: token
+      }
+    );
+    return res.data;
+  } catch (error) {
+    throw error; // ควร throw error เพื่อให้ component จัดการได้
   }
 };
 

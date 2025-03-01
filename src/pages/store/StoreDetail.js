@@ -17,6 +17,7 @@ import { useParams } from "react-router-dom";
 import StarRatings from "react-star-ratings";
 import { useTranslation } from "react-i18next";
 import { useStoreStore } from "../../zustand/storeStore";
+import { useStore } from "../../store";
 
 export default function StoreDetail() {
   const params = useParams();
@@ -34,6 +35,8 @@ export default function StoreDetail() {
   const [popEditStroe, setPopEditStroe] = useState(false);
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
 
+  const { profile } = useStore();
+  const [hasConfigureStoreDetail, setHasConfigureStoreDetail] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,6 +57,16 @@ export default function StoreDetail() {
   //   await getShift(findBy);
   // };
 
+  const permissionRole = profile?.data?.permissionRoleId;
+  const profileRole = profile?.data?.role;
+  const appzapStaff = "APPZAP_DEALER";
+  const appzapAdmin = "APPZAP_ADMIN";
+
+  useEffect(() => {
+    setHasConfigureStoreDetail(
+      permissionRole?.permissions?.includes("CONFIGURE_STORE_DETAIL")
+    );
+  }, []);
 
   const getData = async (storeId) => {
     setIsLoading(true);
@@ -128,15 +141,20 @@ export default function StoreDetail() {
           {t("detail")}
         </div>
         <div className="col-sm-2">
-          <Button
-            variant="outline-warnings"
-            className="col-sm-8"
-            style={{ color: "#606060", border: `solid 1px ${COLOR_APP}` }}
-            onClick={() => setPopEditStroe(true)}
-          >
-            <FontAwesomeIcon icon={faEdit} style={{ marginRight: 10 }} />
-            {t("edit")}
-          </Button>
+          {(hasConfigureStoreDetail && profileRole === appzapStaff) ||
+          profileRole === appzapAdmin ? (
+            <Button
+              variant="outline-warnings"
+              className="col-sm-8"
+              style={{ color: "#606060", border: `solid 1px ${COLOR_APP}` }}
+              onClick={() => setPopEditStroe(true)}
+            >
+              <FontAwesomeIcon icon={faEdit} style={{ marginRight: 10 }} />
+              {t("edit")}
+            </Button>
+          ) : (
+            ""
+          )}
         </div>
       </div>
       <div className="row" style={{ padding: 40 }}>

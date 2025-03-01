@@ -19,6 +19,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import { formatDateNow, moneyCurrency, numberFormat } from "../../helpers";
 import {
   faSearch,
+  faSearchPlus,
   faPlus,
   faMinus,
   faTruck,
@@ -82,6 +83,8 @@ export default function ReportStocks() {
   const [endDate, setEndDate] = useState(_edDate);
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
+  const { profile } = useStore();
+  const [hasManageStockEdit, setHasManageStockEdit] = useState(false);
 
   const rowsPerPage = 15;
   const [page, setPage] = useState(0);
@@ -98,6 +101,18 @@ export default function ReportStocks() {
   const handleChangePageTotal = useCallback((newPage) => {
     setPageTotal(newPage);
   }, []);
+
+  useEffect(() => {
+    if (profile?.data?.permissionRoleId?.permissions) {
+      const permissions = profile?.data?.permissionRoleId?.permissions;
+      const permissionMap = [
+        { set: setHasManageStockEdit, check: "MANAGE_STOCK_CAN_EDIT" },
+      ];
+      permissionMap.forEach(({ set, check }) => {
+        set(permissions.includes(check));
+      });
+    }
+  }, [profile?.data?.permissionRoleId?.permissions, profile, storeDetail]);
 
   const _localData = getLocalData();
   //ເອິ້ນໃຊ້ function ດືງຂໍ້ມູນຮ້ານ
@@ -354,8 +369,11 @@ export default function ReportStocks() {
           {/* <div
             style={{
               position: "absolute",
-              top: "2em",
+              top: "0",
               left: "1em",
+              height: "80%",
+              display: "flex",
+              alignItems: "center",
               zIndex: 10,
             }}
           >
@@ -397,29 +415,33 @@ export default function ReportStocks() {
           </select>
         </div>
 
-        <div
-          style={{ marginLeft: "auto", paddingTop: "32px", display: "flex" }}
-        >
-          <StockExport stock={stocks} storeName={storeDetail?.name} />
-          <button
-            class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md mx-2"
-            onClick={() => setPopup({ PopUpPreViewsPage: true })}
+        {hasManageStockEdit && (
+          <div
+            style={{ marginLeft: "auto", paddingTop: "32px", display: "flex" }}
           >
-            {t("Print")}
-          </button>
-          <button
-            class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md mr-2"
-            onClick={() => setPopup({ PopupSelectStock: true })}
-          >
-            {t("create_stock_menu")}
-          </button>
-          <button
-            class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md"
-            onClick={() => navigate("/settingStore/stock/add")}
-          >
-            {t("create_stock")}
-          </button>
-        </div>
+            <StockExport stock={stocks} storeName={storeDetail?.name} />
+            <button
+              class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md mx-2"
+              onClick={() => setPopup({ PopUpPreViewsPage: true })}
+              disabled={!hasManageStockEdit}
+            >
+              {t("Print")}
+            </button>
+            <button
+              class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md mr-2"
+              onClick={() => setPopup({ PopupSelectStock: true })}
+            >
+              {t("create_stock_menu")}
+            </button>
+
+            <button
+              class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md"
+              onClick={() => navigate("/settingStore/stock/add")}
+            >
+              {t("create_stock")}
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="py-2">
@@ -544,58 +566,62 @@ export default function ReportStocks() {
                         </td>
                         <td className="justify-end flex ">
                           <div className="flex gap-2 w-auto justify-end ">
-                            <ButtonPrimary
-                              onClick={() => {
-                                setSelect(item);
-                                setPopup({ PopUpMinusStock: true });
-                              }}
-                            >
-                              <FontAwesomeIcon
-                                icon={faMinus}
-                                style={{
-                                  color: "white",
-                                }}
-                              />
-                            </ButtonPrimary>{" "}
-                            <ButtonPrimary
-                              onClick={() => {
-                                setSelect(item);
-                                setPopup({ PopUpAddStock: true });
-                              }}
-                            >
-                              <FontAwesomeIcon
-                                icon={faPlus}
-                                style={{
-                                  color: "white",
-                                }}
-                              />
-                            </ButtonPrimary>{" "}
-                            <ButtonPrimary
-                              onClick={() => {
-                                setSelect(item);
-                                setPopup({ PopUpConfirmDeletion: true });
-                              }}
-                            >
-                              <FontAwesomeIcon
-                                icon={faTrash}
-                                style={{
-                                  color: "white",
-                                }}
-                              />
-                            </ButtonPrimary>{" "}
-                            <ButtonPrimary
-                              onClick={() => {
-                                setSelect(item);
-                                setPopup({ PopUpEditStock: true });
-                              }}
-                            >
-                              <FontAwesomeIcon
-                                icon={faEdit}
-                                style={{
-                                  color: "white",
-                                }}
-                              />
-                            </ButtonPrimary>{" "}
+                            {hasManageStockEdit && (
+                              <>
+                                <ButtonPrimary
+                                  onClick={() => {
+                                    setSelect(item);
+                                    setPopup({ PopUpMinusStock: true });
+                                  }}
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faMinus}
+                                    style={{
+                                      color: "white",
+                                    }}
+                                  />
+                                </ButtonPrimary>{" "}
+                                <ButtonPrimary
+                                  onClick={() => {
+                                    setSelect(item);
+                                    setPopup({ PopUpAddStock: true });
+                                  }}
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faPlus}
+                                    style={{
+                                      color: "white",
+                                    }}
+                                  />
+                                </ButtonPrimary>{" "}
+                                <ButtonPrimary
+                                  onClick={() => {
+                                    setSelect(item);
+                                    setPopup({ PopUpConfirmDeletion: true });
+                                  }}
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faTrash}
+                                    style={{
+                                      color: "white",
+                                    }}
+                                  />
+                                </ButtonPrimary>{" "}
+                                <ButtonPrimary
+                                  onClick={() => {
+                                    setSelect(item);
+                                    setPopup({ PopUpEditStock: true });
+                                  }}
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faEdit}
+                                    style={{
+                                      color: "white",
+                                    }}
+                                  />
+                                </ButtonPrimary>{" "}
+                              </>
+                            )}
                           </div>
                         </td>
                       </tr>

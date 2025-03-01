@@ -636,6 +636,57 @@ export default function ConfigPage() {
               ))}
             </Card.Body>
           </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("shift")}
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: t("open_function_shift"),
+                  key: "shift",
+                },
+              ].map((item) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={item?.key}
+                >
+                  <div>{item?.title}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={`switch-shift-${item?.key}`}>
+                      {storeDetail?.isShift ? `${t("oppen")}` : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.isShift}
+                      id={`switch-shift-${item?.key}`}
+                      onChange={changeShift}
+                    />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
         </Box>
       </Box>
       {/* popup */}
