@@ -148,7 +148,7 @@ const EditDiscountForm = () => {
 
       // Extract menu IDs from the response
       const selectedMenu = Array.isArray(data.menuId) ? data.menuId : [];
-      const specialIds = selectedMenu?.map((item) => item._id);
+      const specialIds = selectedMenu?.map((item) => item);
 
       setFormData({
         name: data.name,
@@ -265,12 +265,19 @@ const EditDiscountForm = () => {
       status: "ACTIVE",
     };
 
-    const response = await UpdateDisCountPromotion(promotionId, data);
-    if (response?.status === 200) {
-      navigate("/promotion");
-    } else {
-      errorAdd("ສ່ວນຫຼຸດບໍ່ສໍາເລັດ");
-    }
+    await UpdateDisCountPromotion(promotionId, data)
+      .then((res) => {
+        navigate("/promotion");
+      })
+      .catch((err) => {
+        console.log("errors", err?.response?.data?.isExits);
+        if (err?.response?.data?.isExits) {
+          errorAdd("ລາຍການນີ້ຖຶກເພີ່ມໄປແລ້ວ");
+        } else {
+          errorAdd("ແກ້ໄຂບໍ່ສຳເລັດ");
+        }
+      });
+
     fetchData();
   };
 

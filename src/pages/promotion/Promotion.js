@@ -78,9 +78,16 @@ const Promotion = () => {
     setIsLoading(false);
   };
 
-  const handleOpenModal = () => {
-    setOpenModal(true);
-  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+  // const fetchData = async () => {
+  //   const { data } = await GetAllPromotion();
+  //   setPromotion(data);
+  // };
+  // const handleOpenModal = () => {
+  //   setOpenModal(true);
+  // };
 
   const cards = [
     {
@@ -172,6 +179,7 @@ const Promotion = () => {
           });
           handleCloseDelete();
           fetchData();
+          fetchDataMenu();
         } else {
           Swal.fire({
             icon: "error",
@@ -180,6 +188,7 @@ const Promotion = () => {
             timer: 1500,
           });
           fetchData();
+          fetchDataMenu();
           handleCloseDelete();
         }
       });
