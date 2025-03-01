@@ -175,6 +175,8 @@ export default function DashboardFinance({
       findby += `endDate=${endDate}&`;
       findby += `startTime=${startTime}&`;
       findby += `endTime=${endTime}&`;
+      findby += `&skip=${(pagination - 1) * limitData}`;
+      findby += `&limit=${limitData}`;
 
       if (shiftId) {
         findby += `shiftId=${shiftId}&`;
@@ -185,6 +187,8 @@ export default function DashboardFinance({
       findby += `endDate=${endDate}&`;
       findby += `startTime=${startTime}&`;
       findby += `endTime=${endTime}&`;
+      findby += `&skip=${(pagination - 1) * limitData}`;
+      findby += `&limit=${limitData}`;
       if (shiftCurrent[0]) {
         findby += `shiftId=${shiftCurrent[0]?._id}&`;
       }
