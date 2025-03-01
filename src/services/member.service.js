@@ -3,7 +3,7 @@ import { END_POINT_SEVER, END_POINT_SEVER_BILL_ORDER } from "../constants/api";
 
 export const getMembers = async (findBy, TOKEN) => {
   try {
-    const url = `${END_POINT_SEVER}/v6/members${findBy}`;
+    const url = `${END_POINT_SEVER}/v4/members${findBy}`;
     const res = await axios.get(url, { headers: TOKEN });
     return res?.data;
   } catch (error) {
