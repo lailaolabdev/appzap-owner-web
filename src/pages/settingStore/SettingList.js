@@ -149,7 +149,9 @@ export default function SettingList() {
       subTitle: t("zone_setting_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faTh} />,
       path: `/settingStore/settingZone/${params?.id}`,
-      hidden: !hasMangeZone && appzapStaff.includes(profileRole),
+      hidden:
+        (!hasMangeZone && appzapStaff.includes(profileRole)) ||
+        storeDetail?.isStatusCafe,
     },
     {
       id: "1b76514a-d0e2-4808-89d1-3c66bc46d8ce",
@@ -157,7 +159,9 @@ export default function SettingList() {
       subTitle: t("table_setting_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faTable} />,
       path: `/settingStore/settingTable/${params?.id}`,
-      hidden: !hasMangeTable && appzapStaff.includes(profileRole),
+      hidden:
+        (!hasMangeTable && appzapStaff.includes(profileRole)) ||
+        storeDetail?.isStatusCafe,
     },
     {
       id: "1cb62d9b-01bd-419b-a60e-9b5b43133d7a",
@@ -173,7 +177,9 @@ export default function SettingList() {
       subTitle: t("stok_manage_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faBoxes} />,
       path: `/settingStore/stock/limit/40/page/1/${params?.id}`,
-      hidden: !hasMangeStock && appzapStaff.includes(profileRole),
+      hidden:
+        (!hasMangeStock && appzapStaff.includes(profileRole)) ||
+        storeDetail?.isStatusCafe,
     },
     {
       id: "0f90941b-c594-4365-a279-a995868ede2a",
@@ -191,7 +197,9 @@ export default function SettingList() {
         <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faVolumeUp} />
       ),
       path: `/audio`,
-      hidden: !hasMangeSound && appzapStaff.includes(profileRole),
+      hidden:
+        (!hasMangeSound && appzapStaff.includes(profileRole)) ||
+        storeDetail?.isStatusCafe,
     },
     {
       id: "64bf476a-cbb6-43e1-abe1-29d4bdce7683",
@@ -246,7 +254,9 @@ export default function SettingList() {
       subTitle: t("banner_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faImages} />,
       path: `/settingStore/banner`,
-      hidden: !hasMangeBanner && appzapStaff.includes(profileRole),
+      hidden:
+        (!hasMangeBanner && appzapStaff.includes(profileRole)) ||
+        storeDetail?.isStatusCafe,
     },
     {
       id: "f962968d-1bed-48da-9049-92551dcd7102",
@@ -254,7 +264,9 @@ export default function SettingList() {
       subTitle: t("pin_desc"),
       icon: <MdPassword style={{ fontSize: "1.7rem" }} />,
       path: `/PIN`,
-      hidden: !hasMangePin && appzapStaff.includes(profileRole),
+      hidden:
+        (!hasMangePin && appzapStaff.includes(profileRole)) ||
+        storeDetail?.isStatusCafe,
     },
     {
       id: "f962968d-1bed-48da-9049-86351dcd7102",
@@ -262,7 +274,9 @@ export default function SettingList() {
       subTitle: "",
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faBox} />,
       path: `/settingStore/delivery/${params?.id}`,
-      hidden: !hasMangeDelivery && appzapStaff.includes(profileRole),
+      hidden:
+        (!hasMangeDelivery && appzapStaff.includes(profileRole)) ||
+        storeDetail?.isStatusCafe,
     },
 
     {
