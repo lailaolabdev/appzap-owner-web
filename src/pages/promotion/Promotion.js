@@ -170,6 +170,7 @@ const Promotion = () => {
             showConfirmButton: false,
             timer: 1500,
           });
+          fetchDataMenu();
           handleCloseDelete();
           fetchData();
           fetchDataMenu();
@@ -183,6 +184,7 @@ const Promotion = () => {
           fetchData();
           fetchDataMenu();
           handleCloseDelete();
+          fetchDataMenu();
         }
       });
     } catch (error) {

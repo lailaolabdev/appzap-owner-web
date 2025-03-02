@@ -210,4 +210,16 @@ export const getMemberAllMenu = async (TOKEN) => {
   }
 };
 
+export const deleteMember = async (id, TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v7/member/delete/${id}`;
+    const response = await axios.delete(url, {
+      headers: TOKEN,
+    });
+    return response?.data;
+  } catch (error) {
+    return { error: true };
+  }
+};
+
 // report

@@ -36,7 +36,7 @@ export default function CreateMemberPage() {
   const [disabledButton, setDisabledButton] = useState(false);
   const [formData, setFormData] = useState();
 
-  console.log(" State ", state?.key);
+  // console.log(" State ", state?.key);
 
   // function
   const createMember = async () => {
@@ -93,6 +93,7 @@ export default function CreateMemberPage() {
                   }}
                 />
               </div>
+
               <div className="mb-3">
                 <Form.Label>{t("tel")}</Form.Label>
                 <InputGroup>
@@ -110,6 +111,19 @@ export default function CreateMemberPage() {
                     }}
                   />
                 </InputGroup>
+              </div>
+              <div className="mb-3">
+                <Form.Label>{t("percenDiscount")}</Form.Label>
+                <Form.Control
+                  placeholder={t("percenDiscount")}
+                  value={formData?.discountPercentage}
+                  onChange={(e) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      discountPercentage: e.target.value,
+                    }));
+                  }}
+                />
               </div>
               <div className="mb-3">
                 <Form.Label>{t("birth_date")}</Form.Label>

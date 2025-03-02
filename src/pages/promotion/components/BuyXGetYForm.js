@@ -252,7 +252,7 @@ const BuyXGetYForm = () => {
       status: "ACTIVE",
     };
 
-    const response = await CreateFreePromotion(data)
+    await CreateFreePromotion(data)
       .then((res) => {
         navigate("/promotion");
       })
@@ -264,7 +264,6 @@ const BuyXGetYForm = () => {
           errorAdd("ເພີ່ມບໍ່ສຳເລັດ");
         }
       });
-
     fetchData();
   };
 

@@ -1167,5 +1167,7 @@
   "setting_point": "ຕັ້ງຄ່າການໃຫ້ຄະແນນ",
   "recive_point": "ຮັບພ໋ອຍ",
   "used_point": "ພ໋ອຍທີ່ໃຊ້",
-  "queue no": "ຄິວທີ່"
+  "queue no": "ຄິວທີ່",
+  "member_discount": "ສ່ວນຫຼຸດສະມາຊິກ",
+  "price_basic": "ລາຄາປົກກະຕິ"
 }

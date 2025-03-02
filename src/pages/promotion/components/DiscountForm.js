@@ -231,7 +231,6 @@ const DiscountForm = () => {
           errorAdd("ເພີ່ມບໍ່ສຳເລັດ");
         }
       });
-
     fetchData();
   };
   const openModal = () => {
