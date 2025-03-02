@@ -1,20 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Card, Breadcrumb, Button, InputGroup, Form } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
-import {
-  BsArrowCounterclockwise,
-  BsFillCalendarWeekFill,
-  BsInfoCircle,
-} from "react-icons/bs";
-import { MdAssignmentAdd, MdOutlineCloudDownload } from "react-icons/md";
-import { AiFillPrinter } from "react-icons/ai";
-import Box from "../../components/Box";
-import ReportChartWeek from "../../components/report_chart/ReportChartWeek";
-import { useStore } from "../../store";
+
 import moment from "moment";
 import { COLOR_APP } from "../../constants";
-import ButtonDropdown from "../../components/button/ButtonDropdown";
-import { FaSearch } from "react-icons/fa";
 import {
   addMember,
   getMemberCount,
@@ -25,18 +14,16 @@ import { useNavigate } from "react-router-dom";
 import DateTimeComponent from "../../components/DateTimeComponent";
 import { useTranslation } from "react-i18next";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
-
+import { useStoreStore } from "../../zustand/storeStore";
 export default function CreateMemberPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  // console.log("state: ", state);
   // state
   const [disabledButton, setDisabledButton] = useState(false);
   const [formData, setFormData] = useState();
-
-  // console.log(" State ", state?.key);
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
 
   // function
   const createMember = async () => {

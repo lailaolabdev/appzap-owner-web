@@ -148,7 +148,7 @@ const EditDiscountForm = () => {
 
       // Extract menu IDs from the response
       const selectedMenu = Array.isArray(data.menuId) ? data.menuId : [];
-      const specialIds = selectedMenu?.map((item) => item._id);
+      const specialIds = selectedMenu?.map((item) => item);
 
       setFormData({
         name: data.name,
