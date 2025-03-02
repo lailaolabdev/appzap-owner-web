@@ -38,19 +38,29 @@ export default function PopupOrderHistoryExport({
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'Your Application';
     workbook.created = new Date();
-  
+
     const worksheet = workbook.addWorksheet('ລາຍງານອາຫານ', {
       properties: { defaultRowHeight: 20 }
     });
-  
+
     const defaultFont = { name: 'Noto Sans Lao', size: 11, family: 2 };
     const headerFont = { ...defaultFont, size: 20, bold: true };
-  
+
     // Header setup
     const excelColor = COLOR_APP.replace('#', 'FF');
     worksheet.mergeCells('A1:E1');
     const titleCell = worksheet.getCell('A1');
-    titleCell.value = `ປະຫວັດອາຫານ ${filtterModele === "order_history" ? "" : "ທີ"} ${filtterModele === "order_history" ? "" : filtterModele} ທັງຫມົດ`;
+    titleCell.value = `${t("order_history")} ${filtterModele === "order_history" ? "" : "ທີ"} 
+    ${
+      filtterModele === "order_history"
+      ? ""
+      : filtterModele === "served"
+        ? t("served")
+        : filtterModele === "doing"
+          ? t("cooking")
+          : t("cencel")
+    } ${ t("all") } `
+
     titleCell.font = headerFont;
     titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
     titleCell.height = 30;
@@ -131,7 +141,7 @@ export default function PopupOrderHistoryExport({
     // Save file
     const buffer = await workbook.xlsx.writeBuffer();
     const fileDate = moment().format('YYYYMMDD_HHmmss');
-    const fileName = `ປະຫວັດອາຫານ_${filtterModele}_${fileDate}.xlsx`;
+    const fileName = `ປະຫວັດອາຫານ_${ filtterModele }_${ fileDate }.xlsx`;
   
     saveAs(
       new Blob([buffer], {
@@ -146,7 +156,16 @@ export default function PopupOrderHistoryExport({
   return (
     <Modal show={showMainModal} onHide={onClose} size="xl">
       <Modal.Header closeButton style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <span>  ປະຫວັດອາຫານ {`${filtterModele === "order_history" ? "" : "ທີ"} ${filtterModele === "order_history" ? "" : filtterModele} `}  ທັງຫມົດ"</span>
+        <span>{`${t("order_history")}${filtterModele === "order_history" ? "" : "ທີ"} 
+    ${
+      filtterModele === "order_history"
+      ? ""
+      : filtterModele === "served"
+        ? t("served")
+        : filtterModele === "doing"
+          ? t("cooking")
+          : t("cencel")
+    } ${t("all") } `}</span>
       </Modal.Header>
       <Card border="none" style={{ margin: 0 }}>
         <Card.Header

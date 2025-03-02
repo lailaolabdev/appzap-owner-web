@@ -551,10 +551,10 @@ export default function HistoryUse() {
                     </Button>
                     <div className="flex items-center">
                     <div>
-                      <button onClick={() => setFiltterModele("order_history")} className={` border ${filtterModele === "order_history" ? " bg-color-app" : " bg-orange-400"} rounded-md px-2 mx-1 p-1 text-white`}>ທັງໝົດ</button>
-                      <button onClick={() => setFiltterModele("served")} className={` border ${filtterModele === "served" ? " bg-color-app" : "bg-orange-400"} rounded-md px-2 mx-1 p-1 text-white`}>ເສີບແລ້ວ</button>
-                      <button onClick={() => setFiltterModele("doing")} className={` border ${filtterModele === "doing" ? " bg-color-app" : "bg-orange-400"}  rounded-md px-2 mx-1 p-1 text-white`}>ກຳລັງຄົວ</button>
-                      <button onClick={() => setFiltterModele("canceled")} className={` border ${filtterModele === "canceled" ? " bg-color-app" : " bg-orange-400"} rounded-md px-2 mx-1 p-1 text-white`}>ຍົກເລີກ</button>
+                      <button onClick={() => setFiltterModele("order_history")} className={` border ${filtterModele === "order_history" ? " bg-color-app" : " bg-orange-400"} rounded-md px-2 mx-1 p-1 text-white`}>{t("all")}</button>
+                      <button onClick={() => setFiltterModele("served")} className={` border ${filtterModele === "served" ? " bg-color-app" : "bg-orange-400"} rounded-md px-2 mx-1 p-1 text-white`}>{t("served")}</button>
+                      <button onClick={() => setFiltterModele("doing")} className={` border ${filtterModele === "doing" ? " bg-color-app" : "bg-orange-400"}  rounded-md px-2 mx-1 p-1 text-white`}>{t("cooking")}</button>
+                      <button onClick={() => setFiltterModele("canceled")} className={` border ${filtterModele === "canceled" ? " bg-color-app" : " bg-orange-400"} rounded-md px-2 mx-1 p-1 text-white`}>{t("cancel")}</button>
                     </div>
                     <button onClick={()=>setPopup({PopupOrderHistoryExport:true})}  className={` border  bg-color-app rounded-md px-5 ml-5 p-1 text-white`}>Export</button>
                     </div>
