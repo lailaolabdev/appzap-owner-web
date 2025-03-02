@@ -55,6 +55,7 @@ import {
   getAllMoneys,
   getMembersListTop,
   getMembersListBirthday,
+  deleteMember,
 } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 import PopUpExportExcel from "../../components/popup/PopUpExportExcel";
@@ -78,9 +79,10 @@ import { GetRedeemPoint, GetEarnPoint } from "../../services/point";
 import { useStoreStore } from "../../zustand/storeStore";
 import theme from "../../theme";
 
-let limitData = 10;
+import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 
 export default function MemberPage() {
+  const limitData = 10;
   const { t } = useTranslation();
   const navigate = useNavigate();
   // state
@@ -157,6 +159,9 @@ export default function MemberPage() {
   const [EarnList, setEarnList] = useState([]);
   const [EarnCount, setEarnCount] = useState(0);
 
+  const [isRemoveItem, setIsRemoveItem] = useState(false);
+  const [itemDeleting, setItemDeleting] = useState();
+
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
 
   // useEffect
@@ -197,7 +202,7 @@ export default function MemberPage() {
     getMemberListBirthday();
     getRedeemPointUser();
     getEarnPointUser();
-  }, [paginationMember]);
+  }, [paginationMember, totalPaginationMember]);
 
   useEffect(() => {
     getMemberOrderMenus();
@@ -229,14 +234,6 @@ export default function MemberPage() {
     getRedeemPointUser();
     getEarnPointUser();
   }, [endDatePoint, startDatePoint, endTimePoint, startTimePoint]);
-
-  // useEffect(() => {
-  //   console.log(object)
-  // }, [selectedMenuIds]);
-
-  // useEffect(() => {
-  //   console.log("memberOrders: ", memberOrders.data);
-  // }, [memberOrders]);
 
   const handleEditClick = (member) => {
     setSelectedMember(member);
@@ -270,7 +267,6 @@ export default function MemberPage() {
       // findby += `endDate=${endDateMember}&`;
       // findby += `startTime=${startTimeMember}&`;
       // findby += `endTime=${endTimeMember}`;
-
       const _data = await getMembers(findby, TOKEN);
       if (_data.error) throw new Error("error");
       setMembersData(_data.data.data);
@@ -280,6 +276,7 @@ export default function MemberPage() {
       setLoading(false);
     }
   };
+
   const getMembersDataSearch = async () => {
     setLoading(true);
     try {
@@ -295,7 +292,6 @@ export default function MemberPage() {
       findby += `endDate=${endDateMember}&`;
       findby += `startTime=${startTimeMember}&`;
       findby += `endTime=${endTimeMember}`;
-
       const _data = await getMembers(findby, TOKEN);
       if (_data.error) throw new Error("error");
       setMembersData(_data.data.data);
@@ -517,6 +513,18 @@ export default function MemberPage() {
         setLoading(false);
         console.log("Error: ", err);
       });
+  };
+
+  const onConfirmRemoveItem = (data) => {
+    setIsRemoveItem(true);
+    setItemDeleting(data);
+  };
+
+  const handleDelete = async () => {
+    const { TOKEN } = await getLocalData();
+    await deleteMember(itemDeleting?._id, TOKEN);
+    setIsRemoveItem(false);
+    getMembersData();
   };
 
   return (
@@ -922,7 +930,14 @@ export default function MemberPage() {
                       <td style={{ textAlign: "center" }}>
                         {moment(e?.createdAt).format("DD/MM/YYYY")}
                       </td>
-                      <td style={{ textAlign: "right" }}>
+                      <td className="flex gap-2 justify-end">
+                        <Button
+                          variant="outline-primary"
+                          // onClick={() => handleDelete(e?._id)}
+                          onClick={() => onConfirmRemoveItem(e)}
+                        >
+                          {t("delete")}
+                        </Button>
                         <Button
                           variant="outline-primary"
                           onClick={() => handleEditClick(e)}
@@ -1840,61 +1855,14 @@ export default function MemberPage() {
         onClose={() => setPopup()}
         setSelectedMenu={setSelectedMenuIds}
       />
-    </>
-  );
-}
 
-function ReportCard({ title, chart }) {
-  const { t } = useTranslation();
-  return (
-    <Card border="primary" style={{ margin: 0 }}>
-      <Card.Header
-        style={{
-          backgroundColor: COLOR_APP,
-          color: "#fff",
-          fontSize: 18,
-          fontWeight: "bold",
-        }}
-      >
-        {title} <BsInfoCircle />
-      </Card.Header>
-      <Card.Body>
-        {/* <Card.Title>Special title treatment</Card.Title>
-          <Card.Text>
-            With supporting text below as a natural lead-in to additional content.
-          </Card.Text> */}
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            gap: 10,
-            padding: 10,
-          }}
-        >
-          <ButtonDropdown variant="outline-primary">
-            <option>{t("amount")}</option>
-            <option>{t("price")}</option>
-          </ButtonDropdown>
-          <Button variant="outline-primary">{t("chose_one_prod")}</Button>
-          <ButtonGroup aria-label="Basic example">
-            <Button variant="outline-primary">{"<<"}</Button>
-            <Button variant="outline-primary">01/03/2023 ~ 31/03/2023</Button>
-            <Button variant="outline-primary">{">>"}</Button>
-          </ButtonGroup>
-          <div>{t("compare")}</div>
-          <ButtonDropdown variant="outline-primary">
-            <option value={"test"}>{t("last_month")}</option>
-            <option value={"test2"}>{t("bg_year")}</option>
-            <option value={"test3"}>01/03/2023 ~ 31/03/2023</option>
-          </ButtonDropdown>
-          <Button variant="outline-primary">
-            <BsArrowCounterclockwise />
-          </Button>
-        </div>
-        <div>{chart}</div>
-      </Card.Body>
-    </Card>
+      <PopUpConfirmDeletion
+        open={isRemoveItem}
+        text={itemDeleting?.name}
+        onClose={() => setIsRemoveItem(false)}
+        onSubmit={async () => handleDelete(itemDeleting.id)}
+      />
+    </>
   );
 }
 

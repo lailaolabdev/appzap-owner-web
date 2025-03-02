@@ -20,10 +20,7 @@ export default function CreateMembers() {
   // state
   const [disabledButton, setDisabledButton] = useState(false);
   const [formData, setFormData] = useState();
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
 
   // function
   const createMember = async () => {
@@ -34,7 +31,7 @@ export default function CreateMembers() {
       const _data = await addMember(formData, TOKEN);
       if (_data.error) throw new Error("can not create member");
       successAdd("ເພີ່ມສະມາຊີກສຳເລັດ");
-      setStoreDetail({actions: true });
+      setStoreDetail({ actions: true });
       const timer = setTimeout(() => {
         // window.location.reload("/table");
         navigate(`/tables`, { state: { key: "table" } });
@@ -101,6 +98,21 @@ export default function CreateMembers() {
                     />
                   </InputGroup>
                 </div>
+                {storeDetail?.isStatusCafe && (
+                  <div className="mb-3">
+                    <Form.Label>{t("percenDiscount")}</Form.Label>
+                    <Form.Control
+                      placeholder={t("percenDiscount")}
+                      value={formData?.discountPercentage}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          discountPercentage: e.target.value,
+                        }));
+                      }}
+                    />
+                  </div>
+                )}
                 <div className="mb-3">
                   <Form.Label>{t("birth_date")}</Form.Label>
                   <DateTimeComponent
