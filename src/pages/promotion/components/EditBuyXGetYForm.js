@@ -132,8 +132,6 @@ const EditBuyXGetYForm = () => {
     }
   };
 
-  console.log("formData?.selectedMenus", formData?.selectedMenus);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
