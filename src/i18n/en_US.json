@@ -1018,5 +1018,7 @@
   "setting_point": "Setting Point",
   "recive_point": "Recive point",
   "used_point": "Used point",
-  "queue no": "Queue No"
+  "queue no": "Queue No",
+  "member_discount": "Discount for member",
+  "price_basic": "Basic price"
 }

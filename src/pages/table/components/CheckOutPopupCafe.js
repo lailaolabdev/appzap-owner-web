@@ -110,6 +110,7 @@ export default function CheckOutPopupCafe({
         memberName: _res.data?.name,
         Name: _res.data?.name,
         Point: _res.data?.point,
+        Discount: _res?.data?.discountPercentage,
       }));
     } catch (err) {
       console.log(err);
@@ -273,6 +274,21 @@ export default function CheckOutPopupCafe({
       console.log("err:", err);
     }
   };
+
+  const DiscountMember = () => {
+    let TotalDiscountFinal = 0;
+    if (memberDataSearch?.discountPercentage > 0) {
+      TotalDiscountFinal =
+        totalBill - (totalBill * memberDataSearch?.discountPercentage) / 100;
+    } else {
+      TotalDiscountFinal = totalBill;
+    }
+
+    return matchRoundNumber(TotalDiscountFinal);
+  };
+
+  let AmountDiscountForMember = Math.max(totalBill - DiscountMember(), 0);
+
   const _checkBill = async () => {
     setIsLoading(true);
     const moneyChange = calculateReturnAmount();
@@ -294,9 +310,10 @@ export default function CheckOutPopupCafe({
       storeId: profile.data.storeId,
       isCheckout: "true",
       status: "CHECKOUT",
-      payAmount: cash,
-      transferAmount: transfer,
-      billAmount: totalBill,
+      payAmount: matchRoundNumber(cash),
+      transferAmount: matchRoundNumber(transfer),
+      billAmount: DiscountMember(),
+      billAmountBefore: matchRoundNumber(totalBill),
       paymentMethod: forcus,
       shiftId: shiftCurrent[0]?._id,
       taxAmount: null,
@@ -307,11 +324,17 @@ export default function CheckOutPopupCafe({
       phone: null,
       queue: bill,
       point: point,
-      change: moneyChange,
+      change: matchRoundNumber(moneyChange),
       isCafe: true,
       memberId: memberDataSearch?._id,
       memberName: memberDataSearch?.name,
       memberPhone: memberDataSearch?.phone,
+      memberDiscount: memberDataSearch?.discountPercentage,
+      discount:
+        memberDataSearch?.discountPercentage > 0
+          ? memberDataSearch?.discountPercentage
+          : 0,
+      discountType: "PERCENT",
       statusPoint: statusPoint,
       fullnameStaffCheckOut:
         `${profile.data.firstname ? profile.data.firstname : "--"} ${
@@ -437,64 +460,199 @@ export default function CheckOutPopupCafe({
     });
   }, []);
 
+  // useEffect(() => {
+  //   if (!open) return;
+  //   if (forcus === "CASH") {
+  //     if (dataBill?.discount) {
+  //       if (dataBill?.discountType === "PERCENT") {
+  //         if (cash >= totalBill - (totalBill * dataBill?.discount) / 100) {
+  //           setCanCheckOut(true);
+  //         } else {
+  //           setCanCheckOut(false);
+  //         }
+  //       } else {
+  //         if (cash >= totalBill - dataBill?.discount) {
+  //           setCanCheckOut(true);
+  //         } else {
+  //           setCanCheckOut(false);
+  //         }
+  //       }
+  //     } else {
+  //       if (cash >= totalBill) {
+  //         setCanCheckOut(true);
+  //       } else {
+  //         setCanCheckOut(false);
+  //       }
+  //     }
+  //   } else if (forcus === "TRANSFER") {
+  //     if (dataBill?.discount) {
+  //       if (dataBill?.discountType === "PERCENT") {
+  //         setTransfer(totalBill - (totalBill * dataBill?.discount) / 100);
+  //       } else {
+  //         setTransfer(totalBill - dataBill?.discount);
+  //       }
+  //     } else {
+  //       setTransfer(totalBill);
+  //     }
+  //     setCanCheckOut(true);
+  //   } else if (forcus === "TRANSFER_CASH") {
+  //     const _sum =
+  //       (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
+  //     if (dataBill?.discount) {
+  //       if (dataBill?.discountType === "PERCENT") {
+  //         if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
+  //           setCanCheckOut(true);
+  //         } else {
+  //           setCanCheckOut(false);
+  //         }
+  //       } else {
+  //         if (_sum >= totalBill - dataBill?.discount) {
+  //           setCanCheckOut(true);
+  //         } else {
+  //           setCanCheckOut(false);
+  //         }
+  //       }
+  //     } else {
+  //       if (_sum >= totalBill) {
+  //         setCanCheckOut(true);
+  //       } else {
+  //         setCanCheckOut(false);
+  //       }
+  //     }
+  //   } else if (forcus === "POINT") {
+  //     const checkPoint = Math.max(0, Number.parseInt(dataBill?.Point - point));
+  //     if (checkPoint === 0) {
+  //       Swal.fire({
+  //         icon: "warning",
+  //         title: `${t("error_point")}`,
+  //         text: `${t("error_point_enough")}`,
+  //         showConfirmButton: false,
+  //         timer: 1800,
+  //       });
+  //       return;
+  //     }
+
+  //     if (
+  //       dataBill?.Point <
+  //       totalBill - (totalBill * dataBill?.discount) / 100
+  //     ) {
+  //       setCanCheckOut(true);
+  //       return;
+  //     }
+
+  //     if (dataBill?.discount) {
+  //       if (dataBill?.discountType === "PERCENT") {
+  //         if (point >= totalBill - (totalBill * dataBill?.discount) / 100) {
+  //           setCanCheckOut(true);
+  //         } else {
+  //           setCanCheckOut(false);
+  //         }
+  //       } else {
+  //         if (point >= totalBill - dataBill?.discount) {
+  //           setCanCheckOut(true);
+  //         } else {
+  //           setCanCheckOut(false);
+  //         }
+  //       }
+  //     } else {
+  //       if (point >= totalBill) {
+  //         setCanCheckOut(true);
+  //       } else {
+  //         setCanCheckOut(false);
+  //       }
+  //     }
+  //   } else if (forcus === "CASH_TRANSFER_POINT") {
+  //     const checkPoint = Math.max(0, Number.parseInt(dataBill?.Point - point));
+  //     if (checkPoint === 0) {
+  //       Swal.fire({
+  //         icon: "warning",
+  //         title: `${t("error_point")}`,
+  //         text: `${t("error_point_enough")} ${dataBill?.Point} ${t("point")}`,
+  //         showConfirmButton: false,
+  //         timer: 1800,
+  //       });
+  //       setPoint("");
+  //       return;
+  //     }
+  //     const _sum =
+  //       (Number.parseInt(cash) || 0) +
+  //       (Number.parseInt(transfer) || 0) +
+  //       (Number.parseInt(point) || 0);
+  //     if (dataBill?.discount) {
+  //       if (dataBill?.discountType === "PERCENT") {
+  //         if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
+  //           setCanCheckOut(true);
+  //         } else {
+  //           setCanCheckOut(false);
+  //         }
+  //       } else {
+  //         if (_sum >= totalBill - dataBill?.discount) {
+  //           setCanCheckOut(true);
+  //         } else {
+  //           setCanCheckOut(false);
+  //         }
+  //       }
+  //     } else {
+  //       if (_sum >= totalBill) {
+  //         setCanCheckOut(true);
+  //       } else {
+  //         setCanCheckOut(false);
+  //       }
+  //     }
+  //   } else if (forcus === "POINT") {
+  //     if (point <= 0) {
+  //       setCanCheckOut(false);
+  //     } else {
+  //       setCanCheckOut(true);
+  //     }
+  //   }
+  // }, [cash, transfer, totalBill, forcus, point]);
+
   useEffect(() => {
     if (!open) return;
+
+    let memberDiscount = memberDataSearch?.discountPercentage || 0; // Get member discount, default to 0 if not available
+
     if (forcus === "CASH") {
+      let discountedTotal = totalBill - (totalBill * memberDiscount) / 100; // Apply member discount to the total bill
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
-          if (cash >= totalBill - (totalBill * dataBill?.discount) / 100) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
+          discountedTotal -= (discountedTotal * dataBill?.discount) / 100;
         } else {
-          if (cash >= totalBill - dataBill?.discount) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
+          discountedTotal -= dataBill?.discount;
         }
+      }
+      if (cash >= discountedTotal) {
+        setCanCheckOut(true);
       } else {
-        if (cash >= totalBill) {
-          setCanCheckOut(true);
-        } else {
-          setCanCheckOut(false);
-        }
+        setCanCheckOut(false);
       }
     } else if (forcus === "TRANSFER") {
+      let discountedTotal = totalBill - (totalBill * memberDiscount) / 100; // Apply member discount to the total bill
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
-          setTransfer(totalBill - (totalBill * dataBill?.discount) / 100);
+          discountedTotal -= (discountedTotal * dataBill?.discount) / 100;
         } else {
-          setTransfer(totalBill - dataBill?.discount);
+          discountedTotal -= dataBill?.discount;
         }
-      } else {
-        setTransfer(totalBill);
       }
+      setTransfer(discountedTotal);
       setCanCheckOut(true);
     } else if (forcus === "TRANSFER_CASH") {
-      const _sum =
+      let _sum =
         (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
+      let discountedTotal = totalBill - (totalBill * memberDiscount) / 100; // Apply member discount to the total bill
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
-          if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
+          discountedTotal -= (discountedTotal * dataBill?.discount) / 100;
         } else {
-          if (_sum >= totalBill - dataBill?.discount) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
+          discountedTotal -= dataBill?.discount;
         }
+      }
+      if (_sum >= discountedTotal) {
+        setCanCheckOut(true);
       } else {
-        if (_sum >= totalBill) {
-          setCanCheckOut(true);
-        } else {
-          setCanCheckOut(false);
-        }
+        setCanCheckOut(false);
       }
     } else if (forcus === "POINT") {
       const checkPoint = Math.max(0, Number.parseInt(dataBill?.Point - point));
@@ -508,35 +666,18 @@ export default function CheckOutPopupCafe({
         });
         return;
       }
-
-      if (
-        dataBill?.Point <
-        totalBill - (totalBill * dataBill?.discount) / 100
-      ) {
-        setCanCheckOut(true);
-        return;
-      }
-
+      let discountedTotal = totalBill - (totalBill * memberDiscount) / 100; // Apply member discount to the total bill
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
-          if (point >= totalBill - (totalBill * dataBill?.discount) / 100) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
+          discountedTotal -= (discountedTotal * dataBill?.discount) / 100;
         } else {
-          if (point >= totalBill - dataBill?.discount) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
+          discountedTotal -= dataBill?.discount;
         }
+      }
+      if (dataBill?.Point < discountedTotal) {
+        setCanCheckOut(true);
       } else {
-        if (point >= totalBill) {
-          setCanCheckOut(true);
-        } else {
-          setCanCheckOut(false);
-        }
+        setCanCheckOut(false);
       }
     } else if (forcus === "CASH_TRANSFER_POINT") {
       const checkPoint = Math.max(0, Number.parseInt(dataBill?.Point - point));
@@ -551,30 +692,22 @@ export default function CheckOutPopupCafe({
         setPoint("");
         return;
       }
-      const _sum =
+      let _sum =
         (Number.parseInt(cash) || 0) +
         (Number.parseInt(transfer) || 0) +
         (Number.parseInt(point) || 0);
+      let discountedTotal = totalBill - (totalBill * memberDiscount) / 100; // Apply member discount to the total bill
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
-          if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
+          discountedTotal -= (discountedTotal * dataBill?.discount) / 100;
         } else {
-          if (_sum >= totalBill - dataBill?.discount) {
-            setCanCheckOut(true);
-          } else {
-            setCanCheckOut(false);
-          }
+          discountedTotal -= dataBill?.discount;
         }
+      }
+      if (_sum >= discountedTotal) {
+        setCanCheckOut(true);
       } else {
-        if (_sum >= totalBill) {
-          setCanCheckOut(true);
-        } else {
-          setCanCheckOut(false);
-        }
+        setCanCheckOut(false);
       }
     } else if (forcus === "POINT") {
       if (point <= 0) {
@@ -583,19 +716,26 @@ export default function CheckOutPopupCafe({
         setCanCheckOut(true);
       }
     }
-  }, [cash, transfer, totalBill, forcus, point]);
+  }, [
+    cash,
+    transfer,
+    totalBill,
+    forcus,
+    point,
+    memberDataSearch?.discountPercentage,
+  ]);
 
   let transferCal = dataBill
-    ? totalBill > 0
-      ? totalBill
+    ? DiscountMember() > 0
+      ? DiscountMember()
       : 0
-    : totalBill > 0
-    ? totalBill
+    : DiscountMember() > 0
+    ? DiscountMember()
     : 0;
 
   let totalBillMoney = dataBill
-    ? Number.parseFloat(totalBill > 0 ? totalBill : 0)
-    : Number.parseFloat(totalBill > 0 ? totalBill : 0);
+    ? Number.parseFloat(DiscountMember() > 0 ? DiscountMember() : 0)
+    : Number.parseFloat(DiscountMember() > 0 ? DiscountMember() : 0);
 
   let _selectDataOption = (option) => {
     setSelectDataOpption(option);
@@ -716,8 +856,6 @@ export default function CheckOutPopupCafe({
     return totalAmount <= 0 ? 0 : totalAmount;
   };
 
-  // console.log("calculateReturnAmount", calculateReturnAmount());
-
   return (
     <Modal
       show={open}
@@ -750,9 +888,9 @@ export default function CheckOutPopupCafe({
               <span>{t("bill_total")}: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
                 {dataBill
-                  ? moneyCurrency(totalBill ? matchRoundNumber(totalBill) : 0)
+                  ? moneyCurrency(DiscountMember() ? DiscountMember() : 0)
                   : moneyCurrency(
-                      totalBill > 0 ? matchRoundNumber(totalBill) : 0
+                      DiscountMember() > 0 ? DiscountMember() : 0
                     )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
@@ -766,11 +904,11 @@ export default function CheckOutPopupCafe({
               >
                 {moneyCurrency(
                   (dataBill
-                    ? totalBill > 0
-                      ? totalBill
+                    ? DiscountMember() > 0
+                      ? DiscountMember()
                       : 0
-                    : totalBill > 0
-                    ? totalBill
+                    : DiscountMember() > 0
+                    ? DiscountMember()
                     : 0) / rateCurrency
                 )}{" "}
                 {selectCurrency?.name}
@@ -796,7 +934,9 @@ export default function CheckOutPopupCafe({
                 <Form.Control
                   type="text"
                   placeholder="0"
-                  value={convertNumber(cashCurrency)}
+                  value={convertNumber(
+                    cashCurrency > 0 ? matchRoundNumber(cashCurrency) : 0
+                  )}
                   onClick={() => {
                     setSelectInput("inputCurrency");
                   }}
@@ -819,7 +959,9 @@ export default function CheckOutPopupCafe({
                       }
                       type="text"
                       placeholder="0"
-                      value={convertNumber(cash)}
+                      value={
+                        cash > 0 ? convertNumber(matchRoundNumber(cash)) : 0
+                      }
                       onClick={() => {
                         setSelectInput("inputCash");
                       }}
@@ -842,7 +984,11 @@ export default function CheckOutPopupCafe({
                       }
                       type="text"
                       placeholder="0"
-                      value={convertNumber(transfer)}
+                      value={
+                        transfer > 0
+                          ? convertNumber(matchRoundNumber(transfer))
+                          : 0
+                      }
                       onClick={() => {
                         setSelectInput("inputTransfer");
                       }}
@@ -903,6 +1049,23 @@ export default function CheckOutPopupCafe({
                             : "0"}
                         </InputGroup.Text>
                       </div>
+                      {memberDataSearch &&
+                      memberDataSearch.discountPercentage !== undefined ? (
+                        <div className="box-name">
+                          <InputGroup.Text>
+                            {t("discount")}:{" "}
+                            {memberDataSearch?.discountPercentage != null &&
+                            memberDataSearch?.discountPercentage > 0
+                              ? memberDataSearch.discountPercentage ===
+                                undefined
+                                ? 0
+                                : `${memberDataSearch.discountPercentage ?? 0}%`
+                              : "0"}
+                          </InputGroup.Text>
+                        </div>
+                      ) : (
+                        ""
+                      )}
                     </div>
                   </div>
                   <InputGroup style={{ marginTop: 10 }}>
@@ -975,6 +1138,22 @@ export default function CheckOutPopupCafe({
                           : "0"}
                       </InputGroup.Text>
                     </div>
+                    {memberDataSearch &&
+                    memberDataSearch.discountPercentage !== undefined ? (
+                      <div className="box-name">
+                        <InputGroup.Text>
+                          {t("discount")}:{" "}
+                          {memberDataSearch?.discountPercentage != null &&
+                          memberDataSearch?.discountPercentage > 0
+                            ? memberDataSearch.discountPercentage === undefined
+                              ? 0
+                              : `${memberDataSearch.discountPercentage ?? 0}%`
+                            : "0"}
+                        </InputGroup.Text>
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </div>
                 </div>
               </div>

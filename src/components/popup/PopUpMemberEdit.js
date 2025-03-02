@@ -60,7 +60,7 @@ export default function PopUpMemberEdit({
       });
     } catch (error) {
       await Swal.fire({
-        icon: "success",
+        icon: "error",
         title: `${t("not_success")}`,
         showConfirmButton: false,
         timer: 1500,
@@ -78,25 +78,34 @@ export default function PopUpMemberEdit({
 
   return (
     <Modal show={open} onHide={onClose}>
-      <Modal.Header closeButton>ເລືອກໝວດໝູ່</Modal.Header>
+      <Modal.Header closeButton>ແກ້ໄຂຂໍ້ມູນສະມາຊິກ</Modal.Header>
       <Modal.Body>
         <div className="mb-3">
-          <Form.Label>ຊື່ສະມາຊິກ</Form.Label>
+          <Form.Label>{t("member_name")}</Form.Label>
           <Form.Control
-            placeholder="ຊື່ສະມາຊິກ"
+            placeholder={t("member_name")}
             value={formData?.name}
             onChange={handleChange}
             name="name"
           />
         </div>
         <div className="mb-3">
-          <Form.Label>ເບີໂທ</Form.Label>
+          <Form.Label>{t("percenDiscount")}</Form.Label>
+          <Form.Control
+            placeholder={t("percenDiscount")}
+            value={formData?.discountPercentage}
+            onChange={handleChange}
+            name="discountPercentage"
+          />
+        </div>
+        <div className="mb-3">
+          <Form.Label>{t("tel")}</Form.Label>
           <InputGroup>
             <InputGroup.Text id="phone-addon1">020</InputGroup.Text>
             <Form.Control
               placeholder="XXXX-XXXX"
               aria-describedby="phone-addon1"
-              maxLength={8}
+              maxLength={15}
               value={formData?.phone}
               onChange={handleChange}
               name="phone"

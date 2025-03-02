@@ -566,7 +566,7 @@ export default function DashboardPage() {
                   }}
                 >
                   <div>{e?.title}</div>
-                  <div>{e?.amount}</div>
+                  <div>{e?.amount || 0}</div>
                 </div>
               ))}
             </Card.Body>
@@ -584,39 +584,36 @@ export default function DashboardPage() {
               {t("promotion")}
             </Card.Header>
             <Card.Body>
-              {!storeDetail?.isStatusCafe && (
-                <>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
-                      gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
-                    }}
-                  >
-                    <div>{t("discount_bill")}</div>
-                    <div>{promotionReport?.[0]?.count || 0}</div>
+              <>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                >
+                  <div>{t("discount_bill")}</div>
+                  <div>{promotionReport?.[0]?.count || 0}</div>
+                </div>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                >
+                  <div>{t("all_discount")}</div>
+                  <div>
+                    {moneyCurrency(promotionReport?.[0]?.totalSaleAmount || 0)}
+                    {storeDetail?.firstCurrency}
                   </div>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
-                      gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
-                    }}
-                  >
-                    <div>{t("all_discount")}</div>
-                    <div>
-                      {moneyCurrency(
-                        promotionReport?.[0]?.totalSaleAmount || 0
-                      )}
-                      {storeDetail?.firstCurrency}
-                    </div>
-                  </div>
-                </>
-              )}
+                </div>
+              </>
+
               <div
                 style={{
                   display: "grid",
@@ -914,7 +911,7 @@ export default function DashboardPage() {
                   )}
                   <th style={{ textAlign: "center" }}>{t("discount")}</th>
                   <th style={{ textAlign: "center" }}>{t("debt")}</th>
-                  <th style={{ textAlign: "center" }}>{t("last_amount")}</th>
+                  {/* <th style={{ textAlign: "center" }}>{t("last_amount")}</th> */}
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
                 {reportData.map((e) => (
@@ -937,10 +934,10 @@ export default function DashboardPage() {
                       {moneyCurrency(debtReport?.totalRemainingAmount)}
                       {storeDetail?.firstCurrency}
                     </td>
-                    <td>
+                    {/* <td>
                       {moneyCurrency(e?.billBefore)}
                       {storeDetail?.firstCurrency}
-                    </td>
+                    </td> */}
                     <td style={{ textAlign: "right" }}>
                       {moneyCurrency(e?.billAmount)}
                       {storeDetail?.firstCurrency}

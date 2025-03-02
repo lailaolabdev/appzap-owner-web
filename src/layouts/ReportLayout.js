@@ -29,78 +29,47 @@ export default function ReportLayout() {
   }, [Location.pathname]);
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: width > 900 ? "190px 1fr" : "",
-        background: "#fafafa",
-        width: "100%",
-        overflowY: "auto",
-        height: "100%",
-        maxHeight: "100vh",
-        paddingBottom: "80px",
-      }}
-    >
-      <div
-        style={{
-          borderRight: "1px solid #f2f2f2",
-          position: "relative",
-          height: "auto",
-        }}
-      >
-        <div
+    <div className="flex flex-col w-[1250px] h-[60px] pt-2 mx-4">
+      <div className="flex gap-2 justify-start items-center px-2">
+        <Button
+          onKeyDown={() => {}}
+          className="menu-report-stocks"
           style={{
-            position: "sticky",
-            top: 0,
-            padding: 5,
-
-            // height: "90vh",
+            background:
+              activeButton === "/reports/sales-report" ? COLOR_APP : "white",
+            color:
+              activeButton === "/reports/sales-report" ? "white" : COLOR_APP,
+            // width: width > 900 ? "100%" : "fit-content",
           }}
+          onClick={() => onViewStocksPath("sales-report")}
         >
-          <ButtonGroup
-            style={{ flexWrap: "wrap" }}
-            vertical={width > 900}
-            className="card-left-report"
-          >
-            <div
-              onKeyDown={() => {}}
-              className="menu-report-stocks"
-              style={{
-                background:
-                  activeButton === "/reports/sales-report"
-                    ? COLOR_APP
-                    : "white",
-                color:
-                  activeButton === "/reports/sales-report"
-                    ? "white"
-                    : COLOR_APP,
-                // width: width > 900 ? "100%" : "fit-content",
-              }}
-              onClick={() => onViewStocksPath("sales-report")}
-            >
-              <MdOutlinePieChartOutline style={{ fontSize: 35 }} />
-              <strong>{t("report_sell")}</strong>
-            </div>
-            {/* <div
-              onKeyDown={() => {}}
-              className="menu-report-stocks mt-1"
-              style={{
-                background:
-                  activeButton === "/reports/income-expend-report"
-                    ? COLOR_APP
-                    : "white",
-                color:
-                  activeButton === "/reports/income-expend-report"
-                    ? "white"
-                    : COLOR_APP,
-                // width: width > 900 ? "100%" : "fit-content",
-              }}
-              onClick={() => navigate("/reports/income-expend-report")}
-            >
-              <FaChartLine style={{ fontSize: 35 }} />
-              <strong>{t("report_p_c")}</strong>
-            </div>
-            <div
+          <span className="flex gap-2 items-center">
+            <MdOutlinePieChartOutline style={{ fontSize: 35 }} />
+            <strong>{t("report_sell")}</strong>
+          </span>
+        </Button>
+        <Button
+          onKeyDown={() => {}}
+          className="menu-report-stocks mt-1"
+          style={{
+            background:
+              activeButton === "/reports/income-expend-report"
+                ? COLOR_APP
+                : "white",
+            color:
+              activeButton === "/reports/income-expend-report"
+                ? "white"
+                : COLOR_APP,
+            // width: width > 900 ? "100%" : "fit-content",
+          }}
+          onClick={() => navigate("/reports/income-expend-report")}
+        >
+          <span className="flex gap-2 items-center">
+            <FaChartLine style={{ fontSize: 35 }} />
+            <strong>{t("report_p_c")}</strong>
+          </span>
+        </Button>
+        {/* <div
               onKeyDown={() => {}}
               className="menu-report-stocks mt-1"
               style={{
@@ -119,30 +88,31 @@ export default function ReportLayout() {
               <MdDining style={{ fontSize: 35 }} />
               <strong>{t("stoke_report")}</strong>
             </div> */}
-            {storeDetail?.isCRM && (
-              <div
-                onKeyDown={() => {}}
-                className="menu-report-stocks mt-1"
-                style={{
-                  background:
-                    activeButton === "/reports/members-report"
-                      ? COLOR_APP
-                      : "white",
-                  color:
-                    activeButton === "/reports/members-report"
-                      ? "white"
-                      : COLOR_APP,
-                  // width: width > 900 ? "100%" : "fit-content",
-                }}
-                onClick={() => navigate("/reports/members-report")}
-              >
-                <MdDining style={{ fontSize: 35 }} />
-                <strong>{t("member_report")}</strong>
-              </div>
-            )}
-          </ButtonGroup>
-        </div>
+        {storeDetail?.isCRM && (
+          <Button
+            onKeyDown={() => {}}
+            className="menu-report-stocks mt-1"
+            style={{
+              background:
+                activeButton === "/reports/members-report"
+                  ? COLOR_APP
+                  : "white",
+              color:
+                activeButton === "/reports/members-report"
+                  ? "white"
+                  : COLOR_APP,
+              // width: width > 900 ? "100%" : "fit-content",
+            }}
+            onClick={() => navigate("/reports/members-report")}
+          >
+            <span className="flex gap-2 items-center">
+              <MdDining style={{ fontSize: 35 }} />
+              <strong>{t("member_report")}</strong>
+            </span>
+          </Button>
+        )}
       </div>
+      <hr className="" />
       <div>
         <Outlet />
       </div>
