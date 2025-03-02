@@ -186,7 +186,7 @@ export default function StockExport({ stock, storeName }) {
 
   return (
     <>
-      <div className="flex flex-wrap gap-3">
+      <div>
         <button
           type="button"
           onClick={() => exportExcelFile()}

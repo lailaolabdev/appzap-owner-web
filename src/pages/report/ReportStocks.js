@@ -356,7 +356,7 @@ export default function ReportStocks() {
           </div>
         </div>
       </div> */}
-      <div
+      {/* <div
         className="card-filter-report w-100"
         style={{
           display: "flex",
@@ -366,7 +366,7 @@ export default function ReportStocks() {
         }}
       >
         <div style={{ width: "30%", position: "relative" }}>
-          {/* <div
+          <div
             style={{
               position: "absolute",
               top: "0",
@@ -381,7 +381,7 @@ export default function ReportStocks() {
               icon={faSearch}
               className="text-color-app py-2.5"
             />
-          </div> */}
+          </div>
           <Form.Label>{t("search")}</Form.Label>
           <InputGroup>
             <Form.Control
@@ -415,18 +415,44 @@ export default function ReportStocks() {
           </select>
         </div>
 
+        
+      </div> */}
+      <div className="flex flex-row justify-between mt-8">
+        <div className="text-xl font-semibold pt-2">
+          ລາຍການສະຕ໊ອກທັງໝົດ {totalStock} ລາຍການ
+        </div>
+        <div class="w-full max-w-sm min-w-[200px]">
+          <div class="relative flex items-center">
+            <input
+              class="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-4 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
+              placeholder={t("search")}
+            />
+
+            <button
+              class="rounded-md ml-2 bg-slate-800 py-2.5 px-3 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+              type="button"
+            >
+              <FontAwesomeIcon
+                icon={faSearch}
+                style={{
+                  color: "white",
+                }}
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-row justify-between mt-4">
         {hasManageStockEdit && (
-          <div
-            style={{ marginLeft: "auto", paddingTop: "32px", display: "flex" }}
-          >
-            <StockExport stock={stocks} storeName={storeDetail?.name} />
+          <div>
+            {/* <StockExport stock={stocks} storeName={storeDetail?.name} />
             <button
               class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md mx-2"
               onClick={() => setPopup({ PopUpPreViewsPage: true })}
               disabled={!hasManageStockEdit}
             >
               {t("Print")}
-            </button>
+            </button> */}
             <button
               class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md mr-2"
               onClick={() => setPopup({ PopupSelectStock: true })}
@@ -442,8 +468,19 @@ export default function ReportStocks() {
             </button>
           </div>
         )}
+        {hasManageStockEdit && (
+          <div class="flex gap-2">
+            <StockExport stock={stocks} storeName={storeDetail?.name} />
+            <button
+              class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md"
+              onClick={() => setPopup({ PopUpPreViewsPage: true })}
+              disabled={!hasManageStockEdit}
+            >
+              {t("Print")}
+            </button>
+          </div>
+        )}
       </div>
-
       <div className="py-2">
         <Card
           border="primary"
