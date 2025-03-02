@@ -112,19 +112,21 @@ export default function CreateMemberPage() {
                   />
                 </InputGroup>
               </div>
-              <div className="mb-3">
-                <Form.Label>{t("percenDiscount")}</Form.Label>
-                <Form.Control
-                  placeholder={t("percenDiscount")}
-                  value={formData?.discountPercentage}
-                  onChange={(e) => {
-                    setFormData((prev) => ({
-                      ...prev,
-                      discountPercentage: e.target.value,
-                    }));
-                  }}
-                />
-              </div>
+              {storeDetail?.isStatusCafe && (
+                <div className="mb-3">
+                  <Form.Label>{t("percenDiscount")}</Form.Label>
+                  <Form.Control
+                    placeholder={t("percenDiscount")}
+                    value={formData?.discountPercentage}
+                    onChange={(e) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        discountPercentage: e.target.value,
+                      }));
+                    }}
+                  />
+                </div>
+              )}
               <div className="mb-3">
                 <Form.Label>{t("birth_date")}</Form.Label>
                 <DateTimeComponent
