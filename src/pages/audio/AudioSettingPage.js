@@ -3,7 +3,6 @@ import { Card, Breadcrumb, Form } from "react-bootstrap";
 import { COLOR_APP } from "../../constants";
 import Box from "../../components/Box";
 import { useStore } from "../../store";
-import { useStoreStore } from "../../zustand/storeStore";
 import { useTranslation } from "react-i18next";
 
 export default function AudioSettingPage() {
@@ -12,15 +11,8 @@ export default function AudioSettingPage() {
 
   // provider
   const { audioSetting, setAudioSetting } = useStore();
-  const { storeDetail } = useStoreStore();
-
-  // Check if the storeDetail._id matches the specific ID
-  const isDisabled = storeDetail?._id === "6790c324e9c128001ad67410";
 
   // useEffect
-
-  console.log("audioSetting", audioSetting);
-  console.log("storeDetail", storeDetail);
 
   // function
 
@@ -102,7 +94,6 @@ export default function AudioSettingPage() {
                           [item?.key]: e.target.checked,
                         }))
                       }
-                      disabled={isDisabled} // Disable the switch if isDisabled is true
                     />
                   </div>
                 </div>
@@ -162,7 +153,6 @@ export default function AudioSettingPage() {
                           [item?.key]: e.target.checked,
                         }))
                       }
-                      disabled={isDisabled} // Disable the switch if isDisabled is true
                     />
                   </div>
                 </div>
@@ -222,7 +212,6 @@ export default function AudioSettingPage() {
                           [item?.key]: e.target.checked,
                         }))
                       }
-                      disabled={isDisabled} // Disable the switch if isDisabled is true
                     />
                   </div>
                 </div>

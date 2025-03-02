@@ -137,6 +137,7 @@ const role = (role, user, storeDetail, shiftCurrent) => {
         tableManagement: true,
         orderManagement: true,
         reservationManagement: true,
+        audioManagement: true,
         // menuManagement: true,
         // settingManagement: true,
         // themeManagement: true,

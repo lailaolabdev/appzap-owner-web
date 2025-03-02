@@ -19,6 +19,7 @@ import {
   faChartLine,
   faUser,
   faBook,
+  faVolumeUp,
   faMusic,
   faUsers,
   faBeer,
@@ -349,6 +350,13 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       isCafe: storeDetail?.isStatusCafe,
       system: "reportManagement",
+    },
+    {
+      title: `${t("audio_setting")}`,
+      key: "audio",
+      icon: faVolumeUp,
+      typeStore: "",
+      system: "audioManagement",
     },
   ]
     .filter((e) => {
