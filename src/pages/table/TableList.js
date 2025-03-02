@@ -1827,6 +1827,7 @@ export default function TableList() {
           _id: i?._id,
           menuId: i?.menuId,
           quantity: i?.quantity,
+          name:i?.name
         }));
 
       if (serveItemsReq.length === 0) return setIsServerdLoading(false);
@@ -2005,6 +2006,7 @@ export default function TableList() {
           status: status,
           _id: i?._id,
           menuId: i?.menuId,
+          name:i?.name
         };
       });
     const _resOrderUpdate = await updateOrderItem(
