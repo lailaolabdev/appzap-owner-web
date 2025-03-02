@@ -143,6 +143,7 @@ const role = (role, user, storeDetail, shiftCurrent, path) => {
         // menuManagement: true,
         // settingManagement: true,
         // themeManagement: true,
+        audioManagement: true,
         report: true,
         // stockManagement: true,
         farkManagement: true,

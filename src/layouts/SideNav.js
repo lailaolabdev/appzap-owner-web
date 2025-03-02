@@ -28,6 +28,7 @@ import {
   faBuilding,
   faClock,
   faMoneyBill,
+  faVolumeUp,
   faUserAlt,
   faDesktop,
 } from "@fortawesome/free-solid-svg-icons";
@@ -430,6 +431,13 @@ export default function Sidenav({ location, navigate, onToggle }) {
         (!hasReportDebt && appzapStaff.includes(profileRole)) ||
         !storeDetail?.hasPOS,
       system: "reportManagement",
+    },
+    {
+      title: `${t("audio_setting")}`,
+      key: "audio",
+      icon: faVolumeUp,
+      typeStore: "",
+      system: "audioManagement",
     },
   ]
     .filter((e) => {
