@@ -88,24 +88,6 @@ export default function NumberKeyboard({
 
   return (
     <div className="flex-1">
-      {/* <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(5,1fr)",
-          gap: 10,
-          gridAutoRows: "40px",
-          marginBottom: 30,
-        }}
-      >
-        <Button>500</Button>
-        <Button>1K</Button>
-        <Button>2K</Button>
-        <Button>5K</Button>
-        <Button>10K</Button>
-        <Button>20K</Button>
-        <Button>50K</Button>
-        <Button>100K</Button>
-      </div> */}
       <div
         style={{
           display: "grid",

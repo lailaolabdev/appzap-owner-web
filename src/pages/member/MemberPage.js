@@ -540,20 +540,23 @@ export default function MemberPage() {
     const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // ปัดเศษให้เป็นจำนวนเต็ม
 
     if (daysDiff > 0) {
-      return `ຍັງເຫຼືອອີກ ${daysDiff} ມື້`;
+      return (
+        <span className="text-green-500 font-semibold">
+          ຍັງເຫຼືອອີກ {daysDiff} ມື້
+        </span>
+      );
     } else if (daysDiff === 0) {
-      return "ໝົດອາຍຸວັນນີ້";
+      return (
+        <span className="text-yellow-500 font-semibold">ໝົດອາຍຸວັນນີ້</span>
+      );
     } else {
-      return `ໝົດອາຍຸແລ້ວ ${Math.abs(daysDiff)} ວັນ`;
+      return (
+        <span className="text-red-500 font-semibold">
+          ໝົດອາຍຸແລ້ວ {Math.abs(daysDiff)} ວັນ
+        </span>
+      );
     }
   };
-
-  // const getExpireClass = (daysDiff) => {
-  //   if (daysDiff > 7) return "text-green-500"; // 🟢 ปลอดภัย
-  //   if (daysDiff > 0) return "text-yellow-500"; // 🟡 ใกล้หมดอายุ
-  //   if (daysDiff === 0) return "text-orange-500"; // 🟠 หมดอายุวันนี้
-  //   return "text-red-500"; // 🔴 หมดอายุแล้ว
-  // };
 
   return (
     <>
@@ -940,7 +943,9 @@ export default function MemberPage() {
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
                   <th style={{ textAlign: "center" }}>{"ພ໋ອຍທັງໝົດ"}</th>
-                  <th style={{ textAlign: "center" }}>{t("expirt_point")}</th>
+                  <th style={{ textAlign: "center" }}>
+                    {t("date_expirt_point")}
+                  </th>
                   <th style={{ textAlign: "center" }}>{t("use_service")}</th>
                   <th style={{ textAlign: "center" }}>{t("regis_date")}</th>
                   <th style={{ textAlign: "right" }}>{t("manage")}</th>
@@ -951,16 +956,20 @@ export default function MemberPage() {
                   </td>
                 ) : membersData?.length > 0 ? (
                   membersData?.map((e) => (
-                    <tr>
+                    <tr key={e?._id}>
                       <td style={{ textAlign: "left" }}>{e?.name}</td>
                       <td style={{ textAlign: "center" }}>{e?.phone}</td>
-                      <td style={{ textAlign: "center" }}>
+                      <td className="text-center font-bold">
                         {moneyCurrency(e?.point ?? 0)}
+                        <br />
+                        {!storeDetail?.isStatusCafe &&
+                          CountDateExpire(e?.pointDateExpirt)}
                       </td>
                       <td className="text-center">
-                        {moneyCurrency(e?.pointExpirt ?? 0)}
-                        <br />
-                        {CountDateExpire(e?.pointDateExpirt)}
+                        {e?.pointDateExpirt &&
+                        moment(e.pointDateExpirt).isValid()
+                          ? moment(e.pointDateExpirt).format("DD/MM/YYYY")
+                          : "-"}
                       </td>
                       <td style={{ textAlign: "center" }}>{e?.bill}</td>
                       <td style={{ textAlign: "center" }}>

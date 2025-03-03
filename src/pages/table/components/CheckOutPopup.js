@@ -365,7 +365,6 @@ export default function CheckOutPopup({
         // callCheckOutPrintBillOnly(selectedTable?._id);
         localStorage.removeItem("STAFFCONFIRM_DATA");
 
-        onClose();
         Swal.fire({
           icon: "success",
           title: `${t("checkbill_success")}`,
@@ -379,6 +378,7 @@ export default function CheckOutPopup({
           zoneCheckBill: true,
           point: 0,
         });
+        onClose();
       })
       .catch((error) => {
         errorAdd(`${t("checkbill_fial")}`);
@@ -417,54 +417,119 @@ export default function CheckOutPopup({
     return await PointUser(data);
   };
 
-  const handleSubmit = async () => {
-    const showAlert = (icon, title, text, timer = 1800) => {
-      Swal.fire({
-        icon,
-        title,
-        text,
-        showConfirmButton: false,
-        timer,
-      });
-    };
+  // const handleSubmit = async () => {
+  //   const showAlert = (icon, title, text, timer = 1800) => {
+  //     Swal.fire({
+  //       icon,
+  //       title,
+  //       text,
+  //       showConfirmButton: false,
+  //       timer,
+  //     });
+  //   };
 
+  //   try {
+  //     saveServiceChargeDetails();
+
+  //     if (storeDetail?.isCRM && tab === "cash_transfer_point") {
+  //       try {
+  //         await RedeemPointUser()
+  //           .then((res) => {
+  //             console.log(res);
+  //           })
+  //           .catch((err) => {
+  //             if (err?.response?.data.isExpire) {
+  //               showAlert(
+  //                 "error",
+  //                 "ເກີດຂໍ້ຜິດພາດ",
+  //                 "ຂໍອະໄພຄະແນນຂອງທ່ານໝົດອາຍຸການໃຊ້ງານແລ້ວ"
+  //               );
+  //             }
+  //           });
+  //         return;
+  //       } catch {
+  //         showAlert(
+  //           "error",
+  //           "ເກີດຂໍ້ຜິດພາດ",
+  //           "ການຊຳລະດ້ວຍພ໋ອຍບໍ່ສຳເລັດ ກະລຸນາເລຶອກສະມາຊິກດ້ວຍ"
+  //         );
+  //         return; // Stop further execution if RedeemPointUser fails
+  //       }
+  //     }
+
+  //     try {
+  //       await _checkBill(selectCurrency?.id, selectCurrency?.name);
+  //     } catch {
+  //       showAlert("error", "ການເຊັກບິນບໍ່ສຳເລັດ"); // Add your localized error message
+  //       return; // Stop further execution if _checkBill fails
+  //     }
+
+  //     if (storeDetail?.isCRM && hasCRM) {
+  //       try {
+  //         await PointUsers();
+  //       } catch {
+  //         showAlert("error", "ບໍ່ສາມາດຮັບ point ຈາກການຊຳລະຄັ້ງນີ້");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Unexpected error in handleSubmit:", error);
+  //     showAlert("error", "An unexpected error occurred");
+  //   }
+  // };
+
+  // useEffect
+
+  const handleSubmit = async () => {
     try {
       saveServiceChargeDetails();
 
       if (storeDetail?.isCRM && tab === "cash_transfer_point") {
         try {
           await RedeemPointUser();
-        } catch {
-          showAlert(
-            "error",
-            "ເກີດຂໍ້ຜິດພາດ",
-            "ການຊຳລະດ້ວຍພ໋ອຍບໍ່ສຳເລັດ ກະລຸນາເລຶອກສະມາຊິກດ້ວຍ"
-          );
-          return; // Stop further execution if RedeemPointUser fails
+        } catch (err) {
+          if (err?.response?.data.isExpire) {
+            Swal.fire({
+              icon: "error",
+              title: "ເກີດຂໍ້ຜິດພາດ",
+              text: "ຂໍອະໄພຄະແນນຂອງທ່ານໝົດອາຍຸການໃຊ້ງານແລ້ວ",
+            });
+          }
+          throw new Error("ຂໍອະໄພຄະແນນຂອງທ່ານໝົດອາຍຸການໃຊ້ງານແລ້ວ"); // 🚨 Ensure error is thrown
         }
       }
 
       try {
         await _checkBill(selectCurrency?.id, selectCurrency?.name);
       } catch {
-        showAlert("error", "ການເຊັກບິນບໍ່ສຳເລັດ"); // Add your localized error message
-        return; // Stop further execution if _checkBill fails
+        Swal.fire({
+          icon: "error",
+          title: "ການເຊັກບິນບໍ່ສຳເລັດ",
+        });
+        throw new Error("ການເຊັກບິນບໍ່ສຳເລັດ"); // 🚨 Ensure error is thrown
       }
 
       if (storeDetail?.isCRM && hasCRM) {
         try {
           await PointUsers();
         } catch {
-          showAlert("error", "ບໍ່ສາມາດຮັບ point ຈາກການຊຳລະຄັ້ງນີ້");
+          Swal.fire({
+            icon: "error",
+            title: "ບໍ່ສາມາດຮັບ point ຈາກການຊຳລະຄັ້ງນີ້",
+          });
         }
       }
+
+      return true; // ✅ Return success
     } catch (error) {
       console.error("Unexpected error in handleSubmit:", error);
-      showAlert("error", "An unexpected error occurred");
+      Swal.fire({
+        icon: "error",
+        title: "An unexpected error occurred",
+      });
+      throw error; // 🚨 Ensure error is thrown so `onPrintBill()` is not executed
     }
   };
 
-  // useEffect
   useEffect(() => {
     getDataCurrency();
     getMembersData();
@@ -1045,27 +1110,48 @@ export default function CheckOutPopup({
                         </div>
                       </div>
                     </div>
-                    <InputGroup style={{ marginTop: 10 }}>
-                      <InputGroup.Text>{t("point")}</InputGroup.Text>
-                      <Form.Control
-                        disabled={
-                          dataBill?.Point <= 0 ||
-                          !dataBill?.Name ||
-                          !dataBill?.Point ||
-                          dataBill?.Point <= point
-                        }
-                        type="text"
-                        placeholder="0"
-                        value={convertNumber(point)}
-                        onClick={() => {
-                          setSelectInput("inputPoint");
-                        }}
-                        onChange={(e) => {
-                          onChangePointInput(e.target.value);
-                        }}
-                        size="lg"
-                      />
-                    </InputGroup>
+                    <div className="flex flex-row justify-between items-center">
+                      <InputGroup style={{ marginTop: 10 }}>
+                        <InputGroup.Text>{t("point")}</InputGroup.Text>
+                        <input
+                          disabled={
+                            dataBill?.Point <= 0 ||
+                            !dataBill?.Name ||
+                            !dataBill?.Point ||
+                            dataBill?.Point <= point ||
+                            (dataBill?.ExpireDateForPoint &&
+                              moment(dataBill.ExpireDateForPoint).isBefore(
+                                moment(),
+                                "day"
+                              )) // Disable if expired
+                          }
+                          type="text"
+                          placeholder="0"
+                          value={convertNumber(point)}
+                          onClick={() => {
+                            setSelectInput("inputPoint");
+                          }}
+                          onChange={(e) => {
+                            onChangePointInput(e.target.value);
+                          }}
+                          size="lg"
+                          className="w-[320px] text-[20px] h-[45px] p-2 border rounded-r-lg focus:outline-none"
+                        />
+                      </InputGroup>
+                      {dataBill?.ExpireDateForPoint && (
+                        <div className="w-[250px]">
+                          <span className="text-[18px] font-bold">
+                            {t("expire_date_debt")}:{" "}
+                            {dataBill?.ExpireDateForPoint &&
+                            moment(dataBill.ExpireDateForPoint).isValid()
+                              ? moment(dataBill.ExpireDateForPoint).format(
+                                  "DD-MM-YYYY"
+                                )
+                              : "-"}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   ""
@@ -1401,7 +1487,7 @@ export default function CheckOutPopup({
               {t("debt")}
             </Button>
 
-            <Button
+            {/* <Button
               onClick={() => {
                 setPrintBillLoading(true);
                 saveServiceChargeDetails();
@@ -1422,7 +1508,40 @@ export default function CheckOutPopup({
               )}
               <BiSolidPrinter />
               {t("print_checkbill")}
+            </Button> */}
+
+            <Button
+              onClick={async () => {
+                setPrintBillLoading(true);
+                saveServiceChargeDetails();
+
+                try {
+                  await handleSubmit(); // Run handleSubmit first
+                  await onPrintBill(); // Only run if handleSubmit is successful
+                } catch (error) {
+                  Swal.fire({
+                    icon: "error",
+                    title: "ເກີດຂໍ້ຜິດພາດ",
+                    text: error,
+                  });
+                } finally {
+                  setPrintBillLoading(false);
+                }
+              }}
+              style={{ display: "flex", gap: "10px", alignItems: "center" }}
+              disabled={!canCheckOut || printBillLoading}
+            >
+              {printBillLoading && (
+                <Spinner
+                  animation="border"
+                  size="sm"
+                  style={{ marginRight: 8 }}
+                />
+              )}
+              <BiSolidPrinter />
+              {t("print_checkbill")}
             </Button>
+
             <Button
               className="dmd:w-fit w-full"
               onClick={handleSubmit}

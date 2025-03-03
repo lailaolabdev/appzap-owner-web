@@ -1106,7 +1106,7 @@ function Homecafe() {
         context.textAlign = "center";
 
         const dataUrl = canvas.toDataURL("image/png");
-        console.log("dataUrl", dataUrl);
+
         const printer = printers.find((e) => e?._id === data?.printer);
         if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
       }
@@ -2483,7 +2483,7 @@ function Homecafe() {
           dataBill={SelectedMenus}
           taxPercent={taxPercent}
           profile={profile}
-          meberData={dataBill}
+          memberData={dataBill}
         />
       </div>
       {SelectedMenus?.map((val, i) => {

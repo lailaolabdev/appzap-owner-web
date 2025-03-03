@@ -1,4 +1,5 @@
 import { Modal, Button, Form, InputGroup } from "react-bootstrap";
+import moment from "moment";
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
@@ -120,6 +121,22 @@ export default function PopUpMemberEdit({
             name="point"
           />
         </div>
+
+        {!storeDetail?.isStatusCafe && (
+          <div className="mb-3">
+            <Form.Label>{t("expirt_point")}</Form.Label>
+            <Form.Control
+              type="date"
+              value={
+                formData?.pointDateExpirt
+                  ? moment(formData?.pointDateExpirt).format("YYYY-MM-DD")
+                  : ""
+              }
+              onChange={handleChange}
+              name="pointDateExpirt"
+            />
+          </div>
+        )}
         <div className="mb-3">
           <Form.Label>{t("birth_date")}</Form.Label>
           <DateTimeComponent

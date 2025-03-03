@@ -784,12 +784,12 @@ export default function TableList() {
       setStoreDetail({ ChangeColorTable: true });
 
       setPrintBillLoading(false);
-      await Swal.fire({
-        icon: "success",
-        title: `${t("checkbill_success")}`,
-        showConfirmButton: false,
-        timer: 1800,
-      });
+      // await Swal.fire({
+      //   icon: "success",
+      //   title: `${t("checkbill_success")}`,
+      //   showConfirmButton: false,
+      //   timer: 1800,
+      // });
       setMenuItemDetailModal(false);
       setStoreDetail({
         serviceChargePer: 0,
@@ -1827,7 +1827,7 @@ export default function TableList() {
           _id: i?._id,
           menuId: i?.menuId,
           quantity: i?.quantity,
-          name:i?.name
+          name: i?.name,
         }));
 
       if (serveItemsReq.length === 0) return setIsServerdLoading(false);
@@ -2006,7 +2006,7 @@ export default function TableList() {
           status: status,
           _id: i?._id,
           menuId: i?.menuId,
-          name:i?.name
+          name: i?.name,
         };
       });
     const _resOrderUpdate = await updateOrderItem(
@@ -3266,11 +3266,15 @@ export default function TableList() {
         open={popup?.CheckOutType}
         onClose={() => {
           setPopup();
-          setDataBill((prev) => ({
-            ...prev,
-            Name: "",
-            Point: "",
-          }));
+          // setDataBill((prev) => ({
+          //   ...prev,
+          //   memberId: "",
+          //   memberPhone: "",
+          //   memberName: "",
+          //   Name: "",
+          //   Point: "",
+          //   ExpireDateForPoint: "",
+          // }));
         }}
         onSubmit={() => {
           setPopup({ CheckOutType: false, CheckPopUpDebt: true });
