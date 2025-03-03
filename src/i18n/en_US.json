@@ -1232,5 +1232,7 @@
   "tableNo": "Table No.",
   "transferPayments": "Transfer Payments",
   "1_more_month": "1 More Month",
-  "3_more_month": "3 More Months"
+  "3_more_month": "3 More Months",
+  "add_all": "Add All",
+  "remove_all": "Remove All"
 }
