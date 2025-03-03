@@ -195,7 +195,7 @@ export default function FarkPage() {
               <div>
                 <Form.Control
                   style={{ maxWidth: 180 }}
-                  placeholder={t("search_bill_code")}
+                  placeholder={`${t("search_bill_code")}...`}
                   onChange={(e) => setSearchCode(e.target.value)}
                 />
                 {/* <Button variant="primary" onClick={getData}>
@@ -204,6 +204,7 @@ export default function FarkPage() {
               </div>
               <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
                 <div style={{ display: "flex", gap: 10 }}>
+                  <div>{t("select_date")} : </div>
                   <Button
                     variant="outline-primary"
                     size="small"
@@ -222,11 +223,11 @@ export default function FarkPage() {
                 </div>
                 {profile?.data?.role === "APPZAP_ADMIN"
                   ? storeDetail?.isShift && (
-                      <div className="flex gap-1 items-center">
+                      <div className="flex items-center gap-2 whitespace-nowrap">
                         <span>{t("chose_shift")} : </span>
                         <Select
                           placeholder={t("chose_shift")}
-                          className="w-40 border-orange-500"
+                          className="min-w-[170px] w-full border-orange-500"
                           options={optionsData}
                           onChange={handleSearchInput}
                         />
@@ -315,7 +316,7 @@ export default function FarkPage() {
                       <tr>
                         <td colSpan={6}>
                           <p className="flex justify-center items-center font-bold">
-                            ບໍ່ມີຂໍ້ມູນ
+                            {t("no_data") + "..."}
                           </p>
                         </td>
                       </tr>
@@ -334,12 +335,12 @@ export default function FarkPage() {
                 <ReactPaginate
                   previousLabel={
                     <span className="glyphicon glyphicon-chevron-left">
-                      {"ກ່ອນໜ້າ"}
+                      {t("previous")}
                     </span>
                   }
                   nextLabel={
                     <span className="glyphicon glyphicon-chevron-right">
-                      {"ຕໍ່ໄປ"}
+                      {t("next")}
                     </span>
                   }
                   breakLabel={<Pagination.Item disabled>...</Pagination.Item>}

@@ -78,7 +78,7 @@ export default function PopUpMemberEdit({
 
   return (
     <Modal show={open} onHide={onClose}>
-      <Modal.Header closeButton>ແກ້ໄຂຂໍ້ມູນສະມາຊິກ</Modal.Header>
+      <Modal.Header closeButton>{t("select_category")}</Modal.Header>
       <Modal.Body>
         <div className="mb-3">
           <Form.Label>{t("member_name")}</Form.Label>
@@ -162,10 +162,10 @@ export default function PopUpMemberEdit({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose}>
-          ປິດ
+          {t("close")}
         </Button>
         <Button variant="primary" onClick={handleSave}>
-          ອັບເດດສະມາຊີກ
+          {t("update_member")}
         </Button>
       </Modal.Footer>
     </Modal>

@@ -36,7 +36,7 @@ export default function AudioSettingPage() {
       >
         <Breadcrumb>
           <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t("menage_sound")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("sound_setting")}</Breadcrumb.Item>
         </Breadcrumb>
         <Box
           sx={{

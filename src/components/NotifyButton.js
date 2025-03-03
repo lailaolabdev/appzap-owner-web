@@ -58,21 +58,21 @@ const NotifyItem = ({ title, content, createdAt, item, onButtonClick }) => {
   const mapContent = {
     BANK_TRANSFER: (
       <div>
-        <span>{"ໂຕະ "}</span>
+        <span>{t("table")}</span>
         <span
           style={{
             color: COLOR_APP,
             fontWeight: 600,
           }}
         >{`${tableName} (${code}) `}</span>
-        <span>{`ໄດ້ຈ່າຍເງິນແລ້ວຈຳນວນ `}</span>
+        <span>{t("amount_paid")}</span>
         <span
           style={{
             color: COLOR_APP,
             fontWeight: 600,
           }}
         >{`₭${totalAmount?.toLocaleString()} `}</span>
-        <span>{`ຜ່ານການໂອນ`}</span>
+        <span>{t("through_transfer")}</span>
       </div>
     ),
     CASH: (
@@ -350,9 +350,7 @@ export const NotifyButton = ({ setNotifyFilterToggle, notifyFilterToggle }) => {
 
   // Hooks
   const { newNotify, setNewNotify } = useStore();
-  const {
-    storeDetail
-  } = useStoreStore()
+  const { storeDetail } = useStoreStore();
 
   const { setRunSound } = useSoundState();
   const ref = useRef(null);

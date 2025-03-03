@@ -5,8 +5,10 @@ import { errorAdd } from "../../helpers/sweetalert";
 import { useStoreStore } from "../../zustand/storeStore";
 import PinKeyboard from "../keyboard/PinKeyboard";
 import { END_POINT } from "../../constants";
+import { useTranslation } from "react-i18next";
 
 const PopUpPin = ({ open, onClose, setPinStatus }) => {
+  const { t } = useTranslation();
   const [pin, setPin] = useState("");
   const { storeDetail } = useStoreStore();
 
@@ -47,13 +49,13 @@ const PopUpPin = ({ open, onClose, setPinStatus }) => {
     <Modal show={open} onHide={onClose} style={modalStyle}>
       <Modal.Header>
         <div style={{ fontSize: "20px", fontWeight: 600 }}>
-          ລະຫັດຄວາມປອດໄພ
+          {t("security_code")}
         </div>
       </Modal.Header>
       <Modal.Body>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <Form.Control
-            placeholder="ກະລຸນາໃສພິນ"
+            placeholder={t("enter_pin")}
             type="text"
             maxLength={6}
             value={pin}

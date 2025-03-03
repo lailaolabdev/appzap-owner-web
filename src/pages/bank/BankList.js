@@ -24,7 +24,7 @@ export default function BankList() {
   const [showDelete, setShowDelete] = useState(false);
 
   const { profile } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const [banks, setBanks] = useState([]);
   const [editBank, setEditBank] = useState(null);
   const [alertMessage, setAlertMessage] = useState("");
@@ -165,8 +165,15 @@ export default function BankList() {
                 <span>
                   <BsCurrencyExchange /> {t("main_Bank")}
                 </span>
-                <Button variant="dark" onClick={handleShowAdd}>
-                  <MdAssignmentAdd /> {t("add_Bank")}
+                <Button
+                  variant="dark"
+                  onClick={() => {
+                    handleShowAdd();
+                  }}
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <MdAssignmentAdd style={{ marginRight: "5px" }} />{" "}
+                  {t("add_Bank")}
                 </Button>
               </Card.Header>
               <Card.Body style={{ overflowX: "auto" }}>
@@ -275,7 +282,7 @@ export default function BankList() {
                     type="submit"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "ກຳລັງບັນທຶກ..." : "ບັນທຶກ"}
+                    {isSubmitting ? "ກຳລັງບັນທຶກ..." : t("save")}
                   </Button>
                 </Modal.Footer>
               </form>
@@ -291,7 +298,7 @@ export default function BankList() {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>{"ແກ້ໄຂຊື່ທະນາຄານ"}</Modal.Title>
+            <Modal.Title>{t("edit_bank_name")}</Modal.Title>
           </Modal.Header>
           <Formik
             enableReinitialize
@@ -327,7 +334,7 @@ export default function BankList() {
                   )}
                   <Form.Group>
                     <Form.Label style={{ fontWeight: "bold" }}>
-                      {"ຊື່ທະນາຄານທີຕ້ອງການຈະແກ້ໄຂ"}{" "}
+                      {t("bank_name_to_be_edit")}{" "}
                       <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <Form.Control
@@ -335,7 +342,7 @@ export default function BankList() {
                       name="bankName"
                       value={values.bankName} // ให้ใช้ค่าจาก Formik (values.bankName)
                       onChange={handleChange} // อัปเดตค่าใน Formik เมื่อมีการพิมพ์
-                      placeholder={"ກະລຸນາໃສ່ຊື່ທະນາຄານ"}
+                      placeholder={t("please_fill_bank_name")}
                       isInvalid={!!errors.bankName && touched.bankName}
                     />
                     <Form.Control.Feedback type="invalid">
@@ -352,7 +359,7 @@ export default function BankList() {
                     type="submit"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "ກຳລັງບັນທຶກ..." : "ບັນທຶກ"}
+                    {isSubmitting ? "ກຳລັງບັນທຶກ..." : t("save")}
                   </Button>
                 </Modal.Footer>
               </form>
@@ -368,7 +375,7 @@ export default function BankList() {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>{"ລຶບທະນາຄານ"}</Modal.Title>
+            <Modal.Title>{t("delete_bank")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <p>ທ່ານຢືນຢັນບໍ່ວ່າຈະລຶບ {editBank?.bankName} ອອກຈາກລະບົບ?</p>
@@ -378,7 +385,7 @@ export default function BankList() {
               {t("cancel")}
             </Button>
             <Button variant="danger" onClick={_confirmDelete}>
-              {"ລຶບ"}
+              {t("delete")}
             </Button>
           </Modal.Footer>
         </Modal>

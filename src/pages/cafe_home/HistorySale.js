@@ -22,11 +22,7 @@ import {
   ETHERNET_PRINTER_PORT,
 } from "../../constants/index";
 
-import {
-  CATEGORY,
-  END_POINT_SEVER,
-  getLocalData,
-} from "../../constants/api";
+import { CATEGORY, END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Loading from "../../components/Loading";
 import { json, useNavigate, useParams } from "react-router-dom";
 import { getBills } from "../../services/bill";
@@ -103,10 +99,9 @@ function HistorySale() {
     setTotal(_total);
   };
 
-
   const handleClose = () => setShow(false);
 
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
 
   useEffect(() => {
     const ADMIN = localStorage.getItem(USER_KEY);
@@ -256,10 +251,14 @@ function HistorySale() {
                     >
                       <ReactPaginate
                         previousLabel={
-                          <span className="glyphicon glyphicon-chevron-left">{`ກ່ອນໜ້າ`}</span>
+                          <span className="glyphicon glyphicon-chevron-left">
+                            {t("previous")}
+                          </span>
                         }
                         nextLabel={
-                          <span className="glyphicon glyphicon-chevron-right">{`ຕໍ່ໄປ`}</span>
+                          <span className="glyphicon glyphicon-chevron-right">
+                            {t("next")}
+                          </span>
                         }
                         breakLabel={
                           <Pagination.Item disabled>...</Pagination.Item>

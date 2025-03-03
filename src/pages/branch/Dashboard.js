@@ -175,7 +175,7 @@ export default function Dashboard() {
           <div className="flex w-full justify-between gap-4 lg:flex-row flex-col">
             <div className="flex items-center gap-2 flex-1 max-w-[480px] min-w-80">
               <Form.Control
-                placeholder={t("name_branch")}
+                placeholder={`${t("name_branch")}...`}
                 value={filterValue}
                 onChange={(e) => setFilterValue(e.target.value)}
                 className=""

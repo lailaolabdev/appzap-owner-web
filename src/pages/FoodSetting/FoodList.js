@@ -40,7 +40,7 @@ import { useStoreStore } from "../../zustand/storeStore";
 export default function FoodList() {
   const navigate = useNavigate();
   const params = useParams();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const [showSetting, setShowSetting] = useState(false);
   const [isOpened, setIsOpened] = useState(true);
 
@@ -964,14 +964,14 @@ export default function FoodList() {
                     </div>
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ໝາຍເຫດ</Form.Label>
+                    <Form.Label>{t("note")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="detail"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.detail}
-                      placeholder="ໝາຍເຫດ..."
+                      placeholder={t("note_")}
                     />
                   </Form.Group>
                 </Modal.Body>
@@ -983,7 +983,7 @@ export default function FoodList() {
                       setDataMenuOption([]);
                     }}
                   >
-                    ຍົກເລີກ
+                    {t("cancel")}
                   </Button>
                   <Button
                     style={{
@@ -1354,7 +1354,7 @@ export default function FoodList() {
                               <Row>
                                 <Col xs={6}>
                                   <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>ລາຄາ</Form.Label>
+                                    <Form.Label>{t("price")}</Form.Label>
                                     <Form.Control
                                       type="number"
                                       name="price"
@@ -1366,7 +1366,7 @@ export default function FoodList() {
                                         )
                                       }
                                       value={item?.price}
-                                      placeholder="ລາຄາ..."
+                                      placeholder={t("price_")}
                                       min="0"
                                       isInvalid={!item?.price ? "required" : ""}
                                     />
@@ -1400,14 +1400,14 @@ export default function FoodList() {
                     </div>
                   </Form.Group>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>ໝາຍເຫດ</Form.Label>
+                    <Form.Label>{t("note")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="detail"
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.detail}
-                      placeholder="ໝາຍເຫດ..."
+                      placeholder={t("note_")}
                     />
                   </Form.Group>
                 </Modal.Body>

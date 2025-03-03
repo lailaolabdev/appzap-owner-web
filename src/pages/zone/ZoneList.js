@@ -27,7 +27,7 @@ export default function ZoneList() {
   const { t } = useTranslation();
   const params = useParams();
   const navigate = useNavigate();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const limitData = 10;
   const [pagination, setPagination] = useState(1);
   const [totalPagination, setTotalPagination] = useState(0);
@@ -189,8 +189,14 @@ export default function ZoneList() {
           <span>
             <FontAwesomeIcon icon={faTh} /> {t("zone_list")}
           </span>
-          <Button variant="dark" bg="dark" onClick={handleShowAdd}>
-            <MdAssignmentAdd /> {t("add_list")}
+          <Button
+            variant="dark"
+            bg="dark"
+            onClick={handleShowAdd}
+            style={{ display: "flex", alignItems: "center", gap: "8px" }}
+          >
+            <MdAssignmentAdd />
+            {t("fill_zone")}
           </Button>
         </Card.Header>
         <Card.Body>
@@ -279,7 +285,7 @@ export default function ZoneList() {
       {/* create */}
       <Modal show={showAdd} onHide={handleCloseAdd}>
         <Modal.Header closeButton>
-          <Modal.Title>{t("add_zone")}</Modal.Title>
+          <Modal.Title>{t("fill_zone")}</Modal.Title>
         </Modal.Header>
         <Formik
           enableReinitialize
@@ -425,9 +431,18 @@ export default function ZoneList() {
       <Modal show={showDelete} onHide={handleCloseDelete}>
         <Modal.Header closeButton></Modal.Header>
         <Modal.Body>
-          <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              textAlign: "center",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
             <div>{t("sure_to_delete_zone")}</div>
-            <div style={{ color: "red" }}>{`${dataDelete?.name}`}</div>
+            <div
+              style={{ color: "red", margin: "0 5px" }}
+            >{`${dataDelete?.name}`}</div>
             <div>{t("realy")} ?</div>
           </div>
         </Modal.Body>

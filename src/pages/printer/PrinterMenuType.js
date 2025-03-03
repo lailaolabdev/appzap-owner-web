@@ -60,7 +60,7 @@ export default function PrinterMenuType() {
         }}
         onClick={() => navigate(-1)}
       >
-        ກັບຄືນ
+        {t("back")}
       </div>
       {isMenuCategoryLoading ? <Loading /> : ""}
       <div style={{ padding: 10 }}>

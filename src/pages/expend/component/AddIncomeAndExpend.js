@@ -15,6 +15,7 @@ import { successAdd, errorAdd } from "../../../helpers/sweetalert";
  */
 
 import { getHeadersAccount } from "../../../services/auth";
+import { useTranslation } from "react-i18next";
 
 /**
  * api
@@ -37,6 +38,7 @@ import { useShiftStore } from "../../../zustand/ShiftStore";
 
 export default function AddIncomeAndExpend() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [imageLoadingMany, setImageLoadingMany] = useState(0);
   const [imgArr, setImgArr] = useState([]);
@@ -72,13 +74,13 @@ export default function AddIncomeAndExpend() {
       })
         .then(async (response) => {
           await setIsLoading(false);
-          await successAdd("ເພີ່ມຂໍ້ມູນສຳເລັດ");
+          await successAdd(t("add_data_success"));
           await setSubmitting(false);
           await setImgArr([]);
           await navigate("/expends/limit/40/skip/1");
         })
         .catch(function (error) {
-          errorAdd("ເພີ່ມຂໍ້ມູນບໍ່ສຳເລັດ !");
+          errorAdd(t("add_fail"));
           setIsLoading(false);
           setSubmitting(false);
         });
@@ -142,7 +144,7 @@ export default function AddIncomeAndExpend() {
   };
   return (
     <div style={{ padding: 20 }}>
-      <TitleComponent fontSize={"20px"} title="ລົງບັນຊີລາຍຈ່າຍປະຈຳວັນ" />
+      <TitleComponent fontSize={"20px"} title={t("daily_expenses")} />
 
       {isLoading ? (
         <div>
@@ -212,7 +214,8 @@ export default function AddIncomeAndExpend() {
                     <Col xs={12} sm={12} md={6}>
                       <Form.Group>
                         <Form.Label style={{ fontWeight: "bold" }}>
-                          ວັນທີຈ່າຍ <span style={{ color: "red" }}>*</span>
+                          {t("paid_date")}{" "}
+                          <span style={{ color: "red" }}>*</span>
                         </Form.Label>
                         <Form.Control
                           type="date"
@@ -228,7 +231,8 @@ export default function AddIncomeAndExpend() {
                     <Col xs={12} sm={12} md={6}>
                       <Form.Group>
                         <Form.Label style={{ fontWeight: "bold" }}>
-                          ປະເພດລາຍຈ່າຍ <span style={{ color: "red" }}>*</span>
+                          {t("expence_type")}{" "}
+                          <span style={{ color: "red" }}>*</span>
                         </Form.Label>
                         <Form.Control
                           as="select"
@@ -238,17 +242,21 @@ export default function AddIncomeAndExpend() {
                           onChange={handleChange}
                         >
                           <option value="INGREDIENT_FOOD">
-                            ຊື້ວັດຖຸດິບອາຫານ
+                            {t("ingredient_food")}
                           </option>
                           <option value="INGREDIENT_DRINK">
-                            ຊື້ວັດຖຸດິບເຄື່ອງດື່ມ
+                            {t("ingredient_drink")}
                           </option>
-                          <option value="MAINTENANCE">ແປງຮ້ານ</option>
-                          <option value="MARKETING">ການຕະຫລາດ</option>
-                          <option value="SALARY">ເງິນເດືອນພະນັກງານ</option>
-                          <option value="WELFARE">ສະຫວັດດີການ</option>
-                          <option value="OPERATION">ຄ່າບໍລິຫານ</option>
-                          <option value="OTHER">ອື່ນໆ</option>
+                          <option value="MAINTENANCE">
+                            {t("edit_restaurant")}
+                          </option>
+                          <option value="MARKETING">{t("marketing")}</option>
+                          <option value="SALARY">{t("staff_salary")}</option>
+                          <option value="WELFARE">{t("welfare")}</option>
+                          <option value="OPERATION">
+                            {t("operation_price")}
+                          </option>
+                          <option value="OTHER">{t("other")}</option>
                           {/* <option value="OTHER">ອື່ນໆ</option> */}
                         </Form.Control>
                       </Form.Group>
@@ -259,7 +267,7 @@ export default function AddIncomeAndExpend() {
                     <Col xs={12} sm={6} md={6}>
                       <Form.Group>
                         <Form.Label style={{ fontWeight: "bold" }}>
-                          ຜູ້ຈ່າຍ
+                          {t("payer")}
                         </Form.Label>
                         <Form.Control
                           type="text"
@@ -267,14 +275,14 @@ export default function AddIncomeAndExpend() {
                           // isInvalid={!!errors.paidBy}
                           onChange={handleChange}
                           value={values.paidBy}
-                          placeholder="ປ້ອນຊື່ຜູ້ຈ່າຍ..."
+                          placeholder={t("fill_paid_by")}
                         />
                       </Form.Group>
                     </Col>
                     <Col xs={12} sm={6} md={6}>
                       <Form.Group>
                         <Form.Label style={{ fontWeight: "bold" }}>
-                          ຜູ້ຮັບ
+                          {t("reciver")}
                         </Form.Label>
                         <Form.Control
                           type="text"
@@ -282,7 +290,7 @@ export default function AddIncomeAndExpend() {
                           // isInvalid={!!errors.paidTo}
                           onChange={handleChange}
                           value={values.paidTo}
-                          placeholder="ປ້ອນຊື່ຜູ້ຮັບ...."
+                          placeholder={t("fill_reciver")}
                         />
                       </Form.Group>
                     </Col>
@@ -292,7 +300,7 @@ export default function AddIncomeAndExpend() {
                     <Col xs={12} sm={12} md={12}>
                       <Form.Group>
                         <Form.Label style={{ fontWeight: "bold" }}>
-                          ເງິນກີບ
+                          {t("money_lak")}
                         </Form.Label>
                         <NumericFormat
                           allowLeadingZeros
@@ -301,7 +309,7 @@ export default function AddIncomeAndExpend() {
                           allowNegative={false}
                           // value={values.priceLAK}
                           type="text"
-                          placeholder="ພິມເງິນກີບ..."
+                          placeholder={`${t("print_money_lak")}...`}
                           customInput={Form.Control}
                           name="priceLAK"
                           onChange={handleChange}
@@ -313,7 +321,7 @@ export default function AddIncomeAndExpend() {
                     <Col xs={12} sm={12} md={12}>
                       <Form.Group>
                         <Form.Label style={{ fontWeight: "bold" }}>
-                          ເງິນບາດ
+                          {t("money_thb")}
                         </Form.Label>
                         <NumericFormat
                           allowLeadingZeros
@@ -322,7 +330,7 @@ export default function AddIncomeAndExpend() {
                           allowNegative={false}
                           // value={values.priceTHB}
                           type="text"
-                          placeholder="ພິມເງິນບາດ..."
+                          placeholder={`${t("print_money_thb")}...`}
                           name="priceTHB"
                           onChange={handleChange}
                           customInput={Form.Control}
@@ -334,7 +342,7 @@ export default function AddIncomeAndExpend() {
                     <Col xs={12} sm={12} md={12}>
                       <Form.Group>
                         <Form.Label style={{ fontWeight: "bold" }}>
-                          ເງິນໂດລາ
+                          {t("money_usd")}
                         </Form.Label>
                         <NumericFormat
                           allowLeadingZeros
@@ -343,7 +351,7 @@ export default function AddIncomeAndExpend() {
                           allowNegative={false}
                           // value={values.priceUSD}
                           type="text"
-                          placeholder="ພິມເງິນໂດລາ..."
+                          placeholder={`${t("print_money_usd")}...`}
                           name="priceUSD"
                           onChange={handleChange}
                           customInput={Form.Control}
@@ -355,7 +363,7 @@ export default function AddIncomeAndExpend() {
                     <Col xs={12} sm={12} md={12}>
                       <Form.Group>
                         <Form.Label style={{ fontWeight: "bold" }}>
-                          ເງິນຢວນ
+                          {t("money_cny")}
                         </Form.Label>
                         <NumericFormat
                           allowLeadingZeros
@@ -364,7 +372,7 @@ export default function AddIncomeAndExpend() {
                           allowNegative={false}
                           // value={values.priceCNY}
                           type="text"
-                          placeholder="ພິມເງິນຢວນ..."
+                          placeholder={`${t("print_money_cny")}...`}
                           name="priceCNY"
                           onChange={handleChange}
                           customInput={Form.Control}
@@ -378,7 +386,7 @@ export default function AddIncomeAndExpend() {
 
                 <Col xs={12} md={6}>
                   <Form.Label style={{ fontWeight: "bold" }}>
-                    ຮູບແບບຈ່າຍ <span style={{ color: "red" }}>*</span>
+                    {t("paid_method")} <span style={{ color: "red" }}>*</span>
                   </Form.Label>
                   <Form.Control
                     as="select"
@@ -387,15 +395,16 @@ export default function AddIncomeAndExpend() {
                     value={values.payment}
                     onChange={handleChange}
                   >
-                    <option value="">ເລືອກຮູບແບບຈ່າຍ</option>
-                    <option value="CASH">ເງິນສົດ</option>
-                    <option value="TRANSFER">ເງິນໂອນ</option>
-                    <option value="DEBT">ຕິດຫນີ້</option>
+                    <option value="">{t("chose_payment_method")}</option>
+                    <option value="CASH">{t("cash")}</option>
+                    <option value="TRANSFER">{t("transfer")} </option>
+                    <option value="DEBT">{t("debt")} </option>
                     {/* <option value="OTHER">ອື່ນໆ</option> */}
                   </Form.Control>
                   <Form.Group>
                     <Form.Label style={{ fontWeight: "bold" }}>
-                      ລາຍລະອຽດການຈ່າຍ <span style={{ color: "red" }}>*</span>
+                      {t("paid_detail")}
+                      <span style={{ color: "red" }}>*</span>
                     </Form.Label>
                     <Form.Control
                       as="textarea"
@@ -404,26 +413,26 @@ export default function AddIncomeAndExpend() {
                       name="detail"
                       isInvalid={!!errors.detail}
                       value={values.detail}
-                      placeholder="ປ້ອນລາຍລະອຽດການຈ່າຍ"
+                      placeholder={`${t("fill_paid_detail")}...`}
                     />
                   </Form.Group>
                   <Form.Group>
                     <Form.Label style={{ fontWeight: "bold" }}>
-                      ໝາຍເຫດ
+                      {t("note")}
                     </Form.Label>
                     <Form.Control
                       as="textarea"
                       rows={3}
                       name="note"
                       onChange={handleChange}
-                      placeholder="ໝາຍເຫດ.."
+                      placeholder={t("note_")}
                       value={values.note}
                     />
                   </Form.Group>
 
                   <Form.Group>
                     <Form.Label style={{ fontWeight: "bold" }} xs={12} sm="3">
-                      ອັບໂຫລດຮູບໃບບິນ
+                      {t("upload_receipt")}
                     </Form.Label>
 
                     <Row>
@@ -434,7 +443,7 @@ export default function AddIncomeAndExpend() {
                               <Spinner animation="border" variant="secondary" />
                             ) : (
                               <>
-                                + <br /> ຄລິກເພື່ອອັບໂຫລດ
+                                + <br /> {t("click_upload")}
                               </>
                             )}
                           </div>
@@ -506,7 +515,7 @@ export default function AddIncomeAndExpend() {
                   }}
                 >
                   <ButtonComponent
-                    title={"ປິດອອກ"}
+                    title={t("close_out")}
                     width="150px"
                     handleClick={() =>
                       navigate("/expends/limit/40/skip/1", { replace: true })
@@ -517,7 +526,7 @@ export default function AddIncomeAndExpend() {
                   <ButtonComponent
                     icon={faSave}
                     type="button"
-                    title={"ບັນທຶກ"}
+                    title={t("save")}
                     width="350px"
                     handleClick={() => handleSubmit()}
                     colorbg={"#fb6e3b"}

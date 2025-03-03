@@ -987,12 +987,22 @@ const MainScreen = () => {
         <Modal show={showDelete} onHide={handleCloseDelete}>
           <Modal.Header closeButton></Modal.Header>
           <Modal.Body>
-            <div style={{ textAlign: "center" }}>
+            <div
+              style={{
+                textAlign: "center",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <div>{t("sure_to_delete_data")}</div>
-              <div style={{ color: "red" }}>{`${dataDelete?.name}`}</div>
+              <div
+                style={{ color: "red", margin: "0 5px" }}
+              >{`${dataDelete?.name}`}</div>
               <div>{t("realy")} ?</div>
             </div>
           </Modal.Body>
+
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseDelete}>
               {t("cancel")}

@@ -442,7 +442,7 @@ export default function ShiftList() {
                                 </span>
                               ) : (
                                 <span className="text-red-500 font-bold">
-                                  {t("close")}
+                                  {t("close_shift")}
                                 </span>
                               )}
                             </td>
@@ -522,7 +522,7 @@ export default function ShiftList() {
                 </Card.Header>
                 <Card.Body style={{ overflowX: "auto" }}>
                   <div className="flex items-center gap-2">
-                    <div>ເລືອກວັນທີ : </div>
+                    <div>{t("select_date")} : </div>
                     <Button
                       variant="outline-primary"
                       size="small"
@@ -615,12 +615,12 @@ export default function ShiftList() {
                     <ReactPaginate
                       previousLabel={
                         <span className="glyphicon glyphicon-chevron-left">
-                          {"ກ່ອນໜ້າ"}
+                          {t("previous")}
                         </span>
                       }
                       nextLabel={
                         <span className="glyphicon glyphicon-chevron-right">
-                          {"ຕໍ່ໄປ"}
+                          {t("next")}
                         </span>
                       }
                       breakLabel={
@@ -706,7 +706,7 @@ export default function ShiftList() {
                       type="text"
                       name="shiftName"
                       onChange={handleChange}
-                      placeholder={t("shift_name")}
+                      placeholder={`${t("shift_name")}...`}
                       isInvalid={!!errors.shiftName && touched.shiftName}
                     />
                     <Form.Control.Feedback type="invalid">
@@ -834,7 +834,7 @@ export default function ShiftList() {
                       name="shiftName"
                       value={values.shiftName}
                       onChange={handleChange}
-                      placeholder={t("shift_name")}
+                      placeholder={`${t("shift_name")}...`}
                       isInvalid={!!errors.shiftName && touched.shiftName}
                     />
                     <Form.Control.Feedback type="invalid">
@@ -989,7 +989,7 @@ export default function ShiftList() {
                         </div>
                         <div className="mt-4">
                           <p>
-                            ທ່ານຕ້ອງການເປິດກະ {shifData?.shiftName} ແມ່ນບໍ່ ?{" "}
+                            ທ່ານຕ້ອງການເປິດກະ {shifData?.shiftName} ແມ່ນບໍ່?{" "}
                           </p>
                         </div>
                       </div>
