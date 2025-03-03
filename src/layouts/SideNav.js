@@ -276,17 +276,17 @@ export default function Sidenav({ location, navigate, onToggle }) {
         !storeDetail?.hasPOS,
       system: "orderManagement",
     },
-    {
-      title: t("stock_manage"),
-      key: "stock",
-      // icon: BsArchive,
-      icon: faBoxes,
-      typeStore: "",
-      hidden:
-        (!hasReportStock && appzapStaff.includes(profileRole)) ||
-        !storeDetail?.hasPOS,
-      system: "stockManagement",
-    },
+    // {
+    //   title: t("stock_manage"),
+    //   key: "stock",
+    //   // icon: BsArchive,
+    //   icon: faBoxes,
+    //   typeStore: "",
+    //   hidden:
+    //     (!hasReportStock && appzapStaff.includes(profileRole)) ||
+    // !storeDetail?.hasPOS,
+    //   system: "stockManagement",
+    // },
     {
       title: `${t("isCafe")}`,
       key: storeDetail?.isShift
@@ -300,14 +300,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
         (!hasCafe && appzapStaff.includes(profileRole)) || !storeDetail?.hasPOS,
       system: "tableManagement",
     },
-    {
-      title: `${t("paid_manage")}`,
-      key: "expends",
-      icon: faBook,
-      typeStore: "",
-      system: "reportManagement",
-      hidden: !hasExpenses && appzapStaff.includes(profileRole),
-    },
+    // {
+    //   title: `${t("paid_manage")}`,
+    //   key: "expends",
+    //   icon: faBook,
+    //   typeStore: "",
+    //   system: "reportManagement",
+    //   hidden: !hasExpenses && appzapStaff.includes(profileRole),
+    // },
     {
       title: `${t("booking_manage")}`,
       key: "reservations",
@@ -381,16 +381,16 @@ export default function Sidenav({ location, navigate, onToggle }) {
     .filter((e) => !e?.hidden);
 
   const settingNavItem = [
-    {
-      title: `${t("shift")}`,
-      key: "shift",
-      typeStore: "",
-      icon: faBuilding,
-      hidden:
-        (!hasBranches && appzapStaff.includes(profileRole)) ||
-        !storeDetail?.hasPOS,
-      system: "reportManagement",
-    },
+    // {
+    //   title: `${t("shift")}`,
+    //   key: "shift",
+    //   typeStore: "",
+    //   icon: faBuilding,
+    //   hidden:
+    //     (!hasBranches && appzapStaff.includes(profileRole)) ||
+    //     !storeDetail?.hasPOS,
+    //   system: "reportManagement",
+    // },
     {
       title: `${t("shift")}`,
       key: "shift",
