@@ -261,6 +261,93 @@ export default function ConfigPage() {
                     fontWeight: "bold",
                   }}
                 >
+                  SMART MENU & SELF ORDERING
+                </Card.Header>
+                <Card.Body>
+                  {[
+                    {
+                      title: `${t("oppen_smart_menu")}`,
+                      key: "open",
+                      tooltip: `${t("close_oppen_for_work")}`,
+                      disabled: true,
+                      default: true,
+                    },
+                    {
+                      title: `${t("oppen_table_first")}`,
+                      key: "shouldOpenTableForSelfOrdering",
+                      tooltip: "",
+                      disabled: true,
+                    },
+                    {
+                      title: `${t("auto_oppen")}`,
+                      key: "autoOpenTable",
+                      tooltip: "",
+                      disabled: true,
+                    },
+                    {
+                      title: `${t("table_qr")}`,
+                      key: "tableQrEveryoneCanSelfOrdering",
+                      tooltip: "",
+                      disabled: true,
+                    },
+                  ].map((item, index) => (
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr auto",
+                        gap: 10,
+                        padding: "10px 0",
+                        borderBottom: `1px dotted ${COLOR_APP}`,
+                      }}
+                      key={index}
+                    >
+                      <div>
+                        {item?.title}{" "}
+                        <TooltipFunc title={item?.tooltip} id={index} />
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Form.Label htmlFor={"switch-audio-" + item?.key}>
+                          {switchState?.[item?.key] || item?.default
+                            ? `${t("oppen")}`
+                            : `${t("close")}`}
+                        </Form.Label>
+                        <Form.Check
+                          disabled={item?.disabled}
+                          type="switch"
+                          checked={switchState?.[item?.key] || item?.default}
+                          id={"switch-audio-" + item?.key}
+                          onChange={(e) => {
+                            changeSwitchData({
+                              [`smartMenu.${item?.key}`]: e.target.checked,
+                            })
+                              .then((e) => {
+                                getSettingData();
+                              })
+                              .catch((er) => console.log(er));
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </Card.Body>
+              </Card>
+
+              <Card border="primary" style={{ margin: 0 }}>
+                <Card.Header
+                  style={{
+                    backgroundColor: COLOR_APP,
+                    color: "#fff",
+                    fontSize: 18,
+                    fontWeight: "bold",
+                  }}
+                >
                   {t("stock_system")}
                 </Card.Header>
                 <Card.Body>
