@@ -48,6 +48,8 @@ export default function HistoryUse() {
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
   const [popup, setPopup] = useState();
+  const [statusOderHis, setStatusOrderHis] = useState("")
+  const [filteredData, setFilteredData] = useState([]);
 
   const { storeDetail } = useStoreStore();
 
@@ -99,35 +101,19 @@ export default function HistoryUse() {
       } else if (filtterModele === "billPayBefore") {
         apiUrl =
           END_POINT_SEVER +
-          `/v3/bills-split/skip/${
-            page * rowsPerPage
+          `/v3/bills-split/skip/${page * rowsPerPage
           }/limit/${rowsPerPage}?storeId=${params?.id}`;
       } else if (filtterModele === "bankTransfer") {
-        apiUrl = `${END_POINT_SEVER}/v4/pos/get-call-to-checkouts/skip/${
-          page * rowsPerPage
-        }/limit/${rowsPerPage}?storeId=${
-          params?.id
-        }&paymentMethod=BANK_TRANSFER`;
+        apiUrl = `${END_POINT_SEVER}/v4/pos/get-call-to-checkouts/skip/${page * rowsPerPage
+          }/limit/${rowsPerPage}?storeId=${params?.id
+          }&paymentMethod=BANK_TRANSFER`;
       } else if (filtterModele === "order_history") {
-        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${
-          page * rowsPerPage
-        }/limit/${rowsPerPage}?storeId=${
-          params?.id
-        }&status=${filtterModele}${findBy}`;
-      } else if (
-        filtterModele === "served" ||
-        filtterModele === "doing" ||
-        filtterModele === "canceled"
-      ) {
-        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${
-          page * rowsPerPage
-        }/limit/${rowsPerPage}?storeId=${
-          params?.id
-        }&modele=${filtterModele}${findBy}`;
+        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${page * rowsPerPage
+          }/limit/${rowsPerPage}?storeId=${params?.id
+          }&status=${filtterModele}${findBy}`;
       } else {
-        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${
-          page * rowsPerPage
-        }/limit/${rowsPerPage}?storeId=${params?.id}&modele=${filtterModele}`;
+        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${page * rowsPerPage
+          }/limit/${rowsPerPage}?storeId=${params?.id}&modele=${filtterModele}${findBy}`;
       }
 
       const res = await axios.get(apiUrl, { headers });
@@ -181,6 +167,32 @@ export default function HistoryUse() {
     setShow(true);
     setDataModal(item);
   };
+
+
+  const filterOrderHistory = (data, filterStatus) => {
+    const filteredData = data?.filter(item => {
+      return item?.eventDetail?.includes(filterStatus);
+    });
+
+    return filteredData;
+  };
+
+  const handleFilterClick = (status) => {
+    setStatusOrderHis(status);
+    const filteredResults = filterOrderHistory(data, status);
+    setFilteredData(filteredResults); // Save filtered results to state
+  };
+
+  useEffect(() => {
+    if (statusOderHis) {
+      // If there's an active filter, apply it to the new data
+      setFilteredData(filterOrderHistory(data, statusOderHis));
+    } else {
+      // Otherwise, just use the full data set
+      setFilteredData(data);
+    }
+  }, [data, statusOderHis]);
+
 
   return (
     <div
@@ -236,8 +248,10 @@ export default function HistoryUse() {
               alignItems: "center",
             }}
             onClick={() => {
-              setFiltterModele("order_history");
+              setFiltterModele("canceled");
               setOrderHistory(false);
+              setStatusOrderHis(""); // Clear any active filter
+              setFilteredData(data);
             }}
           >
             <FontAwesomeIcon icon={faCoins} /> <div style={{ width: 8 }}></div>{" "}
@@ -446,15 +460,15 @@ export default function HistoryUse() {
                       <td>
                         {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                           ? new Intl.NumberFormat("ja-JP", {
-                              currency: "JPY",
-                            }).format(_countAmount(item?.orderId))
+                            currency: "JPY",
+                          }).format(_countAmount(item?.orderId))
                           : new Intl.NumberFormat("ja-JP", {
-                              currency: "JPY",
-                            }).format(
-                              item?.payAmount +
-                                item?.taxAmount +
-                                item?.serviceChargeAmount
-                            )}{" "}
+                            currency: "JPY",
+                          }).format(
+                            item?.payAmount +
+                            item?.taxAmount +
+                            item?.serviceChargeAmount
+                          )}{" "}
                         {selectedCurrency}
                       </td>
                       <td
@@ -468,8 +482,8 @@ export default function HistoryUse() {
                         {item?.paymentMethod === "CASH"
                           ? t("payBycash")
                           : item?.paymentMethod === "TRANSFER"
-                          ? t("transferPayment")
-                          : t("transfercash")}
+                            ? t("transferPayment")
+                            : t("transfercash")}
                       </td>
                       <td>
                         {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
@@ -577,53 +591,36 @@ export default function HistoryUse() {
                     </div>
                   </Button>
                   <div className="flex items-center">
-                    <div>
-                      <button
-                        onClick={() => setFiltterModele("order_history")}
-                        className={` border ${
-                          filtterModele === "order_history"
-                            ? " bg-color-app"
-                            : " bg-orange-400"
-                        } rounded-md px-2 mx-1 p-1 text-white`}
-                      >
+                    <select
+                      value={statusOderHis}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === "") {
+                          setFiltterModele("canceled");
+                          setStatusOrderHis("");
+                          setFilteredData(data);
+                        } else {
+                          handleFilterClick(value);
+                        }
+                      }}
+                      className="p-2 border rounded-md bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    >
+                      <option selected value="">
                         {t("all")}
-                      </button>
-                      <button
-                        onClick={() => setFiltterModele("served")}
-                        className={` border ${
-                          filtterModele === "served"
-                            ? " bg-color-app"
-                            : "bg-orange-400"
-                        } rounded-md px-2 mx-1 p-1 text-white`}
-                      >
+                      </option>
+                      <option value="ເສີບອາຫານສຳເລັດ">
                         {t("served")}
-                      </button>
-                      <button
-                        onClick={() => setFiltterModele("doing")}
-                        className={` border ${
-                          filtterModele === "doing"
-                            ? " bg-color-app"
-                            : "bg-orange-400"
-                        }  rounded-md px-2 mx-1 p-1 text-white`}
-                      >
+                      </option>
+                      <option value="ສົ່ງໄປຄົວສຳເລັດແລ້ວ">
                         {t("cooking")}
-                      </button>
-                      <button
-                        onClick={() => setFiltterModele("canceled")}
-                        className={` border ${
-                          filtterModele === "canceled"
-                            ? " bg-color-app"
-                            : " bg-orange-400"
-                        } rounded-md px-2 mx-1 p-1 text-white`}
-                      >
+                      </option>
+                      <option value="ຍົກເລີກອາຫານສຳເລັດແລ້ວ">
                         {t("cancel")}
-                      </button>
-                    </div>
+                      </option>
+                    </select>
                     <button
-                      onClick={() =>
-                        setPopup({ PopupOrderHistoryExport: true })
-                      }
-                      className={` border  bg-color-app rounded-md px-5 ml-5 p-1 text-white`}
+                      onClick={() => setPopup({ PopupOrderHistoryExport: true })}
+                      className="border bg-color-app rounded-md px-5 ml-5 p-1 text-white"
                     >
                       Export
                     </button>
@@ -666,7 +663,7 @@ export default function HistoryUse() {
                 </thead>
 
                 <tbody>
-                  {data?.map((item, index) => {
+                  {(statusOderHis ? filteredData : data)?.map((item, index) => {
                     return (
                       <tr key={index}>
                         <td style={{ textWrap: "nowrap" }}>
@@ -704,8 +701,8 @@ export default function HistoryUse() {
                               item?.reason === undefined ||
                               item?.reason === "undefined" ||
                               item?.reason === "null"
-                            ? "-"
-                            : item?.reason}
+                              ? "-"
+                              : item?.reason}
                         </td>
                         {filtterModele === "historyServiceChange" && (
                           <td>
@@ -764,8 +761,8 @@ export default function HistoryUse() {
                   <td>
                     {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                       item?.totalPrice ||
-                        (item?.price + (item?.totalOptionPrice || 0)) *
-                          item?.quantity
+                      (item?.price + (item?.totalOptionPrice || 0)) *
+                      item?.quantity
                     )}
                   </td>
                   <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
@@ -824,16 +821,16 @@ export default function HistoryUse() {
                           item?.status === "WAITING"
                             ? "#2d00a8"
                             : item?.status === "DOING"
-                            ? "#c48a02"
-                            : item?.status === "SERVED"
-                            ? "green"
-                            : item?.status === "PAID"
-                            ? COLOR_APP
-                            : item?.status === "CART"
-                            ? "#00496e"
-                            : item?.status === "FEEDBACK"
-                            ? "#00496e"
-                            : "#bd0d00",
+                              ? "#c48a02"
+                              : item?.status === "SERVED"
+                                ? "green"
+                                : item?.status === "PAID"
+                                  ? COLOR_APP
+                                  : item?.status === "CART"
+                                    ? "#00496e"
+                                    : item?.status === "FEEDBACK"
+                                      ? "#00496e"
+                                      : "#bd0d00",
                       }}
                     >
                       {orderStatus(item?.status)}
@@ -846,8 +843,8 @@ export default function HistoryUse() {
                         currency: "JPY",
                       }).format(
                         item?.totalPrice ??
-                          (item?.price + (item?.totalOptionPrice ?? 0)) *
-                            item?.quantity
+                        (item?.price + (item?.totalOptionPrice ?? 0)) *
+                        item?.quantity
                       )}
                     </td>
                     <td>
@@ -884,7 +881,7 @@ export default function HistoryUse() {
       <PopupOrderHistoryExport
         open={popup?.PopupOrderHistoryExport}
         onClose={() => setPopup()}
-        data={data}
+        data={statusOderHis ? filteredData : data}
         filtterModele={filtterModele}
       />
     </div>
