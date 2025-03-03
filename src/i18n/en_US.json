@@ -1234,5 +1234,15 @@
   "1_more_month": "1 More Month",
   "3_more_month": "3 More Months",
   "add_all": "Add All",
-  "remove_all": "Remove All"
+  "remove_all": "Remove All",
+  "no_order_list": "No order list",
+  "open_second_screen": "Open Second Screen",
+  "setting_point": "Setting Point",
+  "recive_point": "Recive point",
+  "used_point": "Used point",
+  "queue no": "Queue No",
+  "member_discount": "Discount for member",
+  "price_basic": "Basic price",
+  "expirt_point": "Points that will expire",
+  "date_expirt_point": "Point Expiration"
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { Modal, Form, Button, InputGroup, Spinner } from "react-bootstrap";
 import styled from "styled-components";
@@ -76,6 +77,7 @@ export default function CheckOutPopup({
   const [paid, setPaid] = useState(0);
   const [banks, setBanks] = useState([]);
   const [selectedBank, setSelectedBank] = useState("");
+  const [datePointExpirt, setDatePointExpirt] = useState("");
 
   const {
     setSelectedTable,
@@ -153,6 +155,7 @@ export default function CheckOutPopup({
         memberName: _res.data?.name,
         Name: _res.data?.name,
         Point: _res.data?.point,
+        ExpireDateForPoint: _res?.data?.pointDateExpirt,
       }));
     } catch (err) {
       console.log(err);
@@ -209,16 +212,13 @@ export default function CheckOutPopup({
     const transferAmount = Number.parseFloat(transfer) || 0;
     const totalReceived = cashAmount + transferAmount;
 
-    moneyReceived = `${
+    moneyReceived =
       selectCurrency?.name === "LAK"
-        ? moneyCurrency(totalReceived)
-        : moneyCurrency(Number.parseFloat(cashCurrency) || 0)
-    } ${selectCurrency?.name}`;
+        ? Number.parseFloat(totalReceived)
+        : Number.parseFloat(cashCurrency) || 0;
 
     const changeAmount = totalReceived - discountedTotalBill;
-    moneyChange = `${moneyCurrency(changeAmount > 0 ? changeAmount : 0)} ${
-      storeDetail?.firstCurrency
-    }`;
+    moneyChange = Number.parseFloat(changeAmount > 0 ? changeAmount : 0);
 
     setDataBill((prev) => ({
       ...prev,
@@ -416,62 +416,6 @@ export default function CheckOutPopup({
     };
     return await PointUser(data);
   };
-
-  // console.log("SERVICE", storeDetail?.serviceChargePer);
-
-  // const handleSubmit = async () => {
-  //   saveServiceChargeDetails();
-
-  //   if (storeDetail?.isCRM && tab === "cash_transfer_point") {
-  //     await RedeemPointUser()
-  //       .then((res) => {
-  //         // if (res) {
-  //         //   Swal.fire({
-  //         //     icon: "success",
-  //         //     title: "ການຊຳລະດ້ວຍພ໋ອຍສຳເລັດ",
-  //         //     showConfirmButton: false,
-  //         //     timer: 1800,
-  //         //   });
-  //         // }
-  //       })
-  //       .catch((err) => {
-  //         if (err) {
-  //           Swal.fire({
-  //             icon: "error",
-  //             title: "ການຊຳລະດ້ວຍພ໋ອຍບໍ່ສຳເລັດ",
-  //             showConfirmButton: false,
-  //             timer: 1800,
-  //           });
-  //           return;
-  //         }
-  //       });
-  //   }
-  //   await _checkBill(selectCurrency?.id, selectCurrency?.name);
-
-  //   if (storeDetail?.isCRM && hasCRM) {
-  //     await PointUsers()
-  //       .then((res) => {
-  //         // if (res) {
-  //         //   Swal.fire({
-  //         //     icon: "success",
-  //         //     title: "success",
-  //         //     showConfirmButton: false,
-  //         //     timer: 1800,
-  //         //   });
-  //         // }
-  //       })
-  //       .catch((err) => {
-  //         if (err) {
-  //           Swal.fire({
-  //             icon: "error",
-  //             title: "ບໍ່ສາມາດຮັບ point ຈາກການຊຳລະຄັ້ງນີ້",
-  //             showConfirmButton: false,
-  //             timer: 1800,
-  //           });
-  //         }
-  //       });
-  //   }
-  // };
 
   const handleSubmit = async () => {
     const showAlert = (icon, title, text, timer = 1800) => {
@@ -709,19 +653,6 @@ export default function CheckOutPopup({
       ? (totalBill * dataBill?.discount) / 100
       : 0;
 
-  // const totalBillMoney =
-  //   dataBill && dataBill?.discountType === "LAK"
-  //     ? Number.parseFloat(
-  //         totalBill - dataBill?.discount > 0
-  //           ? totalBill - dataBill?.discount
-  //           : 0
-  //       )
-  //     : Number.parseFloat(
-  //         totalBill - (totalBill * dataBill?.discount) / 100 > 0
-  //           ? totalBill - (totalBill * dataBill?.discount) / 100
-  //           : 0
-  //       );
-
   const totalBillMoney =
     dataBill?.discountType === "LAK"
       ? moneyCurrency(
@@ -869,6 +800,16 @@ export default function CheckOutPopup({
     }
   }, [open, delivery, totalBillMoney]);
 
+  useEffect(() => {
+    if (dataBill?.ExpireDateForPoint) {
+      setDatePointExpirt(
+        moment(dataBill.ExpireDateForPoint).format("YYYY-MM-DD")
+      );
+    } else {
+      setDatePointExpirt(moment().add(1, "months").format("YYYY-MM-DD"));
+    }
+  }, [dataBill?.Name]);
+
   return (
     <Modal
       show={open}
@@ -879,6 +820,7 @@ export default function CheckOutPopup({
         setPoint();
         onClose();
         setCanCheckOut(false);
+        setDatePointExpirt("");
       }}
       keyboard={false}
       size="lg"
@@ -1129,7 +1071,7 @@ export default function CheckOutPopup({
                   ""
                 )}
                 <div hidden={!hasCRM} style={{ marginBottom: 10 }}>
-                  <BoxMember>
+                  <BoxMember className="mb-2">
                     <div className="box-left">
                       <div className="box-search">
                         <Select
@@ -1171,6 +1113,21 @@ export default function CheckOutPopup({
                             ? dataBill?.Point
                             : "0"}
                         </InputGroup.Text>
+                      </div>
+                    </div>
+                  </BoxMember>
+                  <label htmlFor="date-expirt" className="my-2">
+                    ກຳວັນໝົດອາຍຸຂອງຄະແນນ
+                  </label>
+                  <BoxMember className="mb-2">
+                    <div className="box-left">
+                      <div className="box-search">
+                        <input
+                          type="date"
+                          value={datePointExpirt}
+                          onChange={(e) => setDatePointExpirt(e.target.value)}
+                          className="border p-2 w-[325px] h-[38px] rounded-md focus:outline-none"
+                        />
                       </div>
                     </div>
                   </BoxMember>

@@ -527,6 +527,34 @@ export default function MemberPage() {
     getMembersData();
   };
 
+  const CountDateExpire = (pointDateExpirt) => {
+    if (!pointDateExpirt) return "";
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const expirtDate = new Date(pointDateExpirt);
+    expirtDate.setHours(0, 0, 0, 0);
+
+    const timeDiff = expirtDate.getTime() - today.getTime();
+    const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // ปัดเศษให้เป็นจำนวนเต็ม
+
+    if (daysDiff > 0) {
+      return `ຍັງເຫຼືອອີກ ${daysDiff} ມື້`;
+    } else if (daysDiff === 0) {
+      return "ໝົດອາຍຸວັນນີ້";
+    } else {
+      return `ໝົດອາຍຸແລ້ວ ${Math.abs(daysDiff)} ວັນ`;
+    }
+  };
+
+  // const getExpireClass = (daysDiff) => {
+  //   if (daysDiff > 7) return "text-green-500"; // 🟢 ปลอดภัย
+  //   if (daysDiff > 0) return "text-yellow-500"; // 🟡 ใกล้หมดอายุ
+  //   if (daysDiff === 0) return "text-orange-500"; // 🟠 หมดอายุวันนี้
+  //   return "text-red-500"; // 🔴 หมดอายุแล้ว
+  // };
+
   return (
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
@@ -911,10 +939,8 @@ export default function MemberPage() {
                 <tr>
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
-                  <th style={{ textAlign: "center" }}>{t("total_point")}</th>
-                  {/* <th style={{ textAlign: "center" }}>
-                    {"ພ໋ອຍທີ່ສາມາດໃຊ້ໄດ້"}
-                  </th> */}
+                  <th style={{ textAlign: "center" }}>{"ພ໋ອຍທັງໝົດ"}</th>
+                  <th style={{ textAlign: "center" }}>{t("expirt_point")}</th>
                   <th style={{ textAlign: "center" }}>{t("use_service")}</th>
                   <th style={{ textAlign: "center" }}>{t("regis_date")}</th>
                   <th style={{ textAlign: "right" }}>{t("manage")}</th>
@@ -931,9 +957,11 @@ export default function MemberPage() {
                       <td style={{ textAlign: "center" }}>
                         {moneyCurrency(e?.point ?? 0)}
                       </td>
-                      {/* <td style={{ textAlign: "center" }}>
-                        {moneyCurrency(e?.availablePoint ?? 0)}
-                      </td> */}
+                      <td className="text-center">
+                        {moneyCurrency(e?.pointExpirt ?? 0)}
+                        <br />
+                        {CountDateExpire(e?.pointDateExpirt)}
+                      </td>
                       <td style={{ textAlign: "center" }}>{e?.bill}</td>
                       <td style={{ textAlign: "center" }}>
                         {moment(e?.createdAt).format("DD/MM/YYYY")}

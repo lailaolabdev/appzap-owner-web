@@ -208,6 +208,13 @@ export default function BillForCheckOut80({
                     : ""}
                 </span>
               </div>
+
+              <div>
+                {t("date_expirt_point")}: {""}
+                <span style={{ fontWeight: "bold" }}>
+                  {moment(dataBill?.ExpireDateForPoint).format("YYYY-MM-DD")}
+                </span>
+              </div>
             </>
           ) : (
             ""

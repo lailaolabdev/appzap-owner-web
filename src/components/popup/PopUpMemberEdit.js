@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { updateMember } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 import DateTimeComponent from "../DateTimeComponent";
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function PopUpMemberEdit({
   open,
@@ -12,14 +13,10 @@ export default function PopUpMemberEdit({
   memberData,
   onUpdate,
 }) {
-  const [name, setName] = useState();
-  const [phone, setPhone] = useState();
-  const [point, setPoint] = useState();
-  const [bill, setBill] = useState();
-  const [note, setNote] = useState();
   const [birthday, setBirthday] = useState();
   const [formData, setFormData] = useState();
 
+  const { storeDetail } = useStoreStore();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -89,15 +86,17 @@ export default function PopUpMemberEdit({
             name="name"
           />
         </div>
-        <div className="mb-3">
-          <Form.Label>{t("percenDiscount")}</Form.Label>
-          <Form.Control
-            placeholder={t("percenDiscount")}
-            value={formData?.discountPercentage}
-            onChange={handleChange}
-            name="discountPercentage"
-          />
-        </div>
+        {storeDetail?.isStatusCafe && (
+          <div className="mb-3">
+            <Form.Label>{t("percenDiscount")}</Form.Label>
+            <Form.Control
+              placeholder={t("percenDiscount")}
+              value={formData?.discountPercentage}
+              onChange={handleChange}
+              name="discountPercentage"
+            />
+          </div>
+        )}
         <div className="mb-3">
           <Form.Label>{t("tel")}</Form.Label>
           <InputGroup>
