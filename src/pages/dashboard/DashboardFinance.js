@@ -1178,23 +1178,23 @@ export default function DashboardFinance({
             </div>
           )}
         </Modal.Body>
+        <div style={{ width: "80mm", padding: 10, margin: 5 }} ref={bill80Ref}>
+          <BillForCheckOut80
+            // orderPayBefore={orderPayBefore}
+            storeDetail={storeDetail}
+            selectedTable={selectedTable}
+            dataBill={dataModal}
+            totalBillBillForCheckOut80={totalAfter}
+            // taxPercent={taxPercent}
+            profile={profile}
+          />
+        </div>
         <Modal.Footer>
           <Button variant="danger" onClick={handleClose}>
             {t("close")}
           </Button>
         </Modal.Footer>
       </Modal>
-      <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
-        <BillForCheckOut80
-          // orderPayBefore={orderPayBefore}
-          storeDetail={storeDetail}
-          selectedTable={selectedTable}
-          dataBill={dataModal}
-          totalBillBillForCheckOut80={totalAfter}
-          // taxPercent={taxPercent}
-          profile={profile}
-        />
-      </div>
     </div>
   );
 }
