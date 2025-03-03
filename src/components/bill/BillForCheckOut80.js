@@ -14,6 +14,7 @@ import { Image, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import _ from "lodash";
+import matchRoundNumber from "../../helpers/matchRound";
 
 export default function BillForCheckOut80({
   storeDetail,
@@ -359,7 +360,9 @@ export default function BillForCheckOut80({
             <Col>
               <div style={{ textAlign: "right" }}>
                 {moneyCurrency(
-                  (total + taxAmount + serviceChargeAmount) / item?.sell
+                  matchRoundNumber(
+                    (total + taxAmount + serviceChargeAmount) / item?.sell
+                  )
                 )}
               </div>
             </Col>
@@ -368,10 +371,11 @@ export default function BillForCheckOut80({
       </div>
 
       <div style={{ height: 10 }} />
-      <hr style={{ border: "1px dashed #000", margin: 0 }} />
-
+      {storeDetail?.isCRM && dataBill?.memberPhone && (
+        <hr style={{ border: "1px dashed #000", margin: 0 }} />
+      )}
       <div style={{ fontSize: 12, textAlign: "center" }}>
-        <span>{t("exchangeRate")}&nbsp;</span>
+        {/* <span>{t("exchangeRate")}&nbsp;</span>
         {currencyData?.map((item, index) => (
           <span key={index}>
             {item?.currencyCode}: {moneyCurrency(item?.sell)}
@@ -381,8 +385,8 @@ export default function BillForCheckOut80({
               ""
             )}
           </span>
-        ))}
-        {","}
+        ))} */}
+        {/* {","} */}
         &nbsp;
         {storeDetail?.isCRM && dataBill?.memberPhone && (
           <span>
