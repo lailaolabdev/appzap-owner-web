@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { Modal, Form, Button, InputGroup, Spinner } from "react-bootstrap";
 import styled from "styled-components";
@@ -76,6 +77,7 @@ export default function CheckOutPopup({
   const [paid, setPaid] = useState(0);
   const [banks, setBanks] = useState([]);
   const [selectedBank, setSelectedBank] = useState("");
+  const [datePointExpirt, setDatePointExpirt] = useState("");
 
   const {
     setSelectedTable,
@@ -153,6 +155,7 @@ export default function CheckOutPopup({
         memberName: _res.data?.name,
         Name: _res.data?.name,
         Point: _res.data?.point,
+        ExpireDateForPoint: _res?.data?.pointDateExpirt,
       }));
     } catch (err) {
       console.log(err);
@@ -209,16 +212,13 @@ export default function CheckOutPopup({
     const transferAmount = Number.parseFloat(transfer) || 0;
     const totalReceived = cashAmount + transferAmount;
 
-    moneyReceived = `${
+    moneyReceived =
       selectCurrency?.name === "LAK"
-        ? moneyCurrency(totalReceived)
-        : moneyCurrency(Number.parseFloat(cashCurrency) || 0)
-    } ${selectCurrency?.name}`;
+        ? Number.parseFloat(totalReceived)
+        : Number.parseFloat(cashCurrency) || 0;
 
     const changeAmount = totalReceived - discountedTotalBill;
-    moneyChange = `${moneyCurrency(changeAmount > 0 ? changeAmount : 0)} ${
-      storeDetail?.firstCurrency
-    }`;
+    moneyChange = Number.parseFloat(changeAmount > 0 ? changeAmount : 0);
 
     setDataBill((prev) => ({
       ...prev,
@@ -365,7 +365,6 @@ export default function CheckOutPopup({
         // callCheckOutPrintBillOnly(selectedTable?._id);
         localStorage.removeItem("STAFFCONFIRM_DATA");
 
-        onClose();
         Swal.fire({
           icon: "success",
           title: `${t("checkbill_success")}`,
@@ -379,6 +378,7 @@ export default function CheckOutPopup({
           zoneCheckBill: true,
           point: 0,
         });
+        onClose();
       })
       .catch((error) => {
         errorAdd(`${t("checkbill_fial")}`);
@@ -417,110 +417,119 @@ export default function CheckOutPopup({
     return await PointUser(data);
   };
 
-  // console.log("SERVICE", storeDetail?.serviceChargePer);
-
   // const handleSubmit = async () => {
-  //   saveServiceChargeDetails();
+  //   const showAlert = (icon, title, text, timer = 1800) => {
+  //     Swal.fire({
+  //       icon,
+  //       title,
+  //       text,
+  //       showConfirmButton: false,
+  //       timer,
+  //     });
+  //   };
 
-  //   if (storeDetail?.isCRM && tab === "cash_transfer_point") {
-  //     await RedeemPointUser()
-  //       .then((res) => {
-  //         // if (res) {
-  //         //   Swal.fire({
-  //         //     icon: "success",
-  //         //     title: "ການຊຳລະດ້ວຍພ໋ອຍສຳເລັດ",
-  //         //     showConfirmButton: false,
-  //         //     timer: 1800,
-  //         //   });
-  //         // }
-  //       })
-  //       .catch((err) => {
-  //         if (err) {
-  //           Swal.fire({
-  //             icon: "error",
-  //             title: "ການຊຳລະດ້ວຍພ໋ອຍບໍ່ສຳເລັດ",
-  //             showConfirmButton: false,
-  //             timer: 1800,
-  //           });
-  //           return;
-  //         }
-  //       });
-  //   }
-  //   await _checkBill(selectCurrency?.id, selectCurrency?.name);
+  //   try {
+  //     saveServiceChargeDetails();
 
-  //   if (storeDetail?.isCRM && hasCRM) {
-  //     await PointUsers()
-  //       .then((res) => {
-  //         // if (res) {
-  //         //   Swal.fire({
-  //         //     icon: "success",
-  //         //     title: "success",
-  //         //     showConfirmButton: false,
-  //         //     timer: 1800,
-  //         //   });
-  //         // }
-  //       })
-  //       .catch((err) => {
-  //         if (err) {
-  //           Swal.fire({
-  //             icon: "error",
-  //             title: "ບໍ່ສາມາດຮັບ point ຈາກການຊຳລະຄັ້ງນີ້",
-  //             showConfirmButton: false,
-  //             timer: 1800,
+  //     if (storeDetail?.isCRM && tab === "cash_transfer_point") {
+  //       try {
+  //         await RedeemPointUser()
+  //           .then((res) => {
+  //             console.log(res);
+  //           })
+  //           .catch((err) => {
+  //             if (err?.response?.data.isExpire) {
+  //               showAlert(
+  //                 "error",
+  //                 "ເກີດຂໍ້ຜິດພາດ",
+  //                 "ຂໍອະໄພຄະແນນຂອງທ່ານໝົດອາຍຸການໃຊ້ງານແລ້ວ"
+  //               );
+  //             }
   //           });
-  //         }
-  //       });
+  //         return;
+  //       } catch {
+  //         showAlert(
+  //           "error",
+  //           "ເກີດຂໍ້ຜິດພາດ",
+  //           "ການຊຳລະດ້ວຍພ໋ອຍບໍ່ສຳເລັດ ກະລຸນາເລຶອກສະມາຊິກດ້ວຍ"
+  //         );
+  //         return; // Stop further execution if RedeemPointUser fails
+  //       }
+  //     }
+
+  //     try {
+  //       await _checkBill(selectCurrency?.id, selectCurrency?.name);
+  //     } catch {
+  //       showAlert("error", "ການເຊັກບິນບໍ່ສຳເລັດ"); // Add your localized error message
+  //       return; // Stop further execution if _checkBill fails
+  //     }
+
+  //     if (storeDetail?.isCRM && hasCRM) {
+  //       try {
+  //         await PointUsers();
+  //       } catch {
+  //         showAlert("error", "ບໍ່ສາມາດຮັບ point ຈາກການຊຳລະຄັ້ງນີ້");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Unexpected error in handleSubmit:", error);
+  //     showAlert("error", "An unexpected error occurred");
   //   }
   // };
 
-  const handleSubmit = async () => {
-    const showAlert = (icon, title, text, timer = 1800) => {
-      Swal.fire({
-        icon,
-        title,
-        text,
-        showConfirmButton: false,
-        timer,
-      });
-    };
+  // useEffect
 
+  const handleSubmit = async () => {
     try {
       saveServiceChargeDetails();
 
       if (storeDetail?.isCRM && tab === "cash_transfer_point") {
         try {
           await RedeemPointUser();
-        } catch {
-          showAlert(
-            "error",
-            "ເກີດຂໍ້ຜິດພາດ",
-            "ການຊຳລະດ້ວຍພ໋ອຍບໍ່ສຳເລັດ ກະລຸນາເລຶອກສະມາຊິກດ້ວຍ"
-          );
-          return; // Stop further execution if RedeemPointUser fails
+        } catch (err) {
+          if (err?.response?.data.isExpire) {
+            Swal.fire({
+              icon: "error",
+              title: "ເກີດຂໍ້ຜິດພາດ",
+              text: "ຂໍອະໄພຄະແນນຂອງທ່ານໝົດອາຍຸການໃຊ້ງານແລ້ວ",
+            });
+          }
+          throw new Error("ຂໍອະໄພຄະແນນຂອງທ່ານໝົດອາຍຸການໃຊ້ງານແລ້ວ"); // 🚨 Ensure error is thrown
         }
       }
 
       try {
         await _checkBill(selectCurrency?.id, selectCurrency?.name);
       } catch {
-        showAlert("error", "ການເຊັກບິນບໍ່ສຳເລັດ"); // Add your localized error message
-        return; // Stop further execution if _checkBill fails
+        Swal.fire({
+          icon: "error",
+          title: "ການເຊັກບິນບໍ່ສຳເລັດ",
+        });
+        throw new Error("ການເຊັກບິນບໍ່ສຳເລັດ"); // 🚨 Ensure error is thrown
       }
 
       if (storeDetail?.isCRM && hasCRM) {
         try {
           await PointUsers();
         } catch {
-          showAlert("error", "ບໍ່ສາມາດຮັບ point ຈາກການຊຳລະຄັ້ງນີ້");
+          Swal.fire({
+            icon: "error",
+            title: "ບໍ່ສາມາດຮັບ point ຈາກການຊຳລະຄັ້ງນີ້",
+          });
         }
       }
+
+      return true; // ✅ Return success
     } catch (error) {
       console.error("Unexpected error in handleSubmit:", error);
-      showAlert("error", "An unexpected error occurred");
+      Swal.fire({
+        icon: "error",
+        title: "An unexpected error occurred",
+      });
+      throw error; // 🚨 Ensure error is thrown so `onPrintBill()` is not executed
     }
   };
 
-  // useEffect
   useEffect(() => {
     getDataCurrency();
     getMembersData();
@@ -709,19 +718,6 @@ export default function CheckOutPopup({
       ? (totalBill * dataBill?.discount) / 100
       : 0;
 
-  // const totalBillMoney =
-  //   dataBill && dataBill?.discountType === "LAK"
-  //     ? Number.parseFloat(
-  //         totalBill - dataBill?.discount > 0
-  //           ? totalBill - dataBill?.discount
-  //           : 0
-  //       )
-  //     : Number.parseFloat(
-  //         totalBill - (totalBill * dataBill?.discount) / 100 > 0
-  //           ? totalBill - (totalBill * dataBill?.discount) / 100
-  //           : 0
-  //       );
-
   const totalBillMoney =
     dataBill?.discountType === "LAK"
       ? moneyCurrency(
@@ -869,6 +865,16 @@ export default function CheckOutPopup({
     }
   }, [open, delivery, totalBillMoney]);
 
+  useEffect(() => {
+    if (dataBill?.ExpireDateForPoint) {
+      setDatePointExpirt(
+        moment(dataBill.ExpireDateForPoint).format("YYYY-MM-DD")
+      );
+    } else {
+      setDatePointExpirt(moment().add(1, "months").format("YYYY-MM-DD"));
+    }
+  }, [dataBill?.Name]);
+
   return (
     <Modal
       show={open}
@@ -879,6 +885,7 @@ export default function CheckOutPopup({
         setPoint();
         onClose();
         setCanCheckOut(false);
+        setDatePointExpirt("");
       }}
       keyboard={false}
       size="lg"
@@ -1103,33 +1110,54 @@ export default function CheckOutPopup({
                         </div>
                       </div>
                     </div>
-                    <InputGroup style={{ marginTop: 10 }}>
-                      <InputGroup.Text>{t("point")}</InputGroup.Text>
-                      <Form.Control
-                        disabled={
-                          dataBill?.Point <= 0 ||
-                          !dataBill?.Name ||
-                          !dataBill?.Point ||
-                          dataBill?.Point <= point
-                        }
-                        type="text"
-                        placeholder="0"
-                        value={convertNumber(point)}
-                        onClick={() => {
-                          setSelectInput("inputPoint");
-                        }}
-                        onChange={(e) => {
-                          onChangePointInput(e.target.value);
-                        }}
-                        size="lg"
-                      />
-                    </InputGroup>
+                    <div className="flex flex-row justify-between items-center">
+                      <InputGroup style={{ marginTop: 10 }}>
+                        <InputGroup.Text>{t("point")}</InputGroup.Text>
+                        <input
+                          disabled={
+                            dataBill?.Point <= 0 ||
+                            !dataBill?.Name ||
+                            !dataBill?.Point ||
+                            dataBill?.Point <= point ||
+                            (dataBill?.ExpireDateForPoint &&
+                              moment(dataBill.ExpireDateForPoint).isBefore(
+                                moment(),
+                                "day"
+                              )) // Disable if expired
+                          }
+                          type="text"
+                          placeholder="0"
+                          value={convertNumber(point)}
+                          onClick={() => {
+                            setSelectInput("inputPoint");
+                          }}
+                          onChange={(e) => {
+                            onChangePointInput(e.target.value);
+                          }}
+                          size="lg"
+                          className="w-[320px] text-[20px] h-[45px] p-2 border rounded-r-lg focus:outline-none"
+                        />
+                      </InputGroup>
+                      {dataBill?.ExpireDateForPoint && (
+                        <div className="w-[250px]">
+                          <span className="text-[18px] font-bold">
+                            {t("expire_date_debt")}:{" "}
+                            {dataBill?.ExpireDateForPoint &&
+                            moment(dataBill.ExpireDateForPoint).isValid()
+                              ? moment(dataBill.ExpireDateForPoint).format(
+                                  "DD-MM-YYYY"
+                                )
+                              : "-"}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   ""
                 )}
                 <div hidden={!hasCRM} style={{ marginBottom: 10 }}>
-                  <BoxMember>
+                  <BoxMember className="mb-2">
                     <div className="box-left">
                       <div className="box-search">
                         <Select
@@ -1171,6 +1199,21 @@ export default function CheckOutPopup({
                             ? dataBill?.Point
                             : "0"}
                         </InputGroup.Text>
+                      </div>
+                    </div>
+                  </BoxMember>
+                  <label htmlFor="date-expirt" className="my-2">
+                    ກຳວັນໝົດອາຍຸຂອງຄະແນນ
+                  </label>
+                  <BoxMember className="mb-2">
+                    <div className="box-left">
+                      <div className="box-search">
+                        <input
+                          type="date"
+                          value={datePointExpirt}
+                          onChange={(e) => setDatePointExpirt(e.target.value)}
+                          className="border p-2 w-[325px] h-[38px] rounded-md focus:outline-none"
+                        />
                       </div>
                     </div>
                   </BoxMember>
@@ -1444,7 +1487,7 @@ export default function CheckOutPopup({
               {t("debt")}
             </Button>
 
-            <Button
+            {/* <Button
               onClick={() => {
                 setPrintBillLoading(true);
                 saveServiceChargeDetails();
@@ -1465,7 +1508,40 @@ export default function CheckOutPopup({
               )}
               <BiSolidPrinter />
               {t("print_checkbill")}
+            </Button> */}
+
+            <Button
+              onClick={async () => {
+                setPrintBillLoading(true);
+                saveServiceChargeDetails();
+
+                try {
+                  await handleSubmit(); // Run handleSubmit first
+                  await onPrintBill(); // Only run if handleSubmit is successful
+                } catch (error) {
+                  Swal.fire({
+                    icon: "error",
+                    title: "ເກີດຂໍ້ຜິດພາດ",
+                    text: error,
+                  });
+                } finally {
+                  setPrintBillLoading(false);
+                }
+              }}
+              style={{ display: "flex", gap: "10px", alignItems: "center" }}
+              disabled={!canCheckOut || printBillLoading}
+            >
+              {printBillLoading && (
+                <Spinner
+                  animation="border"
+                  size="sm"
+                  style={{ marginRight: 8 }}
+                />
+              )}
+              <BiSolidPrinter />
+              {t("print_checkbill")}
             </Button>
+
             <Button
               className="dmd:w-fit w-full"
               onClick={handleSubmit}

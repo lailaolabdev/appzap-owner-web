@@ -1,10 +1,12 @@
 import { Modal, Button, Form, InputGroup } from "react-bootstrap";
+import moment from "moment";
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 import { updateMember } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 import DateTimeComponent from "../DateTimeComponent";
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function PopUpMemberEdit({
   open,
@@ -12,14 +14,10 @@ export default function PopUpMemberEdit({
   memberData,
   onUpdate,
 }) {
-  const [name, setName] = useState();
-  const [phone, setPhone] = useState();
-  const [point, setPoint] = useState();
-  const [bill, setBill] = useState();
-  const [note, setNote] = useState();
   const [birthday, setBirthday] = useState();
   const [formData, setFormData] = useState();
 
+  const { storeDetail } = useStoreStore();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -89,15 +87,17 @@ export default function PopUpMemberEdit({
             name="name"
           />
         </div>
-        <div className="mb-3">
-          <Form.Label>{t("percenDiscount")}</Form.Label>
-          <Form.Control
-            placeholder={t("percenDiscount")}
-            value={formData?.discountPercentage}
-            onChange={handleChange}
-            name="discountPercentage"
-          />
-        </div>
+        {storeDetail?.isStatusCafe && (
+          <div className="mb-3">
+            <Form.Label>{t("percenDiscount")}</Form.Label>
+            <Form.Control
+              placeholder={t("percenDiscount")}
+              value={formData?.discountPercentage}
+              onChange={handleChange}
+              name="discountPercentage"
+            />
+          </div>
+        )}
         <div className="mb-3">
           <Form.Label>{t("tel")}</Form.Label>
           <InputGroup>
@@ -121,6 +121,22 @@ export default function PopUpMemberEdit({
             name="point"
           />
         </div>
+
+        {!storeDetail?.isStatusCafe && (
+          <div className="mb-3">
+            <Form.Label>{t("expirt_point")}</Form.Label>
+            <Form.Control
+              type="date"
+              value={
+                formData?.pointDateExpirt
+                  ? moment(formData?.pointDateExpirt).format("YYYY-MM-DD")
+                  : ""
+              }
+              onChange={handleChange}
+              name="pointDateExpirt"
+            />
+          </div>
+        )}
         <div className="mb-3">
           <Form.Label>{t("birth_date")}</Form.Label>
           <DateTimeComponent

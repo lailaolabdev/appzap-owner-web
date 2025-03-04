@@ -14,6 +14,7 @@ import { Image, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 // import emptyLogo from "/public/images/emptyLogo.jpeg";
+import matchRoundNumber from "./../../helpers/matchRound";
 
 export default function BillForCheckOutCafe80({
   storeDetail,
@@ -60,14 +61,13 @@ export default function BillForCheckOutCafe80({
     }
 
     let TotalDiscountFinal = 0;
-    if (memberData?.discountPercentage > 0) {
-      TotalDiscountFinal =
-        _total - (_total * memberData?.discountPercentage) / 100;
+    if (memberData?.Discount > 0) {
+      TotalDiscountFinal = _total - (_total * memberData?.Discount) / 100;
     } else {
       TotalDiscountFinal = _total;
     }
     setTotal(_total);
-    setTotalAfterDiscount(TotalDiscountFinal);
+    setTotalAfterDiscount(matchRoundNumber(TotalDiscountFinal));
     setTaxAmount((_total * taxPercent) / 100);
   };
 
@@ -272,31 +272,7 @@ export default function BillForCheckOutCafe80({
       <div style={{ height: 10 }} />
       <hr className="border-b border-dashed border-gray-600" />
       <div className="mb-2">
-        <div className="w-full flex justify-between text-[14px] font-thin">
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "end",
-              alignItems: "center",
-            }}
-          >
-            {t("totalAmount")} :{" "}
-          </div>
-
-          <div
-            style={{
-              width: "60%",
-              display: "flex",
-              justifyContent: "end",
-              alignItems: "center",
-            }}
-          >
-            {moneyCurrency(memberData?.moneyReceived)}{" "}
-            {storeDetail?.firstCurrency}
-          </div>
-        </div>
-        {memberData?.discountPercentage > 0 && (
+        {memberData?.Discount > 0 && (
           <>
             <div className="w-full flex justify-between text-[14px] font-thin">
               <div
@@ -341,11 +317,35 @@ export default function BillForCheckOutCafe80({
                   alignItems: "center",
                 }}
               >
-                {`${moneyCurrency(memberData?.discountPercentage)}%`}{" "}
+                {`${moneyCurrency(memberData?.Discount)}%`}{" "}
               </div>
             </div>
           </>
         )}
+        <div className="w-full flex justify-between text-[14px] font-thin">
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            {t("totalAmount")} :{" "}
+          </div>
+
+          <div
+            style={{
+              width: "60%",
+              display: "flex",
+              justifyContent: "end",
+              alignItems: "center",
+            }}
+          >
+            {moneyCurrency(matchRoundNumber(memberData?.moneyReceived))}{" "}
+            {storeDetail?.firstCurrency}
+          </div>
+        </div>
         <div className="w-full flex justify-between text-[14px] font-thin">
           <div
             style={{
@@ -370,7 +370,7 @@ export default function BillForCheckOutCafe80({
             {storeDetail?.firstCurrency}
           </div>
         </div>
-        {memberData?.discountPercentage > 0 ? (
+        {memberData?.Discount > 0 ? (
           <div className="w-full flex justify-between text-[16px] font-bold">
             <div
               style={{

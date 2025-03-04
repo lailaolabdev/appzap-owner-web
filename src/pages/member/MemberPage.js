@@ -527,6 +527,37 @@ export default function MemberPage() {
     getMembersData();
   };
 
+  const CountDateExpire = (pointDateExpirt) => {
+    if (!pointDateExpirt) return "";
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const expirtDate = new Date(pointDateExpirt);
+    expirtDate.setHours(0, 0, 0, 0);
+
+    const timeDiff = expirtDate.getTime() - today.getTime();
+    const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // ปัดเศษให้เป็นจำนวนเต็ม
+
+    if (daysDiff > 0) {
+      return (
+        <span className="text-green-500 font-semibold">
+          ຍັງເຫຼືອອີກ {daysDiff} ມື້
+        </span>
+      );
+    } else if (daysDiff === 0) {
+      return (
+        <span className="text-yellow-500 font-semibold">ໝົດອາຍຸວັນນີ້</span>
+      );
+    } else {
+      return (
+        <span className="text-red-500 font-semibold">
+          ໝົດອາຍຸແລ້ວ {Math.abs(daysDiff)} ວັນ
+        </span>
+      );
+    }
+  };
+
   return (
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
@@ -911,10 +942,17 @@ export default function MemberPage() {
                 <tr>
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
-                  <th style={{ textAlign: "center" }}>{t("total_point")}</th>
-                  {/* <th style={{ textAlign: "center" }}>
-                    {"ພ໋ອຍທີ່ສາມາດໃຊ້ໄດ້"}
-                  </th> */}
+                  <th style={{ textAlign: "center" }}>{"ພ໋ອຍທັງໝົດ"}</th>
+                  {!storeDetail?.isStatusCafe && (
+                    <th style={{ textAlign: "center" }}>
+                      {t("date_expirt_point")}
+                    </th>
+                  )}
+                  {storeDetail?.isStatusCafe && (
+                    <th style={{ textAlign: "center" }}>
+                      {t("member_discount")}
+                    </th>
+                  )}
                   <th style={{ textAlign: "center" }}>{t("use_service")}</th>
                   <th style={{ textAlign: "center" }}>{t("regis_date")}</th>
                   <th style={{ textAlign: "right" }}>{t("manage")}</th>
@@ -925,15 +963,30 @@ export default function MemberPage() {
                   </td>
                 ) : membersData?.length > 0 ? (
                   membersData?.map((e) => (
-                    <tr>
+                    <tr key={e?._id}>
                       <td style={{ textAlign: "left" }}>{e?.name}</td>
                       <td style={{ textAlign: "center" }}>{e?.phone}</td>
-                      <td style={{ textAlign: "center" }}>
+                      <td className="text-center font-bold">
                         {moneyCurrency(e?.point ?? 0)}
+                        <br />
+                        {!storeDetail?.isStatusCafe &&
+                          CountDateExpire(e?.pointDateExpirt)}
                       </td>
-                      {/* <td style={{ textAlign: "center" }}>
-                        {moneyCurrency(e?.availablePoint ?? 0)}
-                      </td> */}
+                      {!storeDetail?.isStatusCafe && (
+                        <td className="text-center">
+                          {e?.pointDateExpirt &&
+                          moment(e.pointDateExpirt).isValid()
+                            ? moment(e.pointDateExpirt).format("DD/MM/YYYY")
+                            : "-"}
+                        </td>
+                      )}
+                      {storeDetail?.isStatusCafe && (
+                        <td className="text-center">
+                          {e?.discountPercentage > 0
+                            ? `${e?.discountPercentage} %`
+                            : "--"}
+                        </td>
+                      )}
                       <td style={{ textAlign: "center" }}>{e?.bill}</td>
                       <td style={{ textAlign: "center" }}>
                         {moment(e?.createdAt).format("DD/MM/YYYY")}

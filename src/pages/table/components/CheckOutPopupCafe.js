@@ -894,13 +894,19 @@ export default function CheckOutPopupCafe({
                     )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
-              <span hidden={selectCurrency?.name === "LAK"}>
+              <span
+                hidden={
+                  selectCurrency?.name === "LAK" && storeDetail?.firstCurrency
+                }
+              >
                 {" "}
                 <BiTransfer />{" "}
               </span>
               <span
                 style={{ color: COLOR_APP, fontWeight: "bold" }}
-                hidden={selectCurrency?.name === "LAK"}
+                hidden={
+                  selectCurrency?.name === "LAK" && storeDetail?.firstCurrency
+                }
               >
                 {moneyCurrency(
                   (dataBill
@@ -934,9 +940,7 @@ export default function CheckOutPopupCafe({
                 <Form.Control
                   type="text"
                   placeholder="0"
-                  value={convertNumber(
-                    cashCurrency > 0 ? matchRoundNumber(cashCurrency) : 0
-                  )}
+                  value={convertNumber(cashCurrency)}
                   onClick={() => {
                     setSelectInput("inputCurrency");
                   }}
@@ -959,9 +963,7 @@ export default function CheckOutPopupCafe({
                       }
                       type="text"
                       placeholder="0"
-                      value={
-                        cash > 0 ? convertNumber(matchRoundNumber(cash)) : 0
-                      }
+                      value={convertNumber(cash)}
                       onClick={() => {
                         setSelectInput("inputCash");
                       }}
@@ -984,11 +986,7 @@ export default function CheckOutPopupCafe({
                       }
                       type="text"
                       placeholder="0"
-                      value={
-                        transfer > 0
-                          ? convertNumber(matchRoundNumber(transfer))
-                          : 0
-                      }
+                      value={convertNumber(transfer)}
                       onClick={() => {
                         setSelectInput("inputTransfer");
                       }}
@@ -1311,6 +1309,7 @@ export default function CheckOutPopupCafe({
                   });
                 }
               }}
+              setCanCheckOut={setCanCheckOut}
               onClickButtonDrawer={onPrintDrawer}
               totalBill={totalBillMoney}
               payType={tab}
