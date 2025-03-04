@@ -360,9 +360,7 @@ export default function BillForCheckOut80({
             <Col>
               <div style={{ textAlign: "right" }}>
                 {moneyCurrency(
-                  matchRoundNumber(
-                    (total + taxAmount + serviceChargeAmount) / item?.sell
-                  )
+                  (total + taxAmount + serviceChargeAmount) / item?.sell
                 )}
               </div>
             </Col>
