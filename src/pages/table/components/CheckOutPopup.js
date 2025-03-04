@@ -875,6 +875,37 @@ export default function CheckOutPopup({
     }
   }, [dataBill?.Name]);
 
+  const CountDateExpire = (pointDateExpirt) => {
+    if (!pointDateExpirt) return "";
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const expirtDate = new Date(pointDateExpirt);
+    expirtDate.setHours(0, 0, 0, 0);
+
+    const timeDiff = expirtDate.getTime() - today.getTime();
+    const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24)); // ปัดเศษให้เป็นจำนวนเต็ม
+
+    if (daysDiff > 0) {
+      return (
+        <span className="text-green-500 font-semibold">
+          ຍັງເຫຼືອອີກ {daysDiff} ມື້
+        </span>
+      );
+    } else if (daysDiff === 0) {
+      return (
+        <span className="text-yellow-500 font-semibold">ໝົດອາຍຸວັນນີ້</span>
+      );
+    } else {
+      return (
+        <span className="text-red-500 font-semibold">
+          ໝົດອາຍຸແລ້ວ {Math.abs(daysDiff)} ວັນ
+        </span>
+      );
+    }
+  };
+
   return (
     <Modal
       show={open}
@@ -1149,6 +1180,8 @@ export default function CheckOutPopup({
                                 )
                               : "-"}
                           </span>
+                          <br />
+                          {CountDateExpire(dataBill.ExpireDateForPoint)}
                         </div>
                       )}
                     </div>
