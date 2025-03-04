@@ -5,9 +5,13 @@ export const useMenuSelectStore = create(
   persist(
     (set) => ({
       SelectedMenus: [],
-      setSelectedMenus: (menus) => {
-        set({ SelectedMenus: menus });
-      },
+      setSelectedMenus: (updateFunctionOrArray) =>
+        set((state) => ({
+          SelectedMenus:
+            typeof updateFunctionOrArray === "function"
+              ? updateFunctionOrArray(state.SelectedMenus)
+              : updateFunctionOrArray,
+        })),
       clearSelectedMenus: () => {
         set({ SelectedMenus: [] });
       },

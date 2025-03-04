@@ -388,100 +388,6 @@ function Homecafe() {
     }
   };
 
-  // const addToCart = async (menu) => {
-  //   const _menuOptions = _checkMenuOption(menu);
-  //   let updatedSelectedMenus = [...SelectedMenus];
-
-  //   if (_menuOptions.length > 0) {
-  //     setMenuOptions(_menuOptions);
-  //     setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
-  //     setSelectedOptionsArray({
-  //       [menu._id]: _menuOptions.map((option) => ({ ...option, quantity: 0 })),
-  //     });
-  //     handleShow();
-  //     return;
-  //   }
-
-  //   const finalPrice = calculateDiscount(menu);
-
-  //   const mainMenuData = {
-  //     id: menu._id,
-  //     name: menu.name,
-  //     quantity: 1,
-  //     price: finalPrice,
-  //     priceDiscount: Math.max(menu?.price - finalPrice, 0),
-  //     categoryId: menu?.categoryId,
-  //     printer: menu?.categoryId?.printer,
-  //     shiftId: shiftCurrent[0]?._id,
-  //     discount: menu.promotionId?.reduce(
-  //       (sum, promo) => sum + (promo.discountValue || 0),
-  //       0
-  //     ),
-  //     note: "",
-  //     isWeightMenu: menu?.isWeightMenu,
-  //   };
-
-  //   const existingMenuIndex = updatedSelectedMenus.findIndex(
-  //     (item) => item.id === menu._id
-  //   );
-  //   if (existingMenuIndex !== -1) {
-  //     updatedSelectedMenus[existingMenuIndex].quantity += 1;
-  //   } else {
-  //     updatedSelectedMenus.push(mainMenuData);
-  //   }
-
-  //   // ✅ Handle BUY_X_GET_Y promotions and ensure free items match their mainMenuId
-  //   // biome-ignore lint/complexity/noForEach: <explanation>
-  //   menu.promotionId?.forEach((promotion) => {
-  //     if (
-  //       promotion?.type === "BUY_X_GET_Y" &&
-  //       promotion.freeItems?.length > 0
-  //     ) {
-  //       // biome-ignore lint/complexity/noForEach: <explanation>
-  //       promotion.freeItems.forEach((freeItem) => {
-  //         const freeItemId = freeItem?._id?._id || freeItem?._id;
-  //         const freeItemName = freeItem?._id?.name || "Unknown";
-  //         const mainMenuId = freeItem?.mainMenuId?._id;
-
-  //         if (mainMenuId && mainMenuId !== menu._id) {
-  //           console.log(
-  //             `❌ Free item ${freeItemName} incorrect Main Menu ${menu.name}`
-  //           );
-  //           return;
-  //         }
-
-  //         const existingFreeItemIndex = updatedSelectedMenus.findIndex(
-  //           (item) =>
-  //             item.id === freeItemId &&
-  //             item.isFree &&
-  //             item.mainMenuId === menu._id
-  //         );
-
-  //         if (existingFreeItemIndex !== -1) {
-  //           updatedSelectedMenus[existingFreeItemIndex].quantity +=
-  //             promotion.getQuantity;
-  //         } else {
-  //           const freeItemData = {
-  //             id: freeItemId,
-  //             name: freeItemName,
-  //             price: 0,
-  //             quantity: 1,
-  //             categoryId: menu?.categoryId,
-  //             printer: menu?.categoryId?.printer,
-  //             shiftId: shiftCurrent[0]?._id,
-  //             isWeightMenu: menu?.isWeightMenu,
-  //             isFree: true,
-  //             mainMenuId: menu._id,
-  //           };
-  //           updatedSelectedMenus.push(freeItemData);
-  //         }
-  //       });
-  //     }
-  //   });
-
-  //   setSelectedMenus(updatedSelectedMenus);
-  // };
-
   const addToCart = async (menu) => {
     const _menuOptions = _checkMenuOption(menu);
     let updatedSelectedMenus = [...SelectedMenus];
@@ -538,13 +444,6 @@ function Homecafe() {
           const freeItemId = freeItem?._id?._id || freeItem?._id;
           const freeItemName = freeItem?._id?.name || "Unknown";
           const mainMenuId = freeItem?.mainMenuId?._id;
-
-          if (mainMenuId && mainMenuId !== menu._id) {
-            console.log(
-              `❌ Free item ${freeItemName} ไม่ตรงกับ Main Menu ${menu.name}`
-            );
-            return;
-          }
 
           const existingFreeItemIndex = updatedSelectedMenus.findIndex(
             (item) =>
@@ -679,7 +578,7 @@ function Homecafe() {
       isWeightMenu: selectedItem?.isWeightMenu,
     };
 
-    setSelectedMenu((prevMenu) => {
+    setSelectedMenus((prevMenu) => {
       let updatedMenu = [...prevMenu];
 
       const existingMenuIndex = updatedMenu.findIndex((item) => {
@@ -701,11 +600,6 @@ function Homecafe() {
           updatedMenu[existingMenuIndex].price *
             updatedMenu[existingMenuIndex].quantity +
           totalOptionPrice;
-
-        console.log(
-          "🆙 Updated Existing Menu:",
-          updatedMenu[existingMenuIndex]
-        );
       } else {
         updatedMenu.push(mainMenuData);
       }
@@ -721,13 +615,6 @@ function Homecafe() {
             const freeItemId = freeItem?._id?._id || freeItem?._id;
             const freeItemName = freeItem?._id?.name || "Unknown";
             const mainMenuId = freeItem?.mainMenuId?._id;
-
-            if (!mainMenuId || mainMenuId !== selectedItem._id) {
-              console.log(
-                `❌ Free item ${freeItemName}  Main Menu ${selectedItem.name}`
-              );
-              return;
-            }
 
             const existingFreeItemIndex = updatedMenu.findIndex(
               (item) =>

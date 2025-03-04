@@ -110,6 +110,22 @@ const MainScreen = () => {
     }
   }, []);
 
+  // close main screen and close second screen
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (secondScreenWindow && !secondScreenWindow.closed) {
+        secondScreenWindow.close();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [secondScreenWindow]);
+
   // const openSecondScreen = () => {
   //   if ("getScreenDetails" in window) {
   //     // Use Window Management API
