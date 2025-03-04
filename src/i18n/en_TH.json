@@ -1210,5 +1210,7 @@
   "namecategory": "ชื่อหมวดหมู่",
   "confirm_category": "เพิ่มหมวดหมู่",
   "PAID": "จ่ายแล้ว",
-  "shift_open": "เปิดกะ"
+  "shift_open": "เปิดกะ",
+  "add_all": "เพิ่มทั้งหมด",
+  "remove_all": "ลบทั้งหมด"
 }

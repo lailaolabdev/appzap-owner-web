@@ -30,6 +30,8 @@ function PopUpAddMenuOption({
   const [allMenuOptions, setAllMenuOptions] = useState([]);
   const [specificMenuOptions, setSpecificMenuOptions] = useState([]);
   const [loadingOptionId, setLoadingOptionId] = useState(null);
+  const [isAddingAll, setIsAddingAll] = useState(false);
+  const [isRemovingAll, setIsRemovingAll] = useState(false);
   const { t } = useTranslation();
   const {
     addMunuOption,
@@ -37,6 +39,7 @@ function PopUpAddMenuOption({
     getAllMenuOptione,
     deleteMenuOption,
   } = useMenuStore();
+
   useEffect(() => {
     if (showSetting && detailMenu) {
       const storeId = getTokken?.DATA?.storeId;
@@ -47,7 +50,6 @@ function PopUpAddMenuOption({
             END_POINT_SEVER_TABLE_MENU +
               `/v3/restaurant/${storeId}/menu-options`
           );
-          // const response = await getAllMenuOptione(storeId);
           setAllMenuOptions(response?.data);
         } catch (error) {
           console.error("Error fetching all menu options:", error);
@@ -60,7 +62,6 @@ function PopUpAddMenuOption({
             END_POINT_SEVER_TABLE_MENU +
               `/v3/menu/${detailMenu.data._id}/menu-options`
           );
-          // const response = await getMenusOptionByStoreId(detailMenu.data._id);
           setSpecificMenuOptions(response?.data);
           updateMenuOptionsCount(detailMenu.data._id, response.data.length);
         } catch (error) {
@@ -80,17 +81,11 @@ function PopUpAddMenuOption({
   const handleAddOption = async (optionId) => {
     setLoadingOptionId(optionId);
     try {
-      // await axios.post(
-      //   END_POINT_SEVER_TABLE_MENU +
-      //     `/v3/menu/${detailMenu.data._id}/menu-option/${optionId}/add`
-      // );
       await addMunuOption(detailMenu.data._id, optionId);
-      // const updatedOptions = await getMenusOptionByStoreId(detailMenu.data._id);
       const updatedOptions = await axios.get(
         END_POINT_SEVER_TABLE_MENU +
           `/v3/menu/${detailMenu.data._id}/menu-options`
       );
-      console.log("updatedOptions", updatedOptions?.data);
       setSpecificMenuOptions(updatedOptions?.data);
       updateMenuOptionsCount(detailMenu.data._id, updatedOptions.data.length);
     } catch (error) {
@@ -108,12 +103,7 @@ function PopUpAddMenuOption({
   const handleDeleteOption = async (optionId) => {
     setLoadingOptionId(optionId);
     try {
-      // await axios.delete(
-      //   END_POINT_SEVER_TABLE_MENU +
-      //     `/v3/menu/${detailMenu.data._id}/menu-option/${optionId}/remove`
-      // );
       await deleteMenuOption(detailMenu.data._id, optionId);
-      // const updatedOptions = await getMenusOptionByStoreId(detailMenu.data._id);
       const updatedOptions = await axios.get(
         END_POINT_SEVER_TABLE_MENU +
           `/v3/menu/${detailMenu.data._id}/menu-options`
@@ -129,6 +119,56 @@ function PopUpAddMenuOption({
       });
     } finally {
       setLoadingOptionId(null);
+    }
+  };
+
+  const handleAddAllOptions = async () => {
+    setIsAddingAll(true);
+    try {
+      for (const option of allMenuOptions) {
+        if (!isSpecificOption(option._id)) {
+          await addMunuOption(detailMenu.data._id, option._id);
+        }
+      }
+      const updatedOptions = await axios.get(
+        END_POINT_SEVER_TABLE_MENU +
+          `/v3/menu/${detailMenu.data._id}/menu-options`
+      );
+      setSpecificMenuOptions(updatedOptions?.data);
+      updateMenuOptionsCount(detailMenu.data._id, updatedOptions.data.length);
+    } catch (error) {
+      console.error("Error adding all menu options:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error adding all menu options. Please try again.",
+      });
+    } finally {
+      setIsAddingAll(false);
+    }
+  };
+
+  const handleRemoveAllOptions = async () => {
+    setIsRemovingAll(true);
+    try {
+      for (const option of specificMenuOptions) {
+        await deleteMenuOption(detailMenu.data._id, option._id);
+      }
+      const updatedOptions = await axios.get(
+        END_POINT_SEVER_TABLE_MENU +
+          `/v3/menu/${detailMenu.data._id}/menu-options`
+      );
+      setSpecificMenuOptions(updatedOptions?.data);
+      updateMenuOptionsCount(detailMenu.data._id, updatedOptions.data.length);
+    } catch (error) {
+      console.error("Error removing all menu options:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Error removing all menu options. Please try again.",
+      });
+    } finally {
+      setIsRemovingAll(false);
     }
   };
 
@@ -161,20 +201,43 @@ function PopUpAddMenuOption({
         <Modal.Header>
           <Modal.Title style={{ color: "#fb6e3b", fontWeight: "800" }}>
             {t("additional_options_of")}:{" "}
-            <q>{detailMenu && detailMenu?.data?.name}</q> (
-            {specificMenuOptions.length})
+            <q>{detailMenu && detailMenu?.data?.name}</q>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body
           style={{ maxHeight: "calc(100vh - 210px)", overflowY: "auto" }}
         >
-          <InputGroup className="mb-3">
-            <FormControl
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-          </InputGroup>
+          <div className="flex flex-row justify-between mb-2 text-lg font-semibold">
+            <span className="mt-1">
+              ລາຍການທັງໝົດ {sortedMenuOptions?.length} ລາຍການ
+            </span>
+            <div>
+              <button
+                className="rounded-lg bg-color-app py-2 px-2 border border-transparent text-center text-sm font-semibold text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none mr-2"
+                type="button"
+                onClick={handleAddAllOptions}
+                disabled={isAddingAll || isRemovingAll}
+              >
+                {isAddingAll ? (
+                  <Spinner animation="border" size="sm" />
+                ) : (
+                  t("add_all")
+                )}
+              </button>
+              <button
+                className="rounded-lg bg-red-500 py-2 px-2 border border-transparent text-center text-sm font-semibold text-white transition-all shadow-md hover:shadow-lg focus:bg-red-700 focus:shadow-none active:bg-red-700 hover:bg-red-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                type="button"
+                onClick={handleRemoveAllOptions}
+                disabled={isRemovingAll || isAddingAll}
+              >
+                {isRemovingAll ? (
+                  <Spinner animation="border" size="sm" />
+                ) : (
+                  t("remove_all")
+                )}
+              </button>
+            </div>
+          </div>
           <ListGroup>
             {sortedMenuOptions.map((option, index) => (
               <ListGroup.Item

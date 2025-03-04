@@ -1236,5 +1236,7 @@
   "manage_banners": "ຈັດການ Banners",
   "banner": "Banner",
   "branch_name": "ຊື່ສາຂາ",
-  "add_delivery": "ເພີ່ມລາຍການ Delivery"
+  "add_delivery": "ເພີ່ມລາຍການ Delivery",
+  "add_all": "ເພີ່ມທັງໝົດ",
+  "remove_all": "ລົບທັງໝົດ"
 }
