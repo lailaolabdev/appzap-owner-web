@@ -943,9 +943,16 @@ export default function MemberPage() {
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
                   <th style={{ textAlign: "center" }}>{"ພ໋ອຍທັງໝົດ"}</th>
-                  <th style={{ textAlign: "center" }}>
-                    {t("date_expirt_point")}
-                  </th>
+                  {!storeDetail?.isStatusCafe && (
+                    <th style={{ textAlign: "center" }}>
+                      {t("date_expirt_point")}
+                    </th>
+                  )}
+                  {storeDetail?.isStatusCafe && (
+                    <th style={{ textAlign: "center" }}>
+                      {t("member_discount")}
+                    </th>
+                  )}
                   <th style={{ textAlign: "center" }}>{t("use_service")}</th>
                   <th style={{ textAlign: "center" }}>{t("regis_date")}</th>
                   <th style={{ textAlign: "right" }}>{t("manage")}</th>
@@ -965,12 +972,21 @@ export default function MemberPage() {
                         {!storeDetail?.isStatusCafe &&
                           CountDateExpire(e?.pointDateExpirt)}
                       </td>
-                      <td className="text-center">
-                        {e?.pointDateExpirt &&
-                        moment(e.pointDateExpirt).isValid()
-                          ? moment(e.pointDateExpirt).format("DD/MM/YYYY")
-                          : "-"}
-                      </td>
+                      {!storeDetail?.isStatusCafe && (
+                        <td className="text-center">
+                          {e?.pointDateExpirt &&
+                          moment(e.pointDateExpirt).isValid()
+                            ? moment(e.pointDateExpirt).format("DD/MM/YYYY")
+                            : "-"}
+                        </td>
+                      )}
+                      {storeDetail?.isStatusCafe && (
+                        <td className="text-center">
+                          {e?.discountPercentage > 0
+                            ? `${e?.discountPercentage} %`
+                            : "--"}
+                        </td>
+                      )}
                       <td style={{ textAlign: "center" }}>{e?.bill}</td>
                       <td style={{ textAlign: "center" }}>
                         {moment(e?.createdAt).format("DD/MM/YYYY")}
