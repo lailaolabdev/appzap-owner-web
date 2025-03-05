@@ -34,7 +34,7 @@ export default function HistoryUse() {
   const params = useParams();
   const [data, setData] = useState([]);
   const [totalLogs, setTotalLogs] = useState(0);
-  const [filtterModele, setFiltterModele] = useState("checkBill");
+  const [filtterModele, setFiltterModele] = useState("bankTransfer");
   const [selectedCurrency, setSelectedCurrency] = useState("LAK");
   const [isLoading, setIsLoading] = useState(false);
   const [show, setShow] = useState(false);
@@ -206,7 +206,7 @@ export default function HistoryUse() {
       <Nav
         fill
         variant="tabs"
-        defaultActiveKey="/checkBill"
+        defaultActiveKey="/bankTransfer"
         style={{
           fontWeight: "bold",
           backgroundColor: "#f8f8f8",
@@ -216,6 +216,26 @@ export default function HistoryUse() {
           display: "flex",
         }}
       >
+        <Nav.Item>
+          <Nav.Link
+            eventKey="/bankTransfer"
+            style={{
+              color: "#FB6E3B",
+              border: "none",
+              height: 60,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onClick={() => {
+              setFiltterModele("bankTransfer");
+              setOrderHistory(true);
+            }}
+          >
+            <BsBank2 /> <div style={{ width: 8 }}></div>
+            {t("bank_transfer_history")}
+          </Nav.Link>
+        </Nav.Item>
         <Nav.Item>
           <Nav.Link
             eventKey="/checkBill"
@@ -364,26 +384,6 @@ export default function HistoryUse() {
             </Nav.Item>
           </>
         )}
-        <Nav.Item>
-          <Nav.Link
-            eventKey="/bankTransfer"
-            style={{
-              color: "#FB6E3B",
-              border: "none",
-              height: 60,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onClick={() => {
-              setFiltterModele("bankTransfer");
-              setOrderHistory(true);
-            }}
-          >
-            <BsBank2 /> <div style={{ width: 8 }}></div>
-            {t("bank_transfer_history")}
-          </Nav.Link>
-        </Nav.Item>
       </Nav>
       {isLoading ? (
         <LoadingAppzap />
