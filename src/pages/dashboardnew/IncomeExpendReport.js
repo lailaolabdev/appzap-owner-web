@@ -48,8 +48,8 @@ export default function IncomeExpendExport() {
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
   const today = new Date();
-  const [dateStart, setDateStart] = useState(moment().format("YYYY/MM/DD"));
-  const [dateEnd, setDateEnd] = useState(moment().format("YYYY/MM/DD"));
+  const [dateStart, setDateStart] = useState();
+  const [dateEnd, setDateEnd] = useState();
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
   const { width, height } = useWindowDimensions2();
