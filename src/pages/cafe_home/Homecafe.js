@@ -436,16 +436,18 @@ function Homecafe() {
     updatedSelectedMenus.push(mainMenuData);
 
     // biome-ignore lint/complexity/noForEach: <explanation>
+
     activePromotions.forEach((promotion) => {
       if (
         promotion?.type === "BUY_X_GET_Y" &&
         promotion.freeItems?.length > 0
       ) {
-        // biome-ignore lint/complexity/noForEach: <explanation>
         promotion.freeItems.forEach((freeItem) => {
           const freeItemId = freeItem?._id?._id || freeItem?._id;
           const freeItemName = freeItem?._id?.name || "Unknown";
-          const mainMenuId = freeItem?.mainMenuId?._id;
+
+          // เช็กว่า freeItem นี้แถมให้สินค้านี้จริงๆ ไม่ใช่เมนูอื่น
+          if (freeItem?.mainMenuId?._id !== menu._id) return;
 
           const existingFreeItemIndex = updatedSelectedMenus.findIndex(
             (item) =>
@@ -458,7 +460,7 @@ function Homecafe() {
             updatedSelectedMenus[existingFreeItemIndex].quantity +=
               promotion.getQuantity;
           } else {
-            const freeItemData = {
+            updatedSelectedMenus.push({
               id: freeItemId,
               name: freeItemName,
               price: 0,
@@ -469,8 +471,7 @@ function Homecafe() {
               isWeightMenu: menu?.isWeightMenu,
               isFree: true,
               mainMenuId: menu._id,
-            };
-            updatedSelectedMenus.push(freeItemData);
+            });
           }
         });
       }
@@ -607,16 +608,18 @@ function Homecafe() {
       }
 
       // biome-ignore lint/complexity/noForEach: <explanation>
+
       activePromotions.forEach((promotion) => {
         if (
           promotion.type === "BUY_X_GET_Y" &&
           promotion.freeItems?.length > 0
         ) {
-          // biome-ignore lint/complexity/noForEach: <explanation>
           promotion.freeItems.forEach((freeItem) => {
             const freeItemId = freeItem?._id?._id || freeItem?._id;
             const freeItemName = freeItem?._id?.name || "Unknown";
-            const mainMenuId = freeItem?.mainMenuId?._id;
+
+            // เช็กว่า freeItem นี้แถมให้สินค้านี้จริงๆ
+            if (freeItem?.mainMenuId?._id !== selectedItem._id) return;
 
             const existingFreeItemIndex = updatedMenu.findIndex(
               (item) =>
