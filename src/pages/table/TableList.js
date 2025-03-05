@@ -82,12 +82,16 @@ import {
   Loader,
   ReceiptText,
   X,
+  CircleCheckBig,
+  Grid2x2Check,
 } from "lucide-react";
+
 import { cn } from "../../utils/cn";
 import { fontMap } from "../../utils/font-map";
 
 import { useStoreStore } from "../../zustand/storeStore";
 import theme from "../../theme";
+import PopUpConfirms from "../../components/popup/PopUpConfirms";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -136,7 +140,7 @@ export default function TableList() {
   const [qrToken, setQrToken] = useState("");
   const [pinStatus, setPinStatus] = useState(false);
   const [workAfterPin, setWorkAfterPin] = useState("");
-  const [checkStatusItem, setCheckStatusItem] = useState(false);
+  const [openConfirmCloseTable, setOpenConfirmCloseTable] = useState(false);
   const [showBtnCombine, setShowBtnCombine] = useState(false);
   const [selectTable, setSelectTable] = useState(false);
 
@@ -1039,103 +1043,6 @@ export default function TableList() {
     setOrderPayBefore([]);
   };
 
-  // const onPrintForCher = async () => {
-  //   setOnPrinting(true);
-
-  //   let _dataBill = {
-  //     ...dataBill,
-  //     typePrint: "PRINT_BILL_FORCHER",
-  //   };
-  //   await _createHistoriesPrinter(_dataBill);
-
-  //   const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
-  //   let _index = 0;
-  //   const printDate = [...billForCher80.current];
-  //   let dataUrls = [];
-  //   for (const _ref of printDate) {
-  //     const dataUrl = await html2canvas(_ref, {
-  //       useCORS: true,
-  //       scrollX: 10,
-  //       scrollY: 0,
-  //       scale: 530 / widthBill80,
-  //     });
-  //     dataUrls.push(dataUrl);
-  //   }
-  //   for (const _ref of printDate) {
-  //     const _printer = printers.find((e) => {
-  //       return e?._id === orderSelect?.[_index]?.printer;
-  //     });
-
-  //     try {
-  //       let urlForPrinter = "";
-  //       let dataUrl = dataUrls[_index];
-
-  //       if (_printer?.type === "ETHERNET") {
-  //         urlForPrinter = ETHERNET_PRINTER_PORT;
-  //       }
-  //       if (_printer?.type === "BLUETOOTH") {
-  //         urlForPrinter = BLUETOOTH_PRINTER_PORT;
-  //       }
-  //       if (_printer?.type === "USB") {
-  //         urlForPrinter = USB_PRINTER_PORT;
-  //       }
-  //       // const _image64 = await resizeImage(dataUrl.toDataURL(), 300, 500);
-
-  //       const _file = await base64ToBlob(dataUrl.toDataURL());
-  //       var bodyFormData = new FormData();
-  //       bodyFormData.append("ip", _printer?.ip);
-  //       bodyFormData.append("isdrawer", false);
-  //       bodyFormData.append("port", "9100");
-  //       bodyFormData.append("image", _file);
-  //       bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
-  //       if (_index === 0) {
-  //         bodyFormData.append("beep1", 1);
-  //         bodyFormData.append("beep2", 9);
-  //       }
-  //       await printFlutter(
-  //         {
-  //           drawer: false,
-  //           paper: _printer?.width === "58mm" ? 400 : 500,
-  //           imageBuffer: dataUrl.toDataURL(),
-  //           ip: _printer?.ip,
-  //           type: _printer?.type,
-  //           port: "9100",
-  //           width: _printer?.width === "58mm" ? 400 : 580,
-  //         },
-  //         async () => {
-  //           await axios({
-  //             method: "post",
-  //             url: urlForPrinter,
-  //             data: bodyFormData,
-  //             headers: { "Content-Type": "multipart/form-data" },
-  //           });
-  //         }
-  //       );
-
-  //       if (_index === 0) {
-  //         await Swal.fire({
-  //           icon: "success",
-  //           title: `${t("print_success")}`,
-  //           showConfirmButton: false,
-  //           timer: 1500,
-  //         });
-  //       }
-  //     } catch (err) {
-  //       console.log(err);
-  //       if (_index === 0) {
-  //         await Swal.fire({
-  //           icon: "error",
-  //           title: `${t("print_fial")}`,
-  //           showConfirmButton: false,
-  //           timer: 1500,
-  //         });
-  //       }
-  //     }
-  //     _index++;
-  //   }
-  //   setOnPrinting(false);
-  // };
-
   const onPrintForCher = async () => {
     try {
       setOnPrinting(true);
@@ -1155,22 +1062,7 @@ export default function TableList() {
           )
         );
       }
-      // if (countError == "ERR") {
-      //   setIsLoading(false);
-      //   Swal.fire({
-      //     icon: "error",
-      //     title: "ປິ້ນບໍ່ສຳເລັດ",
-      //     showConfirmButton: false,
-      //     timer: 1500,
-      //   });
-      // } else {
-      //   await Swal.fire({
-      //     icon: "success",
-      //     title: "ປິ້ນສຳເລັດ",
-      //     showConfirmButton: false,
-      //     timer: 1500,
-      //   });
-      // }
+
       setOnPrinting(false);
       setPrintBackground((prev) => [...prev, ...arrayPrint]);
     } catch (error) {
@@ -1240,210 +1132,6 @@ export default function TableList() {
     }
   };
 
-  // const convertHtmlToBase64 = (orderSelect) => {
-  //   const base64ArrayAndPrinter = [];
-  //   orderSelect.forEach((data, index) => {
-  //     if (data) {
-  //       const canvas = document.createElement("canvas");
-  //       const context = canvas.getContext("2d");
-
-  //       // Define base dimensions
-  //       const baseHeight = 250;
-  //       const extraHeightPerOption = 30;
-  //       const extraHeightForNote = data?.note ? 40 : 0;
-  //       const dynamicHeight =
-  //         baseHeight +
-  //         (data.options?.length || 0) * extraHeightPerOption +
-  //         extraHeightForNote;
-  //       const width = 510;
-
-  //       canvas.width = width;
-  //       canvas.height = dynamicHeight;
-
-  //       // Set white background
-  //       context.fillStyle = "#fff";
-  //       context.fillRect(0, 0, width, dynamicHeight);
-
-  //       // Helper function for text wrapping
-  //       function wrapText(context, text, x, y, maxWidth, lineHeight) {
-  //         const words = text.split(" ");
-  //         let line = "";
-  //         for (let n = 0; n < words.length; n++) {
-  //           let testLine = line + words[n] + " ";
-  //           let metrics = context.measureText(testLine);
-  //           let testWidth = metrics.width;
-  //           if (testWidth > maxWidth && n > 0) {
-  //             context.fillText(line, x, y);
-  //             line = words[n] + " ";
-  //             y += lineHeight;
-  //           } else {
-  //             line = testLine;
-  //           }
-  //         }
-  //         context.fillText(line, x, y);
-  //         return y + lineHeight;
-  //       }
-
-  //       // Header: Table Name and Code
-  //       // Draw the Table ID (left black block)
-  //       context.fillStyle = "#000";
-  //       context.fillRect(0, 0, width / 2, 60);
-  //       context.fillStyle = "#fff";
-  //       context.font = "bold 36px NotoSansLao, Arial, sans-serif";
-  //       context.fillText(data?.tableId?.name || selectedTable?.name, 10, 45);
-
-  //       // Table Code on the right
-  //       context.fillStyle = "#000";
-  //       context.font = "bold 36px NotoSansLao, Arial, sans-serif";
-  //       context.fillText(data?.code || selectedTable?.code, width - 200, 45); // Adjusted position for better alignment
-
-  //       // Divider line below header
-  //       context.strokeStyle = "#ccc";
-  //       context.lineWidth = 1;
-  //       context.beginPath();
-  //       context.moveTo(0, 65);
-  //       context.lineTo(width, 65);
-  //       context.stroke();
-
-  //       // Content: Item Name and Quantity
-  //       context.fillStyle = "#000";
-  //       context.font = "bold 34px NotoSansLao, Arial, sans-serif";
-  //       let yPosition = 100;
-  //       yPosition = wrapText(
-  //         context,
-  //         `${data?.name} x (${data?.quantity})`,
-  //         10,
-  //         yPosition,
-  //         width - 20,
-  //         36
-  //       );
-
-  //       // Content: Item Note
-  //       if (data?.note) {
-  //         const noteLabel = "note: ";
-  //         const noteText = data.note;
-
-  //         // Draw "Note:" label in bold
-  //         context.fillStyle = "#666";
-  //         context.font = "bold italic bold 24px Arial, sans-serif";
-  //         context.fillText(noteLabel, 10, yPosition);
-
-  //         // Measure width of the "Note:" label
-  //         const noteLabelWidth = context.measureText(noteLabel).width;
-
-  //         // Wrap the note text, starting after the "Note:" label
-  //         context.font = " bold italic 24px Arial, sans-serif";
-  //         yPosition = wrapText(
-  //           context,
-  //           noteText,
-  //           10 + noteLabelWidth, // Start after the label width
-  //           yPosition,
-  //           width - 20 - noteLabelWidth, // Adjust wrapping width
-  //           30
-  //         );
-
-  //         // Add spacing after the note
-  //         yPosition += 10;
-  //       }
-
-  //       // Options
-  //       if (data.options && data.options.length > 0) {
-  //         context.fillStyle = "#000";
-  //         context.font = "24px NotoSansLao, Arial, sans-serif";
-  //         data.options.forEach((option, idx) => {
-  //           const optionPriceText = option?.price
-  //             ? ` - ${moneyCurrency(option?.price)}`
-  //             : "";
-  //           const optionText = `- ${option?.name}${optionPriceText} x ${
-  //             option?.quantity || 1
-  //           }`;
-  //           yPosition = wrapText(
-  //             context,
-  //             optionText,
-  //             10,
-  //             yPosition,
-  //             width - 20,
-  //             30
-  //           );
-  //         });
-
-  //         // Divider below options
-  //         context.strokeStyle = "#ccc";
-  //         context.setLineDash([4, 2]);
-  //         context.beginPath();
-  //         context.moveTo(0, yPosition);
-  //         context.lineTo(width, yPosition);
-  //         context.stroke();
-  //         context.setLineDash([]);
-  //         yPosition += 20;
-  //       }
-
-  //       context.fillStyle = "#000";
-  //       context.font = " 24px NotoSansLao, Arial, sans-serif";
-  //       // let yPosition = 100;
-  //       yPosition = wrapText(
-  //         context,
-  //         `${t("total")} ${moneyCurrency(
-  //           data?.price + (data?.totalOptionPrice ?? 0)
-  //         )} ${t(storeDetail?.firstCurrency)}`,
-  //         30,
-  //         dynamicHeight - 76,
-  //         width - 20
-  //       );
-
-  //       // Set text properties
-  //       context.fillStyle = "#000"; // Black text color
-  //       context.font = "28px NotoSansLao, Arial, sans-serif"; // Font style and size
-  //       context.textAlign = "right"; // Align text to the right
-  //       context.textBaseline = "bottom"; // Align text baseline to bottom
-
-  //       // Draw delivery code at the bottom-right
-  //       context.fillText(
-  //         `${
-  //           data?.deliveryCode ? `(delivery code : ${data?.deliveryCode})` : ""
-  //         }`, // Delivery code text
-  //         width - 10, // Position X: 10px from the right edge
-  //         dynamicHeight - 100 // Position Y: 100px above the bottom edge
-  //       );
-
-  //       // Add a dotted line before footer
-  //       context.strokeStyle = "#000"; // Black dotted line
-  //       context.setLineDash([4, 2]); // Dotted line style
-  //       context.beginPath();
-  //       context.moveTo(0, dynamicHeight - 70); // Position 70px above footer
-  //       context.lineTo(width, dynamicHeight - 70); // Full-width dotted line
-  //       context.stroke();
-  //       context.setLineDash([]); // Reset line dash style
-
-  //       // Footer: Created By and Date
-  //       context.font = "bold 28px NotoSansLao, Arial, sans-serif";
-  //       context.fillStyle = "#000";
-  //       context.fillText(
-  //         data?.createdBy?.firstname ||
-  //           data?.updatedBy?.firstname ||
-  //           "lailaolab",
-  //         10,
-  //         dynamicHeight - 40
-  //       );
-  //       context.fillStyle = "#6e6e6e";
-  //       context.font = "28px NotoSansLao, Arial, sans-serif";
-  //       context.fillText(
-  //         `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
-  //           data?.createdAt
-  //         ).format("LT")}`,
-  //         width - 220,
-  //         dynamicHeight - 40
-  //       );
-
-  //       // Convert canvas to base64
-  //       const dataUrl = canvas.toDataURL("image/png");
-  //       const printer = printers.find((e) => e?._id === data?.printer);
-  //       if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
-  //     }
-  //   });
-
-  //   return base64ArrayAndPrinter;
-  // };
   const convertHtmlToBase64 = (orderSelect) => {
     const base64ArrayAndPrinter = [];
     orderSelect.forEach((data, index) => {
@@ -2358,6 +2046,11 @@ export default function TableList() {
     }
   };
 
+  const handleConfirmCloseTable = async () => {
+    setOpenConfirmCloseTable(false);
+    console.log("handleConfirmCloseTable");
+  };
+
   return (
     <div className="bg-[#F9F9F9] h-[calc(100vh-66px)] overflow-hidden w-full">
       {/* popup */}
@@ -2374,8 +2067,8 @@ export default function TableList() {
             className={cn(
               "items-center justify-between p-2 grid gap-1.5",
               selectTable
-                ? "grid-cols-5 sm:grid-cols-5 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5"
-                : "grid-cols-5 sm:grid-cols-5 md:grid-cols-5 lg:grid-cols-5"
+                ? "grid-cols-6 sm:grid-cols-6 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-6"
+                : "grid-cols-6 sm:grid-cols-6 md:grid-cols-6 lg:grid-cols-6"
             )}
           >
             {[
@@ -2388,7 +2081,7 @@ export default function TableList() {
               {
                 label: t("available"),
                 value: _checkStatusCodeA(tableList),
-                icon: <Check />,
+                icon: <Grid2x2Check />,
                 bgColor: "#FFFFFF",
               },
               {
@@ -2409,6 +2102,12 @@ export default function TableList() {
                 icon: <Edit2Icon />,
                 bgColor: "#CECE5A",
               },
+              {
+                label: t("paided_ordering"),
+                value: _checkStatusCodeC(tableList),
+                icon: <CircleCheckBig />,
+                bgColor: "#00C851",
+              },
             ].map((item, index) => {
               return (
                 <div
@@ -2426,7 +2125,7 @@ export default function TableList() {
                       borderWidth: index === 1 ? 1 : 0,
                     }}
                     className={cn(
-                      "h-[40px] w-[40px] min-w-[40px] min-h-[40px] flex items-center justify-center rounded-[6px]",
+                      "h-[40px] w-[40px] min-w-[40px] min-h-[40px] flex items-center justify-center rounded-full",
                       index === 1 ? "text-gray-500" : "text-white"
                     )}
                   >
@@ -2837,7 +2536,11 @@ export default function TableList() {
                       >
                         + {t("addOrder")}
                       </ButtonCustom>
-                      <ButtonCustom disabled></ButtonCustom>
+                      <ButtonCustom
+                        onClick={() => setOpenConfirmCloseTable(true)}
+                      >
+                        {t("confirm_close_table")}
+                      </ButtonCustom>
                       <ButtonCustom
                         onClick={() => setPopup({ PopUpTranferTable: true })}
                       >
@@ -3431,6 +3134,15 @@ export default function TableList() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <PopUpConfirms
+        open={openConfirmCloseTable}
+        text={selectedTable?.tableName}
+        textBefore={"ທ່ານຕ້ອງການປິດໂຕະ"}
+        textAfter={"ແທ້ບໍ່"}
+        onClose={() => setOpenConfirmCloseTable(false)}
+        onSubmit={async () => handleConfirmCloseTable()}
+      />
 
       <Modal show={show1} onHide={handleClose1}>
         <Modal.Header closeButton>
