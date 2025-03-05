@@ -808,6 +808,7 @@
   "bill_total": "Total Bills",
   "exchange_rate": "Exchange Rates",
   "add_exchangeRate": "Add Exchange Rate", 
+  "show_exchange_rate_on_bill": "Show Exchange rate on bill",
   "member": "Member",
   "return": "Return",
   "cash_transfer": "Cash & Transfer",
