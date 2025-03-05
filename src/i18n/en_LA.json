@@ -1244,12 +1244,11 @@
   "expirt_point": "ຄະແນນທີ່ຈະໝົດອາຍຸ",
   "date_expirt_point": "ວັນໝົດອາຍຸຂອງຄະແນນ",
   "paided_ordering": "ຊຳລະເງິນ",
+
   "confirm_close_table": "ຢືນຢັນການປິດໂຕະ",
   "money_from_appzap": "ເງິນໃນແອັບແຊບ",
   "total_money_claim": "ຈຳນວນຍອດເງິນລວມ",
-<<<<<<< HEAD
-  "deleted_items": "ລາຍການເມນູຖຶກລົບ"
-=======
+  "deleted_items": "ລາຍການເມນູຖຶກລົບ",
   "item_total": "ລາຍການສະຕ໊ອກທັງໝົດ",
   "item_amount":"ລາຍການ",
   "payment_type": "ປະເພດຊຳລະເງິນ",
@@ -1258,5 +1257,4 @@
   "before_paid":"ລາຄາຈ່າຍກ່ອນ",
   "debt_amount":"ລາຄາທີ່ຕິດໜີ້",
   "type_pay": "ປະເພດການຊຳລະ"
->>>>>>> 01b521d4 (fixed:succes export tranfer)
 }
