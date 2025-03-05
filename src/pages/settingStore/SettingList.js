@@ -117,7 +117,7 @@ export default function SettingList() {
     },
     {
       id: "0f83cb87-fc96-4212-b67d-2af6f33ed937",
-      title: t("employeeManage"),
+      title: t("staff_setting"),
       subTitle: t("employee_manage_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faUsers} />,
       path: `/user`,
@@ -191,7 +191,7 @@ export default function SettingList() {
     },
     {
       id: "a2233469-a0b3-4247-9247-6282e2bafc1b",
-      title: t("sound_manage"),
+      title: t("sound_setting"),
       subTitle: t("sound_manage_desc"),
       icon: (
         <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faVolumeUp} />
@@ -281,7 +281,7 @@ export default function SettingList() {
 
     {
       id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
-      title: "ການຕັ້ງຄ່າກ່ຽວກັບ 2 ໜ້າຈໍ",
+      title: t("setting_two_pages"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDesktop} />,
       path: "/setting-screen",
       hidden: !hasMangeSecondScreen && appzapStaff.includes(profileRole),

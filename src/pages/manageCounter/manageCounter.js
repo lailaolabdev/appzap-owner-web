@@ -26,14 +26,12 @@ export default function ManageCounterList() {
   const [selectedCounter, setSelectedCounter] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const [count, setCount] = useState(null);
 
   const storeId = storeDetail._id;
 
-  const data = [
-    { label: `${t("inc_expe")}` }
-  ];
+  const data = [{ label: `${t("inc_expe")}` }];
 
   const fetchData = async () => {
     try {

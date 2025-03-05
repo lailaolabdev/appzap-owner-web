@@ -671,128 +671,6 @@ function AddOrder() {
     return calculateDiscount(menu) + optionsTotalPrice;
   };
 
-  // const handleConfirmOptions = () => {
-  //   const filteredOptions =
-  //     selectedOptionsArray[selectedItem._id]?.filter(
-  //       (option) => option.quantity >= 1
-  //     ) || [];
-
-  //   const sortedFilteredOptionsForComparison = sortOptionsById([
-  //     ...filteredOptions,
-  //   ]);
-
-  //   const totalOptionPrice = filteredOptions.reduce(
-  //     (total, option) => total + option.price * option.quantity,
-  //     0
-  //   );
-
-  //   const finalPrice = calculateDiscount(selectedItem);
-
-  //   const mainMenuData = {
-  //     id: selectedItem._id,
-  //     name: selectedItem.name,
-  //     quantity: 1,
-  //     price: finalPrice,
-  //     priceDiscount: Math.max(selectedItem?.price - finalPrice, 0),
-  //     categoryId: selectedItem?.categoryId,
-  //     printer: selectedItem?.categoryId?.printer,
-  //     note: addComments,
-  //     menuOptions: selectedItem.menuOptions,
-  //     options: filteredOptions,
-  //     shiftId: shiftCurrent[0]?._id,
-  //     discount: selectedItem?.promotionId?.reduce(
-  //       (sum, promo) => sum + (promo.discountValue || 0),
-  //       0
-  //     ),
-  //     totalOptionPrice: totalOptionPrice,
-  //     totalPrice: finalPrice + totalOptionPrice,
-  //     isWeightMenu: selectedItem?.isWeightMenu,
-  //   };
-
-  //   setSelectedMenu((prevMenu) => {
-  //     let updatedMenu = [...prevMenu];
-
-  //     const existingMenuIndex = updatedMenu.findIndex((item) => {
-  //       const sortedItemOptionsForComparison = item.options
-  //         ? sortOptionsById([...item.options])
-  //         : [];
-  //       return (
-  //         item.id === selectedItem._id &&
-  //         JSON.stringify(sortedItemOptionsForComparison) ===
-  //           JSON.stringify(sortedFilteredOptionsForComparison)
-  //       );
-  //     });
-
-  //     if (existingMenuIndex !== -1) {
-  //       updatedMenu[existingMenuIndex].quantity += 1;
-  //       updatedMenu[existingMenuIndex].options = filteredOptions;
-  //       updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
-  //       updatedMenu[existingMenuIndex].totalPrice =
-  //         updatedMenu[existingMenuIndex].price *
-  //           updatedMenu[existingMenuIndex].quantity +
-  //         totalOptionPrice;
-  //     } else {
-  //       updatedMenu.push(mainMenuData);
-  //     }
-
-  //     if (selectedItem.promotionId?.length > 0) {
-  //       // biome-ignore lint/complexity/noForEach: <explanation>
-  //       selectedItem.promotionId.forEach((promotion) => {
-  //         if (
-  //           promotion.type === "BUY_X_GET_Y" &&
-  //           promotion.freeItems?.length > 0
-  //         ) {
-  //           // biome-ignore lint/complexity/noForEach: <explanation>
-  //           promotion.freeItems.forEach((freeItem) => {
-  //             const freeItemId = freeItem?._id?._id || freeItem?._id;
-  //             const freeItemName = freeItem?._id?.name || "Unknown";
-  //             const mainMenuId = freeItem?.mainMenuId?._id;
-
-  //             // ✅ ตรวจสอบว่า free item ควรแถมหรือไม่ (ต้อง match mainMenuId กับ main menu ที่เพิ่ม)
-  //             if (mainMenuId && mainMenuId !== selectedItem._id) {
-  //               console.log(
-  //                 `❌ Free item ${freeItemName} incorrect Main Menu ${selectedItem.name}`
-  //               );
-  //               return;
-  //             }
-
-  //             const existingFreeItemIndex = updatedMenu.findIndex(
-  //               (item) =>
-  //                 item.id === freeItemId &&
-  //                 item.isFree &&
-  //                 item.mainMenuId === selectedItem._id
-  //             );
-
-  //             if (existingFreeItemIndex !== -1) {
-  //               updatedMenu[existingFreeItemIndex].quantity +=
-  //                 promotion.getQuantity;
-  //             } else {
-  //               updatedMenu.push({
-  //                 id: freeItemId,
-  //                 name: freeItemName,
-  //                 price: 0,
-  //                 quantity: 1,
-  //                 categoryId: selectedItem?.categoryId,
-  //                 printer: selectedItem?.categoryId?.printer,
-  //                 shiftId: shiftCurrent[0]?._id,
-  //                 isWeightMenu: selectedItem?.isWeightMenu,
-  //                 isFree: true,
-  //                 mainMenuId: selectedItem._id,
-  //               });
-  //             }
-  //           });
-  //         }
-  //       });
-  //     }
-
-  //     return updatedMenu;
-  //   });
-
-  //   handleClose();
-  //   setAddComments("");
-  //   setEditComments("");
-  // };
-
   const handleConfirmOptions = () => {
     const filteredOptions =
       selectedOptionsArray[selectedItem._id]?.filter(
@@ -939,99 +817,6 @@ function AddOrder() {
       return [];
     }
   };
-
-  // const addToCart = async (menu) => {
-  //   const _menuOptions = _checkMenuOption(menu);
-  //   let updatedSelectedMenus = [...selectedMenu];
-
-  //   if (_menuOptions.length > 0) {
-  //     setMenuOptions(_menuOptions);
-  //     setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
-  //     setSelectedOptionsArray({
-  //       [menu._id]: _menuOptions.map((option) => ({ ...option, quantity: 0 })),
-  //     });
-  //     handleShow();
-  //     return;
-  //   }
-
-  //   const finalPrice = calculateDiscount(menu);
-
-  //   const mainMenuData = {
-  //     id: menu._id,
-  //     name: menu.name,
-  //     quantity: 1,
-  //     price: finalPrice,
-  //     priceDiscount: Math.max(menu?.price - finalPrice, 0),
-  //     categoryId: menu?.categoryId,
-  //     printer: menu?.categoryId?.printer,
-  //     shiftId: shiftCurrent[0]?._id,
-  //     discount: menu.promotionId?.reduce(
-  //       (sum, promo) => sum + (promo.discountValue || 0),
-  //       0
-  //     ),
-  //     note: "",
-  //     isWeightMenu: menu?.isWeightMenu,
-  //   };
-
-  //   const existingMenuIndex = updatedSelectedMenus.findIndex(
-  //     (item) => item.id === menu._id
-  //   );
-  //   if (existingMenuIndex !== -1) {
-  //     updatedSelectedMenus[existingMenuIndex].quantity += 1;
-  //   } else {
-  //     updatedSelectedMenus.push(mainMenuData);
-  //   }
-
-  //   // biome-ignore lint/complexity/noForEach: <explanation>
-  //   menu.promotionId?.forEach((promotion) => {
-  //     if (
-  //       promotion?.type === "BUY_X_GET_Y" &&
-  //       promotion.freeItems?.length > 0
-  //     ) {
-  //       // biome-ignore lint/complexity/noForEach: <explanation>
-  //       promotion.freeItems.forEach((freeItem) => {
-  //         const freeItemId = freeItem?._id?._id || freeItem?._id;
-  //         const freeItemName = freeItem?._id?.name || "Unknown";
-  //         const mainMenuId = freeItem?.mainMenuId?._id;
-
-  //         if (mainMenuId && mainMenuId !== menu._id) {
-  //           console.log(
-  //             `❌ Free item ${freeItemName} incorrect Main Menu ${menu.name}`
-  //           );
-  //           return;
-  //         }
-
-  //         const existingFreeItemIndex = updatedSelectedMenus.findIndex(
-  //           (item) =>
-  //             item.id === freeItemId &&
-  //             item.isFree &&
-  //             item.mainMenuId === menu._id
-  //         );
-
-  //         if (existingFreeItemIndex !== -1) {
-  //           updatedSelectedMenus[existingFreeItemIndex].quantity +=
-  //             promotion.getQuantity;
-  //         } else {
-  //           const freeItemData = {
-  //             id: freeItemId,
-  //             name: freeItemName,
-  //             price: 0,
-  //             quantity: 1,
-  //             categoryId: menu?.categoryId,
-  //             printer: menu?.categoryId?.printer,
-  //             shiftId: shiftCurrent[0]?._id,
-  //             isWeightMenu: menu?.isWeightMenu,
-  //             isFree: true,
-  //             mainMenuId: menu._id,
-  //           };
-  //           updatedSelectedMenus.push(freeItemData);
-  //         }
-  //       });
-  //     }
-  //   });
-
-  //   setSelectedMenu(updatedSelectedMenus);
-  // };
 
   const addToCart = async (menu) => {
     const _menuOptions = _checkMenuOption(menu);
@@ -1962,7 +1747,7 @@ function AddOrder() {
                         style={{ border: "none", textAlign: "center" }}
                         className={fontMap[language]}
                       >
-                        {t("amount")}
+                        {t("quantity")}
                       </th>
                       {selectedTable?.isDeliveryTable && (
                         <th
@@ -2397,7 +2182,7 @@ function AddOrder() {
           </Form.Group>
           <div className="mt-3">
             <strong>
-              ລາຄາລວມອ໋ອບຊັນ:{" "}
+              {t("total_price_with_options")}:{" "}
               {moneyCurrency(
                 calculateTotalPrice(selectedItem, selectedOptionsArray)
               )}{" "}
@@ -2407,8 +2192,8 @@ function AddOrder() {
           <Form.Group className="mt-3">
             <Form.Label>
               {selectedItem?.note === ""
-                ? "ຄອມເມັ້ນລົດຊາດອາຫານ"
-                : "ແກ້ໄຂຄອມເມັ້ນ"}
+                ? t("comment_taste")
+                : t("edit_comment")}
             </Form.Label>
             <Form.Control
               ref={selectedItem?.note === "" ? inputRef : null}
@@ -2416,7 +2201,7 @@ function AddOrder() {
               rows={3}
               value={addComments}
               onChange={(e) => setAddComments(e.target.value)}
-              placeholder="ປ້ອນຄຳອະທິບາຍ..."
+              placeholder={t("fill_desc")}
               className="w-100"
             />
           </Form.Group>

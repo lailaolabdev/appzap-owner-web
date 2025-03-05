@@ -466,7 +466,7 @@ export default function MenuListOption() {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.name}
-                      placeholder="Enter Option Name..."
+                      placeholder={t("enter_options_name")}
                       style={{
                         border:
                           errors.name && touched.name && errors.name

@@ -25,10 +25,10 @@ import Spinner from "react-bootstrap/Spinner";
 import PopUpCreateUser from "../../components/popup/PopUpCreateUser";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
-import {  updateStorePin } from "../../services/store";
+import { updateStorePin } from "../../services/store";
 import { useTranslation } from "react-i18next";
 
-import {useStoreStore} from "../../zustand/storeStore"
+import { useStoreStore } from "../../zustand/storeStore";
 
 let limitData = 10;
 
@@ -42,10 +42,7 @@ export default function PinPage() {
   const [PINs, setPINs] = useState();
 
   // zustand state store
-  const {
-    storeDetail, 
-    fetchStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, fetchStoreDetail, updateStoreDetail } = useStoreStore();
 
   // useEffect
   useEffect(() => {
@@ -164,9 +161,8 @@ export default function PinPage() {
                       const _run = async () => {
                         await updateStorePin(e.target.checked);
                         //zustand store
-                        await fetchStoreDetail(storeDetail?._id)
+                        await fetchStoreDetail(storeDetail?._id);
                         // const data = await getStore(storeDetail?._id);
-                        
                       };
                       _run();
                     }}
@@ -199,8 +195,10 @@ export default function PinPage() {
               onClick={() => {
                 handleRandomPassword();
               }}
+              style={{ display: "flex", alignItems: "center" }}
             >
-              <MdAssignmentAdd /> {t("change_code")}
+              <MdAssignmentAdd style={{ marginRight: "5px" }} />{" "}
+              {t("change_code")}
             </Button>
           </Card.Header>
           <Card.Body>

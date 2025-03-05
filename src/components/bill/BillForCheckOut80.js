@@ -130,6 +130,8 @@ export default function BillForCheckOut80({
     }
   };
 
+  // console.log("storeDetail ", storeDetail);
+
   const imageUrl = URL_PHOTO_AW3 + storeDetail?.image;
   const imageUrl2 = URL_PHOTO_AW3 + storeDetail?.printer?.logo;
 
@@ -140,8 +142,10 @@ export default function BillForCheckOut80({
     });
   }, [imageUrl2]);
 
-  // console.log("storeDetail: ", storeDetail);
-  // console.log("storeDetail.textForBill: ", storeDetail?.textForBill);
+  // // console.log("storeDetail: ", storeDetail);
+  console.log("dataBill: ", dataBill);
+  console.log("pointDateExpirt: ", dataBill?.ExpireDateForPoint);
+  // console.log("service: ", storeDetail?.point);
 
   return (
     <Container>
@@ -199,11 +203,23 @@ export default function BillForCheckOut80({
                 {t("phoneNumber")}: {""}
                 <span style={{ fontWeight: "bold" }}>
                   {dataBill?.memberPhone
-                    ? `${dataBill?.memberPhone} (${t("point")} : ${
+                    ? `${dataBill?.memberPhone} (${t(
+                        "point"
+                      )} : ${moneyCurrency(
                         Number(dataBill?.Point || 0) -
-                        Number(storeDetail?.point || 0)
-                      })`
+                          Number(storeDetail?.point || 0)
+                      )})`
                     : ""}
+                </span>
+              </div>
+
+              <div>
+                {t("date_expirt_point")}: {""}
+                <span style={{ fontWeight: "bold" }}>
+                  {dataBill?.ExpireDateForPoint &&
+                  moment(dataBill.ExpireDateForPoint).isValid()
+                    ? moment(dataBill.ExpireDateForPoint).format("DD-MM-YYYY")
+                    : "-"}
                 </span>
               </div>
             </>

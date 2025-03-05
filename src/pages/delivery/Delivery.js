@@ -31,7 +31,7 @@ export default function DeliveryList() {
   const [showDelete, setShowDelete] = useState(false);
 
   const { profile } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const [delivery, setDelivery] = useState([]);
   const [editName, setEditName] = useState(null);
   const [alertMessage, setAlertMessage] = useState("");
@@ -204,8 +204,12 @@ export default function DeliveryList() {
                 }}
               >
                 <span>{t("list_delivery")}</span>
-                <Button variant="dark" onClick={handleShowAdd}>
-                  <MdAssignmentAdd /> {t("add")}
+                <Button
+                  variant="dark"
+                  onClick={handleShowAdd}
+                  style={{ display: "flex", alignItems: "center" }}
+                >
+                  <MdAssignmentAdd style={{ marginRight: "5px" }} /> {t("add")}
                 </Button>
               </Card.Header>
               <Card.Body style={{ overflowX: "auto" }}>
@@ -312,7 +316,7 @@ export default function DeliveryList() {
                     type="submit"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "ກຳລັງບັນທຶກ..." : "ບັນທຶກ"}
+                    {isSubmitting ? "ກຳລັງບັນທຶກ..." : t("save")}
                   </Button>
                 </Modal.Footer>
               </form>
@@ -384,7 +388,7 @@ export default function DeliveryList() {
                     type="submit"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "ກຳລັງບັນທຶກ..." : "ບັນທຶກ"}
+                    {isSubmitting ? "ກຳລັງບັນທຶກ..." : t("save")}
                   </Button>
                 </Modal.Footer>
               </form>
@@ -400,17 +404,30 @@ export default function DeliveryList() {
           keyboard={false}
         >
           <Modal.Header closeButton>
-            <Modal.Title>{"Delivery"}</Modal.Title>
+            <Modal.Title>{t("delete_delivery")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <p>ທ່ານຢືນຢັນບໍ່ວ່າຈະລຶບ {editName?.name} ອອກຈາກລະບົບ?</p>
+            <div
+              style={{
+                textAlign: "center",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <div>{t("are_you_want_to_delete")}</div>
+              <div
+                style={{ color: "red", margin: "0 5px" }}
+              >{`${editName?.name}`}</div>
+              <div>{t("from_system")}</div>
+            </div>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseDelete}>
               {t("cancel")}
             </Button>
             <Button variant="danger" onClick={_confirmDelete}>
-              {"ລຶບ"}
+              {t("delete")}
             </Button>
           </Modal.Footer>
         </Modal>

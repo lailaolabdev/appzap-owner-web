@@ -9,7 +9,7 @@ import Axios from "axios";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
 import { Breadcrumb, Tab, Tabs } from "react-bootstrap";
 import Box from "../../components/Box";
-import { MdAssignmentAdd } from "react-icons/md";
+import { MdAssignmentAdd, MdSettings } from "react-icons/md";
 import { BsImages } from "react-icons/bs";
 import Loading from "../../components/Loading";
 import ImageSlider from "../../components/ImageSlider";
@@ -58,9 +58,8 @@ export default function UserPage() {
   const { profile } = useStore();
 
   // store
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const appzapStaff = "APPZAP_DEALER";
-
 
   // useEffect
   useEffect(() => {
@@ -121,7 +120,7 @@ export default function UserPage() {
       >
         <Breadcrumb>
           <Breadcrumb.Item>{t("staff")}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t("staff_report")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("staff_setting")}</Breadcrumb.Item>
         </Breadcrumb>
 
         {/* <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
@@ -145,17 +144,17 @@ export default function UserPage() {
               padding: 10,
             }}
           >
-            <span className='flex items-center gap-1'>
+            <span className="flex items-center gap-1">
               <IoPeople /> {t("staff_report")}
             </span>
-            <div>
+            <div style={{ display: "flex", alignItems: "center" }}>
               <Button
                 variant="dark"
                 bg="dark"
                 onClick={() => setPopup({ PopUpCreateUser: true })}
-                className='flex items-center gap-1'
+                className="flex items-center gap-1"
               >
-               {t("add_list")}
+                {t("add_list")}
               </Button>
             </div>
           </Card.Header>
@@ -258,7 +257,9 @@ export default function UserPage() {
                       <div>{e?.phone}</div>
                     </td>
                     <td style={{ textAlign: "start" }}>
-                      {e?.role === appzapStaff ? convertRole(e?.permissionRoleId?.roleName) || "---" : convertRole(e?.role)}
+                      {e?.role === appzapStaff
+                        ? convertRole(e?.permissionRoleId?.roleName) || "---"
+                        : convertRole(e?.role)}
                     </td>
                     <td style={{ textAlign: "start" }}>
                       <div style={{ display: "flex", gap: 10 }}>
@@ -277,7 +278,7 @@ export default function UserPage() {
                             setPopup({ PopUpConfirmDeletion: true });
                           }}
                         >
-                          {t("delete")}
+                          {t("remove")}
                         </Button>
                       </div>
                     </td>

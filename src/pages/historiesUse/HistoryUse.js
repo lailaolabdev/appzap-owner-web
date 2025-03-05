@@ -23,23 +23,33 @@ import { useParams } from "react-router-dom";
 import LoadingAppzap from "../../components/LoadingAppzap";
 import PaginationAppzap from "../../constants/PaginationAppzap";
 import { useTranslation } from "react-i18next";
-import { BsBank2 } from "react-icons/bs";
+import { BsBank2, BsFillCalendarWeekFill } from "react-icons/bs";
 import { useStoreStore } from "../../zustand/storeStore";
 import HistoryBankTransferClaim from "./HistoryBankTransferClaim";
+import PopUpSetStartAndEndDateDebt from "../../components/popup/PopUpSetStartAndEndDateDebt";
+import PopupOrderHistoryExport from "../../components/popup/report/PopupOrderHistoryExport";
 
 export default function HistoryUse() {
   const { t } = useTranslation();
   const params = useParams();
   const [data, setData] = useState([]);
   const [totalLogs, setTotalLogs] = useState(0);
-  const [filtterModele, setFiltterModele] = useState("checkBill");
+  const [filtterModele, setFiltterModele] = useState("bankTransfer");
   const [selectedCurrency, setSelectedCurrency] = useState("LAK");
   const [isLoading, setIsLoading] = useState(false);
   const [show, setShow] = useState(false);
   const [dataModal, setDataModal] = useState([]);
   const rowsPerPage = 100;
   const [page, setPage] = useState(0);
+  const [orderHistory, setOrderHistory] = useState(true);
   const pageAll = totalLogs > 0 ? Math.ceil(totalLogs / rowsPerPage) : 1;
+  const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
+  const [startTime, setStartTime] = useState("00:00:00");
+  const [endTime, setEndTime] = useState("23:59:59");
+  const [popup, setPopup] = useState();
+  const [statusOderHis, setStatusOrderHis] = useState("")
+  const [filteredData, setFilteredData] = useState([]);
 
   const { storeDetail } = useStoreStore();
 
@@ -72,7 +82,13 @@ export default function HistoryUse() {
 
   useEffect(() => {
     _getdataHistories();
-  }, [page, filtterModele]);
+  }, [page, filtterModele, startDate, endDate, startTime, endTime]);
+
+  const findBy = `&startDate=${encodeURIComponent(
+    startDate
+  )}&endDate=${encodeURIComponent(endDate)}&endTime=${encodeURIComponent(
+    endTime
+  )}&startTime=${encodeURIComponent(startTime)}`;
 
   const _getdataHistories = async () => {
     try {
@@ -85,19 +101,19 @@ export default function HistoryUse() {
       } else if (filtterModele === "billPayBefore") {
         apiUrl =
           END_POINT_SEVER +
-          `/v3/bills-split/skip/${
-            page * rowsPerPage
+          `/v3/bills-split/skip/${page * rowsPerPage
           }/limit/${rowsPerPage}?storeId=${params?.id}`;
       } else if (filtterModele === "bankTransfer") {
-        apiUrl = `${END_POINT_SEVER}/v4/pos/get-call-to-checkouts/skip/${
-          page * rowsPerPage
-        }/limit/${rowsPerPage}?storeId=${
-          params?.id
-        }&paymentMethod=BANK_TRANSFER`;
+        apiUrl = `${END_POINT_SEVER}/v4/pos/get-call-to-checkouts/skip/${page * rowsPerPage
+          }/limit/${rowsPerPage}?storeId=${params?.id
+          }&paymentMethod=BANK_TRANSFER`;
+      } else if (filtterModele === "order_history") {
+        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${page * rowsPerPage
+          }/limit/${rowsPerPage}?storeId=${params?.id
+          }&status=${filtterModele}${findBy}`;
       } else {
-        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${
-          page * rowsPerPage
-        }/limit/${rowsPerPage}?storeId=${params?.id}&modele=${filtterModele}`;
+        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${page * rowsPerPage
+          }/limit/${rowsPerPage}?storeId=${params?.id}&modele=${filtterModele}${findBy}`;
       }
 
       const res = await axios.get(apiUrl, { headers });
@@ -152,6 +168,32 @@ export default function HistoryUse() {
     setDataModal(item);
   };
 
+
+  const filterOrderHistory = (data, filterStatus) => {
+    const filteredData = data?.filter(item => {
+      return item?.eventDetail?.includes(filterStatus);
+    });
+
+    return filteredData;
+  };
+
+  const handleFilterClick = (status) => {
+    setStatusOrderHis(status);
+    const filteredResults = filterOrderHistory(data, status);
+    setFilteredData(filteredResults); // Save filtered results to state
+  };
+
+  useEffect(() => {
+    if (statusOderHis) {
+      // If there's an active filter, apply it to the new data
+      setFilteredData(filterOrderHistory(data, statusOderHis));
+    } else {
+      // Otherwise, just use the full data set
+      setFilteredData(data);
+    }
+  }, [data, statusOderHis]);
+
+
   return (
     <div
       style={{
@@ -164,7 +206,7 @@ export default function HistoryUse() {
       <Nav
         fill
         variant="tabs"
-        defaultActiveKey="/checkBill"
+        defaultActiveKey="/bankTransfer"
         style={{
           fontWeight: "bold",
           backgroundColor: "#f8f8f8",
@@ -176,6 +218,26 @@ export default function HistoryUse() {
       >
         <Nav.Item>
           <Nav.Link
+            eventKey="/bankTransfer"
+            style={{
+              color: "#FB6E3B",
+              border: "none",
+              height: 60,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onClick={() => {
+              setFiltterModele("bankTransfer");
+              setOrderHistory(true);
+            }}
+          >
+            <BsBank2 /> <div style={{ width: 8 }}></div>
+            {t("bank_transfer_history")}
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
             eventKey="/checkBill"
             style={{
               color: "#FB6E3B",
@@ -185,7 +247,10 @@ export default function HistoryUse() {
               justifyContent: "center",
               alignItems: "center",
             }}
-            onClick={() => setFiltterModele("checkBill")}
+            onClick={() => {
+              setFiltterModele("checkBill");
+              setOrderHistory(true);
+            }}
           >
             <FontAwesomeIcon icon={faTable} /> <div style={{ width: 8 }}></div>{" "}
             {t("calculate_money")}
@@ -202,7 +267,12 @@ export default function HistoryUse() {
               justifyContent: "center",
               alignItems: "center",
             }}
-            onClick={() => setFiltterModele("canceled")}
+            onClick={() => {
+              setFiltterModele("canceled");
+              setOrderHistory(false);
+              setStatusOrderHis(""); // Clear any active filter
+              setFilteredData(data);
+            }}
           >
             <FontAwesomeIcon icon={faCoins} /> <div style={{ width: 8 }}></div>{" "}
             {t("order_history")}
@@ -219,7 +289,10 @@ export default function HistoryUse() {
               justifyContent: "center",
               alignItems: "center",
             }}
-            onClick={() => setFiltterModele("print")}
+            onClick={() => {
+              setFiltterModele("print");
+              setOrderHistory(true);
+            }}
           >
             <FontAwesomeIcon icon={faPrint} /> <div style={{ width: 8 }}></div>{" "}
             {t("printer")}
@@ -236,7 +309,10 @@ export default function HistoryUse() {
               justifyContent: "center",
               alignItems: "center",
             }}
-            onClick={() => setFiltterModele("resetBill")}
+            onClick={() => {
+              setFiltterModele("resetBill");
+              setOrderHistory(true);
+            }}
           >
             <FontAwesomeIcon icon={faCertificate} />{" "}
             <div style={{ width: 8 }}></div> {t("edit_bill")}
@@ -255,7 +331,10 @@ export default function HistoryUse() {
                   justifyContent: "center",
                   alignItems: "center",
                 }}
-                onClick={() => setFiltterModele("transferTable")}
+                onClick={() => {
+                  setFiltterModele("transferTable");
+                  setOrderHistory(true);
+                }}
               >
                 <FontAwesomeIcon icon={faPeopleArrows} />{" "}
                 <div style={{ width: 8 }}></div> {t("change_combine_table")}
@@ -273,7 +352,10 @@ export default function HistoryUse() {
                   justifyContent: "center",
                   alignItems: "center",
                 }}
-                onClick={() => setFiltterModele("historyServiceChange")}
+                onClick={() => {
+                  setFiltterModele("historyServiceChange");
+                  setOrderHistory(true);
+                }}
               >
                 <FontAwesomeIcon icon={faHistory} />{" "}
                 <div style={{ width: 8 }}></div> {t("history service change")}
@@ -290,7 +372,10 @@ export default function HistoryUse() {
                   justifyContent: "center",
                   alignItems: "center",
                 }}
-                onClick={() => setFiltterModele("billPayBefore")}
+                onClick={() => {
+                  setFiltterModele("billPayBefore");
+                  setOrderHistory(true);
+                }}
               >
                 <FontAwesomeIcon icon={faListAlt}></FontAwesomeIcon>{" "}
                 <div style={{ width: 8 }}></div>
@@ -299,23 +384,6 @@ export default function HistoryUse() {
             </Nav.Item>
           </>
         )}
-        <Nav.Item>
-          <Nav.Link
-            eventKey="/bankTransfer"
-            style={{
-              color: "#FB6E3B",
-              border: "none",
-              height: 60,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onClick={() => setFiltterModele("bankTransfer")}
-          >
-            <BsBank2 /> <div style={{ width: 8 }}></div>
-            {t("bank_transfer_history")}
-          </Nav.Link>
-        </Nav.Item>
       </Nav>
       {isLoading ? (
         <LoadingAppzap />
@@ -392,15 +460,15 @@ export default function HistoryUse() {
                       <td>
                         {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                           ? new Intl.NumberFormat("ja-JP", {
-                              currency: "JPY",
-                            }).format(_countAmount(item?.orderId))
+                            currency: "JPY",
+                          }).format(_countAmount(item?.orderId))
                           : new Intl.NumberFormat("ja-JP", {
-                              currency: "JPY",
-                            }).format(
-                              item?.payAmount +
-                                item?.taxAmount +
-                                item?.serviceChargeAmount
-                            )}{" "}
+                            currency: "JPY",
+                          }).format(
+                            item?.payAmount +
+                            item?.taxAmount +
+                            item?.serviceChargeAmount
+                          )}{" "}
                         {selectedCurrency}
                       </td>
                       <td
@@ -414,8 +482,8 @@ export default function HistoryUse() {
                         {item?.paymentMethod === "CASH"
                           ? t("payBycash")
                           : item?.paymentMethod === "TRANSFER"
-                          ? t("transferPayment")
-                          : t("transfercash")}
+                            ? t("transferPayment")
+                            : t("transfercash")}
                       </td>
                       <td>
                         {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
@@ -504,94 +572,157 @@ export default function HistoryUse() {
               </table> */}
             </div>
           ) : (
-            <table className="table table-hover">
-              <thead className="thead-light">
-                <tr>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
-                    {t("no")}
-                  </th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
-                    {filtterModele === "historyServiceChange"
-                      ? t("surnameAndLastName")
-                      : t("manager_name")}
-                  </th>
-                  {/* <th scope="col">ສະຖານະ</th> */}
-                  <th style={{ textWrap: "nowrap" }} scope="col">
-                    {filtterModele === "historyServiceChange"
-                      ? `${t("service_charge")} (${serviceChargePercent}%)`
-                      : t("detail")}
-                  </th>
-                  <th style={{ textWrap: "nowrap" }} scope="col">
-                    {filtterModele === "historyServiceChange"
-                      ? "ຍອດບິນ"
-                      : t("cause")}
-                  </th>
-                  {filtterModele === "historyServiceChange" && (
-                    <th>vat ({taxPercent}%)</th>
-                  )}
-                  {filtterModele === "historyServiceChange" && (
-                    <th>{t("total_Amount_of_Money")}</th>
-                  )}
-
-                  <th style={{ textWrap: "nowrap" }} scope="col">
-                    {t("date_time")}
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {data?.map((item, index) => {
-                  return (
-                    <tr key={index}>
-                      <td style={{ textWrap: "nowrap" }}>
-                        {page * rowsPerPage + index + 1}
-                      </td>
-                      <td style={{ textWrap: "nowrap" }}>
-                        {filtterModele === "historyServiceChange"
-                          ? `${item.firstName} ${item.lastName}`
-                          : item?.user}
-                      </td>
-                      {/* <td
-                      style={{
-                        color: item?.event === "INFO" ? "green" : "red",
+            <div>
+              {!orderHistory && (
+                <div className=" flex justify-between items-center space-x-2 p-3">
+                  <Button
+                    variant="outline-primary"
+                    size="small"
+                    style={{ display: "flex", gap: 10, alignItems: "center" }}
+                    onClick={() => setPopup({ popupfiltter: true })}
+                  >
+                    <BsFillCalendarWeekFill />
+                    <div>
+                      {startDate} {startTime}
+                    </div>{" "}
+                    ~{" "}
+                    <div>
+                      {endDate} {endTime}
+                    </div>
+                  </Button>
+                  <div className="flex items-center">
+                    <select
+                      value={statusOderHis}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === "") {
+                          setFiltterModele("canceled");
+                          setStatusOrderHis("");
+                          setFilteredData(data);
+                        } else {
+                          handleFilterClick(value);
+                        }
                       }}
+                      className="p-2 border rounded-md bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-400"
                     >
-                      {item?.event}
-                    </td> */}
-                      <td style={{ textWrap: "nowrap" }}>
-                        {filtterModele === "historyServiceChange"
-                          ? ` ${formatNumber(item.serviceChangeAmount)} ກີບ`
-                          : `${item?.eventDetail}`}
-                      </td>
-                      <td style={{ textWrap: "nowrap" }}>
-                        {filtterModele === "historyServiceChange"
-                          ? ` ${formatNumber(item.total)} ກີບ`
-                          : item?.reason === null ||
-                            item?.reason === "" ||
-                            item?.reason === undefined ||
-                            item?.reason === "undefined" ||
-                            item?.reason === "null"
-                          ? "-"
-                          : item?.reason}
-                      </td>
-                      {filtterModele === "historyServiceChange" && (
-                        <td>
-                          {formatNumber((item.taxPercent * item.total) / 100)}{" "}
-                          ກີບ
-                        </td>
-                      )}
-                      {filtterModele === "historyServiceChange" && (
-                        <td>{formatNumber(item.totalMustPay)} ກີບ</td>
-                      )}
+                      <option selected value="">
+                        {t("all")}
+                      </option>
+                      <option value="ເສີບອາຫານສຳເລັດ">
+                        {t("served")}
+                      </option>
+                      <option value="ສົ່ງໄປຄົວສຳເລັດແລ້ວ">
+                        {t("cooking")}
+                      </option>
+                      <option value="ຍົກເລີກອາຫານສຳເລັດແລ້ວ">
+                        {t("cancel")}
+                      </option>
+                    </select>
+                    <button
+                      onClick={() => setPopup({ PopupOrderHistoryExport: true })}
+                      className="border bg-color-app rounded-md px-5 ml-5 p-1 text-white"
+                    >
+                      Export
+                    </button>
+                  </div>
+                </div>
+              )}
+              <table className="table table-hover">
+                <thead className="thead-light">
+                  <tr>
+                    <th style={{ textWrap: "nowrap" }} scope="col">
+                      {t("no")}
+                    </th>
+                    <th style={{ textWrap: "nowrap" }} scope="col">
+                      {filtterModele === "historyServiceChange"
+                        ? t("surnameAndLastName")
+                        : t("manager_name")}
+                    </th>
+                    {/* <th scope="col">ສະຖານະ</th> */}
+                    <th style={{ textWrap: "nowrap" }} scope="col">
+                      {filtterModele === "historyServiceChange"
+                        ? `${t("service_charge")} (${serviceChargePercent}%)`
+                        : t("detail")}
+                    </th>
+                    <th style={{ textWrap: "nowrap" }} scope="col">
+                      {filtterModele === "historyServiceChange"
+                        ? "ຍອດບິນ"
+                        : t("cause")}
+                    </th>
+                    {filtterModele === "historyServiceChange" && (
+                      <th>vat ({taxPercent}%)</th>
+                    )}
+                    {filtterModele === "historyServiceChange" && (
+                      <th>{t("total_Amount_of_Money")}</th>
+                    )}
 
-                      <td style={{ textWrap: "nowrap" }}>
-                        {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                    <th style={{ textWrap: "nowrap" }} scope="col">
+                      {t("date_time")}
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {(statusOderHis ? filteredData : data)?.map((item, index) => {
+                    return (
+                      <tr key={index}>
+                        <td style={{ textWrap: "nowrap" }}>
+                          {page * rowsPerPage + index + 1}
+                        </td>
+                        <td style={{ textWrap: "nowrap" }}>
+                          {filtterModele === "historyServiceChange"
+                            ? `${item.firstName} ${item.lastName}`
+                            : item?.user}
+                        </td>
+                        {/* <td
+        style={{
+          color: item?.event === "INFO" ? "green" : "red",
+        }}
+      >
+        {item?.event}
+      </td> */}
+                        <td
+                          style={{
+                            maxWidth: "35%",
+                            wordBreak: "break-word",
+                            whiteSpace: "normal",
+                          }}
+                        >
+                          {filtterModele === "historyServiceChange"
+                            ? ` ${formatNumber(item.serviceChangeAmount)} ກີບ`
+                            : `${item?.eventDetail}`}
+                        </td>
+
+                        <td style={{ textWrap: "nowrap" }}>
+                          {filtterModele === "historyServiceChange"
+                            ? ` ${formatNumber(item.total)} ກີບ`
+                            : item?.reason === null ||
+                              item?.reason === "" ||
+                              item?.reason === undefined ||
+                              item?.reason === "undefined" ||
+                              item?.reason === "null"
+                              ? "-"
+                              : item?.reason}
+                        </td>
+                        {filtterModele === "historyServiceChange" && (
+                          <td>
+                            {formatNumber((item.taxPercent * item.total) / 100)}{" "}
+                            ກີບ
+                          </td>
+                        )}
+                        {filtterModele === "historyServiceChange" && (
+                          <td>{formatNumber(item.totalMustPay)} ກີບ</td>
+                        )}
+
+                        <td style={{ textWrap: "nowrap" }}>
+                          {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           )}
           <PaginationAppzap
             rowsPerPage={rowsPerPage}
@@ -630,8 +761,8 @@ export default function HistoryUse() {
                   <td>
                     {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                       item?.totalPrice ||
-                        (item?.price + (item?.totalOptionPrice || 0)) *
-                          item?.quantity
+                      (item?.price + (item?.totalOptionPrice || 0)) *
+                      item?.quantity
                     )}
                   </td>
                   <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
@@ -690,16 +821,16 @@ export default function HistoryUse() {
                           item?.status === "WAITING"
                             ? "#2d00a8"
                             : item?.status === "DOING"
-                            ? "#c48a02"
-                            : item?.status === "SERVED"
-                            ? "green"
-                            : item?.status === "PAID"
-                            ? COLOR_APP
-                            : item?.status === "CART"
-                            ? "#00496e"
-                            : item?.status === "FEEDBACK"
-                            ? "#00496e"
-                            : "#bd0d00",
+                              ? "#c48a02"
+                              : item?.status === "SERVED"
+                                ? "green"
+                                : item?.status === "PAID"
+                                  ? COLOR_APP
+                                  : item?.status === "CART"
+                                    ? "#00496e"
+                                    : item?.status === "FEEDBACK"
+                                      ? "#00496e"
+                                      : "#bd0d00",
                       }}
                     >
                       {orderStatus(item?.status)}
@@ -712,8 +843,8 @@ export default function HistoryUse() {
                         currency: "JPY",
                       }).format(
                         item?.totalPrice ??
-                          (item?.price + (item?.totalOptionPrice ?? 0)) *
-                            item?.quantity
+                        (item?.price + (item?.totalOptionPrice ?? 0)) *
+                        item?.quantity
                       )}
                     </td>
                     <td>
@@ -735,6 +866,24 @@ export default function HistoryUse() {
           </Button>
         </Modal.Footer>
       </Modal>
+      <PopUpSetStartAndEndDateDebt
+        open={popup?.popupfiltter}
+        onClose={() => setPopup()}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        setStartTime={setStartTime}
+        startTime={startTime}
+        setEndDate={setEndDate}
+        setEndTime={setEndTime}
+        endTime={endTime}
+        endDate={endDate}
+      />
+      <PopupOrderHistoryExport
+        open={popup?.PopupOrderHistoryExport}
+        onClose={() => setPopup()}
+        data={statusOderHis ? filteredData : data}
+        filtterModele={filtterModele}
+      />
     </div>
   );
 }

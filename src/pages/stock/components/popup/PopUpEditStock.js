@@ -1,5 +1,5 @@
 import { React, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+// import { useForm } from "react-hook-form";
 import { Button, Form, Modal } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { updateStock } from "../../../../services/stocks";

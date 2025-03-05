@@ -92,7 +92,7 @@ export default function NavBar() {
     try {
       const { DATA } = await getLocalData();
       const _res = await axios.get(
-        `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?status=UNCLAIMED&storeId=${DATA?.storeId}`
+        `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${DATA?.storeId}&claimStatus=UNCLAIMED&paymentMethod=BANK_TRANSFER`
       );
       console.log("_res.data");
       console.log(_res.data);
@@ -130,7 +130,7 @@ export default function NavBar() {
           <div className="bg-gray-300 rounded-lg px-2 flex flex-col items-center">
             <p className="m-0 text-sm md:text-base">ຍອດເງິນ</p>
             <p className="m-0 text-lg md:text-lg font-bold">
-              {claimableAmount} ກີບ
+              {claimableAmount.toLocaleString()} ກີບ
             </p>
           </div>
         </div>
@@ -194,8 +194,14 @@ export default function NavBar() {
             </Dropdown.Toggle>
             <Dropdown.Menu className="dropdown-menu-right">
               <Dropdown.Item
-                style={{ color: "#909090" }}
+                style={{
+                  color: "#909090",
+                  textAlign: "center", // Center the text
+                  transition: "color 0.3s",
+                }}
                 onClick={() => _onLogout()}
+                onMouseEnter={(e) => (e.target.style.color = "red")} // Hover on mouse enter
+                onMouseLeave={(e) => (e.target.style.color = "#909090")} // Reset color on mouse leave
               >
                 {t("log_out")}
               </Dropdown.Item>

@@ -93,7 +93,6 @@ function AddOrder() {
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
 
-
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
     if (isPopup && inputRef.current) {
@@ -175,14 +174,21 @@ function AddOrder() {
   };
 
   const { printers, selectedTable, onSelectTable } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const [currency, setCurrency] = useState([]);
 
   const [search, setSearch] = useState("");
 
-  const { menus, menuCategories, getMenus, getMenuCategories, setMenus, setMenuCategories } = useMenuStore();
+  const {
+    menus,
+    menuCategories,
+    getMenus,
+    getMenuCategories,
+    setMenus,
+    setMenuCategories,
+  } = useMenuStore();
 
-  // Get Menus & Categories, and persist it in localstorage. 
+  // Get Menus & Categories, and persist it in localstorage.
   // Only no data in localstorage then fetch, if when to clear data just logout
   useEffect(() => {
     const fetchData = async () => {
@@ -205,7 +211,14 @@ function AddOrder() {
     };
 
     fetchData();
-  }, [menus, menuCategories, getMenus, getMenuCategories, setMenus, setMenuCategories]);
+  }, [
+    menus,
+    menuCategories,
+    getMenus,
+    getMenuCategories,
+    setMenus,
+    setMenuCategories,
+  ]);
 
   const afterSearch = _.filter(
     menus,
@@ -364,15 +377,12 @@ function AddOrder() {
     }, {});
   };
 
-
-
   useEffect(() => {
     // TODO: check selectTable
     if (!selectedTable) {
       navigate("/tables");
     }
   }, [selectedTable]);
-
 
   const handleAddOption = (menuId, option) => {
     console.log({ option });
@@ -586,7 +596,7 @@ function AddOrder() {
     try {
       const _storeId = storeDetail._id;
       const _billId = selectedTable?.billId;
-  
+
       if (!_billId) {
         Swal.fire({
           icon: "error",
@@ -597,12 +607,12 @@ function AddOrder() {
         setDisabledButton(false);
         return;
       }
-  
+
       const headers = {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
-  
+
       const _body = {
         orders: data,
         storeId: _storeId,
@@ -610,11 +620,15 @@ function AddOrder() {
         code: code,
         billId: _billId,
       };
-  
+
       const localZone = localStorage.getItem("selectedZone");
-  
-      const response = await axios.post(END_POINT_SEVER_TABLE_MENU + "/v3/admin/bill/create", _body, { headers });
-  
+
+      const response = await axios.post(
+        END_POINT_SEVER_TABLE_MENU + "/v3/admin/bill/create",
+        _body,
+        { headers }
+      );
+
       if (response?.data) {
         Swal.fire({
           icon: "success",
@@ -622,29 +636,45 @@ function AddOrder() {
           showConfirmButton: false,
           timer: 1800,
         });
-  
+
         if (isPrinted) {
           const selectedPrinterIds = selectedMenu.map((e) => e.printer);
           const pickedUpPrinters = printers.filter((printer) =>
             selectedPrinterIds.includes(printer._id)
           );
-  
-          const hasNoCut = pickedUpPrinters.some((printer) => printer.cutPaper === "not_cut");
-  
+
+          const hasNoCut = pickedUpPrinters.some(
+            (printer) => printer.cutPaper === "not_cut"
+          );
+
           if (hasNoCut) {
-            printItems(groupedItems, combinedBillRefs, printers, selectedTable).then(() => {
+            printItems(
+              groupedItems,
+              combinedBillRefs,
+              printers,
+              selectedTable
+            ).then(() => {
               onSelectTable(selectedTable);
-              navigate(`/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`, { state: { zoneId: localZone } });
+              navigate(
+                `/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`,
+                { state: { zoneId: localZone } }
+              );
             });
           } else {
             onPrintForCher().then(() => {
               onSelectTable(selectedTable);
-              navigate(`/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`, { state: { zoneId: localZone } });
+              navigate(
+                `/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`,
+                { state: { zoneId: localZone } }
+              );
             });
           }
         } else {
           onSelectTable(selectedTable);
-          navigate(`/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`, { state: { zoneId: localZone } });
+          navigate(
+            `/tables/pagenumber/1/tableid/${tableId}/${storeDetail?._id}`,
+            { state: { zoneId: localZone } }
+          );
         }
       }
     } catch (error) {
@@ -1241,7 +1271,7 @@ function AddOrder() {
           </Form.Group>
           <div className="mt-3">
             <strong>
-              ລາຄາລວມອ໋ອບຊັນ:{" "}
+              {t("total_price_with_options")}:{" "}
               {moneyCurrency(
                 calculateTotalPrice(selectedItem, selectedOptionsArray)
               )}{" "}
@@ -1251,8 +1281,8 @@ function AddOrder() {
           <Form.Group className="mt-3">
             <Form.Label>
               {selectedItem?.note === ""
-                ? "ຄອມເມັ້ນລົດຊາດອາຫານ"
-                : "ແກ້ໄຂຄອມເມັ້ນ"}
+                ? t("comment_taste")
+                : t("edit_comment")}
             </Form.Label>
             <Form.Control
               ref={selectedItem?.note === "" ? inputRef : null}
@@ -1260,7 +1290,7 @@ function AddOrder() {
               rows={3}
               value={addComments}
               onChange={(e) => setAddComments(e.target.value)}
-              placeholder="ປ້ອນຄຳອະທິບາຍ..."
+              placeholder={t("fill_desc")}
               className="w-100"
             />
           </Form.Group>

@@ -522,18 +522,17 @@ export default function ExpendList() {
               {endDate} {endTime}
             </div>
           </Button>
-          {profile?.data?.role === "APPZAP_ADMIN"
-            ? storeDetail?.isShift && (
-                <div className="flex gap-1 items-center">
-                  <Select
-                    placeholder={t("chose_shift")}
-                    className="w-36 border-orange-500"
-                    options={optionsData}
-                    onChange={handleSearchInput}
-                  />
-                </div>
-              )
-            : ""}
+          {profile?.data?.role === "APPZAP_ADMIN" && storeDetail?.isShift && (
+            <div className="flex items-center gap-2 whitespace-nowrap">
+              <Select
+                placeholder={t("chose_shift")}
+                className="min-w-[170px] w-full border-orange-500"
+                options={optionsData}
+                onChange={handleSearchInput}
+              />
+            </div>
+          )}
+
           <ButtonComponent
             title={t("daily_account")}
             icon={faPlusCircle}

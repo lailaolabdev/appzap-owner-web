@@ -78,7 +78,7 @@ export default function PopUpAddCategory({ onClose, data, open, callback }) {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.name}
-                  placeholder={t("stock_type_name")}
+                  placeholder={`${t("stock_type_name")}...`}
                 />
               </Form.Group>
               <div style={{ color: "red" }}>

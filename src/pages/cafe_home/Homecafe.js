@@ -388,100 +388,6 @@ function Homecafe() {
     }
   };
 
-  // const addToCart = async (menu) => {
-  //   const _menuOptions = _checkMenuOption(menu);
-  //   let updatedSelectedMenus = [...SelectedMenus];
-
-  //   if (_menuOptions.length > 0) {
-  //     setMenuOptions(_menuOptions);
-  //     setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
-  //     setSelectedOptionsArray({
-  //       [menu._id]: _menuOptions.map((option) => ({ ...option, quantity: 0 })),
-  //     });
-  //     handleShow();
-  //     return;
-  //   }
-
-  //   const finalPrice = calculateDiscount(menu);
-
-  //   const mainMenuData = {
-  //     id: menu._id,
-  //     name: menu.name,
-  //     quantity: 1,
-  //     price: finalPrice,
-  //     priceDiscount: Math.max(menu?.price - finalPrice, 0),
-  //     categoryId: menu?.categoryId,
-  //     printer: menu?.categoryId?.printer,
-  //     shiftId: shiftCurrent[0]?._id,
-  //     discount: menu.promotionId?.reduce(
-  //       (sum, promo) => sum + (promo.discountValue || 0),
-  //       0
-  //     ),
-  //     note: "",
-  //     isWeightMenu: menu?.isWeightMenu,
-  //   };
-
-  //   const existingMenuIndex = updatedSelectedMenus.findIndex(
-  //     (item) => item.id === menu._id
-  //   );
-  //   if (existingMenuIndex !== -1) {
-  //     updatedSelectedMenus[existingMenuIndex].quantity += 1;
-  //   } else {
-  //     updatedSelectedMenus.push(mainMenuData);
-  //   }
-
-  //   // ✅ Handle BUY_X_GET_Y promotions and ensure free items match their mainMenuId
-  //   // biome-ignore lint/complexity/noForEach: <explanation>
-  //   menu.promotionId?.forEach((promotion) => {
-  //     if (
-  //       promotion?.type === "BUY_X_GET_Y" &&
-  //       promotion.freeItems?.length > 0
-  //     ) {
-  //       // biome-ignore lint/complexity/noForEach: <explanation>
-  //       promotion.freeItems.forEach((freeItem) => {
-  //         const freeItemId = freeItem?._id?._id || freeItem?._id;
-  //         const freeItemName = freeItem?._id?.name || "Unknown";
-  //         const mainMenuId = freeItem?.mainMenuId?._id;
-
-  //         if (mainMenuId && mainMenuId !== menu._id) {
-  //           console.log(
-  //             `❌ Free item ${freeItemName} incorrect Main Menu ${menu.name}`
-  //           );
-  //           return;
-  //         }
-
-  //         const existingFreeItemIndex = updatedSelectedMenus.findIndex(
-  //           (item) =>
-  //             item.id === freeItemId &&
-  //             item.isFree &&
-  //             item.mainMenuId === menu._id
-  //         );
-
-  //         if (existingFreeItemIndex !== -1) {
-  //           updatedSelectedMenus[existingFreeItemIndex].quantity +=
-  //             promotion.getQuantity;
-  //         } else {
-  //           const freeItemData = {
-  //             id: freeItemId,
-  //             name: freeItemName,
-  //             price: 0,
-  //             quantity: 1,
-  //             categoryId: menu?.categoryId,
-  //             printer: menu?.categoryId?.printer,
-  //             shiftId: shiftCurrent[0]?._id,
-  //             isWeightMenu: menu?.isWeightMenu,
-  //             isFree: true,
-  //             mainMenuId: menu._id,
-  //           };
-  //           updatedSelectedMenus.push(freeItemData);
-  //         }
-  //       });
-  //     }
-  //   });
-
-  //   setSelectedMenus(updatedSelectedMenus);
-  // };
-
   const addToCart = async (menu) => {
     const _menuOptions = _checkMenuOption(menu);
     let updatedSelectedMenus = [...SelectedMenus];
@@ -538,13 +444,6 @@ function Homecafe() {
           const freeItemId = freeItem?._id?._id || freeItem?._id;
           const freeItemName = freeItem?._id?.name || "Unknown";
           const mainMenuId = freeItem?.mainMenuId?._id;
-
-          if (mainMenuId && mainMenuId !== menu._id) {
-            console.log(
-              `❌ Free item ${freeItemName} ไม่ตรงกับ Main Menu ${menu.name}`
-            );
-            return;
-          }
 
           const existingFreeItemIndex = updatedSelectedMenus.findIndex(
             (item) =>
@@ -637,132 +536,6 @@ function Homecafe() {
     return calculateDiscount(menu) + optionsTotalPrice;
   };
 
-  // const handleConfirmOptions = () => {
-  //   const filteredOptions =
-  //     selectedOptionsArray[selectedItem._id]?.filter(
-  //       (option) => option.quantity >= 1
-  //     ) || [];
-
-  //   const sortedFilteredOptionsForComparison = sortOptionsById([
-  //     ...filteredOptions,
-  //   ]);
-
-  //   const totalOptionPrice = filteredOptions.reduce(
-  //     (total, option) => total + option.price * option.quantity,
-  //     0
-  //   );
-
-  //   const finalPrice = calculateDiscount(selectedItem);
-
-  //   const mainMenuData = {
-  //     id: selectedItem._id,
-  //     name: selectedItem.name,
-  //     quantity: 1,
-  //     price: finalPrice,
-  //     priceDiscount: Math.max(selectedItem?.price - finalPrice, 0),
-  //     categoryId: selectedItem?.categoryId,
-  //     printer: selectedItem?.categoryId?.printer,
-  //     note: addComments,
-  //     menuOptions: selectedItem.menuOptions,
-  //     options: filteredOptions,
-  //     shiftId: shiftCurrent[0]?._id,
-  //     discount: selectedItem?.promotionId?.reduce(
-  //       (sum, promo) => sum + (promo.discountValue || 0),
-  //       0
-  //     ),
-  //     totalOptionPrice: totalOptionPrice,
-  //     totalPrice: finalPrice + totalOptionPrice,
-  //     isWeightMenu: selectedItem?.isWeightMenu,
-  //   };
-
-  //   setSelectedMenu((prevMenu) => {
-  //     let updatedMenu = [...prevMenu];
-
-  //     const existingMenuIndex = updatedMenu.findIndex((item) => {
-  //       const sortedItemOptionsForComparison = item.options
-  //         ? sortOptionsById([...item.options])
-  //         : [];
-  //       return (
-  //         item.id === selectedItem._id &&
-  //         JSON.stringify(sortedItemOptionsForComparison) ===
-  //           JSON.stringify(sortedFilteredOptionsForComparison)
-  //       );
-  //     });
-
-  //     if (existingMenuIndex !== -1) {
-  //       updatedMenu[existingMenuIndex].quantity += 1;
-  //       updatedMenu[existingMenuIndex].options = filteredOptions;
-  //       updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
-  //       updatedMenu[existingMenuIndex].totalPrice =
-  //         updatedMenu[existingMenuIndex].price *
-  //           updatedMenu[existingMenuIndex].quantity +
-  //         totalOptionPrice;
-
-  //       console.log(
-  //         "🆙 Updated Existing Menu:",
-  //         updatedMenu[existingMenuIndex]
-  //       );
-  //     } else {
-  //       updatedMenu.push(mainMenuData);
-  //     }
-
-  //     if (selectedItem.promotionId?.length > 0) {
-  //       // biome-ignore lint/complexity/noForEach: <explanation>
-  //       selectedItem.promotionId.forEach((promotion) => {
-  //         if (
-  //           promotion.type === "BUY_X_GET_Y" &&
-  //           promotion.freeItems?.length > 0
-  //         ) {
-  //           // biome-ignore lint/complexity/noForEach: <explanation>
-  //           promotion.freeItems.forEach((freeItem) => {
-  //             const freeItemId = freeItem?._id?._id || freeItem?._id;
-  //             const freeItemName = freeItem?._id?.name || "Unknown";
-  //             const mainMenuId = freeItem?.mainMenuId?._id;
-
-  //             if (mainMenuId && mainMenuId !== selectedItem._id) {
-  //               console.log(
-  //                 `❌ Free item ${freeItemName} incorrect Main Menu ${selectedItem.name}`
-  //               );
-  //               return;
-  //             }
-
-  //             const existingFreeItemIndex = updatedMenu.findIndex(
-  //               (item) =>
-  //                 item.id === freeItemId &&
-  //                 item.isFree &&
-  //                 item.mainMenuId === selectedItem._id
-  //             );
-
-  //             if (existingFreeItemIndex !== -1) {
-  //               updatedMenu[existingFreeItemIndex].quantity +=
-  //                 promotion.getQuantity;
-  //             } else {
-  //               updatedMenu.push({
-  //                 id: freeItemId,
-  //                 name: freeItemName,
-  //                 price: 0,
-  //                 quantity: 1,
-  //                 categoryId: selectedItem?.categoryId,
-  //                 printer: selectedItem?.categoryId?.printer,
-  //                 shiftId: shiftCurrent[0]?._id,
-  //                 isWeightMenu: selectedItem?.isWeightMenu,
-  //                 isFree: true,
-  //                 mainMenuId: selectedItem._id,
-  //               });
-  //             }
-  //           });
-  //         }
-  //       });
-  //     }
-
-  //     return updatedMenu;
-  //   });
-
-  //   handleClose();
-  //   setAddComments("");
-  //   setEditComments("");
-  // };
-
   const handleConfirmOptions = () => {
     const filteredOptions =
       selectedOptionsArray[selectedItem._id]?.filter(
@@ -805,7 +578,7 @@ function Homecafe() {
       isWeightMenu: selectedItem?.isWeightMenu,
     };
 
-    setSelectedMenu((prevMenu) => {
+    setSelectedMenus((prevMenu) => {
       let updatedMenu = [...prevMenu];
 
       const existingMenuIndex = updatedMenu.findIndex((item) => {
@@ -827,11 +600,6 @@ function Homecafe() {
           updatedMenu[existingMenuIndex].price *
             updatedMenu[existingMenuIndex].quantity +
           totalOptionPrice;
-
-        console.log(
-          "🆙 Updated Existing Menu:",
-          updatedMenu[existingMenuIndex]
-        );
       } else {
         updatedMenu.push(mainMenuData);
       }
@@ -847,13 +615,6 @@ function Homecafe() {
             const freeItemId = freeItem?._id?._id || freeItem?._id;
             const freeItemName = freeItem?._id?.name || "Unknown";
             const mainMenuId = freeItem?.mainMenuId?._id;
-
-            if (!mainMenuId || mainMenuId !== selectedItem._id) {
-              console.log(
-                `❌ Free item ${freeItemName}  Main Menu ${selectedItem.name}`
-              );
-              return;
-            }
 
             const existingFreeItemIndex = updatedMenu.findIndex(
               (item) =>
@@ -1112,7 +873,7 @@ function Homecafe() {
 
         // Render "Queue no" at the top and center it
         context.textAlign = "center"; // Center align the text
-        context.fillText(`Queue No ${bill}`, width / 2, yPosition);
+        context.fillText(`queue no ${bill}`, width / 2, yPosition);
         yPosition += 40; // Add some space after "Queue no"
         // Render data.name below "Queue no"
         context.textAlign = "left"; // Reset alignment to left for other text
@@ -1232,7 +993,7 @@ function Homecafe() {
         context.textAlign = "center";
 
         const dataUrl = canvas.toDataURL("image/png");
-        console.log("dataUrl", dataUrl);
+
         const printer = printers.find((e) => e?._id === data?.printer);
         if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
       }
@@ -1325,8 +1086,6 @@ function Homecafe() {
     }
   };
 
-  // console.log("bill80Ref CaFe",bill80Ref)
-
   const billForCherCancel80 = useRef([]);
 
   if (billForCherCancel80.current.length !== arrLength) {
@@ -1346,10 +1105,10 @@ function Homecafe() {
     await _createHistoriesPrinter(_dataBill);
 
     const orderSelect = selectedMenu?.filter((e) => e);
-    console.log("ORDER", orderSelect);
+
     let _index = 0;
     const printDate = [...billForCherCancel80.current];
-    console.log("printDate", printDate);
+
     let dataUrls = [];
     for (const _ref of printDate) {
       if (_ref) {
@@ -1536,48 +1295,6 @@ function Homecafe() {
     setEditingRowId(null); // Exit editing mode
   };
 
-  // const calculateDiscount = (menu) => {
-  //   if (
-  //     !menu ||
-  //     !menu.price ||
-  //     !Array.isArray(menu.promotionId) ||
-  //     menu.promotionId.length === 0
-  //   ) {
-  //     return menu?.price || 0;
-  //   }
-
-  //   let finalPrice = menu.price;
-
-  //   // biome-ignore lint/complexity/noForEach: <explanation>
-  //   menu.promotionId.forEach((promotion) => {
-  //     if (
-  //       !promotion ||
-  //       !promotion.discountType ||
-  //       promotion.discountValue == null
-  //     ) {
-  //       console.error("Invalid promotion data", promotion);
-  //       return;
-  //     }
-
-  //     let discountAmount = 0;
-
-  //     if (promotion.discountType === "PERCENTAGE") {
-  //       if (promotion.discountValue < 0 || promotion.discountValue > 100) {
-  //         console.warn("Invalid discount percentage:", promotion.discountValue);
-  //         return;
-  //       }
-  //       discountAmount = (finalPrice * promotion.discountValue) / 100;
-  //     } else if (promotion.discountType === "FIXED_AMOUNT") {
-  //       discountAmount = promotion.discountValue;
-  //     }
-
-  //     // Apply the discount
-  //     finalPrice = Math.max(finalPrice - discountAmount, 0);
-  //   });
-
-  //   return finalPrice;
-  // };
-
   const calculateDiscount = (menu) => {
     if (
       !menu ||
@@ -1722,7 +1439,7 @@ function Homecafe() {
                       <div className="relative w-full pt-[75%] overflow-hidden">
                         <img
                           src={
-                            data?.images[0]
+                            data?.images?.length > 0
                               ? URL_PHOTO_AW3 + data?.images[0]
                               : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
                           }
@@ -1835,7 +1552,9 @@ function Homecafe() {
                                       <div className="flex justify-between items-center">
                                         <>
                                           <span className="text-[14px] text-gray-500 line-through text-end">
-                                            {moneyCurrency(data?.price)}{" "}
+                                            {moneyCurrency(
+                                              matchRoundNumber(data?.price)
+                                            )}{" "}
                                             {storeDetail?.firstCurrency}
                                           </span>
                                           <span className="flex flex-col text-center font-bold text-red-500 text-[12px] ">
@@ -2036,11 +1755,7 @@ function Homecafe() {
                               </td>
                               <td>
                                 <p>
-                                  {moneyCurrency(
-                                    itemPrice > 0
-                                      ? matchRoundNumber(itemPrice)
-                                      : 0
-                                  )}
+                                  {moneyCurrency(matchRoundNumber(itemPrice))}
                                 </p>
                               </td>
 
@@ -2353,11 +2068,7 @@ function Homecafe() {
 
                             <td>
                               <p>
-                                {moneyCurrency(
-                                  itemPrice > 0
-                                    ? matchRoundNumber(itemPrice)
-                                    : 0
-                                )}
+                                {moneyCurrency(matchRoundNumber(itemPrice))}
                               </p>
                             </td>
 
@@ -2545,7 +2256,7 @@ function Homecafe() {
           </Form.Group>
           <div className="mt-3">
             <strong>
-              ລາຄາລວມອ໋ອບຊັນ:{" "}
+              {t("total_price_with_options")}:{" "}
               {moneyCurrency(
                 calculateTotalPrice(selectedItem, selectedOptionsArray)
               )}{" "}
@@ -2555,8 +2266,8 @@ function Homecafe() {
           <Form.Group className="mt-3">
             <Form.Label>
               {selectedItem?.note === ""
-                ? "ຄອມເມັ້ນລົດຊາດອາຫານ"
-                : "ແກ້ໄຂຄອມເມັ້ນ"}
+                ? t("comment_taste")
+                : t("edit_comment")}
             </Form.Label>
             <Form.Control
               ref={selectedItem?.note === "" ? inputRef : null}
@@ -2564,7 +2275,7 @@ function Homecafe() {
               rows={3}
               value={addComments}
               onChange={(e) => setAddComments(e.target.value)}
-              placeholder="ປ້ອນຄຳອະທິບາຍ..."
+              placeholder={t("fill_desc")}
               className="w-100"
             />
           </Form.Group>
@@ -2659,7 +2370,7 @@ function Homecafe() {
           dataBill={SelectedMenus}
           taxPercent={taxPercent}
           profile={profile}
-          meberData={dataBill}
+          memberData={dataBill}
         />
       </div>
       {SelectedMenus?.map((val, i) => {

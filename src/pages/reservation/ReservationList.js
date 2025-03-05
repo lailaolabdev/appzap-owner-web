@@ -241,7 +241,7 @@ export default function ReservationList() {
                 style={{ color: "white" }}
                 onClick={() => setPopup((prev) => ({ ...prev, add: true }))}
               >
-                <span className={fontMap[language]}>{t("addBooking")}</span>
+                <span className={fontMap[language]}>+ {t("addBooking")}</span>
               </ButtonPrimary>
             </div>
           </div>
@@ -288,7 +288,7 @@ export default function ReservationList() {
               </FormGroup>
             </div>
             <FormGroup>
-              <Form.Label className={fontMap[language]}>{"ໝາຍເຫດ"}</Form.Label>
+              <Form.Label className={fontMap[language]}>{t("note")}</Form.Label>
               {!isRemarkEditable ? (
                 <InputGroup>
                   <Form.Control

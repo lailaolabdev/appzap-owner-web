@@ -97,7 +97,7 @@ export default function PrinterList() {
                 <th>#</th>
                 <th>{t("printer_name")}</th>
                 <th>{t("size")}</th>
-                <th>IP</th>
+                <th>IP Address</th>
                 <th>{t("manage")}</th>
               </tr>
             </thead>

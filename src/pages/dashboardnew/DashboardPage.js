@@ -455,7 +455,7 @@ export default function DashboardPage() {
           </div>
           {profile?.data?.role === "APPZAP_ADMIN"
             ? storeDetail?.isShift && (
-                <div className="flex gap-1 items-center">
+                <div className="flex items-center gap-2 whitespace-nowrap">
                   {/* <span>{t("chose_shift")} : </span> */}
                   <Select
                     placeholder={t("chose_shift")}
@@ -584,39 +584,36 @@ export default function DashboardPage() {
               {t("promotion")}
             </Card.Header>
             <Card.Body>
-              {!storeDetail?.isStatusCafe && (
-                <>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
-                      gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
-                    }}
-                  >
-                    <div>{t("discount_bill")}</div>
-                    <div>{promotionReport?.[0]?.count || 0}</div>
+              <>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                >
+                  <div>{t("discount_bill")}</div>
+                  <div>{promotionReport?.[0]?.count || 0}</div>
+                </div>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                >
+                  <div>{t("all_discount")}</div>
+                  <div>
+                    {moneyCurrency(promotionReport?.[0]?.totalSaleAmount || 0)}
+                    {storeDetail?.firstCurrency}
                   </div>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
-                      gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
-                    }}
-                  >
-                    <div>{t("all_discount")}</div>
-                    <div>
-                      {moneyCurrency(
-                        promotionReport?.[0]?.totalSaleAmount || 0
-                      )}
-                      {storeDetail?.firstCurrency}
-                    </div>
-                  </div>
-                </>
-              )}
+                </div>
+              </>
+
               <div
                 style={{
                   display: "grid",

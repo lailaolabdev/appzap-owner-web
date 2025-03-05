@@ -1,7 +1,10 @@
 import React from "react";
 import { Spinner } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 export default function LoadingAppzap() {
+  const { t } = useTranslation();
+
   return (
     <div
       style={{
@@ -11,11 +14,11 @@ export default function LoadingAppzap() {
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
-        gap:3
+        gap: 3,
       }}
     >
       <Spinner variant="danger" animation="border" />
-      <p>ກຳລັງໂຫລດຂໍ້ມູນ...</p>
+      <p>{t("loading")}</p>
     </div>
   );
 }

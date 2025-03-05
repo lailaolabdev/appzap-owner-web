@@ -20,7 +20,7 @@ const PaginationComponent = () => {
     };
     return (
       <ReactPaginate
-        previousLabel={t("back")}
+        previousLabel={t("previous")}
         onPageChange={handlePageClick}
         breakLabel="..."
         pageRangeDisplayed={5}

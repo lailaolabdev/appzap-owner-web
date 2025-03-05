@@ -1159,7 +1159,7 @@ export default function MenuList() {
                   <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
-                    <label>ເມນູທີ່ຂາຍເປັນນ້ຳໜັກ</label>
+                    <label>{t("menu_sold_by_weight")}</label>
                     <input
                       type="checkbox"
                       id="isWeightMenu"
@@ -1516,7 +1516,7 @@ export default function MenuList() {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.detail}
-                      placeholder={t("note")}
+                      placeholder={`${t("note")}...`}
                     />
                   </Form.Group>
                 </Modal.Body>
@@ -1654,7 +1654,7 @@ export default function MenuList() {
                   <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
-                    <label>ເມນູທີ່ຂາຍເປັນນ້ຳໜັກ</label>
+                    <label>{t("menu_sold_by_weight")}</label>
                     <input
                       type="checkbox"
                       id="isWeightMenu"
@@ -2007,7 +2007,7 @@ export default function MenuList() {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.detail}
-                      placeholder={t("note")}
+                      placeholder={`${t("note")}...`}
                     />
                   </Form.Group>
                 </Modal.Body>

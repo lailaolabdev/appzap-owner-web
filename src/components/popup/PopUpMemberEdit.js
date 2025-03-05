@@ -1,10 +1,12 @@
 import { Modal, Button, Form, InputGroup } from "react-bootstrap";
+import moment from "moment";
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { useTranslation } from "react-i18next";
 import { updateMember } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 import DateTimeComponent from "../DateTimeComponent";
+import { useStoreStore } from "../../zustand/storeStore";
 
 export default function PopUpMemberEdit({
   open,
@@ -12,14 +14,10 @@ export default function PopUpMemberEdit({
   memberData,
   onUpdate,
 }) {
-  const [name, setName] = useState();
-  const [phone, setPhone] = useState();
-  const [point, setPoint] = useState();
-  const [bill, setBill] = useState();
-  const [note, setNote] = useState();
   const [birthday, setBirthday] = useState();
   const [formData, setFormData] = useState();
 
+  const { storeDetail } = useStoreStore();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -60,7 +58,7 @@ export default function PopUpMemberEdit({
       });
     } catch (error) {
       await Swal.fire({
-        icon: "success",
+        icon: "error",
         title: `${t("not_success")}`,
         showConfirmButton: false,
         timer: 1500,
@@ -78,25 +76,36 @@ export default function PopUpMemberEdit({
 
   return (
     <Modal show={open} onHide={onClose}>
-      <Modal.Header closeButton>ເລືອກໝວດໝູ່</Modal.Header>
+      <Modal.Header closeButton>{t("select_category")}</Modal.Header>
       <Modal.Body>
         <div className="mb-3">
-          <Form.Label>ຊື່ສະມາຊິກ</Form.Label>
+          <Form.Label>{t("member_name")}</Form.Label>
           <Form.Control
-            placeholder="ຊື່ສະມາຊິກ"
+            placeholder={t("member_name")}
             value={formData?.name}
             onChange={handleChange}
             name="name"
           />
         </div>
+        {storeDetail?.isStatusCafe && (
+          <div className="mb-3">
+            <Form.Label>{t("percenDiscount")}</Form.Label>
+            <Form.Control
+              placeholder={t("percenDiscount")}
+              value={formData?.discountPercentage}
+              onChange={handleChange}
+              name="discountPercentage"
+            />
+          </div>
+        )}
         <div className="mb-3">
-          <Form.Label>ເບີໂທ</Form.Label>
+          <Form.Label>{t("tel")}</Form.Label>
           <InputGroup>
             <InputGroup.Text id="phone-addon1">020</InputGroup.Text>
             <Form.Control
               placeholder="XXXX-XXXX"
               aria-describedby="phone-addon1"
-              maxLength={8}
+              maxLength={15}
               value={formData?.phone}
               onChange={handleChange}
               name="phone"
@@ -112,6 +121,22 @@ export default function PopUpMemberEdit({
             name="point"
           />
         </div>
+
+        {!storeDetail?.isStatusCafe && (
+          <div className="mb-3">
+            <Form.Label>{t("expirt_point")}</Form.Label>
+            <Form.Control
+              type="date"
+              value={
+                formData?.pointDateExpirt
+                  ? moment(formData?.pointDateExpirt).format("YYYY-MM-DD")
+                  : ""
+              }
+              onChange={handleChange}
+              name="pointDateExpirt"
+            />
+          </div>
+        )}
         <div className="mb-3">
           <Form.Label>{t("birth_date")}</Form.Label>
           <DateTimeComponent
@@ -153,10 +178,10 @@ export default function PopUpMemberEdit({
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onClose}>
-          ປິດ
+          {t("close")}
         </Button>
         <Button variant="primary" onClick={handleSave}>
-          ອັບເດດສະມາຊີກ
+          {t("update_member")}
         </Button>
       </Modal.Footer>
     </Modal>
