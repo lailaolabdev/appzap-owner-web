@@ -424,14 +424,16 @@ function Homecafe() {
       isWeightMenu: menu?.isWeightMenu,
     };
 
-    const existingMenuIndex = updatedSelectedMenus.findIndex(
-      (item) => item.id === menu._id
-    );
-    if (existingMenuIndex !== -1) {
-      updatedSelectedMenus[existingMenuIndex].quantity += 1;
-    } else {
-      updatedSelectedMenus.push(mainMenuData);
-    }
+    // const existingMenuIndex = updatedSelectedMenus.findIndex(
+    //   (item) => item.id === menu._id
+    // );
+    // if (existingMenuIndex !== -1) {
+    //   updatedSelectedMenus[existingMenuIndex].quantity += 1;
+    // } else {
+    //   updatedSelectedMenus.push(mainMenuData);
+    // }
+
+    updatedSelectedMenus.push(mainMenuData);
 
     // biome-ignore lint/complexity/noForEach: <explanation>
     activePromotions.forEach((promotion) => {
@@ -1094,6 +1096,8 @@ function Homecafe() {
       .fill()
       .map((_, i) => billForCherCancel80.current[i]);
   }
+
+  console.log("billForCherCancel80", billForCherCancel80);
 
   const onPrintForCherLaBel = async () => {
     // setOnPrinting(true);
