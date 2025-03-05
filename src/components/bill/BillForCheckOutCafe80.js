@@ -133,7 +133,7 @@ export default function BillForCheckOutCafe80({
           ) : (
             ""
           )}
-          <span
+          {/* <span
             style={{
               fontSize: "18px",
               fontWeight: "bold",
@@ -141,7 +141,7 @@ export default function BillForCheckOutCafe80({
             }}
           >
             Queue No {data || 0}
-          </span>
+          </span> */}
         </div>
         {/* <span className="text-[18px] font-bold absolute top-[-60px] right-[115px]">
           <span className="flex flex-col gap-2 items-center">

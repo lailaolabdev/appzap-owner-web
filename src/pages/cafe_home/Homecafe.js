@@ -878,7 +878,7 @@ function Homecafe() {
 
         // Render "Queue no" at the top and center it
         context.textAlign = "center"; // Center align the text
-        context.fillText(`queue no ${bill}`, width / 2, yPosition);
+        context.fillText(`${t("queue no")} ${bill}`, width / 2, yPosition);
         yPosition += 40; // Add some space after "Queue no"
         // Render data.name below "Queue no"
         context.textAlign = "left"; // Reset alignment to left for other text
