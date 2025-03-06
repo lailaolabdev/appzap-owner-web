@@ -99,11 +99,10 @@ export default function HistoryBankTransferClaim() {
   // };
 
   const selectPayment = (payment) => {
-    let _selctedPayment = [...selctedPayment]; // คัดลอกการชำระเงินที่เลือก
-    const _index = _selctedPayment.findIndex((x) => x._id === payment._id); // ตรวจสอบว่ามีการเลือกการชำระเงินนี้หรือยัง
+    let _selctedPayment = [...selctedPayment];
+    const _index = _selctedPayment.findIndex((x) => x._id === payment._id);
 
     if (_index === -1) {
-      // ถ้ายังไม่ได้เลือก, เราจะเลือกทุกรายการที่มี tableName หรือ tableCode ตรงกับรายการที่เลือก
       _selctedPayment = [
         ..._selctedPayment,
         ...data.filter(
@@ -113,17 +112,14 @@ export default function HistoryBankTransferClaim() {
         ),
       ];
     } else {
-      // ถ้าเลือกแล้ว, ก็ให้ยกเลิกการเลือกทุกรายการที่มี tableName หรือ tableCode ตรงกัน
       _selctedPayment = _selctedPayment.filter(
         (x) =>
           x.tableName !== payment.tableName && x.tableCode !== payment.tableCode
       );
     }
 
-    setSelectedPayment(_selctedPayment); // อัพเดตการเลือกการชำระเงิน
+    setSelectedPayment(_selctedPayment);
   };
-
-  // console.log("selectPayment", selectPayment);
 
   const TotalAmountSlectedClaim = selctedPayment.reduce(
     (sum, item) => sum + (item.totalAmount || 0),
@@ -274,28 +270,30 @@ export default function HistoryBankTransferClaim() {
       {isLoading && <Loading />}
       {selctedType == "PAYMENT" && (
         <div>
-          <div className="flex flex-row justify-center">
-            <div className="max-w-lg mx-auto my-auto p-4 border-2 border-orange-500 bg-white rounded-lg shadow-xl w-[350px] h-[160px]">
-              <div className="flex flex-row items-center gap-3">
-                <span className="bg-orange-500 border border-orange-500 w-[80px] h-[80px] rounded-full relative">
-                  <GiMoneyStack className="absolute top-4 right-4 text-[50px] text-white" />
-                </span>{" "}
-                <div className="flex flex-col justify-center items-center mt-2">
-                  <h4 className=" text-lg text-gray-500 font-bold">
-                    {t("total_money_claim")}
-                  </h4>
-                  <h2 className="text-3xl font-bold text-orange-600 text-center">
-                    {moneyCurrency(
-                      TotalAmountSlectedClaim
-                        ? TotalAmountSlectedClaim
-                        : TotalAmountClaim
-                    )}{" "}
-                    {storeDetail?.firstCurrency}
-                  </h2>
+          {data?.length > 0 && (
+            <div className="my-3">
+              <div className="max-w-lg  p-4 border-2 border-orange-500 bg-white rounded-lg shadow-xl w-[350px] h-[160px]">
+                <div className="flex flex-row items-center gap-3">
+                  <span className="bg-orange-500 border border-orange-500 w-[80px] h-[80px] rounded-full relative">
+                    <GiMoneyStack className="absolute top-4 right-4 text-[50px] text-white" />
+                  </span>{" "}
+                  <div className="flex flex-col justify-center items-center mt-2">
+                    <h4 className=" text-lg text-gray-500 font-bold">
+                      {t("total_money_claim")}
+                    </h4>
+                    <h2 className="text-3xl font-bold text-orange-600 text-center">
+                      {moneyCurrency(
+                        TotalAmountSlectedClaim
+                          ? TotalAmountSlectedClaim
+                          : TotalAmountClaim
+                      )}{" "}
+                      {storeDetail?.firstCurrency}
+                    </h2>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
           <div>
             <div
               className={`flex ${
@@ -313,15 +311,17 @@ export default function HistoryBankTransferClaim() {
                     handleClick={() => claimSelectedPayment()}
                   />
                 )}
-                <ButtonComponent
-                  title={"ເຄລມທັງຫມົດ"}
-                  icon={faPlusCircle}
-                  colorbg={"#f97316"}
-                  // hoverbg={"orange"}
-                  handleClick={() => setOpenConfirm(true)}
-                  width={"150px"}
-                  // handleClick={() => claimAllPayment()}
-                />
+                {data?.length > 0 && (
+                  <ButtonComponent
+                    title={"ເຄລມທັງຫມົດ"}
+                    icon={faPlusCircle}
+                    colorbg={"#f97316"}
+                    // hoverbg={"orange"}
+                    handleClick={() => setOpenConfirm(true)}
+                    width={"150px"}
+                    // handleClick={() => claimAllPayment()}
+                  />
+                )}
               </div>
             </div>
           </div>
