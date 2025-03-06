@@ -26,6 +26,7 @@ import Loading from "../../components/Loading";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
 import { useStoreStore } from "../../zustand/storeStore";
+import { updateStore } from "../../services/store";
 
 export default function CurrencyList() {
   const { t } = useTranslation();
@@ -42,6 +43,7 @@ export default function CurrencyList() {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showEditMainCurrency, setShowEditMainCurrency] = useState(false);
+  const [isShowExchangeRate, setIsShowExchangeRate] = useState(storeDetail?.isShowExchangeRate || false);
 
   const handleShowAdd = () => setShowAdd(true);
   const handleCloseAdd = () => setShowAdd(false);
@@ -70,6 +72,25 @@ export default function CurrencyList() {
     fetchData();
     getDataCurrency();
   }, []);
+
+  // Function to toggle currency display on bill
+  const handleToggleCurrencyDisplay = async (value) => {
+    try {
+      const _localData = await getLocalData();
+      const id = _localData?.DATA?.storeId;
+      const response = await updateStore(value, id);
+      if (response.error) {
+        throw new Error('error');
+      }
+      await fetchStoreDetail(storeDetail?._id);
+      setIsShowExchangeRate(value?.isShowExchangeRate);
+      getDataCurrencyHistory();
+      getDataCurrency();
+    } catch (error) {
+      console.error( error);
+      errorAdd(`${t("update_failed")}`);
+    }
+  };
 
   const getDataCurrency = async () => {
     try {
@@ -191,6 +212,7 @@ export default function CurrencyList() {
       });
   };
 
+
   return (
     <>
       {isLoading ? <Loading /> : ""}
@@ -247,7 +269,7 @@ export default function CurrencyList() {
                 </table>
               </Card.Body>
             </Card>
-            <Card border="primary" style={{ margin: 0 }}>
+            <Card border="primary" style={{ margin: 0,marginBottom: 20  }}>
               <Card.Header
                 style={{
                   backgroundColor: COLOR_APP,
@@ -312,7 +334,66 @@ export default function CurrencyList() {
                 </table>
               </Card.Body>
             </Card>
+
+            <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                  color: "#fff",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: 10,
+              }}
+            >
+              {t("show_exchange_rate_on_bill")}
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: t("show_exchange_rate_on_bill"),
+                  key: "fer",
+                },
+              ].map((item, index) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={index}
+                >
+                  <div>{item?.title}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={"transfer-payment-" + item?.key}>
+                      {storeDetail?.isBankPaymentAvailable
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                  type="switch"
+                  id="currency-display-switch"
+                  checked={isShowExchangeRate}
+                  onChange={() => handleToggleCurrencyDisplay({ isShowExchangeRate: !isShowExchangeRate })}
+                />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
           </Tab>
+
           <Tab
             eventKey="currency-history"
             title={t("rate_history")}

@@ -34,6 +34,7 @@ export default function BillForCheckOut80({
   const [rateCurrency, setRateCurrency] = useState();
   const { t } = useTranslation();
   const [base64Image, setBase64Image] = useState("");
+  const [isShowExchangeRate, setIsShowExchangeRate] = useState(storeDetail?.isShowExchangeRate || false)
 
   const orders =
     orderPayBefore && orderPayBefore.length > 0
@@ -141,11 +142,10 @@ export default function BillForCheckOut80({
       setBase64Image(base64);
     });
   }, [imageUrl2]);
+  
+
 
   // // console.log("storeDetail: ", storeDetail);
-  console.log("dataBill: ", dataBill);
-  console.log("pointDateExpirt: ", dataBill?.ExpireDateForPoint);
-  // console.log("service: ", storeDetail?.point);
 
   return (
     <Container>
@@ -204,11 +204,11 @@ export default function BillForCheckOut80({
                 <span style={{ fontWeight: "bold" }}>
                   {dataBill?.memberPhone
                     ? `${dataBill?.memberPhone} (${t(
-                        "point"
-                      )} : ${moneyCurrency(
-                        Number(dataBill?.Point || 0) -
-                          Number(storeDetail?.point || 0)
-                      )})`
+                      "point"
+                    )} : ${moneyCurrency(
+                      Number(dataBill?.Point || 0) -
+                      Number(storeDetail?.point || 0)
+                    )})`
                     : ""}
                 </span>
               </div>
@@ -217,7 +217,7 @@ export default function BillForCheckOut80({
                 {t("date_expirt_point")}: {""}
                 <span style={{ fontWeight: "bold" }}>
                   {dataBill?.ExpireDateForPoint &&
-                  moment(dataBill.ExpireDateForPoint).isValid()
+                    moment(dataBill.ExpireDateForPoint).isValid()
                     ? moment(dataBill.ExpireDateForPoint).format("DD-MM-YYYY")
                     : "-"}
                 </span>
@@ -304,7 +304,7 @@ export default function BillForCheckOut80({
             <div style={{ textAlign: "right" }}>
               {t("discount")} (
               {dataBill?.discountType == "MONEY" ||
-              dataBill?.discountType == "LAK"
+                dataBill?.discountType == "LAK"
                 ? storeDetail?.firstCurrency
                 : "%"}
               ):
@@ -316,16 +316,16 @@ export default function BillForCheckOut80({
         </Row>
         {dataBill?.memberPhone
           ? storeDetail?.point > 0 && (
-              <Row>
-                <Col xs={7}>
-                  <div style={{ textAlign: "right" }}>{t("point")}: </div>
-                </Col>
-                <Col>
-                  <div style={{ textAlign: "right" }}>
-                    {storeDetail?.point ? storeDetail?.point : 0}
-                  </div>
-                </Col>
-                {/* <Col xs={7}>
+            <Row>
+              <Col xs={7}>
+                <div style={{ textAlign: "right" }}>{t("point")}: </div>
+              </Col>
+              <Col>
+                <div style={{ textAlign: "right" }}>
+                  {storeDetail?.point ? storeDetail?.point : 0}
+                </div>
+              </Col>
+              {/* <Col xs={7}>
               <div style={{ textAlign: "right" }}>
                 ໄດ້ພ໋ອຍຈາກການຊື້ຄັ້ງນີ້:{" "}
               </div>
@@ -333,8 +333,8 @@ export default function BillForCheckOut80({
             <Col>
               <div style={{ textAlign: "right" }}>150</div>
             </Col> */}
-              </Row>
-            )
+            </Row>
+          )
           : ""}
       </div>
       <Row>
@@ -389,26 +389,28 @@ export default function BillForCheckOut80({
       <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
 
-      <div style={{ fontSize: 12, textAlign: "center" }}>
-        <span>{t("exchangeRate")}&nbsp;</span>
-        {currencyData?.map((item, index) => (
-          <span key={index}>
-            {item?.currencyCode}: {moneyCurrency(item?.sell)}
-            {index + 1 < currencyData?.length ? (
-              <span style={{ marginLeft: 10, marginRight: 10 }}>|</span>
-            ) : (
-              ""
-            )}
-          </span>
-        ))}
-        {","}
-        &nbsp;
-        {storeDetail?.isCRM && dataBill?.memberPhone && (
-          <span>
-            1 {t("point")} = 1 {storeDetail?.firstCurrency}
-          </span>
-        )}
-      </div>
+      {isShowExchangeRate && (
+        <div style={{ fontSize: 12, textAlign: "center" }}>
+          <span>{t("exchangeRate")}&nbsp;</span>
+          {currencyData?.map((item, index) => (
+            <span key={index}>
+              {item?.currencyCode}: {moneyCurrency(item?.sell)}
+              {index + 1 < currencyData?.length ? (
+                <span style={{ marginLeft: 10, marginRight: 10 }}>|</span>
+              ) : (
+                ""
+              )}
+            </span>
+          ))}
+          {","}
+          &nbsp;
+          {storeDetail?.isCRM && dataBill?.memberPhone && (
+            <span>
+              1 {t("point")} = 1 {storeDetail?.firstCurrency}
+            </span>
+          )}
+        </div>
+      )}
       <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
       <div
@@ -423,10 +425,10 @@ export default function BillForCheckOut80({
           {dataBill?.paymentMethod === "CASH"
             ? "ເງີນສົດ"
             : dataBill?.paymentMethod === "TRANSFER"
-            ? "ເງີນໂອນ"
-            : dataBill?.paymentMethod === "TRANSFER_CASH"
-            ? "ເງີນສົດແລະໂອນ"
-            : ""}
+              ? "ເງີນໂອນ"
+              : dataBill?.paymentMethod === "TRANSFER_CASH"
+                ? "ເງີນສົດແລະໂອນ"
+                : ""}
         </div>
         <div>
           {t("getMoney")} {dataBill?.moneyReceived || 0}
