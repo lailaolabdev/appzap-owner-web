@@ -1324,6 +1324,8 @@ function AddOrder() {
 
     return finalPrice;
   };
+
+  console.log("menuCategories: ",menuCategories)
   return (
     <div className="w-full h-screen">
       <div className="flex overflow-hidden mb-4">
