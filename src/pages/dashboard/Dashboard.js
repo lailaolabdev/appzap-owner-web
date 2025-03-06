@@ -412,6 +412,11 @@ export default function Dashboard() {
                 {" : "}
                 {convertNumber(moneyReport?.successAmount?.transferPayment)}
               </div>
+              <div className={fontMap[language]}>
+                {t("money_from_appzap")}
+                {" : "}
+                {convertNumber(moneyReport?.successAmount?.moneyFromOrdering)}
+              </div>
 
               <div>
                 {"Delivery"}

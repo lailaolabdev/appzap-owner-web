@@ -7,7 +7,7 @@ import { FaBell } from "react-icons/fa";
 import Spinner from "react-bootstrap/Spinner";
 
 import { COLOR_APP, COLOR_GRAY } from "../constants";
-import { END_POINT_SEVER_BILL_ORDER } from "../constants/api";
+import { END_POINT_SERVER_JUSTCAN } from "../constants/api";
 import { useStore } from "../store";
 
 import styles from "./NotifyButton.module.css";
@@ -114,7 +114,7 @@ const NotifyItem = ({ title, content, createdAt, item, onButtonClick }) => {
     const updateNotification = async () => {
       try {
         await Axios.put(
-          `${END_POINT_SEVER_BILL_ORDER}/v4/pos/notifications/${item._id}`,
+          `${END_POINT_SERVER_JUSTCAN}/v4/pos/notifications/${item._id}`,
           {
             isRead: true,
           }
@@ -137,7 +137,7 @@ const NotifyItem = ({ title, content, createdAt, item, onButtonClick }) => {
         isLoading: true,
       });
       const res = await Axios.put(
-        `${END_POINT_SEVER_BILL_ORDER}/v3/call-staff/${item.referenceId._id}`,
+        `${END_POINT_SERVER_JUSTCAN}/v3/call-staff/${item.referenceId._id}`,
         {
           status: action,
         }
@@ -372,7 +372,7 @@ export const NotifyButton = ({ setNotifyFilterToggle, notifyFilterToggle }) => {
         notifyFilterToggle === 0 ? "" : filterList[notifyFilterToggle];
 
       const res = await Axios.get(
-        `${END_POINT_SEVER_BILL_ORDER}/v4/pos/notifications`,
+        `${END_POINT_SERVER_JUSTCAN}/v4/pos/notifications`,
         {
           params: {
             storeId,

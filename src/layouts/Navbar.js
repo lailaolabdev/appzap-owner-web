@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { NotifyButton } from "../components/NotifyButton";
 import { useStoreStore } from "../zustand/storeStore";
 import { useMenuStore } from "../zustand/menuStore";
+import { useClaimDataStore } from "../zustand/claimData";
 
 // sound
 import messageSound from "../sound/message.mp3";
@@ -25,14 +26,14 @@ export default function NavBar() {
 
   // state
   const [userData, setUserData] = useState({});
-  const { isConnectPrinter, profile } = useStore();
   const [switchToDev, setSwitchToDev] = useState(0);
   const [claimableAmount, setClaimableAmount] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState("LA"); // ເພີ່ມ state ນີ້້ສຳລັບພາສາ
   const [notifyFilterToggle, setNotifyFilterToggle] = useState(0);
 
   // provider
-  const { setProfile } = useStore();
+  const { isConnectPrinter, profile, newNotify } = useStore();
+  const { setTotalAmountClaim, TotalAmountClaim } = useClaimDataStore();
 
   // ref
   const soundPlayer = useRef();
@@ -92,11 +93,11 @@ export default function NavBar() {
     try {
       const { DATA } = await getLocalData();
       const _res = await axios.get(
-        `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${DATA?.storeId}&claimStatus=UNCLAIMED&paymentMethod=BANK_TRANSFER`
+        `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${DATA?.storeId}&claimStatus=UNCLAIMED&paymentMethod=BANK_TRANSFER&status=PAID`
       );
       console.log("_res.data");
       console.log(_res.data);
-      setClaimableAmount(_res?.data?.totalAmount);
+      setTotalAmountClaim(_res?.data?.totalAmount);
     } catch (err) {
       console.log(err);
     }
@@ -124,13 +125,15 @@ export default function NavBar() {
           className="mr-2 md:mr-5 cursor-pointer"
           onClick={async () => {
             const { DATA } = await getLocalData();
-            navigate(`/historyUse/${DATA?.storeId}`);
+            navigate(`/claim/${DATA?.storeId}`);
+            // navigate(`/historyUse/${DATA?.storeId}`);
           }}
         >
           <div className="bg-gray-300 rounded-lg px-2 flex flex-col items-center">
             <p className="m-0 text-sm md:text-base">ຍອດເງິນ</p>
             <p className="m-0 text-lg md:text-lg font-bold">
-              {claimableAmount.toLocaleString()} ກີບ
+              {/* {newNotify?.totalAmount} ກີບ */}
+              {TotalAmountClaim || 0} ກີບ
             </p>
           </div>
         </div>

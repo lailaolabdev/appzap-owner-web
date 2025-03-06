@@ -1244,5 +1244,7 @@
   "expirt_point": "ຄະແນນທີ່ຈະໝົດອາຍຸ",
   "date_expirt_point": "ວັນໝົດອາຍຸຂອງຄະແນນ",
   "paided_ordering": "ຊຳລະເງິນ",
-  "confirm_close_table": "ຢືນຢັນການປິດໂຕະ"
+  "confirm_close_table": "ຢືນຢັນການປິດໂຕະ",
+  "money_from_appzap": "ເງິນໃນແອັບແຊບ",
+  "total_money_claim": "ຈຳນວນຍອດເງິນລວມ"
 }

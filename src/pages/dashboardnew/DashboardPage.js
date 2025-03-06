@@ -748,6 +748,17 @@ export default function DashboardPage() {
                     },
                     {
                       method: (
+                        <div style={{ fontWeight: 700 }}>
+                          {t("money_from_appzap")}
+                        </div>
+                      ),
+                      qty:
+                        moneyReport?.successAmount?.moneyFromOrderingCount || 0,
+                      amount:
+                        moneyReport?.successAmount?.moneyFromOrdering || 0,
+                    },
+                    {
+                      method: (
                         <div style={{ fontWeight: 700 }}>{t("total_debt")}</div>
                       ),
                       qty: debtReport?.count || 0,

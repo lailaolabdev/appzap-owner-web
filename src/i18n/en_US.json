@@ -1247,5 +1247,7 @@
   "expirt_point": "Points that will expire",
   "date_expirt_point": "Point Expiration",
   "paided_ordering": "Paided",
-  "confirm_close_table": "Confirm close table"
+  "confirm_close_table": "Confirm close table",
+  "money_from_appzap": "Money from appzap",
+  "total_money_claim": "Total money"
 }
