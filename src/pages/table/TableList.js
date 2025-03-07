@@ -12,6 +12,7 @@ import Box from "../../components/Box";
 import PopUpQRToken from "../../components/popup/PopUpQRToken";
 
 import { SiAirtable } from "react-icons/si";
+import { END_POINT } from "../../constants/index";
 
 /**
  * component
@@ -90,6 +91,7 @@ import { cn } from "../../utils/cn";
 import { fontMap } from "../../utils/font-map";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import { useShiftStore } from "../../zustand/ShiftStore";
 import theme from "../../theme";
 import PopUpConfirms from "../../components/popup/PopUpConfirms";
 
@@ -149,6 +151,7 @@ export default function TableList() {
   const { printerCounter, printers } = useStore();
   const [totalMustPay, setTotalMustPay] = useState(0); // สร้างตัวแปรเก็บค่ายอดรวมพร้อมภาษี
   const [createdAt, setCreatedAt] = useState();
+  const { shiftCurrent } = useShiftStore();
 
   // provider
   const {
@@ -646,6 +649,13 @@ export default function TableList() {
         _editBill += 1;
     }
     return _editBill;
+  };
+  const _checkStatusCodePaidOrdering = (code) => {
+    let _PaidOrdering = 0;
+    for (let i = 0; i < code?.length; i++) {
+      if (code[i]?.isOrderingPaid) _PaidOrdering += 1;
+    }
+    return _PaidOrdering;
   };
 
   const [widthBill80, setWidthBill80] = useState(0);
@@ -1883,46 +1893,47 @@ export default function TableList() {
     }
   }, [selectedTable]);
 
-  // useEffect(() => {
-  //   getStatusItem();
-  // }, [isCheckedOrderItem]);
+  const _checkBillOrdering = async () => {
+    const body = {
+      shiftId: shiftCurrent[0]?._id,
+      isCheckout: "true",
+      status: "CHECKOUT",
+      paymentMethod: "APPZAP_TRANSFER",
+      isOrderingPaid: false,
+      billMode: "false",
+      tableName: selectedTable?.tableName,
+      tableCode: selectedTable?.code,
+      fullnameStaffCheckOut:
+        `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-",
+      staffCheckOutId: profile?.data?.id,
+    };
 
-  // const getStatusItem = async () => {
-  //   isCheckedOrderItem.map((e) => {
-  //     const PrintItem = e?.status === "PRINTBILL";
-  //     setCheckStatusItem(PrintItem);
-  //   });
-  // };
+    await axios
+      .put(
+        `${END_POINT}/v7/bill-checkout`,
+        {
+          id: dataBill?._id,
+          data: body,
+        },
+        {
+          headers: await getHeaders(),
+        }
+      )
+      .then(async (response) => {
+        setSelectedTable();
+        getTableDataStore();
+        Swal.fire({
+          icon: "success",
+          title: `${t("checkbill_success")}`,
+          showConfirmButton: false,
+          timer: 1800,
+        });
+      })
+      .catch((error) => {
+        errorAdd(`${t("checkbill_fial")}`);
+      });
+  };
 
-  // console.log("BILL: ", dataBill);
-  // console.log("TABLE: ", selectedTable);
-
-  // function
-  // const _calculateTotal = () => {
-  //   let _total = 0;
-  //   for (let _data of dataBill?.orderId || []) {
-  //     // console.log({ _data });
-  //     _total +=
-  //       (_data?.price + (_data?.totalOptionPrice ?? 0)) * _data?.quantity;
-  //   }
-  //   if (dataBill?.discount > 0) {
-  //     if (
-  //       dataBill?.discountType == "LAK" ||
-  //       dataBill?.discountType == "MONEY"
-  //     ) {
-  //       setTotalAfterDiscount(_total - dataBill?.discount);
-  //     } else {
-  //       const ddiscount = parseInt((_total * dataBill?.discount) / 100);
-  //       setTotalAfterDiscount(_total - ddiscount);
-  //     }
-  //   } else {
-  //     setTotalAfterDiscount(_total);
-  //   }
-  //   setTotal(_total);
-  // };
-
-  // ================ new function ================
-  // console.log("printBillCalulate", printBillCalulate);
   const calculateTotalBill = async () => {
     setPrintBillCalulate(true);
     let _total = 0;
@@ -2048,7 +2059,8 @@ export default function TableList() {
 
   const handleConfirmCloseTable = async () => {
     setOpenConfirmCloseTable(false);
-    console.log("handleConfirmCloseTable");
+    _checkBillOrdering();
+    // onPrintBill();
   };
 
   return (
@@ -2104,7 +2116,7 @@ export default function TableList() {
               },
               {
                 label: t("paided_ordering"),
-                value: _checkStatusCodeC(tableList),
+                value: _checkStatusCodePaidOrdering(tableList),
                 icon: <CircleCheckBig />,
                 bgColor: "#00C851",
               },
@@ -2223,6 +2235,8 @@ export default function TableList() {
                               ? "bg-[#CECE5A] text-gray-500"
                               : table?.statusBill === "CALL_TO_CHECKOUT"
                               ? "bg-[#FFE17B] text-gray-500"
+                              : table?.isOrderingPaid
+                              ? "bg-[#00C851]  text-white"
                               : "bg-color-app text-white"
                             : "text-gray-500"
                         )}
@@ -2537,6 +2551,7 @@ export default function TableList() {
                         + {t("addOrder")}
                       </ButtonCustom>
                       <ButtonCustom
+                        disabled={!selectedTable?.isOrderingPaid}
                         onClick={() => setOpenConfirmCloseTable(true)}
                       >
                         {t("confirm_close_table")}

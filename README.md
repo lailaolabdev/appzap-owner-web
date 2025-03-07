@@ -5,4 +5,6 @@
 npm install --force
 npm start
 
+fixed-bug
+
 # Deploy

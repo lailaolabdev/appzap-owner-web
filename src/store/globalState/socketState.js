@@ -4,6 +4,7 @@ import { END_POINT_SOCKET } from "../../constants/api";
 import { useStoreStore } from "../../zustand/storeStore";
 import { useOrderStore } from "../../zustand/orderStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
+import { useClaimDataStore } from "../../zustand/claimData";
 import {
   useSlideImageStore,
   useCombinedToggleSlide,
@@ -39,6 +40,7 @@ export const useSocketState = ({ setRunSound }) => {
   const { Settoggle, SettoggleTable, SettoggleSlide, SettoggleOpenTwoScreen } =
     useCombinedToggleSlide();
   const { handleNewOrderItems } = useOrderStore();
+  const { setTotalAmountClaim, TotalAmountClaim } = useClaimDataStore();
 
   useEffect(() => {
     if (!storeDetail?._id) return;
@@ -87,7 +89,7 @@ export const useSocketState = ({ setRunSound }) => {
       setCheckoutTable(true);
     };
     const handleNotifyCreated = (data) => {
-      // console.log(`APP_NOTIFY_CREATED:${storeDetail._id}`, data);
+      console.log(`APP_NOTIFY_CREATED:${storeDetail._id}`, data);
       setNewNotify(data);
     };
 
@@ -127,6 +129,13 @@ export const useSocketState = ({ setRunSound }) => {
       setUseSlideImageData(data?.data);
     };
 
+    const TotalAmountOrdering = async (data) => {
+      console.log("TotalAmountOrdering", data);
+      setTotalAmountClaim(
+        (Number(data?.totalAmount) || 0) + (Number(TotalAmountClaim) || 0)
+      );
+    };
+
     // Register socket listeners
     socket.on("connect", handleConnect);
     socket.on("disconnect", handleDisconnect);
@@ -149,6 +158,7 @@ export const useSocketState = ({ setRunSound }) => {
     socket.on(`SHOW_SLIDE:${storeDetail._id}`, showSlide);
     socket.on(`OPEN_TWO_SCREEN:${storeDetail._id}`, OpenTwoScreen);
     socket.on(`IMAGE_SLIDE:${storeDetail._id}`, ImageSlidData);
+    socket.on(`CHECKOUT_UPDATED:${storeDetail._id}`, TotalAmountOrdering);
 
     // Cleanup listeners to prevent duplicates
     return () => {
@@ -177,6 +187,7 @@ export const useSocketState = ({ setRunSound }) => {
       socket.off(`SHOW_SLIDE:${storeDetail._id}`, showSlide);
       socket.off(`OPEN_TWO_SCREEN:${storeDetail._id}`, OpenTwoScreen);
       socket.off(`IMAGE_SLIDE:${storeDetail._id}`, ImageSlidData);
+      socket.off(`CHECKOUT_UPDATED:${storeDetail._id}`, TotalAmountOrdering);
     };
   }, [storeDetail, setRunSound]);
 
