@@ -6,11 +6,17 @@ export const useClaimDataStore = create(
     (set) => ({
       // Initial store state
       TotalAmountClaim: 0,
+      statusServedForOrdering: false,
+
+      setStatusServedForOrdering: (status) => {
+        set({ statusServedForOrdering: status });
+      },
 
       setTotalAmountClaim: (amount) => {
         // console.log("Setting menus data:", menusData);
         set({ TotalAmountClaim: amount });
       },
+
       // Action to clear menu data
       clearClaim: () =>
         set({

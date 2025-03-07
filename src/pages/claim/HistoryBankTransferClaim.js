@@ -7,7 +7,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Button, Dropdown, Nav } from "react-bootstrap";
+import ReactPaginate from "react-paginate";
+import {
+  Card,
+  Breadcrumb,
+  Button,
+  ButtonGroup,
+  Form,
+  Alert,
+  Pagination,
+  Nav,
+  InputGroup,
+  Spinner,
+} from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { FaListCheck } from "react-icons/fa6";
 import { ButtonComponent } from "../../components";
@@ -41,9 +53,19 @@ export default function HistoryBankTransferClaim() {
   const [selctedType, setSelectedType] = useState("PAYMENT");
   const [selctedPayment, setSelectedPayment] = useState([]);
   const [claimData, setClaimData] = useState([]);
-  const [data, setData] = useState([]);
+  const [claimingData, setClaimingData] = useState([]);
+  const [unClaimData, setUnClaimData] = useState([]);
   const [page, setPage] = useState(0);
   const rowsPerPage = 100;
+
+  const [pageClaimData, setPageClaimData] = useState(1);
+  const [totalpageClaimData, setTotalPageClaimData] = useState();
+  const [pageClaimingData, setPageClaimingData] = useState(1);
+  const [totalpageClaimingData, setTotalPageClaimingData] = useState();
+  const [pageUnClaimData, setPageUnClaimData] = useState(1);
+  const [totalpageUnClaimData, setTotalPageUnClaimData] = useState();
+
+  const limitData = 20;
 
   const { profile, setSelectedTable, getTableDataStore } = useStore();
 
@@ -55,16 +77,19 @@ export default function HistoryBankTransferClaim() {
   useEffect(() => {
     getClaimData();
     getDataAllClaim();
+    getDataAllClaiming();
   }, []);
 
   const getClaimData = async () => {
     try {
       //   console.log("IAMWORK");
+      setIsLoading(true);
       const { DATA } = await getLocalData();
       const _res = await axios.get(
         `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${DATA?.storeId}`
       );
       setClaimData(_res?.data?.data);
+      setIsLoading(false);
     } catch (err) {
       console.log(err);
     }
@@ -73,13 +98,31 @@ export default function HistoryBankTransferClaim() {
   const getDataAllClaim = async () => {
     try {
       //   console.log("IAMWORK");
+      setIsLoading(true);
       const { TOKEN, DATA } = await getLocalData();
 
       let apiUrl = `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${DATA?.storeId}&claimStatus=UNCLAIMED&paymentMethod=BANK_TRANSFER&status=PAID`;
 
       const _res = await axios.get(apiUrl, { header: TOKEN });
-      setData(_res?.data?.data);
+      setUnClaimData(_res?.data?.data);
       setTotalAmountClaim(_res?.data?.totalAmount);
+      setIsLoading(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const getDataAllClaiming = async () => {
+    try {
+      //   console.log("IAMWORK");
+      setIsLoading(true);
+      const { TOKEN, DATA } = await getLocalData();
+
+      let apiUrl = `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${DATA?.storeId}&claimStatus=CLAIMING&paymentMethod=BANK_TRANSFER`;
+
+      const _res = await axios.get(apiUrl, { header: TOKEN });
+      setClaimingData(_res?.data?.data);
+      setTotalAmountClaim(_res?.data?.totalAmount);
+      setIsLoading(false);
     } catch (err) {
       console.log(err);
     }
@@ -99,26 +142,32 @@ export default function HistoryBankTransferClaim() {
   // };
 
   const selectPayment = (payment) => {
-    let _selctedPayment = [...selctedPayment];
-    const _index = _selctedPayment.findIndex((x) => x._id === payment._id);
+    let updatedSelection = [...selctedPayment];
+    const isAlreadySelected = updatedSelection.some(
+      (x) =>
+        x.tableName === payment.tableName && x.tableCode === payment.tableCode
+    );
 
-    if (_index === -1) {
-      _selctedPayment = [
-        ..._selctedPayment,
-        ...data.filter(
+    if (!isAlreadySelected) {
+      // Select all payments with the same tableName and tableCode
+      updatedSelection = [
+        ...updatedSelection,
+        ...unClaimData.filter(
           (x) =>
-            x.tableName === payment.tableName ||
+            x.tableName === payment.tableName &&
             x.tableCode === payment.tableCode
         ),
       ];
     } else {
-      _selctedPayment = _selctedPayment.filter(
+      // Deselect all payments with the same tableName and tableCode
+      updatedSelection = updatedSelection.filter(
         (x) =>
-          x.tableName !== payment.tableName && x.tableCode !== payment.tableCode
+          x.tableName !== payment.tableName || x.tableCode !== payment.tableCode
       );
     }
 
-    setSelectedPayment(_selctedPayment);
+    console.log("Updated Selected Payments:", updatedSelection);
+    setSelectedPayment(updatedSelection);
   };
 
   const TotalAmountSlectedClaim = selctedPayment.reduce(
@@ -245,10 +294,29 @@ export default function HistoryBankTransferClaim() {
             background: selctedType === "PAYMENT" ? COLOR_APP : "white",
             color: selctedType === "PAYMENT" ? "white" : COLOR_APP,
           }}
-          onClick={() => setSelectedType("PAYMENT")}
+          onClick={() => {
+            setSelectedType("PAYMENT");
+            getDataAllClaim();
+          }}
         >
           <span className="flex gap-2 items-center">
             <FontAwesomeIcon icon={faListAlt} /> ລາຍການຊຳລະ
+          </span>
+        </Button>
+        <Button
+          onKeyDown={() => {}}
+          className="menu-report-stocks"
+          style={{
+            background: selctedType === "CLAIMING" ? COLOR_APP : "white",
+            color: selctedType === "CLAIMING" ? "white" : COLOR_APP,
+          }}
+          onClick={() => {
+            setSelectedType("CLAIMING");
+            getDataAllClaiming();
+          }}
+        >
+          <span className="flex gap-2 items-center">
+            <FontAwesomeIcon icon={faListAlt} /> ລາຍການກຳລັງເຄລມ
           </span>
         </Button>
         <Button
@@ -259,7 +327,10 @@ export default function HistoryBankTransferClaim() {
             color: selctedType === "CLAIM" ? "white" : COLOR_APP,
             // width: width > 900 ? "100%" : "fit-content",
           }}
-          onClick={() => setSelectedType("CLAIM")}
+          onClick={() => {
+            setSelectedType("CLAIM");
+            getClaimData();
+          }}
         >
           <span className="flex gap-2 items-center">
             <FontAwesomeIcon icon={faTable} />
@@ -268,9 +339,9 @@ export default function HistoryBankTransferClaim() {
         </Button>
       </div>
       {isLoading && <Loading />}
-      {selctedType == "PAYMENT" && (
+      {selctedType === "PAYMENT" && (
         <div>
-          {data?.length > 0 && (
+          {unClaimData?.length > 0 && (
             <div className="my-3">
               <div className="max-w-lg  p-4 border-2 border-orange-500 bg-white rounded-lg shadow-xl w-[350px] h-[160px]">
                 <div className="flex flex-row items-center gap-3">
@@ -311,7 +382,7 @@ export default function HistoryBankTransferClaim() {
                     handleClick={() => claimSelectedPayment()}
                   />
                 )}
-                {data?.length > 0 && (
+                {unClaimData?.length > 0 && (
                   <ButtonComponent
                     title={"ເຄລມທັງຫມົດ"}
                     icon={faPlusCircle}
@@ -325,7 +396,7 @@ export default function HistoryBankTransferClaim() {
               </div>
             </div>
           </div>
-          <div style={{ height: 10 }}></div>
+          <div style={{ height: 10 }} />
           <table className="table table-hover">
             <thead className="thead-light">
               <tr>
@@ -360,8 +431,8 @@ export default function HistoryBankTransferClaim() {
             </thead>
 
             <tbody>
-              {data?.length > 0 ? (
-                data?.map((item, index) => {
+              {unClaimData?.length > 0 ? (
+                unClaimData?.map((item, index) => {
                   return (
                     <tr
                       key={index}
@@ -429,7 +500,7 @@ export default function HistoryBankTransferClaim() {
                           color: checkPaymentSelected(item) ? "white" : "",
                         }}
                       >
-                        {t(item.claimStatus) ?? "-"}
+                        {item.claimStatus === "UNCLAIMED" ? "ຖອນເງິນຄືນ" : "-"}
                       </td>
                       <td
                         style={{
@@ -485,10 +556,237 @@ export default function HistoryBankTransferClaim() {
               )}
             </tbody>
           </table>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              width: "100%",
+              bottom: 20,
+            }}
+          >
+            <ReactPaginate
+              previousLabel={
+                <span className="glyphicon glyphicon-chevron-left">
+                  {t("previous")}
+                </span>
+              }
+              nextLabel={
+                <span className="glyphicon glyphicon-chevron-right">
+                  {t("next")}
+                </span>
+              }
+              breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
+              breakClassName={"break-me"}
+              pageCount={totalpageClaimData} // Replace with the actual number of pages
+              marginPagesDisplayed={1}
+              pageRangeDisplayed={3}
+              onPageChange={(e) => {
+                console.log(e);
+                setPageClaimData(e?.selected + 1);
+              }}
+              containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
+              pageClassName={"page-item"}
+              pageLinkClassName={"page-link"}
+              activeClassName={"active"}
+              previousClassName={"page-item"}
+              nextClassName={"page-item"}
+              previousLinkClassName={"page-link"}
+              nextLinkClassName={"page-link"}
+            />
+          </div>
         </div>
       )}
+      {selctedType === "CLAIMING" && (
+        <>
+          {claimingData?.length > 0 && (
+            <div className="my-3">
+              <div className="max-w-lg  p-4 border-2 border-orange-500 bg-white rounded-lg shadow-xl w-[350px] h-[160px]">
+                <div className="flex flex-row items-center gap-3">
+                  <span className="bg-orange-500 border border-orange-500 w-[80px] h-[80px] rounded-full relative">
+                    <GiMoneyStack className="absolute top-4 right-4 text-[50px] text-white" />
+                  </span>{" "}
+                  <div className="flex flex-col justify-center items-center mt-2">
+                    <h4 className=" text-lg text-gray-500 font-bold">
+                      {t("total_money_claim")}
+                    </h4>
+                    <h2 className="text-3xl font-bold text-orange-600 text-center">
+                      {moneyCurrency(
+                        TotalAmountSlectedClaim
+                          ? TotalAmountSlectedClaim
+                          : TotalAmountClaim
+                      )}{" "}
+                      {storeDetail?.firstCurrency}
+                    </h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
-      {selctedType == "CLAIM" && (
+          <div style={{ height: 10 }} />
+          <table className="table table-hover">
+            <thead className="thead-light">
+              <tr>
+                <th style={{ textWrap: "nowrap" }} scope="col">
+                  {t("no")}
+                </th>
+                <th style={{ textWrap: "nowrap" }} scope="col">
+                  {t("tableNumber")}
+                </th>
+                <th style={{ textWrap: "nowrap" }} scope="col">
+                  {t("tableCode")}
+                </th>
+                <th style={{ textWrap: "nowrap" }} scope="col">
+                  {t("amount")}
+                </th>
+                <th style={{ textWrap: "nowrap" }} scope="col">
+                  {t("detail")}
+                </th>
+                <th style={{ textWrap: "nowrap" }} scope="col">
+                  {t("status")}
+                </th>
+                <th style={{ textWrap: "nowrap" }} scope="col">
+                  ສະຖານະເຄລມ
+                </th>
+                <th style={{ textWrap: "nowrap" }} scope="col">
+                  {t("date_time")}
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {claimingData?.length > 0 ? (
+                claimingData?.map((item, index) => {
+                  return (
+                    <tr
+                      key={index}
+                      style={{
+                        backgroundColor: checkPaymentSelected(item)
+                          ? "#616161"
+                          : "",
+                      }}
+                    >
+                      <td
+                        style={{
+                          textWrap: "nowrap",
+                          color: checkPaymentSelected(item) ? "white" : "",
+                        }}
+                      >
+                        {page * rowsPerPage + index + 1}
+                      </td>
+                      <td
+                        style={{
+                          textWrap: "nowrap",
+                          color: checkPaymentSelected(item) ? "white" : "",
+                        }}
+                      >
+                        {item?.tableName ?? "-"}
+                      </td>
+                      <td
+                        style={{
+                          textWrap: "nowrap",
+                          color: checkPaymentSelected(item) ? "white" : "",
+                        }}
+                      >
+                        {item?.code ?? "-"}
+                      </td>
+                      <td
+                        style={{
+                          textWrap: "nowrap",
+                          color: checkPaymentSelected(item) ? "white" : "",
+                        }}
+                      >
+                        {item?.totalAmount
+                          ? `${item?.totalAmount.toLocaleString()} ${
+                              item?.currency ?? "LAK"
+                            }`
+                          : "-"}
+                      </td>
+                      <td
+                        style={{
+                          textWrap: "nowrap",
+                          color: checkPaymentSelected(item) ? "white" : "",
+                        }}
+                      >
+                        {t("checkout") ?? "-"}
+                      </td>
+                      <td
+                        style={{
+                          textWrap: "nowrap",
+                          color: checkPaymentSelected(item) ? "white" : "",
+                        }}
+                      >
+                        {t(item.status) ?? "-"}
+                      </td>
+                      <td
+                        style={{
+                          textWrap: "nowrap",
+                          color: checkPaymentSelected(item) ? "white" : "",
+                        }}
+                      >
+                        {item.claimStatus === "CLAIMING"
+                          ? "ກຳລັງຖອນເງິນຄືນ"
+                          : "-"}
+                      </td>
+                      <td
+                        style={{
+                          textWrap: "nowrap",
+                          color: checkPaymentSelected(item) ? "white" : "",
+                        }}
+                      >
+                        {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={9}>
+                    <div className="flex flex-col items-center mt-4">
+                      <p className="text-orange-500 text-[18px] font-bold">
+                        ບໍ່ມີຂໍ້ມູນ
+                      </p>
+                      <FcEmptyTrash className="text-orange-500 text-[60px] animate-bounce" />
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+          <ReactPaginate
+            previousLabel={
+              <span className="glyphicon glyphicon-chevron-left">
+                {t("previous")}
+              </span>
+            }
+            nextLabel={
+              <span className="glyphicon glyphicon-chevron-right">
+                {t("next")}
+              </span>
+            }
+            breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
+            breakClassName={"break-me"}
+            pageCount={totalpageUnClaimData} // Replace with the actual number of pages
+            marginPagesDisplayed={1}
+            pageRangeDisplayed={3}
+            onPageChange={(e) => {
+              console.log(e);
+              setPageUnClaimData(e?.selected + 1);
+            }}
+            containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
+            pageClassName={"page-item"}
+            pageLinkClassName={"page-link"}
+            activeClassName={"active"}
+            previousClassName={"page-item"}
+            nextClassName={"page-item"}
+            previousLinkClassName={"page-link"}
+            nextLinkClassName={"page-link"}
+          />
+        </>
+      )}
+
+      {selctedType === "CLAIM" && (
         <div>
           <div style={{}}>
             <table className="table table-hover">
@@ -512,9 +810,6 @@ export default function HistoryBankTransferClaim() {
                   <th style={{ textWrap: "nowrap" }} scope="col">
                     {t("date_time")}
                   </th>
-                  {/* <th style={{ textWrap: "nowrap" }} scope="col">
-                                ຈັດການ
-                            </th> */}
                 </tr>
               </thead>
 
@@ -573,7 +868,7 @@ export default function HistoryBankTransferClaim() {
                             color: checkPaymentSelected(item) ? "white" : "",
                           }}
                         >
-                          {t(item.status) ?? "-"}
+                          {item.status === "CLAIMED" ? "ຖອນເງີນຄືນສຳເລັດ" : "-"}
                         </td>
                         <td
                           style={{
@@ -600,6 +895,35 @@ export default function HistoryBankTransferClaim() {
                 )}
               </tbody>
             </table>
+            <ReactPaginate
+              previousLabel={
+                <span className="glyphicon glyphicon-chevron-left">
+                  {t("previous")}
+                </span>
+              }
+              nextLabel={
+                <span className="glyphicon glyphicon-chevron-right">
+                  {t("next")}
+                </span>
+              }
+              breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
+              breakClassName={"break-me"}
+              pageCount={totalpageClaimingData} // Replace with the actual number of pages
+              marginPagesDisplayed={1}
+              pageRangeDisplayed={3}
+              onPageChange={(e) => {
+                console.log(e);
+                setPageClaimingData(e?.selected + 1);
+              }}
+              containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
+              pageClassName={"page-item"}
+              pageLinkClassName={"page-link"}
+              activeClassName={"active"}
+              previousClassName={"page-item"}
+              nextClassName={"page-item"}
+              previousLinkClassName={"page-link"}
+              nextLinkClassName={"page-link"}
+            />
           </div>
         </div>
       )}

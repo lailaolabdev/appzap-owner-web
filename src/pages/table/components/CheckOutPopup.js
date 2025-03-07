@@ -33,6 +33,7 @@ import { RedeemPoint, PointUser } from "../../../services/point";
 
 import { useStoreStore } from "../../../zustand/storeStore";
 import { useShiftStore } from "../../../zustand/ShiftStore";
+import { useClaimDataStore } from "../../../zustand/claimData";
 
 export default function CheckOutPopup({
   onPrintDrawer,
@@ -89,7 +90,8 @@ export default function CheckOutPopup({
   } = useStore();
 
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
-
+  const { statusServedForOrdering, setStatusServedForOrdering } =
+    useClaimDataStore();
   const { shiftCurrent } = useShiftStore();
 
   //select Bank
@@ -307,7 +309,10 @@ export default function CheckOutPopup({
       transferAmount: transfer,
       deliveryAmount: delivery,
       point: point,
-      paymentMethod: tableData?.isOrderingPaid ? "APPZAP_TRANSFER" : forcus,
+      paymentMethod:
+        tableData?.isOrderingPaid && !statusServedForOrdering
+          ? "APPZAP_TRANSFER"
+          : forcus,
       isOrderingPaid: false,
       taxAmount: taxAmount,
       taxPercent: taxPercent,
@@ -380,6 +385,7 @@ export default function CheckOutPopup({
           point: 0,
         });
         onClose();
+        setStatusServedForOrdering(true);
       })
       .catch((error) => {
         errorAdd(`${t("checkbill_fial")}`);
