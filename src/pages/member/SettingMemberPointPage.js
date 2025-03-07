@@ -113,18 +113,14 @@ export default function SettingMemberPointPage() {
     setError(false);
     try {
       const data = await getAllStorePoints();
-      if (!data.error) {
-        const { DATA } = await getLocalData();
-        const filteredData = data.filter(
-          (point) => point.storeId === DATA.storeId
-        );
-        setPointsData(filteredData);
-        setStoreDetail({
-          pointStore: filteredData[0].money,
-        });
-      } else {
-        setError(true);
-      }
+      const { DATA } = await getLocalData();
+      const filteredData = data.filter(
+        (point) => point.storeId === DATA.storeId
+      );
+      setPointsData(filteredData);
+      setStoreDetail({
+        pointStore: filteredData[0].money,
+      });
     } catch (error) {
       console.error("Failed to fetch points data: ", error);
       setError(true);
@@ -166,8 +162,6 @@ export default function SettingMemberPointPage() {
               <Spinner animation="border" variant="warning" />
             </center>
           </div>
-        ) : error ? (
-          <div>Failed to load points data.</div>
         ) : pointsData.length > 0 ? (
           <Card border="primary" style={{ maxWidth: 500 }}>
             <Card.Header
