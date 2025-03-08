@@ -104,6 +104,7 @@ function Homecafe() {
   const [endTime, setEndTime] = useState("23:59:59");
   const [bill, setBill] = useState(0);
   const [promotion, setPromotion] = useState([]);
+  const [selectedCategoryType, setSelectedCategoryType] = useState("All");
 
   const [isMobile, setIsMobile] = useState(
     window.matchMedia("(max-width: 767px)").matches
@@ -591,7 +592,7 @@ function Homecafe() {
         return (
           item.id === selectedItem._id &&
           JSON.stringify(sortedItemOptionsForComparison) ===
-            JSON.stringify(sortedFilteredOptionsForComparison)
+          JSON.stringify(sortedFilteredOptionsForComparison)
         );
       });
 
@@ -601,7 +602,7 @@ function Homecafe() {
         updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
         updatedMenu[existingMenuIndex].totalPrice =
           updatedMenu[existingMenuIndex].price *
-            updatedMenu[existingMenuIndex].quantity +
+          updatedMenu[existingMenuIndex].quantity +
           totalOptionPrice;
       } else {
         updatedMenu.push(mainMenuData);
@@ -922,9 +923,8 @@ function Homecafe() {
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
               : "";
-            const optionText = `- ${option?.name}${optionPriceText} x ${
-              option?.quantity || 1
-            }`;
+            const optionText = `- ${option?.name}${optionPriceText} x ${option?.quantity || 1
+              }`;
             yPosition = wrapText(
               context,
               optionText,
@@ -1371,18 +1371,105 @@ function Homecafe() {
             <div className="w-full px-2 py-1">
               <input
                 placeholder={t("search")}
-                className={cn("form-control", fontMap[language])}
+                className="form-control"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
+
+            <div
+              className="w-full overflow-x-auto flex flex-row whitespace-nowrap p-2 gap-2"
+            >
+              <button
+                key="category-type-all"
+                className={cn(
+                  `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
+                  selectedCategoryType === "All"
+                    ? "bg-color-app text-white"
+                    : "bg-gray-100 text-gray-700",
+                  fontMap[language]
+                )}
+                onClick={() => {
+                  setSelectedCategoryType("All");
+                  setSelectedCategory("All");
+                }}
+              >
+                {t("all")}
+              </button>
+
+              {/* ສະແດງຫມວດໝູ່ (categoryTypeId) */}
+              {menuCategories && (() => {
+                // ລວມປະເພດ (ບໍ່ຊຳກັນ)
+                const categoryTypes = {};
+                let hasUncategorized = false;
+
+                menuCategories.forEach(category => {
+                  if (!category.categoryTypeId) {
+                    hasUncategorized = true;
+                  } else {
+                    const typeId = category.categoryTypeId._id;
+                    if (!categoryTypes[typeId]) {
+                      categoryTypes[typeId] = category.categoryTypeId.name;
+                    }
+                  }
+                });
+
+                const categoryTypeElements = [];
+
+                Object.entries(categoryTypes).forEach(([typeId, name]) => {
+                  categoryTypeElements.push(
+                    <button
+                      key={`category-type-${typeId}`}
+                      className={cn(
+                        `rounded-full px-4 py-3 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
+                        selectedCategoryType === typeId
+                          ? "bg-color-app text-white"
+                          : "bg-gray-100 text-gray-700",
+                        fontMap[language]
+                      )}
+                      onClick={() => {
+                        setSelectedCategoryType(typeId);
+                        setSelectedCategory("All");
+                      }}
+                    >
+                      {name}
+                    </button>
+                  );
+                });
+
+                // ເພີ່ມປຸ່ມ "ບໍ່ມີຫມວດໝູ່" ຖ້າມີປະເພດຢູ່ໃນ
+                if (hasUncategorized) {
+                  categoryTypeElements.push(
+                    <button
+                      key="category-type-uncategorized"
+                      className={cn(
+                        `rounded-full px-4 py-3 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
+                        selectedCategoryType === "uncategorized"
+                          ? "bg-color-app text-white"
+                          : "bg-gray-100 text-gray-700",
+                        fontMap[language]
+                      )}
+                      onClick={() => {
+                        setSelectedCategoryType("uncategorized");
+                        setSelectedCategory("All");
+                      }}
+                    >
+                      {t("other")}
+                    </button>
+                  );
+                }
+
+                return categoryTypeElements;
+              })()}
+            </div>
+
+            {/* ສະແດງເມນູຍ່ອຍ (menuCategories) */}
             <div
               ref={sliderRef}
               className="w-full overflow-x-auto flex flex-row whitespace-nowrap p-2 gap-2 flex-1"
             >
               <button
-                type="button"
-                key={"category-all"}
+                key="category-all"
                 className={cn(
                   `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
                   selectedCategory === "All"
@@ -1395,13 +1482,22 @@ function Homecafe() {
                 {t("all")}
                 <div className="ml-12"></div>
               </button>
-              {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
-              {menuCategories &&
-                menuCategories?.map((data, index) => {
+
+              {/* ກອງແລະສະແດງສະເພາະຫມວດໝູ່ທີຢູ່ໃນປະເພດມີເລືອກ */}
+              {menuCategories && menuCategories
+                .filter(category => {
+                  if (selectedCategoryType === "All") {
+                    return true; // ສະແດງທັງຫມົດ
+                  } else if (selectedCategoryType === "uncategorized") {
+                    return !category.categoryTypeId; // ສະແດງສະເພາະທີບໍ່ມີຫມວດໝູ່
+                  } else {
+                    return category.categoryTypeId && category.categoryTypeId._id === selectedCategoryType; // ສະແດງສະເພາະຫມວດໝູ່ທີເລືອກ
+                  }
+                })
+                .map((data, index) => {
                   return (
                     <button
-                      type="button"
-                      key={"category" + index}
+                      key={`category-${index}`}
                       className={cn(
                         `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
                         selectedCategory === data?._id
@@ -1523,9 +1619,9 @@ function Homecafe() {
                           </span>
                         )} */}
                         {data?.promotionId?.length > 0 &&
-                        data.promotionId.some(
-                          (promotion) => promotion?.status === "ACTIVE"
-                        ) ? (
+                          data.promotionId.some(
+                            (promotion) => promotion?.status === "ACTIVE"
+                          ) ? (
                           data.promotionId
                             .filter(
                               (promotion) => promotion?.status === "ACTIVE"
@@ -1549,8 +1645,8 @@ function Homecafe() {
                                         {moneyCurrency(
                                           calculateDiscount(data) > 0
                                             ? matchRoundNumber(
-                                                calculateDiscount(data)
-                                              )
+                                              calculateDiscount(data)
+                                            )
                                             : 0
                                         )}{" "}
                                         {storeDetail?.firstCurrency}
@@ -1571,7 +1667,7 @@ function Homecafe() {
                                                 promotion?.discountValue
                                               )}{" "}
                                               {promotion?.discountType ===
-                                              "PERCENTAGE"
+                                                "PERCENTAGE"
                                                 ? "%"
                                                 : storeDetail?.firstCurrency}
                                             </span>
@@ -1655,12 +1751,12 @@ function Homecafe() {
                           const optionsString =
                             data.options && data.options.length > 0
                               ? data.options
-                                  .map((option) =>
-                                    option.quantity > 1
-                                      ? `[${option.quantity} x ${option.name}]`
-                                      : `[${option.name}]`
-                                  )
-                                  .join(" ")
+                                .map((option) =>
+                                  option.quantity > 1
+                                    ? `[${option.quantity} x ${option.name}]`
+                                    : `[${option.name}]`
+                                )
+                                .join(" ")
                               : "";
                           const totalOptionPrice = data?.totalOptionPrice || 0;
                           const itemPrice = data?.price + totalOptionPrice;
@@ -1969,12 +2065,12 @@ function Homecafe() {
                         const optionsString =
                           data.options && data.options.length > 0
                             ? data.options
-                                .map((option) =>
-                                  option.quantity > 1
-                                    ? `[${option.quantity} x ${option.name}]`
-                                    : `[${option.name}]`
-                                )
-                                .join(" ")
+                              .map((option) =>
+                                option.quantity > 1
+                                  ? `[${option.quantity} x ${option.name}]`
+                                  : `[${option.name}]`
+                              )
+                              .join(" ")
                             : "";
                         const totalOptionPrice = data?.totalOptionPrice || 0;
                         const itemPrice = data?.price + totalOptionPrice;
@@ -2224,10 +2320,10 @@ function Homecafe() {
                     (selectedOption) => selectedOption._id === option._id
                   )?.quantity >= 1
                     ? {
-                        backgroundColor: "#fd8b66",
-                        borderRadius: "5px",
-                        padding: 5,
-                      }
+                      backgroundColor: "#fd8b66",
+                      borderRadius: "5px",
+                      padding: 5,
+                    }
                     : {}
                 }
               >
