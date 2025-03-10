@@ -40,6 +40,7 @@ import {
 import { useStoreStore } from "../../zustand/storeStore";
 import { useOrderStore } from "../../zustand/orderStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
+import orderShowStatusService from "../../services/orderShowStatus";
 
 export default function OrderPage() {
   const {
@@ -91,6 +92,25 @@ export default function OrderPage() {
 
   const [ordersUpdating, setOrdersUpdating] = useState(false);
   const [canceledfromStatus, setCanceledfromStatus] = useState(WAITING_STATUS);
+  const [doingStatus, setDoingStatus] = useState(false);
+  const [showStatus, setShowStatus] = useState(null);
+  const [orderStatusId, setOrderStatusId] = useState(null);
+
+  const fetchOrderShowStatuses = async () => {
+    try {
+      const response = await orderShowStatusService.getAllOrderShowStatus(storeDetail?._id);
+      if (response.success) {
+        setShowStatus(response.data[0]?.orderShowStatusName || null);
+        setOrderStatusId(response.data[0]?._id || null);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrderShowStatuses();
+  }, [doingStatus,showStatus])
 
   useEffect(() => {
     const fetchAllOrders = async () => {
@@ -104,7 +124,31 @@ export default function OrderPage() {
     };
 
     fetchAllOrders();
+    fetchOrderShowStatuses();
   }, [fetchOrdersByStatus]);
+
+
+  const handleStatusChange = async (e) => {
+    const newStatus = e.target.value;
+    setShowStatus(newStatus);
+    
+    try {
+      if (orderStatusId) {
+        // Update existing record
+        await orderShowStatusService.updateOrderShowStatus(orderStatusId, {
+          orderShowStatusName: newStatus
+        });
+      } else {
+        // Create new record if none exists
+        await orderShowStatusService.createOrderShowStatus({
+          storeId: storeDetail?._id,
+          orderShowStatusName: newStatus
+        });
+      }
+    } catch (err) {
+      console.error('Error saving order show status:', err);
+    }
+  };
 
   const handleUpdateOrderStatus = async ({ fromStatus, toStatus }) => {
     try {
@@ -459,9 +503,29 @@ export default function OrderPage() {
             onChange={() => handleToggleAutoPrint()}
           />
         </div> */}
+        {
+          doingStatus && (
+            <div>
+              <label className="pr-2">{t("showing")}: </label>
+              <select
+                className="border border-color-app rounded-md p-2"
+                value={showStatus || "TOGETER_SHOW"}
+                onChange={handleStatusChange}
+              >
+                <option value="TOGETER_SHOW">{t("combined")}</option>
+                <option value="CATEGORY_TYPE_SHOW">{t("Category")}</option>
+                <option value="CATEGORY_SHOW">{t("type")}</option>
+                <option value="CATEGORY_SHOW_AND_CATEGORY_SHOW">{`${t("Category")}${t("and")}${t("type")}`}</option>
+              </select>
+            </div>
+          )
+        }
       </div>
     );
   };
+
+
+
   return (
     <RootStyle>
       {/* {orderLoading || (isLoading && <Loading />)} */}
@@ -474,15 +538,19 @@ export default function OrderPage() {
             getOrderItemsStore(select);
             setSelectOrderStatus(select);
             // getOrderWaitingAndDoingByStore();
+            if (select === DOING_STATUS) {
+              setDoingStatus(true);
+            } else {
+              setDoingStatus(false);
+            }
           }}
           className="myClass"
         >
           <Tab
             eventKey={WAITING_STATUS}
             title={
-              <span className={fontMap[language]}>{`${t("hasOrder")}(${
-                waitingOrders?.length
-              })`}</span>
+              <span className={fontMap[language]}>{`${t("hasOrder")}(${waitingOrders?.length
+                })`}</span>
             }
           >
             <Tool fromStatus={WAITING_STATUS} />
@@ -491,20 +559,21 @@ export default function OrderPage() {
           <Tab
             eventKey={DOING_STATUS}
             title={
-              <span className={fontMap[language]}>{`${t("cooking")}(${
-                doingOrders?.length
-              })`}</span>
+              <span className={fontMap[language]}>{`${t("cooking")}(${doingOrders?.length
+                })`}</span>
             }
           >
             <Tool fromStatus={DOING_STATUS} />
-            <DoingOrderTab />
+            <DoingOrderTab
+              doingStatus={doingStatus}
+              showStatus={showStatus}
+            />
           </Tab>
           <Tab
             eventKey={SERVE_STATUS}
             title={
-              <span className={fontMap[language]}>{`${t("served")}(${
-                servedOrders?.length
-              })`}</span>
+              <span className={fontMap[language]}>{`${t("served")}(${servedOrders?.length
+                })`}</span>
             }
           >
             <ServedOrderTab />
@@ -512,9 +581,8 @@ export default function OrderPage() {
           <Tab
             eventKey={CANCEL_STATUS}
             title={
-              <span className={fontMap[language]}>{`${t("cancel")}(${
-                canceledOrders?.length
-              })`}</span>
+              <span className={fontMap[language]}>{`${t("cancel")}(${canceledOrders?.length
+                })`}</span>
             }
           >
             <CanceledOrderTab />
