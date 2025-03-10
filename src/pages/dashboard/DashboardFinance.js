@@ -86,9 +86,6 @@ export default function DashboardFinance({
   const { shiftCurrent } = useShiftStore();
   const { storeDetail } = useStoreStore();
 
-  console.log("storedetail", storeDetail);
-  console.log("data", dataBill);
-
   const getPaginationCountData = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
@@ -198,7 +195,7 @@ export default function DashboardFinance({
     try {
       setDisabledEditBill(true);
       if (disabledEditBill) return;
-      const url = END_POINT_SEVER + "/v3/bill-reset";
+      const url = `${END_POINT_SEVER}/v3/bill-reset`;
       const _body = {
         id: selectOrder?._id,
         storeId: storeDetail?._id,
@@ -441,8 +438,6 @@ export default function DashboardFinance({
   };
 
   const calculateDiscount = (menu) => {
-    console.log("calculateDiscount", menu);
-
     if (
       !menu ||
       !menu.totalPrice ||
@@ -483,7 +478,6 @@ export default function DashboardFinance({
 
     return finalPrice;
   };
-  console.log("storeDetail", storeDetail);
 
   let TotalAmount = 0;
   if (dataModal?.paymentMethod === "CASH") {
@@ -622,9 +616,6 @@ export default function DashboardFinance({
       return 0;
     }
   };
-
-  console.log("dataModal", dataModal);
-  console.log("orderStatus", orderStatus);
 
   const orderData = mapOrderData(
     dataModal?.orderId,
@@ -1027,7 +1018,7 @@ export default function DashboardFinance({
                   disabled={
                     disabledEditBill ||
                     selectOrder?.status === "ACTIVE" ||
-                    profile?.data?.role != "APPZAP_ADMIN" ||
+                    profile?.data?.role !== "APPZAP_ADMIN" ||
                     dataModal?.isDebtPayment === true ||
                     dataModal?.isDebtAndPay === true
                   }
@@ -1036,6 +1027,20 @@ export default function DashboardFinance({
                   {selectOrder?.status === "ACTIVE"
                     ? t("editingTheBill")
                     : t("billEditing")}
+                </Button>
+              )}
+              {storeDetail?.isStatusCafe && (
+                <Button
+                  // disabled={
+                  //   disabledEditBill ||
+                  //   selectOrder?.status === "ACTIVE" ||
+                  //   profile?.data?.role != "APPZAP_ADMIN" ||
+                  //   dataModal?.isDebtPayment === true ||
+                  //   dataModal?.isDebtAndPay === true
+                  // }
+                  onClick={() => navigate(`/cafe/Edit/${dataModal?._id}`)}
+                >
+                  {t("billEditing")}
                 </Button>
               )}
               <Button className="ml-2" onClick={() => onPrintBill()}>

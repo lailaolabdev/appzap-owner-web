@@ -807,7 +807,7 @@
   "check_out_table": "Check Out Table",
   "bill_total": "Total Bills",
   "exchange_rate": "Exchange Rates",
-  "add_exchangeRate": "Add Exchange Rate", 
+  "add_exchangeRate": "Add Exchange Rate",
   "show_exchange_rate_on_bill": "Show Exchange rate on bill",
   "member": "Member",
   "return": "Return",
@@ -1249,5 +1249,6 @@
   "paided_ordering": "Paided",
   "confirm_close_table": "Confirm close table",
   "money_from_appzap": "Money from appzap",
-  "total_money_claim": "Total money"
+  "total_money_claim": "Total money",
+  "deleted_items": "Deleted menu items"
 }

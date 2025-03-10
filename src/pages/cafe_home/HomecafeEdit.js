@@ -1,17 +1,14 @@
 /* eslint-disable no-loop-func */
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import styled from "styled-components";
-import Row from "react-bootstrap/Row";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
-import ReactToPrint from "react-to-print";
 import BillForCheckOutCafe80 from "../../components/bill/BillForCheckOutCafe80";
 import PrintLabel from "./components/PrintLabel";
 import _ from "lodash";
 import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
 import { useTranslation } from "react-i18next";
-import { Formik } from "formik";
 import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
 import { base64ToBlob } from "../../helpers";
 import { RiListOrdered2 } from "react-icons/ri";
@@ -44,17 +41,11 @@ import {
 import { moneyCurrency } from "../../helpers";
 import { getHeaders } from "../../services/auth";
 import Loading from "../../components/Loading";
-// import { BillForChef } from "./components/BillForChef";
-import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { json, useNavigate, useParams } from "react-router-dom";
 import { getBillCafe, getBills } from "../../services/bill";
 import { GetAllPromotion } from "../../services/promotion";
 import { useStore } from "../../store";
-import BillForChef80 from "../../components/bill/BillForChef80";
-import BillForChef58 from "../../components/bill/BillForChef58";
 import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
-import { RiChatNewFill } from "react-icons/ri";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import CheckOutPopupCafe from "../table/components/CheckOutPopupCafe";
 import printFlutter from "../../helpers/printFlutter";
@@ -69,14 +60,14 @@ import { useMenuSelectStore } from "../../zustand/menuSelectStore";
 
 import theme from "../../theme";
 import moment from "moment";
-import url from "socket.io-client/lib/url";
-import CheckOutPopupCafeNew from "../table/components/CheckOutPopupCafeNew";
 import { getAllStorePoints } from "../../services/member.service";
 import AnimationLoading from "../../constants/loading";
 
-function Homecafe() {
-  const params = useParams();
-  const [billId, setBillId] = useState();
+import { deleteOrderCafeItemV7 } from "../../services/order";
+
+function HomecafeEdit() {
+  const { billId } = useParams();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [selectedMenu, setSelectedMenu] = useState([]);
@@ -339,14 +330,16 @@ function Homecafe() {
   }
 
   useEffect(() => {
-    (async () => {
-      let findby = "?";
-      findby += `storeId=${storeDetail?._id}`;
-      // findby += `&code=${code}`;
-      const data = await getBillCafe(findby);
-      setBillId(data?.[0]);
-    })();
-  }, []);
+    GetOneItemsCafe();
+  }, [billId]);
+
+  const GetOneItemsCafe = async () => {
+    let findby = "?";
+    findby += `storeId=${storeDetail?._id}`;
+    findby += `&billId=${billId}`;
+    const data = await getBillCafe(findby);
+    setSelectedMenus(data?.orderId);
+  };
 
   useEffect(() => {
     if (selectedMenu && selectedMenu.length > 0) {
@@ -437,16 +430,17 @@ function Homecafe() {
 
     // biome-ignore lint/complexity/noForEach: <explanation>
 
+    // biome-ignore lint/complexity/noForEach: <explanation>
     activePromotions.forEach((promotion) => {
       if (
         promotion?.type === "BUY_X_GET_Y" &&
         promotion.freeItems?.length > 0
       ) {
+        // biome-ignore lint/complexity/noForEach: <explanation>
         promotion.freeItems.forEach((freeItem) => {
           const freeItemId = freeItem?._id?._id || freeItem?._id;
           const freeItemName = freeItem?._id?.name || "Unknown";
 
-          // เช็กว่า freeItem นี้แถมให้สินค้านี้จริงๆ ไม่ใช่เมนูอื่น
           if (freeItem?.mainMenuId?._id !== menu._id) return;
 
           const existingFreeItemIndex = updatedSelectedMenus.findIndex(
@@ -678,17 +672,13 @@ function Homecafe() {
     }, 0);
   };
 
-  const onRemoveFromCart = (id) => {
-    const selectedMenuCopied = [...SelectedMenus];
-    for (let i = 0; i < selectedMenuCopied.length; i++) {
-      var obj = selectedMenuCopied[i];
-      if (obj.id === id) {
-        selectedMenuCopied.splice(i, 1);
-      }
-    }
-    setSelectedMenu([...selectedMenuCopied]);
-    setSelectedMenus([...selectedMenuCopied]);
+  const onRemoveFromCart = async (data) => {
+    setIsLoading(true);
+    const storeId = storeDetail?._id;
+    await deleteOrderCafeItemV7(data, storeId);
+    GetOneItemsCafe();
     setIsRemoveItem(false);
+    setIsLoading(false);
   };
   useEffect(() => {
     const getDataTax = async () => {
@@ -1100,8 +1090,6 @@ function Homecafe() {
       .map((_, i) => billForCherCancel80.current[i]);
   }
 
-  console.log("billForCherCancel80", billForCherCancel80);
-
   const onPrintForCherLaBel = async () => {
     // setOnPrinting(true);
 
@@ -1384,7 +1372,7 @@ function Homecafe() {
                 type="button"
                 key={"category-all"}
                 className={cn(
-                  `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
+                  "rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
                   selectedCategory === "All"
                     ? "text-color-app"
                     : "text-gray-700",
@@ -1393,7 +1381,7 @@ function Homecafe() {
                 onClick={() => setSelectedCategory("All")}
               >
                 {t("all")}
-                <div className="ml-12"></div>
+                <div className="ml-12" />
               </button>
               {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
               {menuCategories &&
@@ -1401,9 +1389,9 @@ function Homecafe() {
                   return (
                     <button
                       type="button"
-                      key={"category" + index}
+                      key={`category${data?._id}`}
                       className={cn(
-                        `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
+                        "rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
                         selectedCategory === data?._id
                           ? "text-color-app"
                           : "text-gray-700",
@@ -1412,7 +1400,7 @@ function Homecafe() {
                       onClick={() => setSelectedCategory(data?._id)}
                     >
                       {data?.name}
-                      <div className="ml-12"></div>
+                      <div className="ml-12" />
                     </button>
                   );
                 })}
@@ -1437,7 +1425,8 @@ function Homecafe() {
                 if (data?.type === "MENU") {
                   return (
                     <div
-                      key={"menu" + index}
+                      onKeyDown={() => {}}
+                      key={`menu${data?._id}`}
                       onClick={() => {
                         addToCart(data);
                       }}
@@ -1458,70 +1447,6 @@ function Homecafe() {
                         <span className="text-sm">{data?.name}</span>
                         <br />
 
-                        {/* {data?.promotionId?.length > 0 ? (
-                          data.promotionId.map((promotion, index) => {
-                            const filteredFreeItems =
-                              promotion?.freeItems?.filter(
-                                (freeItem) =>
-                                  freeItem?.mainMenuId?._id === data._id
-                              ) || [];
-
-                            return (
-                              <div
-                                key={promotion._id}
-                                className="flex flex-col"
-                              >
-                                {promotion?.discountValue ? (
-                                  <div className="flex flex-col">
-                                    <span className="text-color-app font-medium text-base">
-                                      {moneyCurrency(calculateDiscount(data))}{" "}
-                                      {storeDetail?.firstCurrency}
-                                    </span>
-
-                                    <div className="flex justify-between items-center">
-                                      <>
-                                        <span className="text-[14px] text-gray-500 line-through text-end">
-                                          {moneyCurrency(data?.price)}{" "}
-                                          {storeDetail?.firstCurrency}
-                                        </span>
-                                        <span className="flex flex-col text-center font-bold text-red-500 text-[12px] ">
-                                          <span>ສ່ວນຫຼຸດ</span>
-                                          <span>
-                                            {moneyCurrency(
-                                              promotion?.discountValue
-                                            )}{" "}
-                                            {promotion?.discountType ===
-                                            "PERCENTAGE"
-                                              ? "%"
-                                              : storeDetail?.firstCurrency}
-                                          </span>
-                                        </span>
-                                      </>
-                                    </div>
-                                  </div>
-                                ) : null}
-
-                               
-                                {filteredFreeItems.length > 0 && (
-                                  <>
-                                    <span className="text-color-app font-medium text-base">
-                                      {moneyCurrency(data?.price)}
-                                      {storeDetail?.firstCurrency}
-                                    </span>
-                                    <span className="flex flex-col font-bold text-red-500 text-[14px]">
-                                      {`ແຖມ ${filteredFreeItems.length} ລາຍການ`}
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                            );
-                          })
-                        ) : (
-                          <span className="text-color-app font-medium text-base">
-                            {moneyCurrency(data?.price)}
-                            {storeDetail?.firstCurrency}
-                          </span>
-                        )} */}
                         {data?.promotionId?.length > 0 &&
                         data.promotionId.some(
                           (promotion) => promotion?.status === "ACTIVE"
@@ -2352,7 +2277,7 @@ function Homecafe() {
         open={isRemoveItem}
         text={itemDeleting?.name}
         onClose={() => setIsRemoveItem(false)}
-        onSubmit={async () => onRemoveFromCart(itemDeleting.id)}
+        onSubmit={async () => onRemoveFromCart(itemDeleting)}
       />
       <CheckOutPopupCafe
         bill={bill}
@@ -2368,7 +2293,8 @@ function Homecafe() {
         taxPercent={taxPercent}
         TotalPrice={TotalPrice()}
         setIsLoading={setIsLoading}
-        statusBill={false}
+        statusBill={true}
+        billId={billId}
       />
 
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
@@ -2489,4 +2415,4 @@ const CafeCart = styled.div`
     margin-top: 15px;
   }
 `;
-export default Homecafe;
+export default HomecafeEdit;
