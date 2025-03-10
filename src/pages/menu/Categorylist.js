@@ -19,7 +19,7 @@ import { fontMap } from "../../utils/font-map";
 import { cn } from "../../utils/cn";
 import { updateCategoryMenu } from "../../services/menu";
 import { useMenuStore } from "../../zustand/menuStore";
-import { addCategory } from "../../services/menuCategory";
+import { addCategory, getCategories } from "../../services/menuCategory";
 
 export default function Categorylist() {
   const {
@@ -176,13 +176,7 @@ export default function Categorylist() {
 
   const getData = async (id) => {
     setIsLoading(true);
-    const _resCategory = await axios({
-      method: "get",
-      url:
-        END_POINT_SEVER_TABLE_MENU +
-        `/v3/categories?isDeleted=false&storeId=${id}`,
-    });
-    console.log("-----", _resCategory?.data);
+    const _resCategory = await getCategories(id);
     setCategorys(_resCategory?.data);
     setIsLoading(false);
   };

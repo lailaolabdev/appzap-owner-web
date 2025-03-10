@@ -87,6 +87,7 @@ export default function MenuList() {
   //update show menu
   const [detailMenu, setDetailMenu] = useState();
   const [detailMenuOption, setDetailMenuOption] = useState();
+  console.log("detailMenuOption", detailMenuOption);
   const [menuOptionsCount, setMenuOptionsCount] = useState({});
 
   const [allMenuOptions, setAllMenuOptions] = useState([]);
@@ -399,7 +400,7 @@ export default function MenuList() {
   const [dataUpdate, setdataUpdate] = useState("");
   const handleShow2 = async (item) => {
     setdataUpdate(item);
-    setDataUpdateMenuOption(item?.menuOption);
+    setDataUpdateMenuOption(item?.menuOptions);
     setShow2(true);
   };
   //TODO: UPDATE MENU FORM ZUSTAND
@@ -976,6 +977,8 @@ export default function MenuList() {
                             )}
                             onClick={() => {
                               setShowOptionSetting(true);
+                              console.log("data", data);
+                              console.log("index", index);
                               setDetailMenuOption({ data, index });
                             }}
                           >
@@ -997,7 +1000,14 @@ export default function MenuList() {
                         >
                           <FontAwesomeIcon
                             icon={faEdit}
-                            onClick={() => handleShow2(data)}
+                            onClick={() =>
+                              navigate(
+                                `/settingStore/edit-menu/${storeDetail?._id}`,
+                                {
+                                  state: { data, index },
+                                }
+                              )
+                            }
                             style={{ color: COLOR_APP, cursor: "pointer" }}
                           />
                           <FontAwesomeIcon
@@ -1619,6 +1629,7 @@ export default function MenuList() {
                       setFieldValue("images", [e.name]);
                     }}
                   />
+
                   {/* <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
@@ -1635,37 +1646,74 @@ export default function MenuList() {
                       {values?.isOpened ? `${t("oppen")}` : `${t("close")}`}
                     </label>
                   </div> */}
-                  <div
-                    style={{ display: "flex", gap: 20, alignItems: "center" }}
-                  >
-                    <label>{t("sg_menu")}</label>
-                    <input
-                      type="checkbox"
-                      id="recommended"
-                      checked={values?.recommended}
-                      onChange={() =>
-                        setFieldValue("recommended", !values.recommended)
-                      }
-                    />
-                    <label for="recommended">
-                      {values?.recommended ? `${t("oppen")}` : `${t("close")}`}
-                    </label>
-                  </div>
-                  <div
-                    style={{ display: "flex", gap: 20, alignItems: "center" }}
-                  >
-                    <label>{t("menu_sold_by_weight")}</label>
-                    <input
-                      type="checkbox"
-                      id="isWeightMenu"
-                      checked={values?.isWeightMenu}
-                      onChange={() =>
-                        setFieldValue("isWeightMenu", !values.isWeightMenu)
-                      }
-                    />
-                    <label for="isWeightMenu">
-                      {values?.isWeightMenu ? `${t("oppen")}` : `${t("close")}`}
-                    </label>
+                  <div className="flex flex-row justify-between items-center">
+                    <div>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: 20,
+                          alignItems: "center",
+                        }}
+                      >
+                        <label>{t("sg_menu")}</label>
+                        <input
+                          type="checkbox"
+                          id="recommended"
+                          checked={values?.recommended}
+                          onChange={() =>
+                            setFieldValue("recommended", !values.recommended)
+                          }
+                        />
+                        <label for="recommended">
+                          {values?.recommended
+                            ? `${t("oppen")}`
+                            : `${t("close")}`}
+                        </label>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: 20,
+                          alignItems: "center",
+                        }}
+                      >
+                        <label>{t("menu_sold_by_weight")}</label>
+                        <input
+                          type="checkbox"
+                          id="isWeightMenu"
+                          checked={values?.isWeightMenu}
+                          onChange={() =>
+                            setFieldValue("isWeightMenu", !values.isWeightMenu)
+                          }
+                        />
+                        <label for="isWeightMenu">
+                          {values?.isWeightMenu
+                            ? `${t("oppen")}`
+                            : `${t("close")}`}
+                        </label>
+                      </div>
+                    </div>
+                    <div>
+                      <button
+                        type="button"
+                        className={cn(
+                          "menuSetting whitespace-nowrap !w-fit px-2",
+                          fontMap[language]
+                        )}
+                        onClick={() => {
+                          setShowOptionSetting(true);
+
+                          // setDetailMenuOption({ data, index });
+                        }}
+                      >
+                        + {t("addition_options")} (
+                        {dataUpdateMenuOption?.length}
+                        {/* {menuOptionsCount[data._id] ||
+                      data?.menuOptions?.length ||
+                      0} */}
+                        )
+                      </button>
+                    </div>
                   </div>
                   <Form.Group>
                     <Form.Label>{t("sequence")}</Form.Label>
@@ -2082,7 +2130,7 @@ export default function MenuList() {
 
         <PopUpAddMenuOption
           showSetting={showOptionSetting}
-          detailMenu={detailMenuOption}
+          detailMenu={detailMenuOption || dataUpdate}
           handleClose={() => {
             setShowOptionSetting(false);
             setDetailMenuOption(null);

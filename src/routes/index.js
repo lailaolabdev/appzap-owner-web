@@ -97,7 +97,11 @@ import BuyXGetYForm from "../pages/promotion/components/BuyXGetYForm";
 import EditDiscountForm from "../pages/promotion/components/EditDiscountForm";
 import EditBuyXGetYForm from "../pages/promotion/components/EditBuyXGetYForm";
 import HistoryBankTransferClaim from "../pages/claim/HistoryBankTransferClaim";
+<<<<<<< HEAD
 import HomecafeEdit from "../pages/cafe_home/HomecafeEdit";
+=======
+import EditMenu from "../pages/menu/EditMenu";
+>>>>>>> 01b521d4 (fixed:succes export tranfer)
 function Router() {
   return useRoutes([
     {
@@ -406,6 +410,10 @@ function Router() {
         {
           path: "/claim/:storeId",
           element: <HistoryBankTransferClaim />,
+        },
+        {
+          path: "/settingStore/edit-menu/:storeId",
+          element: <EditMenu />,
         },
 
         OrderRoutes,

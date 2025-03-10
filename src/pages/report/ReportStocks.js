@@ -419,7 +419,7 @@ export default function ReportStocks() {
       </div> */}
       <div className="flex flex-row justify-between mt-8">
         <div className="text-xl font-semibold pt-2">
-          ລາຍການສະຕ໊ອກທັງໝົດ {totalStock} ລາຍການ
+          {t("item_total")} {totalStock} {t("item_amount")}
         </div>
         <div class="w-full max-w-sm min-w-[200px]">
           <div class="relative flex items-center">

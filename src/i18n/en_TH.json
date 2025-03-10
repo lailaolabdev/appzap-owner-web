@@ -1213,5 +1213,13 @@
   "PAID": "จ่ายแล้ว",
   "shift_open": "เปิดกะ",
   "add_all": "เพิ่มทั้งหมด",
-  "remove_all": "ลบทั้งหมด"
+  "remove_all": "ลบทั้งหมด",
+  "item_total": "รายการทั้งหมด",
+  "item_amount":"จำนวนรายการ",
+  "payment_type": "ประเภทการชำระ",
+  "discount_type": "ประเภทส่วนลด",
+  "last_paid":"จ่ายล่าสุด",
+  "before_paid":"จ่ายก่อนหน้า",
+  "debt_amount":"จำนวนหนี้",
+  "type_pay": "ประเภทการชำระ"
 }

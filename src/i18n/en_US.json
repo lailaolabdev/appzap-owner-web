@@ -1250,5 +1250,16 @@
   "confirm_close_table": "Confirm close table",
   "money_from_appzap": "Money from appzap",
   "total_money_claim": "Total money",
+<<<<<<< HEAD
   "deleted_items": "Deleted menu items"
+=======
+  "item_total": "Total Item",
+  "item_amount":"Item",
+  "payment_type": "Payment Type",
+  "discount_type": "Discount Type",
+  "last_paid":"Last Paid",
+  "before_paid":"Before Paid",
+  "debt_amount":"Debt Amount",
+  "type_pay": "Type Pay"
+>>>>>>> 01b521d4 (fixed:succes export tranfer)
 }
