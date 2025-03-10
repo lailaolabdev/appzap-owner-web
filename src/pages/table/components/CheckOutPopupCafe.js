@@ -43,14 +43,14 @@ export default function CheckOutPopupCafe({
   onQueue,
   onPrintBill,
   onPrintForCher,
-  onPrintForCherLaBel,
+  billId,
   open,
   onClose,
   dataBill,
   setDataBill,
   taxPercent = 0,
   setIsLoading,
-  setSelectedMenu,
+  statusBill,
 }) {
   // ref
   const inputCashRef = useRef(null);
@@ -304,9 +304,11 @@ export default function CheckOutPopupCafe({
     }
 
     const datas = {
+      billId: billId,
       selectedBank: selectedBank.name,
       bankId: selectedBank.id,
       order: Orders,
+      statusBill: statusBill,
       storeId: profile.data.storeId,
       isCheckout: "true",
       status: "CHECKOUT",
@@ -355,13 +357,6 @@ export default function CheckOutPopupCafe({
       )
       .then(async (response) => {
         if (response?.status === 200) {
-          // await Swal.fire({
-          //   icon: "success",
-          //   title: "ສໍາເລັດການເຊັກບິນ",
-          //   showConfirmButton: false,
-          //   timer: 1800,
-          // });
-
           setSelectedTable();
           getTableDataStore();
           setCashCurrency();
@@ -386,7 +381,7 @@ export default function CheckOutPopupCafe({
           ClearChangeAmount();
         }
 
-        // navigate("/history-cafe-sale")
+        navigate("/cafe");
       })
       .catch((error) => {
         errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
@@ -459,154 +454,6 @@ export default function CheckOutPopupCafe({
       name: "LAK",
     });
   }, []);
-
-  // useEffect(() => {
-  //   if (!open) return;
-  //   if (forcus === "CASH") {
-  //     if (dataBill?.discount) {
-  //       if (dataBill?.discountType === "PERCENT") {
-  //         if (cash >= totalBill - (totalBill * dataBill?.discount) / 100) {
-  //           setCanCheckOut(true);
-  //         } else {
-  //           setCanCheckOut(false);
-  //         }
-  //       } else {
-  //         if (cash >= totalBill - dataBill?.discount) {
-  //           setCanCheckOut(true);
-  //         } else {
-  //           setCanCheckOut(false);
-  //         }
-  //       }
-  //     } else {
-  //       if (cash >= totalBill) {
-  //         setCanCheckOut(true);
-  //       } else {
-  //         setCanCheckOut(false);
-  //       }
-  //     }
-  //   } else if (forcus === "TRANSFER") {
-  //     if (dataBill?.discount) {
-  //       if (dataBill?.discountType === "PERCENT") {
-  //         setTransfer(totalBill - (totalBill * dataBill?.discount) / 100);
-  //       } else {
-  //         setTransfer(totalBill - dataBill?.discount);
-  //       }
-  //     } else {
-  //       setTransfer(totalBill);
-  //     }
-  //     setCanCheckOut(true);
-  //   } else if (forcus === "TRANSFER_CASH") {
-  //     const _sum =
-  //       (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
-  //     if (dataBill?.discount) {
-  //       if (dataBill?.discountType === "PERCENT") {
-  //         if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
-  //           setCanCheckOut(true);
-  //         } else {
-  //           setCanCheckOut(false);
-  //         }
-  //       } else {
-  //         if (_sum >= totalBill - dataBill?.discount) {
-  //           setCanCheckOut(true);
-  //         } else {
-  //           setCanCheckOut(false);
-  //         }
-  //       }
-  //     } else {
-  //       if (_sum >= totalBill) {
-  //         setCanCheckOut(true);
-  //       } else {
-  //         setCanCheckOut(false);
-  //       }
-  //     }
-  //   } else if (forcus === "POINT") {
-  //     const checkPoint = Math.max(0, Number.parseInt(dataBill?.Point - point));
-  //     if (checkPoint === 0) {
-  //       Swal.fire({
-  //         icon: "warning",
-  //         title: `${t("error_point")}`,
-  //         text: `${t("error_point_enough")}`,
-  //         showConfirmButton: false,
-  //         timer: 1800,
-  //       });
-  //       return;
-  //     }
-
-  //     if (
-  //       dataBill?.Point <
-  //       totalBill - (totalBill * dataBill?.discount) / 100
-  //     ) {
-  //       setCanCheckOut(true);
-  //       return;
-  //     }
-
-  //     if (dataBill?.discount) {
-  //       if (dataBill?.discountType === "PERCENT") {
-  //         if (point >= totalBill - (totalBill * dataBill?.discount) / 100) {
-  //           setCanCheckOut(true);
-  //         } else {
-  //           setCanCheckOut(false);
-  //         }
-  //       } else {
-  //         if (point >= totalBill - dataBill?.discount) {
-  //           setCanCheckOut(true);
-  //         } else {
-  //           setCanCheckOut(false);
-  //         }
-  //       }
-  //     } else {
-  //       if (point >= totalBill) {
-  //         setCanCheckOut(true);
-  //       } else {
-  //         setCanCheckOut(false);
-  //       }
-  //     }
-  //   } else if (forcus === "CASH_TRANSFER_POINT") {
-  //     const checkPoint = Math.max(0, Number.parseInt(dataBill?.Point - point));
-  //     if (checkPoint === 0) {
-  //       Swal.fire({
-  //         icon: "warning",
-  //         title: `${t("error_point")}`,
-  //         text: `${t("error_point_enough")} ${dataBill?.Point} ${t("point")}`,
-  //         showConfirmButton: false,
-  //         timer: 1800,
-  //       });
-  //       setPoint("");
-  //       return;
-  //     }
-  //     const _sum =
-  //       (Number.parseInt(cash) || 0) +
-  //       (Number.parseInt(transfer) || 0) +
-  //       (Number.parseInt(point) || 0);
-  //     if (dataBill?.discount) {
-  //       if (dataBill?.discountType === "PERCENT") {
-  //         if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
-  //           setCanCheckOut(true);
-  //         } else {
-  //           setCanCheckOut(false);
-  //         }
-  //       } else {
-  //         if (_sum >= totalBill - dataBill?.discount) {
-  //           setCanCheckOut(true);
-  //         } else {
-  //           setCanCheckOut(false);
-  //         }
-  //       }
-  //     } else {
-  //       if (_sum >= totalBill) {
-  //         setCanCheckOut(true);
-  //       } else {
-  //         setCanCheckOut(false);
-  //       }
-  //     }
-  //   } else if (forcus === "POINT") {
-  //     if (point <= 0) {
-  //       setCanCheckOut(false);
-  //     } else {
-  //       setCanCheckOut(true);
-  //     }
-  //   }
-  // }, [cash, transfer, totalBill, forcus, point]);
 
   useEffect(() => {
     if (!open) return;

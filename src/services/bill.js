@@ -26,7 +26,7 @@ export const getBillsNolimit = async (findBy) => {
 export const getBillCafe = async (findBy) => {
   try {
     const _header = await getHeaders();
-    const url = `${END_POINT_APP}/v3/bills${findBy}`;
+    const url = `${END_POINT_APP}/v7/bill${findBy}`;
     const res = await axios.get(url, { headers: _header });
     return res.data;
   } catch (error) {
