@@ -373,7 +373,7 @@ export default function BillForCheckOut80({
         <hr style={{ border: "1px dashed #000", margin: 0 }} />
       )}
       <div style={{ fontSize: 12, textAlign: "center" }}>
-        {/* <span>{t("exchangeRate")}&nbsp;</span>
+        <span>{t("exchangeRate")}&nbsp;</span>
         {currencyData?.map((item, index) => (
           <span key={index}>
             {item?.currencyCode}: {moneyCurrency(item?.sell)}
@@ -383,7 +383,7 @@ export default function BillForCheckOut80({
               ""
             )}
           </span>
-        ))} */}
+        ))}
         {/* {","} */}
         &nbsp;
         {storeDetail?.isCRM && dataBill?.memberPhone && (
