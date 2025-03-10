@@ -126,7 +126,6 @@ export const updateOrderItemV7 = async (updateItems, storeId) => {
         headers: await getHeaders(),
       }
     );
-<<<<<<< HEAD
     return response;
   } catch (error) {
     console.error("Error updating order status:", error);
@@ -147,8 +146,6 @@ export const deleteOrderCafeItemV7 = async (updateItems, storeId) => {
         headers: await getHeaders(),
       }
     );
-=======
->>>>>>> 01b521d4 (fixed:succes export tranfer)
     return response;
   } catch (error) {
     console.error("Error updating order status:", error);
