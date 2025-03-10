@@ -1378,7 +1378,7 @@ function Homecafe() {
               />
             </div>
 
-            <div className="w-full overflow-x-auto flex flex-row whitespace-nowrap p-2 gap-2">
+            {/* <div className="w-full overflow-x-auto flex flex-row whitespace-nowrap p-2 gap-2">
               <button
                 key="category-type-all"
                 className={cn(
@@ -1396,7 +1396,7 @@ function Homecafe() {
                 {t("all")}
               </button>
 
-              {/* ສະແດງຫມວດໝູ່ (categoryTypeId) */}
+           
               {menuCategories &&
                 (() => {
                   // ລວມປະເພດ (ບໍ່ຊຳກັນ)
@@ -1461,7 +1461,7 @@ function Homecafe() {
 
                   return categoryTypeElements;
                 })()}
-            </div>
+            </div> */}
 
             {/* ສະແດງເມນູຍ່ອຍ (menuCategories) */}
             <div

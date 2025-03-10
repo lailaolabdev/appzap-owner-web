@@ -186,7 +186,7 @@ function AddOrder() {
       if (
         data?.id === i?.id &&
         JSON.stringify(sortedDataOptionsForComparison) ===
-        JSON.stringify(sortedItemOptionsForComparison)
+          JSON.stringify(sortedItemOptionsForComparison)
       ) {
         _data = { ..._data, quantity: (_data?.quantity || 0) + int };
       }
@@ -491,8 +491,9 @@ function AddOrder() {
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
               : "";
-            const optionText = `- ${option?.name}${optionPriceText} x ${option?.quantity || 1
-              }`;
+            const optionText = `- ${option?.name}${optionPriceText} x ${
+              option?.quantity || 1
+            }`;
             yPosition = wrapText(
               context,
               optionText,
@@ -724,7 +725,7 @@ function AddOrder() {
         return (
           item.id === selectedItem._id &&
           JSON.stringify(sortedItemOptionsForComparison) ===
-          JSON.stringify(sortedFilteredOptionsForComparison)
+            JSON.stringify(sortedFilteredOptionsForComparison)
         );
       });
 
@@ -734,7 +735,7 @@ function AddOrder() {
         updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
         updatedMenu[existingMenuIndex].totalPrice =
           updatedMenu[existingMenuIndex].price *
-          updatedMenu[existingMenuIndex].quantity +
+            updatedMenu[existingMenuIndex].quantity +
           totalOptionPrice;
 
         console.log(
@@ -1325,8 +1326,6 @@ function AddOrder() {
     return finalPrice;
   };
 
-
-  console.log("menuCategories: ", menuCategories)
   return (
     <div className="w-full h-screen">
       <div className="flex overflow-hidden mb-4">
@@ -1341,7 +1340,7 @@ function AddOrder() {
               />
             </div>
 
-            <div
+            {/* <div
               className="w-full overflow-x-auto flex flex-row whitespace-nowrap p-2 gap-2"
             >
               <button
@@ -1361,7 +1360,7 @@ function AddOrder() {
                 {t("all")}
               </button>
 
-              {/* ສະແດງຫມວດໝູ່ (categoryTypeId) */}
+             
               {menuCategories && (() => {
                 // ລວມປະເພດ (ບໍ່ຊຳກັນ)
                 const categoryTypes = {};
@@ -1425,7 +1424,7 @@ function AddOrder() {
 
                 return categoryTypeElements;
               })()}
-            </div>
+            </div> */}
 
             {/* ສະແດງເມນູຍ່ອຍ (menuCategories) */}
             <div
@@ -1448,34 +1447,38 @@ function AddOrder() {
               </button>
 
               {/* ກອງແລະສະແດງສະເພາະຫມວດໝູ່ທີຢູ່ໃນປະເພດມີເລືອກ */}
-              {menuCategories && menuCategories
-                .filter(category => {
-                  if (selectedCategoryType === "All") {
-                    return true; // ສະແດງທັງຫມົດ
-                  } else if (selectedCategoryType === "uncategorized") {
-                    return !category.categoryTypeId; // ສະແດງສະເພາະທີບໍ່ມີຫມວດໝູ່
-                  } else {
-                    return category.categoryTypeId && category.categoryTypeId._id === selectedCategoryType; // ສະແດງສະເພາະຫມວດໝູ່ທີເລືອກ
-                  }
-                })
-                .map((data, index) => {
-                  return (
-                    <button
-                      key={`category-${index}`}
-                      className={cn(
-                        `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
-                        selectedCategory === data?._id
-                          ? "text-color-app"
-                          : "text-gray-700",
-                        fontMap[language]
-                      )}
-                      onClick={() => setSelectedCategory(data?._id)}
-                    >
-                      {data?.name}
-                      <div className="ml-12"></div>
-                    </button>
-                  );
-                })}
+              {menuCategories &&
+                menuCategories
+                  .filter((category) => {
+                    if (selectedCategoryType === "All") {
+                      return true; // ສະແດງທັງຫມົດ
+                    } else if (selectedCategoryType === "uncategorized") {
+                      return !category.categoryTypeId; // ສະແດງສະເພາະທີບໍ່ມີຫມວດໝູ່
+                    } else {
+                      return (
+                        category.categoryTypeId &&
+                        category.categoryTypeId._id === selectedCategoryType
+                      ); // ສະແດງສະເພາະຫມວດໝູ່ທີເລືອກ
+                    }
+                  })
+                  .map((data, index) => {
+                    return (
+                      <button
+                        key={`category-${index}`}
+                        className={cn(
+                          `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
+                          selectedCategory === data?._id
+                            ? "text-color-app"
+                            : "text-gray-700",
+                          fontMap[language]
+                        )}
+                        onClick={() => setSelectedCategory(data?._id)}
+                      >
+                        {data?.name}
+                        <div className="ml-12"></div>
+                      </button>
+                    );
+                  })}
             </div>
           </div>
 
@@ -1567,9 +1570,9 @@ function AddOrder() {
                         </span>
                       )} */}
                       {data?.promotionId?.length > 0 &&
-                        data.promotionId.some(
-                          (promotion) => promotion?.status === "ACTIVE"
-                        ) ? (
+                      data.promotionId.some(
+                        (promotion) => promotion?.status === "ACTIVE"
+                      ) ? (
                         data.promotionId
                           .filter((promotion) => promotion?.status === "ACTIVE")
                           .map((promotion, index) => {
@@ -1605,7 +1608,7 @@ function AddOrder() {
                                               promotion?.discountValue
                                             )}{" "}
                                             {promotion?.discountType ===
-                                              "PERCENTAGE"
+                                            "PERCENTAGE"
                                               ? "%"
                                               : storeDetail?.firstCurrency}
                                           </span>
@@ -1664,9 +1667,9 @@ function AddOrder() {
                       <br />
 
                       {data?.promotionId?.length > 0 &&
-                        data.promotionId.some(
-                          (promotion) => promotion?.status === "ACTIVE"
-                        ) ? (
+                      data.promotionId.some(
+                        (promotion) => promotion?.status === "ACTIVE"
+                      ) ? (
                         data.promotionId
                           .filter((promotion) => promotion?.status === "ACTIVE")
                           .map((promotion, index) => {
@@ -1702,7 +1705,7 @@ function AddOrder() {
                                               promotion?.discountValue
                                             )}{" "}
                                             {promotion?.discountType ===
-                                              "PERCENTAGE"
+                                            "PERCENTAGE"
                                               ? "%"
                                               : storeDetail?.firstCurrency}
                                           </span>
@@ -1758,9 +1761,9 @@ function AddOrder() {
                     <span className="text-sm">{data?.name}</span>
                     <br />
                     {data?.promotionId?.length > 0 &&
-                      data.promotionId.some(
-                        (promotion) => promotion?.status === "ACTIVE"
-                      ) ? (
+                    data.promotionId.some(
+                      (promotion) => promotion?.status === "ACTIVE"
+                    ) ? (
                       data.promotionId
                         .filter((promotion) => promotion?.status === "ACTIVE")
                         .map((promotion, index) => {
@@ -1793,7 +1796,7 @@ function AddOrder() {
                                             promotion?.discountValue
                                           )}{" "}
                                           {promotion?.discountType ===
-                                            "PERCENTAGE"
+                                          "PERCENTAGE"
                                             ? "%"
                                             : storeDetail?.firstCurrency}
                                         </span>
@@ -1875,12 +1878,12 @@ function AddOrder() {
                         const optionsString =
                           data.options && data.options.length > 0
                             ? data.options
-                              .map((option) =>
-                                option.quantity > 1
-                                  ? `[${option.quantity} x ${option.name}]`
-                                  : `[${option.name}]`
-                              )
-                              .join(" ")
+                                .map((option) =>
+                                  option.quantity > 1
+                                    ? `[${option.quantity} x ${option.name}]`
+                                    : `[${option.name}]`
+                                )
+                                .join(" ")
                             : "";
 
                         return (
@@ -2245,10 +2248,10 @@ function AddOrder() {
                     (selectedOption) => selectedOption._id === option._id
                   )?.quantity >= 1
                     ? {
-                      backgroundColor: "#fd8b66",
-                      borderRadius: "5px",
-                      padding: 5,
-                    }
+                        backgroundColor: "#fd8b66",
+                        borderRadius: "5px",
+                        padding: 5,
+                      }
                     : {}
                 }
               >
