@@ -78,7 +78,6 @@ export default function PopUpReportExportExcel({
     }
     return findBy;
   };
-  console.log("storeDetail", storeDetail);
   const downloadExcel = async () => {
     setPopup({ ReportExport: false });
     try {
@@ -105,6 +104,7 @@ export default function PopUpReportExportExcel({
 
       if (storeDetail?.isStatusCafe) {
         const dataExcel = _res?.data?.bills;
+        console.log("DATA", dataExcel);
         if (!dataExcel || dataExcel.length === 0) {
           Swal.fire({
             icon: "warning",
@@ -133,8 +133,20 @@ export default function PopUpReportExportExcel({
           t("before_paid"),
           t("debt_amount"),
           t("date"),
-          t("type_pay"),
+          t("staff"),
         ];
+
+        const totals = {
+          cash: 0,
+          e_money: 0,
+          delivery: 0,
+          point: 0,
+          discount: 0,
+          change: 0,
+          last_paid: 0,
+          before_paid: 0,
+          debt_amount: 0,
+        };
 
         const workbook = new ExcelJS.Workbook();
         const sheet = workbook.addWorksheet("Expenses");
@@ -190,7 +202,7 @@ export default function PopUpReportExportExcel({
           { key: "before_paid", width: 18 },
           { key: "debt_amount", width: 18 },
           { key: "date", width: 18 },
-          { key: "type_pay", width: 18 },
+          { key: "staff", width: 18 },
         ];
 
         // Add data rows
@@ -213,6 +225,7 @@ export default function PopUpReportExportExcel({
             before_paid: item?.billAmountBefore || 0,
             debt_amount: item?.debtId?.remainingAmount || 0,
             date: formattedDate,
+            staff: item?.fullnameStaffCheckOut,
           });
 
           // Format data rows
@@ -228,6 +241,57 @@ export default function PopUpReportExportExcel({
             };
           });
         }
+
+        dataExcel.forEach((item) => {
+          totals.cash += item?.payAmount || 0;
+          totals.e_money += item.transferAmount || 0;
+          totals.delivery += item.deliveryAmount || 0;
+          totals.point += item.point || 0;
+          totals.discount += item.discount || 0;
+          totals.change += item.change || 0;
+          totals.last_paid += item.billAmount || 0;
+          totals.before_paid += item.billAmountBefore || 0;
+          totals.debt_amount += item.debtId?.remainingAmount || 0;
+        });
+
+        const totalRow = sheet.addRow({
+          no: t("total"),
+          payment_type: "",
+          bank_transfer_history: "",
+          status: "",
+          cash: totals.cash,
+          e_money: totals.e_money,
+          delivery: totals.delivery,
+          point: totals.point,
+          discount: totals.discount,
+          discount_type: "",
+          change: totals.change,
+          last_paid: totals.last_paid,
+          before_paid: totals.before_paid,
+          debt_amount: totals.debt_amount,
+          date: "",
+          type_pay: "",
+        });
+
+        totalRow.eachCell((cell, colNumber) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 14,
+            bold: true,
+            color: { argb: "FF000000" }, // ສີດຳ
+          };
+
+          cell.alignment = {
+            horizontal: colNumber === 1 ? "center" : "left",
+            vertical: "middle",
+            wrapText: true,
+          };
+        });
+
+        // Set width for total row
+        sheet.columns.forEach((column) => {
+          column.width = 18;
+        });
 
         // Set row heights
         for (let i = 1; i <= dataExcel.length + 2; i++) {

@@ -103,7 +103,7 @@ export default function EditMenu() {
         name_cn: formData?.name_cn,
         name_kr: formData?.name_kr,
         quantity: formData?.quantity,
-        categoryId: formData?.categoryId, // ໃຊ້ categoryId ຈາກ form
+        categoryId: formData?.categoryId?._id,
         price: formData?.price,
         detail: formData?.detail,
         unit: formData?.unit,
