@@ -688,17 +688,12 @@ export default function CheckOutPopupCafe({
   };
 
   const calculateReturnAmount = () => {
-    const parsedCash = Number.parseInt(cash) || 0;
-    const parsedTransfer = Number.parseInt(transfer) || 0;
-    const parsedPoint = Number.parseInt(point) || 0;
+    const parsedCash = Number.parseInt(matchRoundNumber(cash)) || 0;
+    const parsedTransfer = Number.parseInt(matchRoundNumber(transfer)) || 0;
+    const parsedPoint = Number.parseInt(matchRoundNumber(point)) || 0;
 
-    // console.log("parsedCash", parsedCash);
-    // console.log("transfer", transfer);
-    // console.log("point", point);
-    // console.log("totalBill", totalBill);
-    // console.log("dataBill", dataBill);
-
-    const totalAmount = parsedCash + parsedTransfer + parsedPoint - totalBill;
+    const totalAmount =
+      parsedCash + parsedTransfer + parsedPoint - matchRoundNumber(totalBill);
 
     return totalAmount <= 0 ? 0 : totalAmount;
   };
@@ -833,7 +828,11 @@ export default function CheckOutPopupCafe({
                       }
                       type="text"
                       placeholder="0"
-                      value={convertNumber(transfer)}
+                      value={
+                        tab === "cash_transfer"
+                          ? convertNumber(transfer)
+                          : convertNumber(matchRoundNumber(transfer || 0))
+                      }
                       onClick={() => {
                         setSelectInput("inputTransfer");
                       }}
