@@ -92,6 +92,7 @@ import { fontMap } from "../../utils/font-map";
 
 import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
+import { useClaimDataStore } from "../../zustand/claimData";
 import theme from "../../theme";
 import PopUpConfirms from "../../components/popup/PopUpConfirms";
 
@@ -192,6 +193,7 @@ export default function TableList() {
   } = useStore();
 
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
+  const { setStatusServedForOrdering } = useClaimDataStore();
 
   const reLoadData = () => {
     setReload(true);
@@ -1535,6 +1537,7 @@ export default function TableList() {
 
       if (response?.data?.message === "UPDATE_ORDER_SUCCESS") {
         setCheckedBox(!checkedBox);
+        setStatusServedForOrdering(true);
         // Success, update the UI
         Swal.fire({
           icon: "success",
