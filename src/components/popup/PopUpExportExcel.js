@@ -13,10 +13,7 @@ import { END_POINT_EXPORT } from "../../constants/api";
 import { useStoreStore } from "../../zustand/storeStore";
 
 export default function PopUpExportExcel({ open, onClose, setPopup }) {
-  const {
-    storeDetail, 
-    setStoreDetail,
-    updateStoreDetail} = useStoreStore()
+  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const { t } = useTranslation();
 
   const exportAllMember = async () => {
@@ -84,7 +81,7 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
 
         // Use the file-saver library to save the file with a new name
         saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
-        setStoreDetail({limitData: "" });
+        setStoreDetail({ limitData: "" });
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);

@@ -604,7 +604,7 @@
   "member_list": "ລາຍການສະມາຊິກ",
   "add_member": "ເພີ່ມສະມາຊິກ",
   "member_name": "ຊື່ສະມາຊິກ",
-  "point": "ພ໋ອຍ",
+  "point": "ຄະແນນ",
   "use_service": "ໃຊ້ບໍລິການ",
   "regis_date": "ວັນທີສະໝັກ",
   "manage_regis": "ຈັດການ",
@@ -1247,5 +1247,16 @@
   "confirm_close_table": "ຢືນຢັນການປິດໂຕະ",
   "money_from_appzap": "ເງິນໃນແອັບແຊບ",
   "total_money_claim": "ຈຳນວນຍອດເງິນລວມ",
+<<<<<<< HEAD
   "deleted_items": "ລາຍການເມນູຖຶກລົບ"
+=======
+  "item_total": "ລາຍການສະຕ໊ອກທັງໝົດ",
+  "item_amount":"ລາຍການ",
+  "payment_type": "ປະເພດຊຳລະເງິນ",
+  "discount_type": "ປະເພດສ່ວນຫຼຸດ",
+  "last_paid":"ລາຄາຈ່າຍໂຕຈິງ",
+  "before_paid":"ລາຄາຈ່າຍກ່ອນ",
+  "debt_amount":"ລາຄາທີ່ຕິດໜີ້",
+  "type_pay": "ປະເພດການຊຳລະ"
+>>>>>>> 01b521d4 (fixed:succes export tranfer)
 }

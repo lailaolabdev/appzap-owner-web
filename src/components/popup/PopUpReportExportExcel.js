@@ -9,9 +9,11 @@ import { MdOutlineCloudDownload } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import { errorAdd } from "../../helpers/sweetalert";
 import { END_POINT_EXPORT } from "../../constants/api";
-
+import * as ExcelJS from "exceljs";
 import { useStoreStore } from "../../zustand/storeStore";
 import { useStore } from "../../store";
+import Swal from "sweetalert2";
+import { COLOR_APP } from "../../constants";
 
 export default function PopUpReportExportExcel({
   open,
@@ -23,6 +25,7 @@ export default function PopUpReportExportExcel({
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const { profile } = useStore();
   const { t } = useTranslation();
+  const [excel, setExcel] = useState([]);
 
   const findByData = () => {
     let findBy = "?";
@@ -75,6 +78,7 @@ export default function PopUpReportExportExcel({
     }
     return findBy;
   };
+  console.log("storeDetail", storeDetail);
   const downloadExcel = async () => {
     setPopup({ ReportExport: false });
     try {
@@ -99,24 +103,165 @@ export default function PopUpReportExportExcel({
       const url = `${END_POINT_EXPORT}/export/bill?storeId=${storeDetail?._id}${findBy}`;
       const _res = await axios.get(url);
 
-      if (_res?.data?.exportUrl) {
-        const response = await axios.get(_res?.data?.exportUrl, {
-          responseType: "blob", // Important to get the response as a Blob
-        });
+      if (storeDetail?.isStatusCafe) {
+        const dataExcel = _res?.data?.bills;
+        if (!dataExcel || dataExcel.length === 0) {
+          Swal.fire({
+            icon: "warning",
+            title: t("Please select data to export."),
+            timer: 3000,
+            position: "top-end",
+            toast: true,
+            showConfirmButton: false,
+          });
+          return;
+        }
 
-        // Create a Blob from the response data
-        const fileBlob = new Blob([response.data], {
+        const header = [
+          t("no"),
+          t("payment_type"),
+          t("bank_transfer_history"),
+          t("status"),
+          t("cash"),
+          t("e_money"),
+          t("delivery"),
+          t("point"),
+          t("discount"),
+          t("discount_type"),
+          t("change"),
+          t("last_paid"),
+          t("before_paid"),
+          t("debt_amount"),
+          t("date"),
+          t("type_pay"),
+        ];
+
+        const workbook = new ExcelJS.Workbook();
+        const sheet = workbook.addWorksheet("Expenses");
+
+        // Set header row
+        sheet.getRow(2).values = header;
+
+        // Format header row
+        for (let i = 1; i <= header.length; i++) {
+          const cell = sheet.getRow(2).getCell(i);
+
+          cell.border = {
+            top: { style: "thin", color: { argb: "FFCC8400" } },
+            left: { style: "thin", color: { argb: "FFCC8400" } },
+            bottom: { style: "thin", color: { argb: "FFCC8400" } },
+            right: { style: "thin", color: { argb: "FFCC8400" } },
+          };
+
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: COLOR_APP,
+          };
+
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 14,
+            bold: true,
+            color: { argb: "FF000000" }, // ປ່ຽນເປັນສີດຳ
+          };
+
+          cell.alignment = {
+            horizontal: i === 1 ? "center" : "left",
+            vertical: "middle",
+            wrapText: true,
+          };
+        }
+
+        // Set column widths
+        sheet.columns = [
+          { key: "no", width: 10 },
+          { key: "payment_type", width: 18 },
+          { key: "bank_transfer_history", width: 18 },
+          { key: "status", width: 18 },
+          { key: "cash", width: 18 },
+          { key: "e_money", width: 18 },
+          { key: "delivery", width: 18 },
+          { key: "point", width: 18 },
+          { key: "discount", width: 18 },
+          { key: "discount_type", width: 18 },
+          { key: "change", width: 18 },
+          { key: "last_paid", width: 18 },
+          { key: "before_paid", width: 18 },
+          { key: "debt_amount", width: 18 },
+          { key: "date", width: 18 },
+          { key: "type_pay", width: 18 },
+        ];
+
+        // Add data rows
+        for (const [index, item] of dataExcel.entries()) {
+          const formattedDate = moment(item?.createdAt).format("DD/MM/YYYY");
+
+          const row = sheet.addRow({
+            no: index + 1,
+            payment_type: item?.paymentMethod,
+            bank_transfer_history: item.selectedBank,
+            status: item?.status,
+            cash: item?.payAmount || 0,
+            e_money: item?.transferAmount || 0,
+            delivery: item?.deliveryAmount || 0,
+            point: item?.point || 0,
+            discount: item?.discount || 0,
+            discount_type: item?.discountType,
+            change: item?.change || 0,
+            last_paid: item?.billAmount || 0,
+            before_paid: item?.billAmountBefore || 0,
+            debt_amount: item?.debtId?.remainingAmount || 0,
+            date: formattedDate,
+          });
+
+          // Format data rows
+          row.eachCell((cell, colNumber) => {
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 14,
+            };
+
+            cell.alignment = {
+              horizontal: colNumber === 1 ? "center" : "left",
+              vertical: "middle",
+            };
+          });
+        }
+
+        // Set row heights
+        for (let i = 1; i <= dataExcel.length + 2; i++) {
+          sheet.getRow(i).height = 45;
+        }
+
+        // Generate Excel file
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
 
-        // Use the file-saver library to save the file with a new name
-        // biome-ignore lint/style/useTemplate: <explanation>
-        saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
-      }
+        // Download the file
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = downloadUrl;
+        anchor.download = `${storeDetail?.name} - ExportExel.xlsx`;
+        anchor.click();
+        window.URL.revokeObjectURL(downloadUrl);
+      } else {
+        if (_res?.data?.exportUrl) {
+          const response = await axios.get(_res?.data?.exportUrl, {
+            responseType: "blob",
+          });
 
-      // setLoadingExportCsv(false);
+          const fileBlob = new Blob([response.data], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+
+          saveAs(fileBlob, `${storeDetail?.name}.xlsx` || "export.xlsx");
+        }
+      }
     } catch (err) {
-      // setLoadingExportCsv(false);
+      console.error("Export failed:", err);
       errorAdd(`${t("export_fail")}`);
     }
   };

@@ -6,7 +6,7 @@ export const getCategories = async (storeId) => {
   try {
     const url = `${END_POINT_SEVER_TABLE_MENU}/v3/categories?storeId=${storeId}`;
     const res = await axios.get(url);
-    return res.data;
+    return res?.data;
   } catch (error) {
     return error;
   }
@@ -16,7 +16,7 @@ export const getCategory = async (categoryId) => {
   try {
     const url = `${END_POINT_SEVER_TABLE_MENU}/v3/category?id=${categoryId}`;
     const res = await axios.get(url);
-    return res.data;
+    return res?.data;
   } catch (error) {
     return error;
   }
