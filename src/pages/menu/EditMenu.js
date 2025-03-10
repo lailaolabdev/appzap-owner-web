@@ -12,6 +12,7 @@ import { errorAdd, successAdd } from "../../helpers/sweetalert";
 import PopUpAddMenuOption from "./components/popup/PopUpAddMenuOption";
 import { getLocalData } from "../../constants/api";
 import { getCategories } from "../../services/menuCategory";
+import Box from "../../components/Box";
 
 export default function EditMenu() {
   const location = useLocation();
@@ -136,13 +137,15 @@ export default function EditMenu() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="p-4">
         {/* Upload Image */}
-        <Upload
-          src={watch("images")?.[0] || ""}
-          removeImage={() => setValue("images", [])}
-          onChange={(e) => {
-            setValue("images", [e.name]);
-          }}
-        />
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Upload
+            src={watch("images")?.[0] || ""}
+            removeImage={() => setValue("images", [])}
+            onChange={(e) => {
+              setValue("images", [e.name]);
+            }}
+          />
+        </Box>
 
         {/* Recommended and Weight Menu */}
         <div className="flex flex-row justify-between items-center mb-4">
@@ -181,8 +184,7 @@ export default function EditMenu() {
                 setDetailMenuOption({ data, index });
               }}
             >
-              + {t("addition_options")} (
-              {menuOptionsCount[data?.id] || data?.menuOptions?.length || 0})
+              + {t("addition_options")}
             </button>
           </div>
         </div>
