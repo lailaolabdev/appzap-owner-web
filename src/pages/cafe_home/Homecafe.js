@@ -1813,7 +1813,11 @@ function Homecafe() {
                         <span className={fontMap[language]}>
                           {t("amountTotal")} :{" "}
                         </span>
-                        <span>{Number.parseFloat(TotalAmount())}</span>
+                        <span>
+                          {storeDetail?.isStatusCafe
+                            ? Number.parseFloat(TotalAmount())
+                            : Number.parseFloat(TotalAmount()).toFixed(3)}
+                        </span>
                       </div>
                       <div>
                         <span className={fontMap[language]}>
