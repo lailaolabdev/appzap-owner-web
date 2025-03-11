@@ -318,7 +318,9 @@ export default function DashboardFinance({
     );
 
     const _checkOut = getDataDashBoard.data;
+
     const totalPrice = _.sumBy(_checkOut, (o) => o.billAmount);
+
     const _formatJson = {
       checkOut: _checkOut,
       amount: totalPrice,
@@ -1186,12 +1188,15 @@ export default function DashboardFinance({
           )}
         </Modal.Body>
         {dataModal?.isCafe ? (
-          <div>
+          <div
+            style={{ width: "80mm", padding: 10, margin: 5 }}
+            ref={bill80Ref}
+          >
             <BillForCheckOutCafe80
               storeDetail={storeDetail}
               profile={profile}
-              dataBill={dataModal}
-              data={0}
+              dataBill={dataModal?.orderId}
+              data={dataModal?.length}
               memberData={""}
             />
           </div>
@@ -1201,7 +1206,7 @@ export default function DashboardFinance({
             ref={bill80Ref}
           >
             <BillForCheckOut80
-              // orderPayBefore={orderPayBefore}
+              orderPayBefore={0}
               storeDetail={storeDetail}
               selectedTable={selectedTable}
               dataBill={dataModal}
