@@ -353,7 +353,7 @@ export default function HistoryBankTransferClaim() {
     <div>
       {unClaimedData?.length > 0 && (
         <MoneySummaryCard
-          amount={totalAmountSelectedClaim || TotalAmountClaim}
+          amount={amountData?.unclaimed}
           currency={storeDetail?.firstCurrency}
         />
       )}
