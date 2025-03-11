@@ -198,22 +198,50 @@ function HomecafeEdit() {
   };
   const handleClose = () => setShow(false);
 
-  const handleSetQuantity = (int, data) => {
+  // const handleSetQuantity = (int, data) => {
+  //   const dataArray = [];
+  //   for (const i of SelectedMenus) {
+  //     let _data = { ...i };
+
+  //     if (
+  //       data?.id === i?.id &&
+  //       JSON.stringify(data?.options) === JSON.stringify(i?.options)
+  //     ) {
+  //       _data = { ..._data, quantity: _data?.quantity + int };
+  //     }
+
+  //     if (_data.quantity > 0) {
+  //       dataArray.push(_data);
+  //     }
+  //   }
+  //   setSelectedMenu(dataArray);
+  //   setSelectedMenus(dataArray);
+  // };
+
+  const handleSetQuantity = async (int, data) => {
     const dataArray = [];
+
     for (const i of SelectedMenus) {
       let _data = { ...i };
 
       if (
-        data?.id === i?.id &&
+        data?._id === i?._id &&
         JSON.stringify(data?.options) === JSON.stringify(i?.options)
       ) {
         _data = { ..._data, quantity: _data?.quantity + int };
+
+        if (_data?.quantity < 0) {
+          const storeId = storeDetail?._id;
+          await deleteOrderCafeItemV7(i, storeId);
+          continue;
+        }
       }
 
       if (_data.quantity > 0) {
         dataArray.push(_data);
       }
     }
+
     setSelectedMenu(dataArray);
     setSelectedMenus(dataArray);
   };
