@@ -555,7 +555,7 @@ export default function ConfigPage() {
                         : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
-                      disabled={true}
+                      // disabled={true}
                       type="switch"
                       checked={storeDetail?.isBankPaymentAvailable}
                       id={"transfer-payment-" + item?.key}
