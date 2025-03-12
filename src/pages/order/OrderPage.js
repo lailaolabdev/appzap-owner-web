@@ -5,7 +5,7 @@ import { Button, Tabs, Tab, Spinner } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { useStore } from "../../store";
 
-import { getCountOrderWaiting, updateOrderItem } from "../../services/order";
+import { getCountOrderWaiting, updateOrderItemV7 } from "../../services/order";
 import BillForChef80 from "../../components/bill/BillForChef80";
 import {
   DOING_STATUS,
@@ -151,11 +151,11 @@ export default function OrderPage() {
       }));
 
       // Update order status in the backend
-      const response = await updateOrderItem(_updateItems, storeDetail?._id);
+      const response = await updateOrderItemV7(_updateItems, storeDetail?._id);
 
       console.log({ response });
 
-      if (response?.data?.message === "UPADTE_ORDER_SECCESS") {
+      if (response?.data?.message === "UPDATE_ORDER_SUCCESS") {
         setOrdersUpdating(false);
         // Show success message
         Swal.fire({

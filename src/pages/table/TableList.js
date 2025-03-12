@@ -1520,6 +1520,7 @@ export default function TableList() {
       const storeId = storeDetail?._id;
 
       // Filter checked items with status "SERVED"
+      let menuId;
       const serveItemsReq = isCheckedOrderItem
         ?.filter((e) => e?.isChecked && e?.status !== "SERVED") // Add condition for SERVED status
         .map((i) => ({
@@ -1532,8 +1533,20 @@ export default function TableList() {
 
       if (serveItemsReq.length === 0) return setIsServerdLoading(false);
 
+      console.log("serveItemsReq", serveItemsReq);
+      console.log("selectedTable", selectedTable);
+
       // Only send data for items with a valid status change
-      const response = await updateOrderItemV7(serveItemsReq, storeId);
+      // const response = await updateOrderItemV7(serveItemsReq, storeId);
+
+      const response = await updateOrderItemV7(
+        serveItemsReq,
+        storeId,
+        menuId,
+        selectedTable
+      );
+
+      console.log("response", response?.data);
 
       if (response?.data?.message === "UPDATE_ORDER_SUCCESS") {
         setCheckedBox(!checkedBox);
@@ -1548,6 +1561,7 @@ export default function TableList() {
 
         // 1. Optimistically update the order list in the state (Update the status to "SERVED")
         const updatedOrderItems = isCheckedOrderItem.map((item) => {
+          console.log("OrderItems", item);
           // Check if the item is checked, and update its status
           const updatedItem = {
             ...item,
@@ -1563,6 +1577,8 @@ export default function TableList() {
 
           return updatedItem;
         });
+
+        console.log("updatedOrderItems", updatedOrderItems);
 
         setIsCheckedOrderItem(updatedOrderItems); // Update state
 
