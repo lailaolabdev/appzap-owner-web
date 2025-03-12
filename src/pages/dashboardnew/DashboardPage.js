@@ -138,7 +138,7 @@ export default function DashboardPage() {
       findBy += `startDate=${startDate}&`;
       findBy += `endDate=${endDate}&`;
       findBy += `startTime=${startTime}&`;
-      findBy += `endTime=${endTime}&`;
+      findBy += `endTime=${endTime}`;
 
       if (shiftId) {
         findBy += `&shiftId=${shiftId}`;
@@ -147,7 +147,7 @@ export default function DashboardPage() {
       findBy += `startDate=${startDate}&`;
       findBy += `endDate=${endDate}&`;
       findBy += `startTime=${startTime}&`;
-      findBy += `endTime=${endTime}&`;
+      findBy += `endTime=${endTime}`;
       if (shiftCurrent[0]) {
         findBy += `&shiftId=${shiftCurrent[0]?._id}`;
       }

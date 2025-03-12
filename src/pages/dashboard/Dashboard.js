@@ -112,7 +112,7 @@ export default function Dashboard() {
       findBy += `startDate=${startDate}&`;
       findBy += `endDate=${endDate}&`;
       findBy += `startTime=${startTime}&`;
-      findBy += `endTime=${endTime}&`;
+      findBy += `endTime=${endTime}`;
 
       if (shiftId) {
         findBy += `&shiftId=${shiftId}`;
@@ -121,7 +121,7 @@ export default function Dashboard() {
       findBy += `startDate=${startDate}&`;
       findBy += `endDate=${endDate}&`;
       findBy += `startTime=${startTime}&`;
-      findBy += `endTime=${endTime}&`;
+      findBy += `endTime=${endTime}`;
       if (shiftCurrent[0]) {
         findBy += `&shiftId=${shiftCurrent[0]?._id}`;
       }
@@ -167,7 +167,7 @@ export default function Dashboard() {
       findBy += `dateFrom=${startDate}&`;
       findBy += `dateTo=${endDate}&`;
       findBy += `timeFrom=${startTime}&`;
-      findBy += `timeTo=${endTime}&`;
+      findBy += `timeTo=${endTime}`;
 
       if (shiftId) {
         findBy += `&shiftId=${shiftId}`;
@@ -178,7 +178,7 @@ export default function Dashboard() {
       findBy += `dateFrom=${startDate}&`;
       findBy += `dateTo=${endDate}&`;
       findBy += `timeFrom=${startTime}&`;
-      findBy += `timeTo=${endTime}&`;
+      findBy += `timeTo=${endTime}`;
       if (shiftCurrent[0]) {
         findBy += `&shiftId=${shiftCurrent[0]?._id}`;
       }
@@ -190,7 +190,7 @@ export default function Dashboard() {
 
   const getTotalBillActiveReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getTotalBillActiveReport(storeDetail?._id, findBy);
+    const data = await getTotalBillActiveReport(storeDetail?._id, findByData());
 
     setTotalBillActiveReport(data);
   };

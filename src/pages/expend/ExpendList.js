@@ -287,12 +287,12 @@ export default function ExpendList() {
           findby += `&shiftId=${shiftId}`;
         }
       } else {
-        findby += `&date_gte=${startDate}&`;
-        findby += `&date_lt=${endDate}&`;
-        findby += `&startTime=${startTime}&`;
-        findby += `&endTime=${endTime}&`;
+        findby += `&date_gte=${startDate}`;
+        findby += `&date_lt=${endDate}`;
+        findby += `&startTime=${startTime}`;
+        findby += `&endTime=${endTime}`;
         if (shiftCurrent[0]) {
-          findby += `&shiftId=${shiftCurrent[0]?._id}&`;
+          findby += `&shiftId=${shiftCurrent[0]?._id}`;
         }
       }
 
