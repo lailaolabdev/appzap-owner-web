@@ -71,7 +71,6 @@ export default function Dashboard() {
   const [changeText, setChangeText] = useState("CLICK1");
   const [countIsDebtTrue, setCountIsDebtTrue] = useState(0);
 
-
   const [shifts, setShift] = useState([]);
   const [shiftId, setShiftId] = useState(null);
 
@@ -116,7 +115,7 @@ export default function Dashboard() {
       findBy += `endTime=${endTime}&`;
 
       if (shiftId) {
-        findBy += `shiftId=${shiftId}&`;
+        findBy += `&shiftId=${shiftId}`;
       }
     } else {
       findBy += `startDate=${startDate}&`;
@@ -124,13 +123,12 @@ export default function Dashboard() {
       findBy += `startTime=${startTime}&`;
       findBy += `endTime=${endTime}&`;
       if (shiftCurrent[0]) {
-        findBy += `shiftId=${shiftCurrent[0]?._id}&`;
+        findBy += `&shiftId=${shiftCurrent[0]?._id}`;
       }
     }
 
     return findBy;
   };
-
 
   // function
   const getReportData = async () => {
@@ -161,7 +159,6 @@ export default function Dashboard() {
     setCountAllBillReport(data);
   };
 
-
   const getCountBillActiveReportData = async () => {
     let findBy = "?";
     if (profile?.data?.role === "APPZAP_ADMIN") {
@@ -173,7 +170,7 @@ export default function Dashboard() {
       findBy += `timeTo=${endTime}&`;
 
       if (shiftId) {
-        findBy += `shiftId=${shiftId}&`;
+        findBy += `&shiftId=${shiftId}`;
       }
     } else {
       findBy += `storeId=${storeDetail?._id}&`;
@@ -183,7 +180,7 @@ export default function Dashboard() {
       findBy += `timeFrom=${startTime}&`;
       findBy += `timeTo=${endTime}&`;
       if (shiftCurrent[0]) {
-        findBy += `shiftId=${shiftCurrent[0]?._id}&`;
+        findBy += `&shiftId=${shiftCurrent[0]?._id}`;
       }
     }
 
@@ -360,7 +357,7 @@ export default function Dashboard() {
                 {" : "}
                 {convertNumber(
                   totalBillActiveReport?.total +
-                    salesInformationReport?.totalSales 
+                    salesInformationReport?.totalSales
                 )}
               </div>
               <div className={fontMap[language]}>
