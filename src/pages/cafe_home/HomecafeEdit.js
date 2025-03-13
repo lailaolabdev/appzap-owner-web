@@ -2096,7 +2096,7 @@ function HomecafeEdit() {
                 <div className="row" style={{ margin: 0 }}>
                   {SelectedMenus.length > 0 ? (
                     <>
-                      <Button
+                      {/* <Button
                         variant="outline-warning"
                         className="hover-me"
                         style={{
@@ -2112,7 +2112,7 @@ function HomecafeEdit() {
                         }}
                       >
                         {t("cancel")}
-                      </Button>
+                      </Button> */}
                       <Button
                         variant="light"
                         className="hover-me"
