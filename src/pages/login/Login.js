@@ -218,6 +218,7 @@ function Login() {
                   <Form.Control
                     type="text"
                     placeholder={t("user_name_dot")}
+                    data-testid="login-username"
                     onChange={handleChange("userId")}
                     onBlur={handleBlur}
                     value={values.userId}
@@ -255,6 +256,7 @@ function Login() {
                       type={isPasswordType ? "password" : "text"}
                       placeholder={t("password_dot")}
                       onChange={handleChange("password")}
+                      data-testid="login-password"
                       onBlur={handleBlur}
                       value={values.password}
                       style={{ borderWidth: 0 }}
@@ -265,6 +267,7 @@ function Login() {
                       }}
                     />
                     <FontAwesomeIcon
+                      id="toggle-password"
                       onClick={() => setIsPasswordType(!isPasswordType)}
                       style={{ float: "right", marginRight: 8 }}
                       icon={isPasswordType ? faEye : faEyeSlash}
@@ -310,6 +313,7 @@ function Login() {
                     }}
                     onClick={handleSubmit}
                     // disabled={isLoading}
+                    data-testid="login-button"
                   >
                     {isLoading && <Spinner size="small" animation="border" />}
                     {t("log_in")}

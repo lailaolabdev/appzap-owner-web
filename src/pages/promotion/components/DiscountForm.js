@@ -49,7 +49,7 @@ const DiscountForm = () => {
     isMenuLoading,
   } = useMenuStore();
 
-  const fetchData = async () => {
+  const fetchDataMenu = async () => {
     if (storeDetail?._id) {
       const storeId = storeDetail?._id;
 
@@ -162,7 +162,6 @@ const DiscountForm = () => {
       ? [...formData.selectedMenus, e.target.value]
       : formData.selectedMenus.filter((id) => id !== e.target.value);
 
-    console.log("Selected: ", selected);
     setFormData({
       ...formData,
       selectedMenus: selected,
@@ -231,7 +230,7 @@ const DiscountForm = () => {
           errorAdd("ເພີ່ມບໍ່ສຳເລັດ");
         }
       });
-    fetchData();
+    fetchDataMenu();
   };
   const openModal = () => {
     setModalOpen(true);

@@ -18,7 +18,7 @@ import {
   GetOnePromotion,
   RemoveMenuFromDiscount,
 } from "../../../services/promotion";
-
+import Loading from "../../../components/Loading";
 const EditDiscountForm = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -142,6 +142,7 @@ const EditDiscountForm = () => {
   };
 
   const getOnePromotion = async (id) => {
+    setIsLoading(true);
     const response = await GetOnePromotion(id);
     if (response?.status === 200) {
       const data = response?.data;
@@ -160,6 +161,7 @@ const EditDiscountForm = () => {
         selectedMenus: selectedMenu, // Full menu objects
         selectedMenuIds: specialIds, // Only menu IDs
       });
+      setIsLoading(false);
     }
   };
 
@@ -226,17 +228,12 @@ const EditDiscountForm = () => {
       const storeId = storeDetail?._id;
 
       // Check if menuData and categories are already in the zustand store
-      if (!menus.length || !menuCategories.length) {
-        // If menuData or categories are not found, fetch them
-        if (!menus.length) {
-          const fetchedMenus = await getMenus(storeId);
-          setMenus(fetchedMenus); // Save to zustand store
-        }
-        if (!menuCategories.length) {
-          const fetchedCategories = await getMenuCategories(storeId);
-          setMenuCategories(fetchedCategories); // Save to zustand store
-        }
-      }
+
+      const fetchedMenus = await getMenus(storeId);
+      setMenus(fetchedMenus); // Save to zustand store
+
+      const fetchedCategories = await getMenuCategories(storeId);
+      setMenuCategories(fetchedCategories); // Save to zustand store
     }
   };
 
@@ -326,6 +323,7 @@ const EditDiscountForm = () => {
 
   return (
     <div className="p-2 bg-gray-50 h-full w-full">
+      {isLoading && <Loading />}
       <Card className="bg-white rounded-xl h-full">
         <form onSubmit={handleSubmit} className="p-4">
           <h2 className="text-lg font-bold">ໂປຣໂມຊັນສ່ວນຫຼຸດ</h2>
@@ -426,7 +424,7 @@ const EditDiscountForm = () => {
               </h3>
 
               <div className="mb-4 flex justify-between items-center">
-                {formData?.selectedMenus?.length > 1 && (
+                {/* {formData?.selectedMenus?.length > 1 && (
                   <div className="flex gap-2">
                     <button
                       type="button"
@@ -436,7 +434,7 @@ const EditDiscountForm = () => {
                       ຍົກເລິກທັງໝົດ
                     </button>
                   </div>
-                )}
+                )} */}
                 <div className="flex flex-col gap-2">
                   <button
                     type="button"
