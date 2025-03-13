@@ -131,10 +131,10 @@ export default function FarkPage() {
         findBy += `startDate=${startDate}&`;
         findBy += `endDate=${endDate}&`;
         findBy += `startTime=${startTime}&`;
-        findBy += `endTime=${endTime}&`;
+        findBy += `endTime=${endTime}`;
 
         if (shiftId) {
-          findBy += `shiftId=${shiftId}&`;
+          findBy += `&shiftId=${shiftId}`;
         }
       } else {
         findBy += `skip=${(pagination - 1) * limitData}&`;
@@ -143,9 +143,9 @@ export default function FarkPage() {
         findBy += `startDate=${startDate}&`;
         findBy += `endDate=${endDate}&`;
         findBy += `startTime=${startTime}&`;
-        findBy += `endTime=${endTime}&`;
+        findBy += `endTime=${endTime}`;
         if (shiftCurrent[0]) {
-          findBy += `shiftId=${shiftCurrent[0]?._id}&`;
+          findBy += `&shiftId=${shiftCurrent[0]?._id}`;
         }
       }
 

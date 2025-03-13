@@ -138,18 +138,18 @@ export default function DashboardPage() {
       findBy += `startDate=${startDate}&`;
       findBy += `endDate=${endDate}&`;
       findBy += `startTime=${startTime}&`;
-      findBy += `endTime=${endTime}&`;
+      findBy += `endTime=${endTime}`;
 
       if (shiftId) {
-        findBy += `shiftId=${shiftId}&`;
+        findBy += `&shiftId=${shiftId}`;
       }
     } else {
       findBy += `startDate=${startDate}&`;
       findBy += `endDate=${endDate}&`;
       findBy += `startTime=${startTime}&`;
-      findBy += `endTime=${endTime}&`;
+      findBy += `endTime=${endTime}`;
       if (shiftCurrent[0]) {
-        findBy += `shiftId=${shiftCurrent[0]?._id}&`;
+        findBy += `&shiftId=${shiftCurrent[0]?._id}`;
       }
     }
 
@@ -302,7 +302,7 @@ export default function DashboardPage() {
         });
 
         // Create a Blob from the response data
-       // console.log("response", response.data);
+        // console.log("response", response.data);
         const fileBlob = new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });

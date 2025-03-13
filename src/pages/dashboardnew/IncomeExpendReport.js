@@ -278,19 +278,19 @@ export default function IncomeExpendExport() {
           findIncomeby += `startDate=${dateStart}&`;
           findIncomeby += `endDate=${dateEnd}&`;
           findIncomeby += `startTime=${startTime}&`;
-          findIncomeby += `endTime=${endTime}&`;
+          findIncomeby += `endTime=${endTime}`;
         }
 
         if (shiftId) {
-          findIncomeby += `shiftId=${shiftId}&`;
+          findIncomeby += `&shiftId=${shiftId}`;
         }
       } else {
         findIncomeby += `startDate=${dateStart}&`;
         findIncomeby += `endDate=${dateEnd}&`;
         findIncomeby += `startTime=${startTime}&`;
-        findIncomeby += `endTime=${endTime}&`;
+        findIncomeby += `endTime=${endTime}`;
         if (shiftCurrent[0]) {
-          findIncomeby += `shiftId=${shiftCurrent[0]?._id}&`;
+          findIncomeby += `&shiftId=${shiftCurrent[0]?._id}`;
         }
       }
 

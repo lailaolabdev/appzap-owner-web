@@ -71,7 +71,6 @@ export default function Dashboard() {
   const [changeText, setChangeText] = useState("CLICK1");
   const [countIsDebtTrue, setCountIsDebtTrue] = useState(0);
 
-
   const [shifts, setShift] = useState([]);
   const [shiftId, setShiftId] = useState(null);
 
@@ -113,24 +112,23 @@ export default function Dashboard() {
       findBy += `startDate=${startDate}&`;
       findBy += `endDate=${endDate}&`;
       findBy += `startTime=${startTime}&`;
-      findBy += `endTime=${endTime}&`;
+      findBy += `endTime=${endTime}`;
 
       if (shiftId) {
-        findBy += `shiftId=${shiftId}&`;
+        findBy += `&shiftId=${shiftId}`;
       }
     } else {
       findBy += `startDate=${startDate}&`;
       findBy += `endDate=${endDate}&`;
       findBy += `startTime=${startTime}&`;
-      findBy += `endTime=${endTime}&`;
+      findBy += `endTime=${endTime}`;
       if (shiftCurrent[0]) {
-        findBy += `shiftId=${shiftCurrent[0]?._id}&`;
+        findBy += `&shiftId=${shiftCurrent[0]?._id}`;
       }
     }
 
     return findBy;
   };
-
 
   // function
   const getReportData = async () => {
@@ -161,7 +159,6 @@ export default function Dashboard() {
     setCountAllBillReport(data);
   };
 
-
   const getCountBillActiveReportData = async () => {
     let findBy = "?";
     if (profile?.data?.role === "APPZAP_ADMIN") {
@@ -170,10 +167,10 @@ export default function Dashboard() {
       findBy += `dateFrom=${startDate}&`;
       findBy += `dateTo=${endDate}&`;
       findBy += `timeFrom=${startTime}&`;
-      findBy += `timeTo=${endTime}&`;
+      findBy += `timeTo=${endTime}`;
 
       if (shiftId) {
-        findBy += `shiftId=${shiftId}&`;
+        findBy += `&shiftId=${shiftId}`;
       }
     } else {
       findBy += `storeId=${storeDetail?._id}&`;
@@ -181,9 +178,9 @@ export default function Dashboard() {
       findBy += `dateFrom=${startDate}&`;
       findBy += `dateTo=${endDate}&`;
       findBy += `timeFrom=${startTime}&`;
-      findBy += `timeTo=${endTime}&`;
+      findBy += `timeTo=${endTime}`;
       if (shiftCurrent[0]) {
-        findBy += `shiftId=${shiftCurrent[0]?._id}&`;
+        findBy += `&shiftId=${shiftCurrent[0]?._id}`;
       }
     }
 
@@ -193,7 +190,7 @@ export default function Dashboard() {
 
   const getTotalBillActiveReportData = async () => {
     const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getTotalBillActiveReport(storeDetail?._id, findBy);
+    const data = await getTotalBillActiveReport(storeDetail?._id, findByData());
 
     setTotalBillActiveReport(data);
   };
@@ -360,7 +357,7 @@ export default function Dashboard() {
                 {" : "}
                 {convertNumber(
                   totalBillActiveReport?.total +
-                    salesInformationReport?.totalSales 
+                    salesInformationReport?.totalSales
                 )}
               </div>
               <div className={fontMap[language]}>
