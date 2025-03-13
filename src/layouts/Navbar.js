@@ -93,7 +93,7 @@ export default function NavBar() {
     try {
       const { DATA } = await getLocalData();
       const _res = await axios.get(
-        `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${DATA?.storeId}&claimStatus=UNCLAIMED&paymentMethod=BANK_TRANSFER&status=PAID`
+        `${END_POINT_SERVER_JUSTCAN}/v5/checkout-total-amount?storeId=${DATA?.storeId}`
       );
       console.log("_res.data");
       console.log(_res.data);
