@@ -42,6 +42,8 @@ export default function BillForCheckOut80({
     orderPayBefore && orderPayBefore.length > 0
       ? orderPayBefore
       : dataBill?.orderId;
+
+  console.log("BILLDATA", orderPayBefore);
   // useEffect
   useEffect(() => {
     _calculateTotal();
@@ -79,11 +81,12 @@ export default function BillForCheckOut80({
 
     // Loop through the available orders
     for (let _data of (orders || []).filter(
-      (e) => e?.status === "SERVED" || e?.status === "PRINTBILL"
+      (e) => e?.status === "SERVED" || e?.status === "PRINTBILL" || "PAID"
     )) {
       const totalOptionPrice = _data?.totalOptionPrice || 0;
       const itemPrice = _data?.price + totalOptionPrice;
       _total += _data?.quantity * itemPrice;
+      console.log("_total", _total);
     }
 
     const totalAmountAll =
@@ -105,6 +108,7 @@ export default function BillForCheckOut80({
     } else {
       setTotalAfterDiscount(totalAmountAll);
     }
+    console.log("totalAmountAll", totalAmountAll);
     setTotal(totalAmountAll);
     setTaxAmount((totalAmountAll * taxPercent) / 100);
     const serviceChargeTotal = Math.floor(
@@ -238,7 +242,12 @@ export default function BillForCheckOut80({
       </Name>
       <Order>
         {orders
-          ?.filter((e) => e?.status === "SERVED" || e?.status === "PRINTBILL")
+          ?.filter(
+            (e) =>
+              e?.status === "SERVED" ||
+              e?.status === "PRINTBILL" ||
+              e?.status === "PAID"
+          )
           ?.map((item, index) => {
             const optionsNames =
               item?.options

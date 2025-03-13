@@ -117,7 +117,7 @@ export default function MenuList() {
       }
     };
     fetchData();
-    getCategory();
+    // getCategory();
   }, []);
 
   useEffect(() => {
@@ -668,17 +668,17 @@ export default function MenuList() {
 
   const [categoriesRestaurant, setCategoriesRestaurant] = useState([]);
 
-  const getCategory = async () => {
-    try {
-      await fetch(master_menu_api_dev + `/api/restaurant-categories`, {
-        method: "GET",
-      })
-        .then((response) => response.json())
-        .then((json) => setCategoriesRestaurant(json));
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // const getCategory = async () => {
+  //   try {
+  //     await fetch(master_menu_api_dev + `/api/restaurant-categories`, {
+  //       method: "GET",
+  //     })
+  //       .then((response) => response.json())
+  //       .then((json) => setCategoriesRestaurant(json));
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   return (
     <div style={BODY}>

@@ -39,6 +39,7 @@ import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
 import printFlutter from "../../helpers/printFlutter";
 import BillForCheckOut80 from "../../components/bill/BillForCheckOut80";
+import BillForCheckOutCafe80 from "../../components/bill/BillForCheckOutCafe80";
 
 const limitData = 50;
 
@@ -213,6 +214,7 @@ export default function DashboardFinance({
 
   const handleShow = (item) => {
     setShow(true);
+    console.log("ITEM", item);
     setDataModal(item);
   };
 
@@ -316,7 +318,9 @@ export default function DashboardFinance({
     );
 
     const _checkOut = getDataDashBoard.data;
+
     const totalPrice = _.sumBy(_checkOut, (o) => o.billAmount);
+
     const _formatJson = {
       checkOut: _checkOut,
       amount: totalPrice,
@@ -1183,17 +1187,36 @@ export default function DashboardFinance({
             </div>
           )}
         </Modal.Body>
-        <div style={{ width: "80mm", padding: 10, margin: 5 }} ref={bill80Ref}>
-          <BillForCheckOut80
-            // orderPayBefore={orderPayBefore}
-            storeDetail={storeDetail}
-            selectedTable={selectedTable}
-            dataBill={dataModal}
-            totalBillBillForCheckOut80={totalAfter}
-            // taxPercent={taxPercent}
-            profile={profile}
-          />
-        </div>
+        {dataModal?.isCafe ? (
+          <div
+            style={{ width: "80mm", padding: 10, margin: 5 }}
+            ref={bill80Ref}
+          >
+            <BillForCheckOutCafe80
+              storeDetail={storeDetail}
+              profile={profile}
+              dataBill={dataModal?.orderId}
+              data={dataModal?.length}
+              memberData={""}
+            />
+          </div>
+        ) : (
+          <div
+            style={{ width: "80mm", padding: 10, margin: 5 }}
+            ref={bill80Ref}
+          >
+            <BillForCheckOut80
+              orderPayBefore={0}
+              storeDetail={storeDetail}
+              selectedTable={selectedTable}
+              dataBill={dataModal}
+              totalBillBillForCheckOut80={totalAfter}
+              // taxPercent={taxPercent}
+              profile={profile}
+            />
+          </div>
+        )}
+
         <Modal.Footer>
           <Button variant="danger" onClick={handleClose}>
             {t("close")}
