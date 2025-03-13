@@ -22,15 +22,15 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
   const { t } = useTranslation();
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [formData, setFormData] = useState({ role: "APPZAP_DEALER" });
-  const [dataPermission, setDataPermision] = useState([])
-  const { storeDetail } = useStoreStore()
+  const [dataPermission, setDataPermision] = useState([]);
+  const { storeDetail } = useStoreStore();
 
   // useEffect
   useEffect(() => {
     if (!open) {
       setButtonDisabled(false);
       setFormData({ role: "APPZAP_DEALER" });
-      getDataPermissionRole()
+      getDataPermissionRole();
     }
   }, [open]);
 
@@ -42,7 +42,6 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
     callback();
   };
 
-
   const getDataPermissionRole = async () => {
     try {
       const permissionData = await getPermissionRoles(storeDetail?._id);
@@ -52,10 +51,9 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
     }
   };
 
-
   return (
     <Modal show={open} onHide={onClose}>
-      <Modal.Header closeButton>{t("add_staff")}</Modal.Header>
+      <Modal.Header closeButton>{t("add_staff2")}</Modal.Header>
       <Modal.Body>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <div>
@@ -85,8 +83,12 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
               className="form-control"
               value={formData?.permissionRoleId || ""}
               onChange={(e) =>
-                setFormData((prev) => ({ ...prev, permissionRoleId: e.target.value }))
-              }>
+                setFormData((prev) => ({
+                  ...prev,
+                  permissionRoleId: e.target.value,
+                }))
+              }
+            >
               <option value="">{t("chose_policy_type")}</option>
               {dataPermission.map((role) => (
                 <option key={role._id} value={role._id}>
