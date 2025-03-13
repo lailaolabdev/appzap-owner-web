@@ -1708,14 +1708,14 @@ export default function TableList() {
           // remark: seletedCancelOrderItem
         };
       });
-    const _resOrderUpdate = await updateOrderItem(
+    const _resOrderUpdate = await updateOrderItemV7(
       _updateItems,
       storeId,
       menuId,
       seletedCancelOrderItem,
       selectedTable
     );
-    if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
+    if (_resOrderUpdate?.data?.message === "UPDATE_ORDER_SUCCESS") {
       handleClose1();
       reLoadData();
       setCheckedBox(!checkedBox);
