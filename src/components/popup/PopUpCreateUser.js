@@ -76,7 +76,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
               }
             />
           </div>
-          <div>
+          {/* <div>
             <Form.Label>{t("use_system_policy")}</Form.Label>
             <Form.Label>{t("use_system_policy")}</Form.Label>
             <select
@@ -96,7 +96,25 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
                 </option>
               ))}
             </select>
+          </div> */}
+          <div>
+            <Form.Label>{t("use_system_policy")}</Form.Label>
+            <select
+              className="form-control"
+              value={formData?.role}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, role: e.target.value }))
+              }
+            >
+              <option value="">{t("chose_policy_type")}</option>
+              <option value="APPZAP_ADMIN">{t("ceo")}</option>
+              <option value="APPZAP_STAFF">{t("server_staff")}</option>
+              <option value="APPZAP_COUNTER">{t("counter_staff")}</option>
+              <option value="APPZAP_KITCHEN">{t("chef")}</option>
+              <option value="APPZAP_CUSTOM_ROLE">{t("selft_define")}</option>
+            </select>
           </div>
+
           <div>
             <Form.Label>{t("phonenumber")}</Form.Label>
             <Form.Control
