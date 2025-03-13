@@ -82,6 +82,7 @@ function Homecafe() {
   const [selectedMenu, setSelectedMenu] = useState([]);
   const [selectedItem, setSelectedItem] = useState();
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategoryType, setSelectedCategoryType] = useState("All");
   const [show, setShow] = useState(false);
   const [menuOptions, setMenuOptions] = useState([]);
   const [isPopup, setIsPupup] = useState(false);
@@ -317,9 +318,48 @@ function Homecafe() {
 
   const afterSearch = _.filter(
     menus,
-    (e) =>
-      (e?.name?.indexOf(search) > -1 && selectedCategory === "All") ||
-      e?.categoryId?._id === selectedCategory
+    (menu) => {
+
+      const matchesSearch = search
+        ? menu?.name?.toLowerCase().includes(search.toLowerCase())
+        : true;
+
+      let matchesCategory = true;
+      if (selectedCategory !== "All") {
+
+        const menuCategoryId = menu?.categoryId?._id || menu?.categoryId;
+        matchesCategory = menuCategoryId === selectedCategory;
+      }
+
+      let matchesCategoryType = true;
+      if (selectedCategoryType !== "All") {
+        // find categoryId 
+        const menuCategoryId = menu?.categoryId?._id || menu?.categoryId;
+
+        const menuCategory = menuCategories.find(cat =>
+          cat._id === menuCategoryId
+        );
+
+        if (menuCategory) {
+          // check categoryTypeId is object or string
+          if (menuCategory.categoryTypeId) {
+            const categoryTypeName = menuCategory.categoryTypeId.name ||
+              // if id find name of categoryTypes
+              categoryTypes.find(type => type._id === menuCategory.categoryTypeId)?.name ||
+              "ໝວດໝູ່ອື່ນໆ";
+
+            matchesCategoryType = categoryTypeName === selectedCategoryType;
+          } else {
+            // if no categoryTypeId 
+            matchesCategoryType = selectedCategoryType === "ໝວດໝູ່ອື່ນໆ";
+          }
+        } else {
+          matchesCategoryType = false;
+        }
+      }
+
+      return matchesSearch && matchesCategory && matchesCategoryType;
+    }
   );
 
   const arrLength = SelectedMenus?.length;
@@ -591,7 +631,7 @@ function Homecafe() {
         return (
           item.id === selectedItem._id &&
           JSON.stringify(sortedItemOptionsForComparison) ===
-            JSON.stringify(sortedFilteredOptionsForComparison)
+          JSON.stringify(sortedFilteredOptionsForComparison)
         );
       });
 
@@ -601,7 +641,7 @@ function Homecafe() {
         updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
         updatedMenu[existingMenuIndex].totalPrice =
           updatedMenu[existingMenuIndex].price *
-            updatedMenu[existingMenuIndex].quantity +
+          updatedMenu[existingMenuIndex].quantity +
           totalOptionPrice;
       } else {
         updatedMenu.push(mainMenuData);
@@ -922,9 +962,8 @@ function Homecafe() {
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
               : "";
-            const optionText = `- ${option?.name}${optionPriceText} x ${
-              option?.quantity || 1
-            }`;
+            const optionText = `- ${option?.name}${optionPriceText} x ${option?.quantity || 1
+              }`;
             yPosition = wrapText(
               context,
               optionText,
@@ -1100,7 +1139,7 @@ function Homecafe() {
       .map((_, i) => billForCherCancel80.current[i]);
   }
 
-  console.log("billForCherCancel80", billForCherCancel80);
+ 
 
   const onPrintForCherLaBel = async () => {
     // setOnPrinting(true);
@@ -1359,6 +1398,32 @@ function Homecafe() {
     return finalPrice;
   };
 
+  const groupByCategoryType = () => {
+    const grouped = {
+      All: []
+    };
+
+    menuCategories.forEach(menu => {
+      const categoryTypeName = menu.categoryTypeId ? menu.categoryTypeId.name : "ໝວດໝູ່ອື່ນໆ";
+
+      if (!grouped[categoryTypeName]) {
+        grouped[categoryTypeName] = [];
+      }
+
+      grouped[categoryTypeName].push(menu);
+      grouped["All"].push(menu);
+    });
+
+    return grouped;
+  };
+
+  const categoryGroups = groupByCategoryType();
+  const categoryTypes = Object.keys(categoryGroups);
+
+  const filteredCategories = selectedCategoryType === "All"
+    ? menuCategories
+    : categoryGroups[selectedCategoryType] || [];
+
   return (
     <div>
       <CafeContent
@@ -1376,46 +1441,71 @@ function Homecafe() {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <div
-              ref={sliderRef}
-              className="w-full overflow-x-auto flex flex-row whitespace-nowrap p-2 gap-2 flex-1"
-            >
+            <div className="w-full overflow-x-auto flex flex-row whitespace-nowrap p-2 gap-2 flex-1">
               <button
-                type="button"
-                key={"category-all"}
+                key="category-type-all"
                 className={cn(
                   `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
-                  selectedCategory === "All"
-                    ? "text-color-app"
-                    : "text-gray-700",
+                  selectedCategoryType === "All" ? "text-color-app" : "text-gray-700",
+                  fontMap[language]
+                )}
+                onClick={() => {
+                  setSelectedCategoryType("All");
+                  setSelectedCategory("All");
+                }}
+              >
+                {t("ໝວດໝູ່ທັງຫມົດ")}
+                <div className="ml-12"></div>
+              </button>
+
+              {categoryTypes.filter(type => type !== "All").map((categoryType, index) => (
+                <button
+                  key={`category-type-${index}`}
+                  className={cn(
+                    `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
+                    selectedCategoryType === categoryType ? "text-color-app" : "text-gray-700",
+                    fontMap[language]
+                  )}
+                  onClick={() => {
+                    setSelectedCategoryType(categoryType);
+                    setSelectedCategory("All");
+                  }}
+                >
+                  {categoryType}
+                  <div className="ml-12"></div>
+                </button>
+              ))}
+            </div>
+
+            {/*  (menuCategories.name) */}
+            <div ref={sliderRef} className="w-full overflow-x-auto flex flex-row whitespace-nowrap p-2 gap-2 flex-1">
+              <button
+                key="category-all"
+                className={cn(
+                  `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
+                  selectedCategory === "All" ? "text-color-app" : "text-gray-700",
                   fontMap[language]
                 )}
                 onClick={() => setSelectedCategory("All")}
               >
-                {t("all")}
+                {t("ປະເພດທັງຫມົດ")}
                 <div className="ml-12"></div>
               </button>
-              {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
-              {menuCategories &&
-                menuCategories?.map((data, index) => {
-                  return (
-                    <button
-                      type="button"
-                      key={"category" + index}
-                      className={cn(
-                        `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
-                        selectedCategory === data?._id
-                          ? "text-color-app"
-                          : "text-gray-700",
-                        fontMap[language]
-                      )}
-                      onClick={() => setSelectedCategory(data?._id)}
-                    >
-                      {data?.name}
-                      <div className="ml-12"></div>
-                    </button>
-                  );
-                })}
+
+              {filteredCategories.map((data, index) => (
+                <button
+                  key={`category-${index}`}
+                  className={cn(
+                    `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
+                    selectedCategory === data?._id ? "text-color-app" : "text-gray-700",
+                    fontMap[language]
+                  )}
+                  onClick={() => setSelectedCategory(data?._id)}
+                >
+                  {data?.name}
+                  <div className="ml-12"></div>
+                </button>
+              ))}
             </div>
           </div>
 
@@ -1458,74 +1548,11 @@ function Homecafe() {
                         <span className="text-sm">{data?.name}</span>
                         <br />
 
-                        {/* {data?.promotionId?.length > 0 ? (
-                          data.promotionId.map((promotion, index) => {
-                            const filteredFreeItems =
-                              promotion?.freeItems?.filter(
-                                (freeItem) =>
-                                  freeItem?.mainMenuId?._id === data._id
-                              ) || [];
 
-                            return (
-                              <div
-                                key={promotion._id}
-                                className="flex flex-col"
-                              >
-                                {promotion?.discountValue ? (
-                                  <div className="flex flex-col">
-                                    <span className="text-color-app font-medium text-base">
-                                      {moneyCurrency(calculateDiscount(data))}{" "}
-                                      {storeDetail?.firstCurrency}
-                                    </span>
-
-                                    <div className="flex justify-between items-center">
-                                      <>
-                                        <span className="text-[14px] text-gray-500 line-through text-end">
-                                          {moneyCurrency(data?.price)}{" "}
-                                          {storeDetail?.firstCurrency}
-                                        </span>
-                                        <span className="flex flex-col text-center font-bold text-red-500 text-[12px] ">
-                                          <span>ສ່ວນຫຼຸດ</span>
-                                          <span>
-                                            {moneyCurrency(
-                                              promotion?.discountValue
-                                            )}{" "}
-                                            {promotion?.discountType ===
-                                            "PERCENTAGE"
-                                              ? "%"
-                                              : storeDetail?.firstCurrency}
-                                          </span>
-                                        </span>
-                                      </>
-                                    </div>
-                                  </div>
-                                ) : null}
-
-                               
-                                {filteredFreeItems.length > 0 && (
-                                  <>
-                                    <span className="text-color-app font-medium text-base">
-                                      {moneyCurrency(data?.price)}
-                                      {storeDetail?.firstCurrency}
-                                    </span>
-                                    <span className="flex flex-col font-bold text-red-500 text-[14px]">
-                                      {`ແຖມ ${filteredFreeItems.length} ລາຍການ`}
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                            );
-                          })
-                        ) : (
-                          <span className="text-color-app font-medium text-base">
-                            {moneyCurrency(data?.price)}
-                            {storeDetail?.firstCurrency}
-                          </span>
-                        )} */}
                         {data?.promotionId?.length > 0 &&
-                        data.promotionId.some(
-                          (promotion) => promotion?.status === "ACTIVE"
-                        ) ? (
+                          data.promotionId.some(
+                            (promotion) => promotion?.status === "ACTIVE"
+                          ) ? (
                           data.promotionId
                             .filter(
                               (promotion) => promotion?.status === "ACTIVE"
@@ -1549,8 +1576,8 @@ function Homecafe() {
                                         {moneyCurrency(
                                           calculateDiscount(data) > 0
                                             ? matchRoundNumber(
-                                                calculateDiscount(data)
-                                              )
+                                              calculateDiscount(data)
+                                            )
                                             : 0
                                         )}{" "}
                                         {storeDetail?.firstCurrency}
@@ -1571,7 +1598,7 @@ function Homecafe() {
                                                 promotion?.discountValue
                                               )}{" "}
                                               {promotion?.discountType ===
-                                              "PERCENTAGE"
+                                                "PERCENTAGE"
                                                 ? "%"
                                                 : storeDetail?.firstCurrency}
                                             </span>
@@ -1655,12 +1682,12 @@ function Homecafe() {
                           const optionsString =
                             data.options && data.options.length > 0
                               ? data.options
-                                  .map((option) =>
-                                    option.quantity > 1
-                                      ? `[${option.quantity} x ${option.name}]`
-                                      : `[${option.name}]`
-                                  )
-                                  .join(" ")
+                                .map((option) =>
+                                  option.quantity > 1
+                                    ? `[${option.quantity} x ${option.name}]`
+                                    : `[${option.name}]`
+                                )
+                                .join(" ")
                               : "";
                           const totalOptionPrice = data?.totalOptionPrice || 0;
                           const itemPrice = data?.price + totalOptionPrice;
@@ -1973,12 +2000,12 @@ function Homecafe() {
                         const optionsString =
                           data.options && data.options.length > 0
                             ? data.options
-                                .map((option) =>
-                                  option.quantity > 1
-                                    ? `[${option.quantity} x ${option.name}]`
-                                    : `[${option.name}]`
-                                )
-                                .join(" ")
+                              .map((option) =>
+                                option.quantity > 1
+                                  ? `[${option.quantity} x ${option.name}]`
+                                  : `[${option.name}]`
+                              )
+                              .join(" ")
                             : "";
                         const totalOptionPrice = data?.totalOptionPrice || 0;
                         const itemPrice = data?.price + totalOptionPrice;
@@ -2228,10 +2255,10 @@ function Homecafe() {
                     (selectedOption) => selectedOption._id === option._id
                   )?.quantity >= 1
                     ? {
-                        backgroundColor: "#fd8b66",
-                        borderRadius: "5px",
-                        padding: 5,
-                      }
+                      backgroundColor: "#fd8b66",
+                      borderRadius: "5px",
+                      padding: 5,
+                    }
                     : {}
                 }
               >

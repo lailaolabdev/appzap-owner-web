@@ -52,6 +52,7 @@ export default function OrderPage() {
   const [workAfterPin, setWorkAfterPin] = useState("");
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
+  const [ dingStatus, setDoingStatus] = useState(false)
 
   const {
     getOrderItemsStore,
@@ -472,6 +473,11 @@ export default function OrderPage() {
             getOrderItemsStore(select);
             setSelectOrderStatus(select);
             // getOrderWaitingAndDoingByStore();
+            if (select === DOING_STATUS) {
+              setDoingStatus(true);
+            } else {
+              setDoingStatus(false);
+            }
           }}
           className="myClass"
         >
@@ -495,7 +501,7 @@ export default function OrderPage() {
             }
           >
             <Tool fromStatus={DOING_STATUS} />
-            <DoingOrderTab />
+            <DoingOrderTab dingStatus={dingStatus} />
           </Tab>
           <Tab
             eventKey={SERVE_STATUS}

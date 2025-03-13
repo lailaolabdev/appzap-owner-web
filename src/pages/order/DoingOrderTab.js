@@ -12,7 +12,7 @@ import {
 	CANCEL_STATUS,
   } from "../../constants/index";
 
-const DoingOrderTab = () => {
+const DoingOrderTab = ({dingStatus}) => {
   const { t, i18n: { language } } = useTranslation();
   const { doingOrders, handleCheckbox, handleCheckAll } = useOrderStore();
 
@@ -28,6 +28,7 @@ const DoingOrderTab = () => {
         handleCheckAll={handleCheckAll} // Pass handleCheckAll function
         language={language} // Pass language for translations
         t={t} // Pass translation function
+        dingStatus={dingStatus}
       />
     </div>
   );
