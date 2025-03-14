@@ -48,6 +48,8 @@ import { useOrderStore } from "../zustand/orderStore";
 import { useBookingStore } from "../zustand/bookingStore";
 import PopUpOpenShift from "./../components/popup/PopUpOpenShift";
 import { useShiftStore } from "../zustand/ShiftStore";
+import axios from "axios";
+import {USER_KEY} from "../constants";
 
 export default function Sidenav({ location, navigate, onToggle }) {
   const { openTableData, getTableDataStore } = useStore();
@@ -64,6 +66,16 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const [selected, setSelectStatus] = useState(
     location.pathname.split("/")[1].split("-")[0]
   );
+  const [userId, setUserId] = useState(null);
+  
+  useEffect(() => {
+    ///convert json
+    let user = localStorage.getItem(USER_KEY);
+    user = JSON.parse(user)
+    if(user) {
+      setUserId(user.data.userId);
+    }
+  }, [])
 
   const isPathInclude = (condition) =>
     _.includes(condition, selected.split("/page")[0]);
@@ -772,7 +784,34 @@ export default function Sidenav({ location, navigate, onToggle }) {
                   </NavText>
                 </NavItem>
 
-                <NavItem eventKey="supplier">
+                <NavItem eventKey="supplier" 
+                  onClick={async() => {
+                    console.log({userId})
+                    await axios
+                      // .get(`http://localhost:8080/user/getToken/${userId}`, {
+                      .get(`https://ry5bw19rok.execute-api.ap-southeast-1.amazonaws.com/user/getToken/${userId}`, {
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                      })
+                      .then((res) => {
+                        // Open the window only after the token is received
+                        let posData = localStorage.getItem(USER_KEY);
+                        posData = JSON.parse(posData);
+
+                        window.open(
+                          `https://appzap-supplier-lll.netlify.app/?token=${res.data.refreshToken}&accessToken=${posData.accessToken}&refreshToken=${posData.refreshToken}`,
+                          "_blank"
+                        ).focus();
+                      })
+                      .catch((error) => {
+                        console.error("Error fetching token:", error);
+                        window.open(
+                          'https://appzap-supplier-lll.netlify.app/',
+                          "_blank"
+                        ).focus();
+                      });
+                  }}>
                   <NavIcon>
                     <FontAwesomeIcon
                       className={

@@ -15,6 +15,7 @@ import { toast } from "react-toastify"; ///// Ton fix errors ////////
 import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
 import { useMenuStore } from "../../zustand/menuStore";
+import { useEffect } from "react";
 
 // style
 import "./login.css";
@@ -24,6 +25,7 @@ import role from "../../helpers/role";
 import LoadingAppzap from "../../components/LoadingAppzap";
 import { errorAdd } from "../../helpers/sweetalert";
 import { useTranslation } from "react-i18next";
+import { head } from "lodash";
 
 function Login() {
   const navigate = useNavigate();
@@ -37,6 +39,61 @@ function Login() {
   const { storeDetail, fetchStoreDetail, updateStoreDetail } = useStoreStore();
   const { shiftCurrent } = useShiftStore();
   const { clearMenus } = useMenuStore();
+  const authWithToken = sessionStorage.getItem(USER_KEY);
+
+  useEffect(() => {
+    const userAuthWithToken = async () => {
+      if (!authWithToken) return;
+
+      try {
+        const posData = JSON.parse(authWithToken);
+        if (!posData?.data) return;
+
+        const { defaultPath } = role(
+          posData?.data?.role,
+          posData?.data,
+          storeDetail,
+          shiftCurrent
+        );
+
+        const userData = await axios.post(
+          `${END_POINT}/v3/admin/get-token-data`,
+          {},
+          {
+            headers: {
+              Authorization: `AppZap ${posData?.accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        posData.data = userData?.data?.data;
+
+        if (defaultPath) {
+          clearMenus();
+          localStorage.setItem(USER_KEY, JSON.stringify(posData));
+
+          const data = await fetchStoreDetail(posData?.data?.storeId);
+          document.title = data?.name;
+          ReactGA.send({ hitType: "pageview", title: `${data?.name}` });
+
+          setIsLoading(false);
+          sessionStorage.removeItem(USER_KEY);
+
+          setTimeout(() => {
+            navigate(defaultPath); // Navigate first
+            setTimeout(() => window.location.reload(), 500); // Then reload to ensure smooth transition
+          }, 200);
+        }
+      } catch (error) {
+        console.error("Error authenticating user:", error);
+        navigate('/')
+        setIsLoading(false);
+      }
+    };
+
+    userAuthWithToken();
+  }, [authWithToken]);
 
   useMemo(() => {
     console.log("GOOGLE ANALYTICS STARTED");
