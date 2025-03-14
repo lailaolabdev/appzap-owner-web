@@ -407,11 +407,11 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "settingStore",
       typeStore: "",
       icon: faCogs,
-      hidden:
-        (!hasShopSetting &&
-          !appzapStaff.includes(profileRole) &&
-          !profileRole !== "APPZAP_ADMIN") ||
-        !storeDetail?.hasPOS,
+      hidden: !hasShopSetting && profileRole !== "APPZAP_ADMIN",
+      // ( &&
+      //    &&
+      //   !profileRole !== "APPZAP_ADMIN") ||
+      // !storeDetail?.hasPOS,
       system: "settingManagement",
     },
 
@@ -440,7 +440,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "audio",
       icon: faVolumeUp,
       typeStore: "",
-      system: "audioManagement",
+      hidden: profileRole === "APPZAP_ADMIN",
+      system: "reportManagement",
     },
   ]
     .filter((e) => {

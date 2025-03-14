@@ -177,7 +177,7 @@ export default function Categorylist() {
   const getData = async (id) => {
     setIsLoading(true);
     const _resCategory = await getCategories(id);
-    setCategorys(_resCategory?.data);
+    setCategorys(_resCategory);
     setIsLoading(false);
   };
 
