@@ -11,6 +11,7 @@ import { errorAdd } from "../../helpers/sweetalert";
 import { END_POINT_EXPORT } from "../../constants/api";
 import * as ExcelJS from "exceljs";
 import { useStoreStore } from "../../zustand/storeStore";
+import { useMenuStore } from "../../zustand/menuStore";
 import { useStore } from "../../store";
 import Swal from "sweetalert2";
 import { COLOR_APP } from "../../constants";
@@ -23,9 +24,30 @@ export default function PopUpReportExportExcel({
   shiftData,
 }) {
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
+  const { menuCategories, getMenuCategories, setMenuCategories } =
+    useMenuStore();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (storeDetail?._id) {
+        const storeId = storeDetail?._id;
+        if (!menuCategories.length) {
+          const fetchedCategories = await getMenuCategories(storeId);
+          setMenuCategories(fetchedCategories); // Save to zustand store
+        }
+      }
+    };
+    fetchData();
+  }, [open]);
+
+  const findCategoryName = (categoryId, menuCategories) => {
+    const category = menuCategories.find((cat) => cat._id === categoryId);
+    return category ? category.name : "";
+  };
+
   const { profile } = useStore();
   const { t } = useTranslation();
-  const [excel, setExcel] = useState([]);
+  const [category, setCategory] = useState("");
 
   const findByData = () => {
     let findBy = "?";
@@ -104,19 +126,7 @@ export default function PopUpReportExportExcel({
 
       if (storeDetail?.isStatusCafe) {
         const dataExcel = _res?.data?.bills;
-        console.log("DATA", dataExcel);
-        if (!dataExcel || dataExcel.length === 0) {
-          Swal.fire({
-            icon: "warning",
-            title: t("Please select data to export."),
-            timer: 3000,
-            position: "top-end",
-            toast: true,
-            showConfirmButton: false,
-          });
-          return;
-        }
-
+        console.log("dataExcel", dataExcel);
         const header = [
           t("no"),
           t("payment_type"),
@@ -131,7 +141,10 @@ export default function PopUpReportExportExcel({
           t("change"),
           t("last_paid"),
           t("before_paid"),
-          t("debt_amount"),
+          t("oreder_no"),
+          t("order"),
+          t("order_status"),
+          t("type_name"),
           t("date"),
           t("staff"),
         ];
@@ -145,7 +158,7 @@ export default function PopUpReportExportExcel({
           change: 0,
           last_paid: 0,
           before_paid: 0,
-          debt_amount: 0,
+          order_no: 0,
         };
 
         const workbook = new ExcelJS.Workbook();
@@ -200,7 +213,10 @@ export default function PopUpReportExportExcel({
           { key: "change", width: 18 },
           { key: "last_paid", width: 18 },
           { key: "before_paid", width: 18 },
-          { key: "debt_amount", width: 18 },
+          { key: "order_no", width: 18 },
+          { key: "order", width: 18 },
+          { key: "order_status", width: 18 },
+          { key: "type_name", width: 18 },
           { key: "date", width: 18 },
           { key: "staff", width: 18 },
         ];
@@ -208,6 +224,15 @@ export default function PopUpReportExportExcel({
         // Add data rows
         for (const [index, item] of dataExcel.entries()) {
           const formattedDate = moment(item?.createdAt).format("DD/MM/YYYY");
+          const orderDetails = item?.orderId
+            .map((order) => {
+              const categoryName = findCategoryName(
+                order?.categoryId,
+                menuCategories
+              );
+              return `(${categoryName})`;
+            })
+            .join(", ");
 
           const row = sheet.addRow({
             no: index + 1,
@@ -223,7 +248,12 @@ export default function PopUpReportExportExcel({
             change: item?.change || 0,
             last_paid: item?.billAmount || 0,
             before_paid: item?.billAmountBefore || 0,
-            debt_amount: item?.debtId?.remainingAmount || 0,
+            order_no: item?.orderId.length,
+            order: item?.orderId.map((order) => order?.name).join(", "),
+            order_status: item?.orderId
+              .map((order) => order?.status)
+              .join(", "),
+            type_name: orderDetails,
             date: formattedDate,
             staff: item?.fullnameStaffCheckOut,
           });
@@ -238,6 +268,7 @@ export default function PopUpReportExportExcel({
             cell.alignment = {
               horizontal: colNumber === 1 ? "center" : "left",
               vertical: "middle",
+              wrapText: true,
             };
           });
         }
@@ -251,7 +282,8 @@ export default function PopUpReportExportExcel({
           totals.change += item.change || 0;
           totals.last_paid += item.billAmount || 0;
           totals.before_paid += item.billAmountBefore || 0;
-          totals.debt_amount += item.debtId?.remainingAmount || 0;
+
+          totals.order_no += item?.orderId?.length || 0;
         });
 
         const totalRow = sheet.addRow({
@@ -268,9 +300,10 @@ export default function PopUpReportExportExcel({
           change: totals.change,
           last_paid: totals.last_paid,
           before_paid: totals.before_paid,
-          debt_amount: totals.debt_amount,
+
           date: "",
           type_pay: "",
+          order_no: totals.order_no,
         });
 
         totalRow.eachCell((cell, colNumber) => {

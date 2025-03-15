@@ -557,37 +557,42 @@ export default function DashboardFinance({
   const mapOrderData = (orderId, formatMenuName, orderStatus) => {
     if (!orderId || !Array.isArray(orderId)) return [];
 
-    return orderId.map((item, index) => ({
-      index: index + 1,
-      menuName: formatMenuName
-        ? formatMenuName(item?.name || "", item?.options || [])
-        : "-",
-      quantity: item?.quantity || 0,
-      status: item?.status || "UNKNOWN",
-      statusColor: getStatusColor(item?.status),
-      createdBy: item?.createdBy?.firstname || "-",
-      totalPrice: (() => {
-        try {
-          const calculatedPrice =
-            item?.totalPrice ||
-            ((item?.price || 0) + (item?.totalOptionPrice || 0)) *
-              (item?.quantity || 0);
+    return orderId.map((item, index) => {
+      const isCanceled = item?.status === "CANCELED";
 
-          return new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-            calculatedPrice
-          );
-        } catch {
-          return "0";
-        }
-      })(),
-      deliveryCode: item?.deliveryCode || "-",
-      createdAt: item?.createdAt
-        ? moment(item.createdAt).format("DD/MM/YYYY HH:mm")
-        : "-",
-      updatedAt: item?.updatedAt
-        ? moment(item.updatedAt).format("DD/MM/YYYY HH:mm")
-        : "-",
-    }));
+      return {
+        index: index + 1,
+        menuName: formatMenuName
+          ? formatMenuName(item?.name || "", item?.options || [])
+          : "-",
+        quantity: item?.quantity || 0,
+        status: item?.status || "UNKNOWN",
+        statusColor: getStatusColor(item?.status),
+        createdBy: item?.createdBy?.firstname || "-",
+        totalPrice: (() => {
+          if (isCanceled) return "CANCELED";
+          try {
+            const calculatedPrice =
+              item?.totalPrice ||
+              ((item?.price || 0) + (item?.totalOptionPrice || 0)) *
+                (item?.quantity || 0);
+
+            return new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+              calculatedPrice
+            );
+          } catch {
+            return "0";
+          }
+        })(),
+        deliveryCode: item?.deliveryCode || "-",
+        createdAt: item?.createdAt
+          ? moment(item.createdAt).format("DD/MM/YYYY HH:mm")
+          : "-",
+        updatedAt: item?.updatedAt
+          ? moment(item.updatedAt).format("DD/MM/YYYY HH:mm")
+          : "-",
+      };
+    });
   };
 
   const getStatusColor = (status) => {
@@ -631,6 +636,8 @@ export default function DashboardFinance({
   useEffect(() => {
     setTotalTranferAndPayLast(dataModal?.totalTranferAndPayLast);
   }, [dataModal]);
+
+  console.log("dataModal", dataModal);
 
   return (
     <div style={{ padding: 0 }}>

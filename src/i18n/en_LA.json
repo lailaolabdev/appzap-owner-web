@@ -1255,5 +1255,10 @@
   "last_paid":"ລາຄາຈ່າຍໂຕຈິງ",
   "before_paid":"ລາຄາຈ່າຍກ່ອນ",
   "debt_amount":"ລາຄາທີ່ຕິດໜີ້",
-  "type_pay": "ປະເພດການຊຳລະ"
+  "type_pay": "ປະເພດການຊຳລະ",
+  "order_summry": "ສະຖານະການສັ່ງຊື້",
+  "order_item": "ລາຍການສັ່ງຊື້",
+  "order_checkout": "ການຊຳລະສັ່ງຊື້",
+  "cancel_order": "ຍົກເລີກອໍເດິ",
+  "order_status": "ສະຖານະອໍເດິ"
 }

@@ -128,13 +128,14 @@ export default function CheckOutPopupCafe({
   };
 
   const totalBillDefualt = _.sumBy(
-    dataBill?.filter(
-      (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
-    )
+    dataBill?.filter((e) => e.status !== "CANCELED"),
+    (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
   );
+
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
   const totalBills = totalBillDefualt + taxAmount;
 
+  console.log("dataBill", totalBillDefualt);
   useEffect(() => {
     setMemberDataSearch();
     setCash();
@@ -248,11 +249,13 @@ export default function CheckOutPopupCafe({
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill || []) {
-      const totalOptionPrice = _data?.totalOptionPrice || 0;
-      const itemPrice = _data?.price + totalOptionPrice;
-      // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
-      _total += _data?.quantity * itemPrice;
+      if (_data.status !== "CANCELED") {
+        const totalOptionPrice = _data?.totalOptionPrice || 0;
+        const itemPrice = _data?.price + totalOptionPrice;
+        _total += _data?.quantity * itemPrice;
+      }
     }
+
     setTotal(_total);
     setTotalBill(_total);
     const roundedNumber = matchRoundNumber(_total);
@@ -344,6 +347,8 @@ export default function CheckOutPopupCafe({
         }` ?? "-",
       staffCheckOutId: profile.data._id,
     };
+
+    console.log("DATAS:", datas);
 
     await axios
       .post(

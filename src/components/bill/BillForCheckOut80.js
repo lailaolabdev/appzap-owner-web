@@ -81,7 +81,11 @@ export default function BillForCheckOut80({
 
     // Loop through the available orders
     for (let _data of (orders || []).filter(
-      (e) => e?.status === "SERVED" || e?.status === "PRINTBILL" || "PAID"
+      (e) =>
+        (e?.status === "SERVED" ||
+          e?.status === "PRINTBILL" ||
+          e?.status === "PAID") &&
+        e?.status !== "CANCELED"
     )) {
       const totalOptionPrice = _data?.totalOptionPrice || 0;
       const itemPrice = _data?.price + totalOptionPrice;
@@ -249,6 +253,7 @@ export default function BillForCheckOut80({
               e?.status === "PAID"
           )
           ?.map((item, index) => {
+            if (item?.status === "CANCELED") return;
             const optionsNames =
               item?.options
                 ?.map((option) =>

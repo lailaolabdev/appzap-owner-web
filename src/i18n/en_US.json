@@ -1258,5 +1258,11 @@
   "last_paid":"Last Paid",
   "before_paid":"Before Paid",
   "debt_amount":"Debt Amount",
-  "type_pay": "Type Pay"
+  "type_pay": "Type Pay",
+  "order_summry": "Order Summary",
+  "order_item": "Order Item",
+  "order_checkout": "Order Checkout",
+  "cancel_order": "Cancel Order",
+  "order_status": "Order Status"
+  
 }

@@ -9,7 +9,7 @@ import _ from "lodash";
 import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
 import { useTranslation } from "react-i18next";
-import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
+import { Modal, Form, Nav, Image } from "react-bootstrap";
 import { base64ToBlob } from "../../helpers";
 import { RiListOrdered2 } from "react-icons/ri";
 import { BsCartXFill } from "react-icons/bs";
@@ -62,8 +62,31 @@ import theme from "../../theme";
 import moment from "moment";
 import { getAllStorePoints } from "../../services/member.service";
 import AnimationLoading from "../../constants/loading";
+import { deleteOrderCafeItemV7, updateOrderItemV7 } from "../../services/order";
+import { Button } from "../../components/ui/Button";
+import { Badge } from "../../components/ui/Badge";
+import { Input } from "../../components/ui/Input";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "../../components/ui/AlertDialog";
 
-import { deleteOrderCafeItemV7 } from "../../services/order";
+import {
+  Minus,
+  Plus,
+  Trash2,
+  User,
+  MapPin,
+  CreditCard,
+  Clock,
+} from "lucide-react";
 
 function HomecafeEdit() {
   const { billId } = useParams();
@@ -106,6 +129,8 @@ function HomecafeEdit() {
   const { shiftCurrent } = useShiftStore();
   const { setSelectedMenus, SelectedMenus, clearSelectedMenus } =
     useMenuSelectStore();
+
+  console.log("SelectedMenus", SelectedMenus);
 
   const sliderRef = useRef();
   useEffect(() => {
@@ -382,10 +407,11 @@ function HomecafeEdit() {
   const _calculateTotal = () => {
     let _total = 0;
     for (const _data of SelectedMenus || []) {
-      const totalOptionPrice = _data?.totalOptionPrice || 0;
-      const itemPrice = _data?.price + totalOptionPrice;
-      // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
-      _total += _data?.quantity * itemPrice;
+      if (_data.status !== "CANCELED") {
+        const totalOptionPrice = _data?.totalOptionPrice || 0;
+        const itemPrice = _data?.price + totalOptionPrice;
+        _total += _data?.quantity * itemPrice;
+      }
     }
 
     const roundedNumber = matchRoundNumber(_total);
@@ -410,6 +436,7 @@ function HomecafeEdit() {
   };
 
   const addToCart = async (menu) => {
+    console.log("menu", menu);
     const _menuOptions = _checkMenuOption(menu);
     let updatedSelectedMenus = [...SelectedMenus];
 
@@ -443,6 +470,7 @@ function HomecafeEdit() {
       ),
       note: "",
       isWeightMenu: menu?.isWeightMenu,
+      menuImage: menu?.images[0],
     };
 
     // const existingMenuIndex = updatedSelectedMenus.findIndex(
@@ -690,7 +718,10 @@ function HomecafeEdit() {
 
   const TotalAmount = () => {
     return SelectedMenus?.reduce((currentValue, nextValue) => {
-      return currentValue + nextValue.quantity;
+      if (nextValue.status !== "CANCELED") {
+        return currentValue + nextValue.quantity;
+      }
+      return currentValue;
     }, 0);
   };
 
@@ -767,9 +798,24 @@ function HomecafeEdit() {
     setEditComments("");
   };
 
-  const onConfirmRemoveItem = (data) => {
-    setIsRemoveItem(true);
-    setItemDeleting(data);
+  const updateOrderCancel = async (data) => {
+    try {
+      const res = await updateOrderItemV7(data, storeDetail?._id);
+      setSelectedMenus(res);
+    } catch (error) {}
+  };
+
+  const onConfirmRemoveItem = (item) => {
+    console.log("data", item);
+    console.log("selectedItem", selectedItem);
+
+    const updatedSelectedMenus = SelectedMenus.map((menu) =>
+      menu._id === item._id ? { ...menu, status: "CANCELED" } : menu
+    );
+    updateOrderCancel(updatedSelectedMenus);
+
+    // setIsRemoveItem(true);
+    // setItemDeleting(data);
   };
   const onPrintDrawer = async () => {
     try {
@@ -1375,6 +1421,11 @@ function HomecafeEdit() {
     return finalPrice;
   };
 
+  const findCategoryName = (categoryId, menuCategories) => {
+    const category = menuCategories.find((cat) => cat._id === categoryId);
+    return category ? category.name : "";
+  };
+
   return (
     <div>
       <CafeContent
@@ -1571,7 +1622,7 @@ function HomecafeEdit() {
             <div className="container">
               <div className="row">
                 <div className="col-lg-12 col-md-12">
-                  <Table responsive className="table">
+                  {/* <Table responsive className="table">
                     <thead style={{ backgroundColor: "#F1F1F1" }}>
                       <tr style={{ fontSize: "bold", border: "none" }}>
                         <th style={{ border: "none" }}>#</th>
@@ -1604,7 +1655,7 @@ function HomecafeEdit() {
                     <tbody>
                       {SelectedMenus?.length > 0 ? (
                         SelectedMenus?.map((data, index) => {
-                          // Create the options string if options exist
+                          
                           const optionsString =
                             data.options && data.options.length > 0
                               ? data.options
@@ -1701,7 +1752,7 @@ function HomecafeEdit() {
                                     {data?.quantity}
                                   </p>
                                 )}
-                                {/* biome-ignore lint/a11y/useButtonType: <explanation> */}
+                                
                                 <button
                                   style={{
                                     color: "red",
@@ -1759,20 +1810,211 @@ function HomecafeEdit() {
                         </tr>
                       )}
                     </tbody>
-                  </Table>
+                  </Table> */}
+                  <div className="mt-1">
+                    <h3 className="text-lg font-semibold">{t("order_item")}</h3>
+                    {SelectedMenus.length === 0 ? (
+                      <div className="h-[400px] flex justify-center items-center">
+                        <div className="flex flex-col items-center">
+                          <BsCartXFill className="text-[100px] text-orange-500 animate-bounce" />
+                          <p className="text-[16] mt-3 font-bold text-orange-500">
+                            {t("no_order_list")}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {SelectedMenus?.map((item) => {
+                          if (item?.status === "CANCELED") {
+                            return <div></div>;
+                          }
+                          const optionsString =
+                            item.options &&
+                            item.options.length > 0 &&
+                            item?.status === "CANCELED"
+                              ? item.options
+                                  .map((option) =>
+                                    option.quantity > 1
+                                      ? `[${option.quantity} x ${option.name}]`
+                                      : `[${option.name}]`
+                                  )
+                                  .join(" ")
+                              : "";
+                          const totalOptionPrice = item?.totalOptionPrice || 0;
+                          const itemPrice = item?.price + totalOptionPrice;
+                          const category = findCategoryName(
+                            item?.categoryId,
+                            menuCategories
+                          );
+
+                          return (
+                            <div
+                              key={item?._id}
+                              className="flex items-center space-x-4 px-2.5 py-1 rounded-xl border bg-card"
+                            >
+                              <div className="relative h-20 w-20 overflow-hidden rounded-md">
+                                <Image
+                                  src={
+                                    item?.menuImage?.length > 0
+                                      ? URL_PHOTO_AW3 + item?.menuImage
+                                      : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
+                                  }
+                                  alt={item.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium text-sm">
+                                  {item.name}
+                                </h4>
+                                <Badge
+                                  variant="outline"
+                                  className="mt-1 text-xs"
+                                >
+                                  {category || item?.categoryId?.name}
+                                </Badge>
+                                <p className="text-sm font-semibold mt-1">
+                                  {optionsString}
+                                </p>
+                                <p className="text-sm font-semibold mt-1">
+                                  {moneyCurrency(itemPrice)}{" "}
+                                  {storeDetail?.firstCurrency}
+                                </p>
+                              </div>
+
+                              <div className={cn("flex items-center gap-2")}>
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-8 w-8 rounded-full"
+                                  onClick={() => handleSetQuantity(-1, item)}
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+
+                                {editingRowId === item?.id ? (
+                                  <Input
+                                    type="number"
+                                    step={item.isWeightMenu ? "0.001" : "1"}
+                                    min="0"
+                                    value={item?.quantity}
+                                    onChange={(e) =>
+                                      handleQuantityChange(e, item)
+                                    }
+                                    onBlur={() => saveQuantity()}
+                                    autoFocus
+                                    className="w-16 h-8 text-center px-1 py-0 border-2"
+                                  />
+                                ) : // <Input
+                                //   type="number"
+                                //   step="0.1"
+                                //   min="0"
+                                //   value={item?.quantity}
+                                //   autoFocus
+                                //   onChange={(e) =>
+                                //     handleQuantityChange(e, item)
+                                //   }
+                                //   onBlur={() => saveQuantity()}
+                                //   style={{
+                                //     width: "60px",
+                                //     textAlign: "center",
+                                //     border: `2px solid ${theme.primaryColor}`,
+                                //     borderRadius: "5px",
+                                //     padding: "2px",
+                                //     outline: "none",
+                                //   }}
+                                // />
+                                item?.isWeightMenu ? (
+                                  <div
+                                    onClick={() => setEditingRowId(item?.id)}
+                                    className="flex justify-center items-center w-16 h-8 border-2 rounded cursor-pointer px-1 gap-2"
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-label={`Edit quantity: ${Number.parseFloat(
+                                      item.quantity.toString()
+                                    ).toFixed(3)}`}
+                                  >
+                                    {Number.parseFloat(
+                                      item.quantity.toString()
+                                    ).toFixed(3)}
+                                  </div>
+                                ) : (
+                                  // <p
+                                  //   style={{
+                                  //     display: "flex",
+                                  //     justifyContent: "center",
+                                  //     alignItems: "center",
+                                  //     gap: 10,
+                                  //     margin: "0px 5px",
+                                  //     cursor: "pointer",
+                                  //     border: `2px solid ${theme.primaryColor}`,
+                                  //     borderRadius: "5px",
+                                  //     padding: "2px",
+                                  //   }}
+                                  //   onClick={() => setEditingRowId(item?.id)}
+                                  // >
+                                  //   {Number.parseFloat(
+                                  //     item?.quantity
+                                  //   ).toFixed(3)}
+                                  // </p>
+                                  <div className="flex justify-center items-center w-10 h-8">
+                                    {item.quantity}
+                                  </div>
+                                )}
+
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-8 w-8 rounded-full"
+                                  onClick={() => handleSetQuantity(1, item)}
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                                  onClick={() => onConfirmRemoveItem(item)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                  <hr></hr>
                   {SelectedMenus?.length > 0 ? (
                     <div className="mb-3">
-                      <div>
-                        <span className={fontMap[language]}>
+                      <h3 className="text-lg font-semibold">
+                        {t("order_summry")}
+                      </h3>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">
                           {t("amountTotal")} :{" "}
                         </span>
-                        <span>{Number.parseFloat(TotalAmount())}</span>
-                      </div>
-                      <div>
-                        <span className={fontMap[language]}>
-                          {t("pricesTotal")} :{" "}
+                        <span>
+                          {Number.parseFloat(TotalAmount())} {t("item_amount")}
                         </span>
-                        <span className={fontMap[language]}>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">
+                          {t("pricesTotal")} :
+                        </span>
+                        <span>
+                          {moneyCurrency(matchRoundNumber(total))}{" "}
+                          {t("nameCurrency")}
+                        </span>
+                      </div>
+                      <hr></hr>
+                      <div className="flex justify-between font-bold">
+                        <span>{t("pricesTotal")} :</span>
+                        <span>
                           {moneyCurrency(matchRoundNumber(total))}{" "}
                           {t("nameCurrency")}
                         </span>
@@ -1782,51 +2024,26 @@ function HomecafeEdit() {
                     ""
                   )}
                 </div>
-                <div className="col-12">
-                  <div className="row" style={{ margin: 0 }}>
-                    {SelectedMenus?.length > 0 ? (
-                      <>
-                        {/* <Button
-                          variant="outline-warning"
-                          className={cn("hover-me", fontMap[language])}
-                          style={{
-                            marginRight: 15,
-                            border: `solid 1px ${theme.primaryColor}`,
-                            fontWeight: "bold",
-                            backgroundColor: theme.primaryColor,
-                            color: "#ffffff",
-                          }}
-                          onClick={() => {
-                            clearSelectedMenus();
-                            setSelectedMenu([]);
-                          }}
-                        >
-                          {t("cancel")}
-                        </Button> */}
-                        <Button
-                          variant="light"
-                          className={cn("hover-me", fontMap[language])}
-                          style={{
-                            marginRight: 15,
-                            backgroundColor: theme.primaryColor,
-                            color: "#ffffff",
-                            fontWeight: "bold",
-                            flex: 1,
-                          }}
-                          onClick={() => {
-                            SelectedMenus.length === 0
-                              ? AlertMessage()
-                              : setPopup({ CheckOutType: true });
-                          }}
-                        >
-                          {/* {t("print_bill")} */}
-                          CheckOut
-                        </Button>
-                      </>
-                    ) : (
-                      ""
-                    )}
-                  </div>
+                <div className="col-lg-12 col-md-12">
+                  <Button
+                    size="lg"
+                    className="w-full bg-color-app hover:bg-orange-300 text-md font-bold text-white"
+                    onClick={() => {
+                      SelectedMenus.length === 0
+                        ? AlertMessage()
+                        : setPopup({ CheckOutType: true });
+                    }}
+                    disabled={SelectedMenus.length === 0}
+                  >
+                    {t("order_checkout")}
+                    <CreditCard className="mr-0 h-8 w-8" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full mt-2 text-red-500 text-md font-bold"
+                  >
+                    {t("cancel_order")}
+                  </Button>
                 </div>
               </div>
             </div>

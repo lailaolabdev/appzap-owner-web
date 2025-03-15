@@ -54,10 +54,11 @@ export default function BillForCheckOutCafe80({
   const _calculateTotal = () => {
     let _total = 0;
     for (let _data of dataBill || []) {
-      const totalOptionPrice = _data?.totalOptionPrice || 0;
-      const itemPrice = _data?.price + totalOptionPrice;
-      // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
-      _total += _data?.quantity * itemPrice;
+      if (_data?.status !== "CANCELED") {
+        const totalOptionPrice = _data?.totalOptionPrice || 0;
+        const itemPrice = _data?.price + totalOptionPrice;
+        _total += _data?.quantity * itemPrice;
+      }
     }
 
     let TotalDiscountFinal = 0;
@@ -227,6 +228,7 @@ export default function BillForCheckOutCafe80({
       <hr className="border-b border-dashed border-gray-600" />
       <Order>
         {dataBill?.map((item, index) => {
+          if (item?.status === "CANCELED") return;
           const optionsNames =
             item?.options
               ?.map((option) =>
