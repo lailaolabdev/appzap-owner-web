@@ -57,6 +57,7 @@ import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
 import { RiChatNewFill } from "react-icons/ri";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import CheckOutPopupCafe from "../table/components/CheckOutPopupCafe";
+import CheckOutPopupCafeDelivery from "../table/components/CheckOurPopupCafeDelivery";
 import printFlutter from "../../helpers/printFlutter";
 import matchRoundNumber from "../../helpers/matchRound";
 import { cn } from "../../utils/cn";
@@ -96,6 +97,9 @@ function Homecafe() {
   const [popup, setPopup] = useState({
     CheckOutType: false,
   });
+  const [popupDelivery, setPopupDelivery] = useState({
+    CheckOutDelivery: false,
+  });
   const [selectedOptionsArray, setSelectedOptionsArray] = useState([]);
   const [total, setTotal] = useState();
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
@@ -104,6 +108,10 @@ function Homecafe() {
   const [endTime, setEndTime] = useState("23:59:59");
   const [bill, setBill] = useState(0);
   const [promotion, setPromotion] = useState([]);
+  const [isDelivery, setIsDelivery] = useState(false)
+  const [platform, setPlatform] = useState("");
+  const [deliveryCode, setDeliveryCode] = useState("");
+
 
   const [isMobile, setIsMobile] = useState(
     window.matchMedia("(max-width: 767px)").matches
@@ -275,6 +283,8 @@ function Homecafe() {
     getMenuCategories,
     setMenus,
     setMenuCategories,
+    deliveryCode,
+    platform,
   ]);
 
   useEffect(() => {
@@ -541,6 +551,17 @@ function Homecafe() {
     );
     return calculateDiscount(menu) + optionsTotalPrice;
   };
+
+  useEffect(() => {
+    setSelectedMenus((prevMenus) =>
+      prevMenus.map((menu) => ({
+        ...menu,
+        platform:platform,
+        deliveryCode: deliveryCode,
+      }))
+    );
+  }, [deliveryCode,platform]);
+  
 
   const handleConfirmOptions = () => {
     const filteredOptions =
@@ -1007,7 +1028,7 @@ function Homecafe() {
       }
     });
 
-    // console.log("base64ArrayAndPrinter", base64ArrayAndPrinter);
+     //console.log("base64ArrayAndPrinter", base64ArrayAndPrinter);
 
     return base64ArrayAndPrinter;
   };
@@ -1103,7 +1124,8 @@ function Homecafe() {
       .map((_, i) => billForCherCancel80.current[i]);
   }
 
-  console.log("billForCherCancel80", billForCherCancel80);
+  //console.log("billForCherCancel80", billForCherCancel80);
+  
 
   const onPrintForCherLaBel = async () => {
     // setOnPrinting(true);
@@ -1868,13 +1890,40 @@ function Homecafe() {
                             flex: 1,
                           }}
                           onClick={() => {
-                            SelectedMenus.length === 0
-                              ? AlertMessage()
-                              : setPopup({ CheckOutType: true });
+                            if (SelectedMenus.length === 0) {
+                              AlertMessage();
+                            } else {
+                              setPopup({ CheckOutType: true })
+                              setIsDelivery(false);
+                            }
                           }}
+                          
                         >
                           {/* {t("print_bill")} */}
                           CheckOut
+                        </Button>
+                        <Button
+                          variant="light"
+                          className={cn("hover-me", fontMap[language])}
+                          style={{
+                            marginRight: 15,
+                            backgroundColor: theme.primaryColor,
+                            color: "#ffffff",
+                            fontWeight: "bold",
+                            flex: 1,
+                          }}
+                          onClick={() => {
+                            if (SelectedMenus.length === 0) {
+                              AlertMessage();
+                            } else {
+                              setPopupDelivery({ CheckOutDelivery: true });
+                              setIsDelivery(true);
+                            }
+                          }}
+                          
+                        >
+                          {/* {t("print_bill")} */}
+                          Delivery
                         </Button>
                       </>
                     ) : (
@@ -2378,6 +2427,28 @@ function Homecafe() {
         statusBill={false}
       />
 
+      <CheckOutPopupCafeDelivery
+        bill={bill}
+        onPrintForCher={onPrintForCher}
+        onQueue={billData}
+        onPrintBill={onPrintBill}
+        onPrintForCherLaBel={onPrintForCherLaBel}
+        onPrintDrawer={onPrintDrawer}
+        dataBill={SelectedMenus}
+        open={popupDelivery?.CheckOutDelivery}
+        onClose={() => setPopupDelivery()}
+        setDataBill={setDataBill}
+        isDelivery={isDelivery}
+        taxPercent={taxPercent}
+        TotalPrice={TotalPrice()}
+        setIsLoading={setIsLoading}
+        statusBill={false}
+        setPlatform={setPlatform}
+        setDeliveryCode={setDeliveryCode}
+        platform={platform}
+        deliveryCode={deliveryCode}
+      />
+
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
         <BillForCheckOutCafe80
           data={bill}
@@ -2386,6 +2457,9 @@ function Homecafe() {
           taxPercent={taxPercent}
           profile={profile}
           memberData={dataBill}
+          isDelivery={isDelivery}
+          platform={platform}
+          deliveryCode={deliveryCode}
         />
       </div>
       {SelectedMenus?.map((val, i) => {
