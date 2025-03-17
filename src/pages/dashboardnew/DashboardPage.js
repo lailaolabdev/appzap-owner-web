@@ -623,7 +623,7 @@ export default function DashboardPage() {
                   borderBottom: `1px dotted ${COLOR_APP}`,
                 }}
               >
-                <div>ຈຳນວນເມນູທີ່ມີສ່ວນຫຼຸດ</div>
+                <div>{t("total_amount_menu_discount")}</div>
                 <div
                   className="flex gap-2 items-center text-orange-500 cursor-pointer"
                   onClick={() =>
@@ -648,7 +648,7 @@ export default function DashboardPage() {
                   borderBottom: `1px dotted ${COLOR_APP}`,
                 }}
               >
-                <div>ລວມເປັນເງິນ(ເມນູສ່ວນຫຼຸດ)</div>
+                <div>{t("total_money") + `(${t("menu_discount")})`}</div>
                 <div>
                   {moneyCurrency(
                     promotionDiscountAndFreeReport?.totalDiscountValue || 0
@@ -665,7 +665,7 @@ export default function DashboardPage() {
                   borderBottom: `1px dotted ${COLOR_APP}`,
                 }}
               >
-                <div>ຈຳນວນເມນູທີ່ແຖມ</div>
+                <div>{t("total_money") + t("menu_free")}</div>
                 <div
                   className="flex gap-2 items-center text-orange-500 cursor-pointer"
                   onClick={() =>
@@ -687,7 +687,7 @@ export default function DashboardPage() {
                   borderBottom: `1px dotted ${COLOR_APP}`,
                 }}
               >
-                <div>ລວມເປັນເງິນ(ເມນູທີ່ແຖມ)</div>
+                <div>{t("total_money") + `(${t("menu_free")})`}</div>
                 <div>
                   {moneyCurrency(
                     promotionDiscountAndFreeReport?.totalFreeMenuPrice || 0

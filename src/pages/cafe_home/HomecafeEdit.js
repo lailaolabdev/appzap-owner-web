@@ -42,7 +42,11 @@ import { moneyCurrency } from "../../helpers";
 import { getHeaders } from "../../services/auth";
 import Loading from "../../components/Loading";
 import { json, useNavigate, useParams } from "react-router-dom";
-import { getBillCafe, getBills } from "../../services/bill";
+import {
+  createBillCancelCafe,
+  getBillCafe,
+  getBills,
+} from "../../services/bill";
 import { GetAllPromotion } from "../../services/promotion";
 import { useStore } from "../../store";
 import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
@@ -62,7 +66,11 @@ import theme from "../../theme";
 import moment from "moment";
 import { getAllStorePoints } from "../../services/member.service";
 import AnimationLoading from "../../constants/loading";
-import { deleteOrderCafeItemV7, updateOrderItemV7 } from "../../services/order";
+import {
+  deleteOrderCafeItemV7,
+  updateOrderCafeItemV7,
+  updateOrderItemV7,
+} from "../../services/order";
 import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
 import { Input } from "../../components/ui/Input";
@@ -129,8 +137,6 @@ function HomecafeEdit() {
   const { shiftCurrent } = useShiftStore();
   const { setSelectedMenus, SelectedMenus, clearSelectedMenus } =
     useMenuSelectStore();
-
-  console.log("SelectedMenus", SelectedMenus);
 
   const sliderRef = useRef();
   useEffect(() => {
@@ -436,7 +442,6 @@ function HomecafeEdit() {
   };
 
   const addToCart = async (menu) => {
-    console.log("menu", menu);
     const _menuOptions = _checkMenuOption(menu);
     let updatedSelectedMenus = [...SelectedMenus];
 
@@ -468,6 +473,7 @@ function HomecafeEdit() {
         (sum, promo) => sum + (promo.discountValue || 0),
         0
       ),
+      status: "SERVED",
       note: "",
       isWeightMenu: menu?.isWeightMenu,
       menuImage: menu?.images[0],
@@ -587,6 +593,16 @@ function HomecafeEdit() {
       0
     );
     return calculateDiscount(menu) + optionsTotalPrice;
+  };
+
+  console.log("SelectedMenus", SelectedMenus);
+
+  const createBillCancelCafeData = async () => {
+    try {
+      // await createBillCancelCafe();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleConfirmOptions = () => {
@@ -734,7 +750,11 @@ function HomecafeEdit() {
   const onRemoveFromCart = async (data) => {
     setIsLoading(true);
     const storeId = storeDetail?._id;
-    await deleteOrderCafeItemV7(data, storeId);
+    const updatedSelectedMenus = SelectedMenus.map((menu) =>
+      menu._id === data._id ? { ...menu, status: "CANCELED" } : menu
+    );
+    await updateOrderCafeItemV7(updatedSelectedMenus, storeId);
+    // await deleteOrderCafeItemV7(data, storeId);
     GetOneItemsCafe();
     setIsRemoveItem(false);
     setIsLoading(false);
@@ -800,23 +820,21 @@ function HomecafeEdit() {
 
   const updateOrderCancel = async (data) => {
     try {
-      const res = await updateOrderItemV7(data, storeDetail?._id);
-      setSelectedMenus(res);
+      const res = await updateOrderCafeItemV7(data, storeDetail?._id);
     } catch (error) {}
   };
 
   const onConfirmRemoveItem = (item) => {
-    console.log("data", item);
-    console.log("selectedItem", selectedItem);
-
-    const updatedSelectedMenus = SelectedMenus.map((menu) =>
-      menu._id === item._id ? { ...menu, status: "CANCELED" } : menu
-    );
-    updateOrderCancel(updatedSelectedMenus);
-
-    // setIsRemoveItem(true);
-    // setItemDeleting(data);
+    // const updatedSelectedMenus = SelectedMenus.map((menu) =>
+    //   menu._id === item._id ? { ...menu, status: "CANCELED" } : menu
+    // );
+    // console.log("updatedSelectedMenus", updatedSelectedMenus);
+    // updateOrderCafeItemV7(data, storeDetail?._id);
+    // updateOrderCancel(updatedSelectedMenus);
+    setIsRemoveItem(true);
+    setItemDeleting(item);
   };
+
   const onPrintDrawer = async () => {
     try {
       let urlForPrinter = "";
@@ -2041,6 +2059,9 @@ function HomecafeEdit() {
                   <Button
                     variant="outline"
                     className="w-full mt-2 text-red-500 text-md font-bold"
+                    onClick={() => {
+                      createBillCancelCafeData(SelectedMenus);
+                    }}
                   >
                     {t("cancel_order")}
                   </Button>

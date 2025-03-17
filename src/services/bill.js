@@ -54,3 +54,20 @@ export const getCountBillsV7 = async (storeId, findBy) => {
     return error;
   }
 };
+
+export const createBillCancelCafe = async (data) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v7/admin/bill-cafe-checkout`;
+    const res = await axios.post(
+      url,
+      {
+        data: data,
+      },
+      { headers: _header }
+    );
+    return res;
+  } catch (error) {
+    return error;
+  }
+};

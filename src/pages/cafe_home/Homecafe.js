@@ -420,9 +420,12 @@ function Homecafe() {
         (sum, promo) => sum + (promo.discountValue || 0),
         0
       ),
+      status: "SERVED",
       note: "",
       isWeightMenu: menu?.isWeightMenu,
     };
+
+    console.log("mainMenuData", mainMenuData);
 
     // const existingMenuIndex = updatedSelectedMenus.findIndex(
     //   (item) => item.id === menu._id
