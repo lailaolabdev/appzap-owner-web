@@ -152,6 +152,19 @@ const Promotion = () => {
       navigate(`/promotion/buyXGetX/edit/${promotionId}`);
     }
   };
+  const handleChangePagePromotionDetail = (type, promotionId) => {
+    if (type === "DISCOUNT") {
+      navigate(`/promotion/discount/detail/${promotionId}`);
+    } else if (type === "Bundle_Menu") {
+      navigate("/promotion/bundle-menu");
+    } else if (type === "Bundle_Set_for_Discount_Menu") {
+      navigate("/promotion/bundle-set-for-discount-menu");
+    } else if (type === "Bundle_Set_for_Menu_Free") {
+      navigate("/promotion/bundle-set-for-menu-free");
+    } else if (type === "BUY_X_GET_Y") {
+      navigate(`/promotion/buyXGetX/detail/${promotionId}`);
+    }
+  };
 
   const handleCloseDelete = () => setShowDelete(false);
   const handleShowDelete = (data) => {
@@ -291,15 +304,6 @@ const Promotion = () => {
                     </td>
 
                     <td className="text-[18px] font-bold text-center">
-                      {/* <span
-                        className={`px-2 py-1 rounded-md ${
-                          data?.status === "ACTIVE"
-                            ? "bg-green-500 text-white"
-                            : "bg-red-500 text-white"
-                        }`}
-                      >
-                        {data?.status === "ACTIVE" ? "ເປີດ" : "ປິດ"}
-                      </span> */}
                       <div className="flex justify-start items-center gap-2">
                         <Form.Label
                           htmlFor={"switch-status"}
@@ -332,6 +336,16 @@ const Promotion = () => {
                         className="bg-red-500 hover:bg-red-400 text-[14px] p-2 w-[60px] rounded-md text-white"
                       >
                         ລົບ
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          // navigate(`/promotion/discount/edit/${data?._id}`)
+                          handleChangePagePromotionDetail(data?.type, data?._id)
+                        }
+                        className="bg-gray-500 hover:bg-gray-700 text-[14px] p-2 w-[100px] rounded-md text-white"
+                      >
+                        ລາຍລະອຽດ
                       </button>
                     </td>
                   </tr>
