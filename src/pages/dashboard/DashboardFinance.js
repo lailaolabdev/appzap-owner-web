@@ -551,7 +551,7 @@ export default function DashboardFinance({
       createdBy: item?.createdBy?.firstname || "-",
       isWeightMenu: item?.isWeightMenu,
       totalPrice: (() => {
-        if (isCanceled) return "CANCELED";
+        // if (isCanceled) return "CANCELED";
         try {
           const basePrice = item?.price || 0;
           const optionPrice = item?.totalOptionPrice || 0;

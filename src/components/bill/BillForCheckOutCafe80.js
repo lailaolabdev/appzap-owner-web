@@ -32,6 +32,26 @@ export default function BillForCheckOutCafe80({
     _calculateTotal();
   }, [dataBill, taxPercent]);
 
+  const getDataCurrency = async () => {
+    try {
+      const { DATA } = await getLocalData();
+      if (DATA) {
+        const data = await Axios.get(
+          `${QUERY_CURRENCIES}?storeId=${DATA?.storeId}`
+        );
+        if (data?.status == 200) {
+          setCurrencyData(data?.data?.data);
+          const _currencyData = data?.data?.data?.find(
+            (e) => e.currencyCode === "THB"
+          );
+          setRateCurrency(_currencyData?.buy || 1);
+        }
+      }
+    } catch (err) {
+      console.log("err:", err);
+    }
+  };
+
   useEffect(() => {
     _calculateTotal();
     getDataCurrency();
@@ -62,26 +82,6 @@ export default function BillForCheckOutCafe80({
       setTotalAfterDiscount(matchRoundNumber(TotalDiscountFinal));
       setTaxAmount((_total * taxPercent) / 100);
     }
-
-    const getDataCurrency = async () => {
-      try {
-        const { DATA } = await getLocalData();
-        if (DATA) {
-          const data = await Axios.get(
-            `${QUERY_CURRENCIES}?storeId=${DATA?.storeId}`
-          );
-          if (data?.status == 200) {
-            setCurrencyData(data?.data?.data);
-            const _currencyData = data?.data?.data?.find(
-              (e) => e.currencyCode === "THB"
-            );
-            setRateCurrency(_currencyData?.buy || 1);
-          }
-        }
-      } catch (err) {
-        console.log("err:", err);
-      }
-    };
 
     const imageUrl = URL_PHOTO_AW3 + storeDetail?.image;
     const imageUrl2 = URL_PHOTO_AW3 + storeDetail?.printer?.logo;
