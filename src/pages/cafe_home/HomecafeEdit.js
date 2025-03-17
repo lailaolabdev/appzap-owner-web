@@ -269,62 +269,129 @@ function HomecafeEdit() {
   const handleSetQuantity = async (int, data) => {
     let dataArray = [...SelectedMenus]; // Clone current selected menu list
 
-    let mainMenuIndex = dataArray.findIndex(
-      (item) =>
-        item.id === data.id &&
-        JSON.stringify(item.options) === JSON.stringify(data.options)
-    );
+    const CheckId = dataArray?.find((item) => item?.id);
 
-    if (mainMenuIndex !== -1) {
-      dataArray[mainMenuIndex].quantity = Math.max(
-        0,
-        dataArray[mainMenuIndex].quantity + int
+    if (CheckId && CheckId !== undefined) {
+      let mainMenuIndex = dataArray.findIndex(
+        (item) =>
+          item.id === data.id &&
+          JSON.stringify(item.options) === JSON.stringify(data.options)
       );
-    }
 
-    const activePromotions =
-      data?.promotionId?.filter(
-        (promotion) =>
-          promotion?.type === "BUY_X_GET_Y" && promotion?.status === "ACTIVE"
-      ) || [];
+      console.log("mainMenuIndex", mainMenuIndex);
 
-    activePromotions.forEach((promotion) => {
-      const buyQuantity = promotion?.buyQuantity || 1;
-      const getQuantity = promotion?.getQuantity || 1;
-
-      if (buyQuantity > 0 && getQuantity > 0) {
-        const freeMultiplier = Math.floor(
-          (dataArray[mainMenuIndex]?.quantity || 0) / buyQuantity
+      if (mainMenuIndex !== -1) {
+        dataArray[mainMenuIndex].quantity = Math.max(
+          0,
+          dataArray[mainMenuIndex].quantity + int
         );
+      }
 
-        promotion.freeItems.forEach((freeItem) => {
-          const freeItemId =
-            typeof freeItem._id === "object" ? freeItem._id._id : freeItem._id;
-          const freeItemCount = freeMultiplier * getQuantity;
+      const activePromotions =
+        data?.promotionId?.filter(
+          (promotion) =>
+            promotion?.type === "BUY_X_GET_Y" && promotion?.status === "ACTIVE"
+        ) || [];
 
-          let freeItemInCart = dataArray.find(
-            (item) =>
-              item.id === freeItemId &&
-              item.isFree &&
-              item.mainMenuId === data.id
+      console.log("activePromotions", activePromotions);
+
+      activePromotions.forEach((promotion) => {
+        const buyQuantity = promotion?.buyQuantity || 1;
+        const getQuantity = promotion?.getQuantity || 1;
+
+        if (buyQuantity > 0 && getQuantity > 0) {
+          const freeMultiplier = Math.floor(
+            (dataArray[mainMenuIndex]?.quantity || 0) / buyQuantity
           );
 
-          if (freeItemInCart) {
-            freeItemInCart.quantity = freeItemCount;
-          }
-        });
-      }
-    });
+          console.log("promotion", promotion);
 
-    dataArray = dataArray.filter(async (item) => {
-      if (item.quantity === 0) {
-        const storeId = storeDetail?._id;
-        await deleteOrderCafeItemV7(item, storeId);
-        GetOneItemsCafe();
-        return false;
+          promotion.freeItems.forEach((freeItem) => {
+            const freeItemId =
+              typeof freeItem._id === "object"
+                ? freeItem._id._id
+                : freeItem._id;
+            const freeItemCount = freeMultiplier * getQuantity;
+
+            console.log("freeItemId", freeItemId);
+            console.log("freeItemCount", freeItemCount);
+
+            let freeItemInCart = dataArray.find(
+              (item) =>
+                item.id === freeItemId &&
+                item.isFree &&
+                item.mainMenuId === data.id
+            );
+
+            if (freeItemInCart) {
+              freeItemInCart.quantity = freeItemCount;
+            }
+          });
+        }
+      });
+
+      dataArray = dataArray.filter((item) => !(item.quantity === 0));
+    } else {
+      let mainMenuIndex = dataArray.findIndex(
+        (item) =>
+          item._id === data._id &&
+          JSON.stringify(item.options) === JSON.stringify(data.options)
+      );
+
+      if (mainMenuIndex !== -1) {
+        dataArray[mainMenuIndex].quantity = Math.max(
+          0,
+          dataArray[mainMenuIndex].quantity + int
+        );
       }
-      return true;
-    });
+
+      const activePromotions =
+        data?.promotionId?.filter(
+          (promotion) =>
+            promotion?.type === "BUY_X_GET_Y" && promotion?.status === "ACTIVE"
+        ) || [];
+
+      activePromotions.forEach((promotion) => {
+        const buyQuantity = promotion?.buyQuantity || 1;
+        const getQuantity = promotion?.getQuantity || 1;
+
+        if (buyQuantity > 0 && getQuantity > 0) {
+          const freeMultiplier = Math.floor(
+            (dataArray[mainMenuIndex]?.quantity || 0) / buyQuantity
+          );
+
+          promotion.freeItems.forEach((freeItem) => {
+            const freeItemId =
+              typeof freeItem._id === "object"
+                ? freeItem._id._id
+                : freeItem._id;
+            const freeItemCount = freeMultiplier * getQuantity;
+
+            let freeItemInCart = dataArray.find(
+              (item) =>
+                item._id === freeItemId &&
+                item.isFree &&
+                item.mainMenuId === data._id
+            );
+            if (freeItemInCart) {
+              freeItemInCart.quantity = freeItemCount;
+            }
+          });
+        }
+      });
+
+      dataArray = dataArray.filter(async (item) => {
+        if (item.quantity === 0) {
+          const storeId = storeDetail?._id;
+          await deleteOrderCafeItemV7(item, storeId);
+          GetOneItemsCafe();
+          return false;
+        }
+        return true;
+      });
+    }
+
+    // dataArray = dataArray.filter((item) => !(item.quantity === 0));
 
     setSelectedMenu(dataArray);
     setSelectedMenus(dataArray);
@@ -525,6 +592,8 @@ function HomecafeEdit() {
       categoryId: menu?.categoryId,
       printer: menu?.categoryId?.printer,
       shiftId: shiftCurrent[0]?._id,
+      promotionId: menu.promotionId,
+      activePromotions: activePromotions,
       discount: activePromotions.reduce(
         (sum, promo) => sum + (promo.discountValue || 0),
         0
