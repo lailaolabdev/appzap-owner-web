@@ -930,13 +930,11 @@ export default function DashboardPage() {
                     <td style={{ textAlign: "left" }}>{e?.date}</td>
                     <td>{e?.order}</td>
                     <td>{e?.bill}</td>
-                    <td>{moneyCurrency(e?.point)}</td>
-
                     <td>
                       {moneyCurrency(e?.deliveryAmount)}{" "}
                       {storeDetail?.firstCurrency}
                     </td>
-
+                    <td>{moneyCurrency(e?.point)}</td>
                     <td>
                       {moneyCurrency(e?.discount)}
                       {storeDetail?.firstCurrency}

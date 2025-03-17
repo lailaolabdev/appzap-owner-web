@@ -2439,6 +2439,7 @@ function Homecafe() {
         onClose={() => setPopupDelivery()}
         setDataBill={setDataBill}
         isDelivery={isDelivery}
+        setIsDelivery={setIsDelivery}
         taxPercent={taxPercent}
         TotalPrice={TotalPrice()}
         setIsLoading={setIsLoading}

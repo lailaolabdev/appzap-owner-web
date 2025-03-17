@@ -57,7 +57,8 @@ export default function CheckOutPopupCafeDelivery({
   platform,
   setDeliveryCode,
   deliveryCode,
-  mainMenuData
+  mainMenuData,
+  setIsDelivery
 }) {
   // ref
   const inputTransferhRef = useRef(null);
@@ -94,7 +95,7 @@ export default function CheckOutPopupCafeDelivery({
   const [selectedBank, setSelectedBank] = useState("");
   const [banks, setBanks] = useState([]);
   const [platformList, setPlatformList] = useState([]);
-  
+
 
 
   const { t } = useTranslation();
@@ -105,6 +106,7 @@ export default function CheckOutPopupCafeDelivery({
       handleSearchOne();
     }
   }, [textSearchMember]);
+
 
   const handleSearchOne = async () => {
     try {
@@ -121,7 +123,7 @@ export default function CheckOutPopupCafeDelivery({
         Name: _res.data?.name,
         Point: _res.data?.point,
         Discount: _res?.data?.discountPercentage,
-        
+
       }));
     } catch (err) {
       console.log(err);
@@ -340,10 +342,10 @@ export default function CheckOutPopupCafeDelivery({
       isCheckout: "true",
       status: "CHECKOUT",
       payAmount: matchRoundNumber(cash),
-      deliveryAmount: matchRoundNumber(transfer) ,
+      deliveryAmount: matchRoundNumber(transfer),
       billAmount: DiscountMember(),
       deliveryName: platform,
-      deliveryCode:deliveryCode,
+      deliveryCode: deliveryCode,
       billAmountBefore: matchRoundNumber(totalBill),
       paymentMethod: "DELIVERY",
       shiftId: shiftCurrent[0]?._id,
@@ -456,7 +458,7 @@ export default function CheckOutPopupCafeDelivery({
 
     let memberDiscount = memberDataSearch?.discountPercentage || 0; // Get member discount, default to 0 if not available
 
-   if (forcus === "DELIVERY") {
+    if (forcus === "DELIVERY") {
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           if (delivery >= totalBill - (totalBill * dataBill?.discount) / 100) {
@@ -567,14 +569,9 @@ export default function CheckOutPopupCafeDelivery({
   };
 
   const calculateReturnAmount = () => {
-    const parsedCash = Number.parseInt(matchRoundNumber(cash)) || 0;
-    const parsedTransfer = Number.parseInt(matchRoundNumber(transfer)) || 0;
-    const parsedDelivery = Number.parseInt(delivery) || 0;
-    const parsedPoint = Number.parseInt(matchRoundNumber(point)) || 0;
-
+    const parsedTransfer = Number.parseInt(transfer) || 0;
     const totalAmount =
-      parsedCash + parsedTransfer + parsedDelivery + parsedPoint - matchRoundNumber(totalBill);
-
+      parsedTransfer - totalBill;
     return totalAmount <= 0 ? 0 : totalAmount;
   };
 
@@ -587,6 +584,9 @@ export default function CheckOutPopupCafeDelivery({
         onClose();
         setDelivery();
         ClearChangeAmount();
+        setPlatform("");
+        setDeliveryCode("");
+        setIsDelivery(false)
       }}
       keyboard={false}
       size="lg"
@@ -620,7 +620,7 @@ export default function CheckOutPopupCafeDelivery({
                   )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
-              
+
             </div>
             <div
               style={{
@@ -637,13 +637,10 @@ export default function CheckOutPopupCafeDelivery({
                     <InputGroup.Text>{t("transfer")}</InputGroup.Text>
                     <Form.Control
                       ref={inputTransferhRef}
-                      disabled={
-                        tab !== "cash_transfer" && tab !== "cash_transfer_point"
-                      }
                       type="text"
                       placeholder="0"
                       value={
-                        tab === "cash_transfer"
+                        tab === "transfer"
                           ? convertNumber(transfer)
                           : convertNumber(matchRoundNumber(transfer || 0))
                       }
@@ -654,6 +651,10 @@ export default function CheckOutPopupCafeDelivery({
                         onChangeTransferInput(e.target.value);
                       }}
                       size="lg"
+                      style={{
+                        borderColor: selectInput === "inputTransfer" ? COLOR_APP : '',
+                        borderWidth: selectInput === "inputTransfer" ? '2px' : ''
+                      }}
                     />
                     <InputGroup.Text>
                       {storeDetail?.firstCurrency}
@@ -666,6 +667,13 @@ export default function CheckOutPopupCafeDelivery({
                       value={deliveryCode}
                       onChange={(e) => setDeliveryCode(e.target.value)}
                       placeholder={t("deliveryPlaceholder")}
+                      onClick={() => {
+                        setSelectInput("inputDelivery");
+                      }}
+                      style={{
+                        borderColor: selectInput === "inputDelivery" ? COLOR_APP : '',
+                        borderWidth: selectInput === "inputDelivery" ? '2px' : ''
+                      }}
                     />
                   </Form.Group>
                   <Form.Group className="mt-3">
@@ -695,6 +703,16 @@ export default function CheckOutPopupCafeDelivery({
               </div>
 
 
+            </div>
+            <div
+              style={{
+                marginBottom: 10,
+              }}
+            >
+              <div hidden={tab === "point"} style={{ marginBottom: 10 }}>
+                {t("return")}: {moneyCurrency(calculateReturnAmount())}{" "}
+                {storeDetail?.firstCurrency}
+              </div>
             </div>
             <div
               style={{
@@ -785,15 +803,19 @@ export default function CheckOutPopupCafeDelivery({
               onClickButtonDrawer={onPrintDrawer}
               totalBill={totalBillMoney}
               payType={tab}
+              isDelivery={isDelivery}
               selectInput={((e) => {
-
                 if (selectInput === "inputTransfer") {
                   return transfer;
+                } else if (selectInput === "inputDelivery") {
+                  return deliveryCode;
                 }
               })()}
               setSelectInput={(e) => {
                 if (selectInput === "inputTransfer") {
                   onChangeTransferInput(e);
+                } else if (selectInput === "inputDelivery") {
+                  setDeliveryCode(e);
                 }
               }}
             />
@@ -821,7 +843,7 @@ export default function CheckOutPopupCafeDelivery({
                 // await onPrintForCher();
               }}
               style={{ display: "flex", gap: "10px", alignItems: "center" }}
-              disabled={ platform.length <= 0  }
+              disabled={platform.length <= 0}
             >
               <BiSolidPrinter />
               {t("print_checkbill")}
