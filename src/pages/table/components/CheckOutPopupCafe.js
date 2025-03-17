@@ -251,7 +251,6 @@ export default function CheckOutPopupCafe({
       if (_data.status !== "CANCELED") {
         const totalOptionPrice = _data?.totalOptionPrice || 0;
         const itemPrice = _data?.price + totalOptionPrice;
-      
       // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
       if (storeDetail?.isStatusCafe && _data?.isWeightMenu) {
         _total += convertkgToG(_data?.quantity) * itemPrice;
