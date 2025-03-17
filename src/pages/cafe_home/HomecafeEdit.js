@@ -1965,9 +1965,7 @@ function HomecafeEdit() {
                                         item.quantity.toString()
                                       ).toFixed(3)}`}
                                     >
-                                      {Number.parseFloat(
-                                        item.quantity.toString()
-                                      ).toFixed(3)}
+                                      {convertkgToG(item?.quantity)}
                                     </div>
                                   ) : (
                                     // <p
@@ -2028,7 +2026,7 @@ function HomecafeEdit() {
                             {t("amountTotal")} :{" "}
                           </span>
                           <span>
-                            {Number.parseFloat(TotalAmount())}{" "}
+                            {TotalAmount()}
                             {t("item_amount")}
                           </span>
                         </div>
@@ -2255,9 +2253,7 @@ function HomecafeEdit() {
                                     }}
                                     onClick={() => setEditingRowId(data?.id)}
                                   >
-                                    {Number.parseFloat(data?.quantity).toFixed(
-                                      3
-                                    )}
+                                    {convertkgToG(data?.quantity)}
                                   </p>
                                 ) : (
                                   <p
@@ -2337,9 +2333,7 @@ function HomecafeEdit() {
                     <div className="mb-3">
                       <div>
                         <span>{t("amountTotal")} : </span>
-                        <span>
-                          {Number.parseFloat(TotalAmount()).toFixed(3)}{" "}
-                        </span>
+                        <span>{TotalAmount()}</span>
                       </div>
                       <div>
                         <span>{t("pricesTotal")} : </span>
