@@ -131,50 +131,51 @@ export default function HistoryBankTransferClaim() {
   const [totalPageClaimingData, setTotalPageClaimingData] = useState(1);
   const [pageUnClaimData, setPageUnClaimData] = useState(1);
   const [totalPageUnClaimData, setTotalPageUnClaimData] = useState(1);
+  const { setTotalAmountClaim, TotalAmountClaim } = useClaimDataStore();
 
   // Zustand stores
   const { profile, setSelectedTable, getTableDataStore } = useStore();
   const { storeDetail } = useStoreStore();
-  const { TotalAmountClaim, setTotalAmountClaim } = useClaimDataStore();
   const { shiftCurrent } = useShiftStore();
 
-  // Calculate total amount of selected claims
-  const totalAmountSelectedClaim = selectedPayment.reduce(
-    (sum, item) => sum + (item.totalAmount || 0),
-    0
-  );
-
   useEffect(() => {
-    getDataAllUnClaim();
-    getDataAllClaiming();
-    getDataAllClaimed();
-  }, []);
+    if (selectedType === "UNCLAIMED") {
+      getDataAllUnClaim();
+      getClaimAmountData();
+    } else if (selectedType === "CLAIMING") {
+      getClaimAmountData();
+      getDataAllClaiming();
+    } else if (selectedType === "CLAIMED") {
+      getClaimAmountData();
+      getDataAllClaimed();
+    }
+  }, [selectedType]);
 
-  // // API calls
-  // const getClaimData = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     const { DATA } = await getLocalData();
-  //     const response = await axios.get(
-  //       `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${DATA?.storeId}`
-  //     );
-  //     setClaimData(response?.data?.data);
-  //     setIsLoading(false);
-  //   } catch (error) {
-  //     console.log(error);
-  //     setIsLoading(false);
-  //   }
-  // };
+  const getClaimAmountData = async () => {
+    try {
+      const { DATA } = await getLocalData();
+      const _res = await axios.get(
+        `${END_POINT_SERVER_JUSTCAN}/v5/checkout-total-amount?storeId=${DATA?.storeId}`
+      );
+      console.log("_res.data");
+      console.log(_res.data);
+      setTotalAmountClaim(_res?.data?.totalAmount);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const getDataAllUnClaim = async () => {
     try {
       setIsLoading(true);
       const { TOKEN, DATA } = await getLocalData();
-      const apiUrl = `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${DATA?.storeId}&claimStatus=UNCLAIMED&paymentMethod=BANK_TRANSFER&status=PAID`;
-      const response = await axios.get(apiUrl, { header: TOKEN });
+      const apiUrl = `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${DATA?.storeId}&claimStatus=UNCLAIMED&paymentMethod=BANK_TRANSFER&status=PAID&skip=0&limit=999999`;
+      const response = await axios.get(apiUrl, {
+        headers: TOKEN,
+      });
       setUnClaimedData(response?.data?.data);
       setAmountData({ ...amountData, unclaimed: response?.data?.totalAmount });
-      console.log("unclaimed", response?.data?.data);
+      console.log("unclaimed", response?.data);
       setIsLoading(false);
     } catch (error) {
       console.log(error);
@@ -186,11 +187,11 @@ export default function HistoryBankTransferClaim() {
     try {
       setIsLoading(true);
       const { TOKEN, DATA } = await getLocalData();
-      const apiUrl = `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${DATA?.storeId}&claimStatus=CLAIMING&paymentMethod=BANK_TRANSFER&status=PAID`;
-      const response = await axios.get(apiUrl, { header: TOKEN });
+      const apiUrl = `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${DATA?.storeId}&status=CLAIMING&skip=0&limit=999999`;
+      const response = await axios.get(apiUrl, { headers: TOKEN });
       setClaimingData(response?.data?.data);
       setAmountData({ ...amountData, claiming: response?.data?.totalAmount });
-      console.log("claiming", response?.data?.data);
+      console.log("claiming", response?.data);
       setIsLoading(false);
     } catch (error) {
       console.log(error);
@@ -202,8 +203,8 @@ export default function HistoryBankTransferClaim() {
     try {
       setIsLoading(true);
       const { TOKEN, DATA } = await getLocalData();
-      const apiUrl = `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${DATA?.storeId}&claimStatus=CLAIMED&paymentMethod=BANK_TRANSFER&status=PAID`;
-      const response = await axios.get(apiUrl, { header: TOKEN });
+      const apiUrl = `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${DATA?.storeId}&status=CLAIMED&skip=0&limit=999999`;
+      const response = await axios.get(apiUrl, { headers: TOKEN });
       setClaimedData(response?.data?.data);
       setAmountData({ ...amountData, claimed: response?.data?.totalAmount });
       console.log("claimed", response?.data?.data);
@@ -272,6 +273,7 @@ export default function HistoryBankTransferClaim() {
       // Refresh data
       // getClaimData();
       getDataAllUnClaim();
+      getDataAllClaiming();
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -351,12 +353,10 @@ export default function HistoryBankTransferClaim() {
   // Render functions for tab content
   const renderUnclaimedTab = () => (
     <div>
-      {unClaimedData?.length > 0 && (
-        <MoneySummaryCard
-          amount={amountData?.unclaimed}
-          currency={storeDetail?.firstCurrency}
-        />
-      )}
+      <MoneySummaryCard
+        amount={amountData?.unclaimed}
+        currency={storeDetail?.firstCurrency}
+      />
 
       <div>
         <div className="flex justify-end flex-wrap gap-3">
@@ -530,12 +530,10 @@ export default function HistoryBankTransferClaim() {
 
   const renderClaimingTab = () => (
     <>
-      {claimingData?.length > 0 && (
-        <MoneySummaryCard
-          amount={amountData.claiming}
-          currency={storeDetail?.firstCurrency}
-        />
-      )}
+      <MoneySummaryCard
+        amount={amountData.claiming}
+        currency={storeDetail?.firstCurrency}
+      />
 
       <div style={{ height: 10 }} />
 
@@ -546,22 +544,19 @@ export default function HistoryBankTransferClaim() {
               {t("no")}
             </th>
             <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("tableNumber")}
+              {t("ລະຫັດເຄລມ")}
             </th>
             <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("tableCode")}
+              {t("ຈຳນວນບິນ")}
             </th>
             <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("amount")}
+              {t("ຈຳນວນບິນເງິນ")}
             </th>
             <th style={{ textWrap: "nowrap" }} scope="col">
               {t("detail")}
             </th>
             <th style={{ textWrap: "nowrap" }} scope="col">
               {t("status")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              ສະຖານະເຄລມ
             </th>
             <th style={{ textWrap: "nowrap" }} scope="col">
               {t("date_time")}
@@ -591,7 +586,7 @@ export default function HistoryBankTransferClaim() {
                       color: isSelected ? "white" : "",
                     }}
                   >
-                    {item?.tableName ?? "-"}
+                    {item?.code ?? "-"}
                   </td>
                   <td
                     style={{
@@ -599,7 +594,7 @@ export default function HistoryBankTransferClaim() {
                       color: isSelected ? "white" : "",
                     }}
                   >
-                    {item?.code ?? "-"}
+                    {item?.billIds?.length ?? "-"}
                   </td>
                   <td
                     style={{
@@ -627,15 +622,7 @@ export default function HistoryBankTransferClaim() {
                       color: isSelected ? "white" : "",
                     }}
                   >
-                    {t(item.status) ?? "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {item.claimStatus === "CLAIMING" ? "ກຳລັງຖອນເງິນຄືນ" : "-"}
+                    {item.status === "CLAIMING" ? "ກຳລັງຖອນເງິນຄືນ" : "-"}
                   </td>
                   <td
                     style={{
@@ -664,6 +651,12 @@ export default function HistoryBankTransferClaim() {
 
   const renderClaimedTab = () => (
     <div>
+      <MoneySummaryCard
+        amount={amountData.claimed}
+        currency={storeDetail?.firstCurrency}
+      />
+
+      <div style={{ height: 10 }} />
       <table className="table table-hover">
         <thead className="thead-light">
           <tr>
@@ -671,22 +664,19 @@ export default function HistoryBankTransferClaim() {
               {t("no")}
             </th>
             <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("tableNumber")}
+              {t("ລະຫັດເຄລມ")}
             </th>
             <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("tableCode")}
+              {t("ຈຳນວນບິນ")}
             </th>
             <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("amount")}
+              {t("ຈຳນວນບິນເງິນ")}
             </th>
             <th style={{ textWrap: "nowrap" }} scope="col">
               {t("detail")}
             </th>
             <th style={{ textWrap: "nowrap" }} scope="col">
               {t("status")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              ສະຖານະເຄລມ
             </th>
             <th style={{ textWrap: "nowrap" }} scope="col">
               {t("date_time")}
@@ -716,7 +706,7 @@ export default function HistoryBankTransferClaim() {
                       color: isSelected ? "white" : "",
                     }}
                   >
-                    {item?.tableName ?? "-"}
+                    {item?.code ?? "-"}
                   </td>
                   <td
                     style={{
@@ -724,7 +714,7 @@ export default function HistoryBankTransferClaim() {
                       color: isSelected ? "white" : "",
                     }}
                   >
-                    {item?.code ?? "-"}
+                    {item?.billIds?.length ?? "-"}
                   </td>
                   <td
                     style={{
@@ -753,14 +743,6 @@ export default function HistoryBankTransferClaim() {
                     }}
                   >
                     {t(item.status) ?? "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {item.claimStatus === "CLAIMED" ? "ຖອນເງິນສຳເລັດ" : "-"}
                   </td>
                   <td
                     style={{
