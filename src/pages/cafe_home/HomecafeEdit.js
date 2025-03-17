@@ -41,13 +41,8 @@ import {
 import { moneyCurrency } from "../../helpers";
 import { getHeaders } from "../../services/auth";
 import Loading from "../../components/Loading";
-import { json, useNavigate, useParams } from "react-router-dom";
-import {
-  createBillCancelCafe,
-  getBillCafe,
-  getBills,
-} from "../../services/bill";
-import { GetAllPromotion } from "../../services/promotion";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { getBillCafe, getBills } from "../../services/bill";
 import { useStore } from "../../store";
 import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
@@ -95,12 +90,15 @@ import {
   CreditCard,
   Clock,
 } from "lucide-react";
+import { deleteOrderCafeItemV7 } from "../../services/order";
+import { convertkgToG } from "./../../helpers/convertKgToG";
 
 function HomecafeEdit() {
   const { billId } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
-
   const [selectedMenu, setSelectedMenu] = useState([]);
   const [selectedItem, setSelectedItem] = useState();
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -125,7 +123,6 @@ function HomecafeEdit() {
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
   const [bill, setBill] = useState(0);
-  const [promotion, setPromotion] = useState([]);
 
   const [isMobile, setIsMobile] = useState(
     window.matchMedia("(max-width: 767px)").matches
@@ -137,6 +134,24 @@ function HomecafeEdit() {
   const { shiftCurrent } = useShiftStore();
   const { setSelectedMenus, SelectedMenus, clearSelectedMenus } =
     useMenuSelectStore();
+
+  useEffect(() => {
+    return () => {
+      console.log("Leaving HomecafeEdit, clearing Zustand state...");
+      clearSelectedMenus();
+    };
+  }, []);
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      clearSelectedMenus();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
   const sliderRef = useRef();
   useEffect(() => {
@@ -228,26 +243,6 @@ function HomecafeEdit() {
     setShow(true);
   };
   const handleClose = () => setShow(false);
-
-  // const handleSetQuantity = (int, data) => {
-  //   const dataArray = [];
-  //   for (const i of SelectedMenus) {
-  //     let _data = { ...i };
-
-  //     if (
-  //       data?.id === i?.id &&
-  //       JSON.stringify(data?.options) === JSON.stringify(i?.options)
-  //     ) {
-  //       _data = { ..._data, quantity: _data?.quantity + int };
-  //     }
-
-  //     if (_data.quantity > 0) {
-  //       dataArray.push(_data);
-  //     }
-  //   }
-  //   setSelectedMenu(dataArray);
-  //   setSelectedMenus(dataArray);
-  // };
 
   const handleSetQuantity = async (int, data) => {
     const dataArray = [];
@@ -397,6 +392,7 @@ function HomecafeEdit() {
     findby += `storeId=${storeDetail?._id}`;
     findby += `&billId=${billId}`;
     const data = await getBillCafe(findby);
+    console.log("GetOneItemsCafe", data);
     setSelectedMenus(data?.orderId);
   };
 
@@ -416,267 +412,91 @@ function HomecafeEdit() {
       if (_data.status !== "CANCELED") {
         const totalOptionPrice = _data?.totalOptionPrice || 0;
         const itemPrice = _data?.price + totalOptionPrice;
-        _total += _data?.quantity * itemPrice;
+        if (storeDetail?.isStatusCafe && _data?.isWeightMenu) {
+          _total += convertkgToG(_data?.quantity) * itemPrice;
+        } else {
+          _total += _data?.quantity * itemPrice;
+        }
       }
+      const roundedNumber = matchRoundNumber(_total);
+      setTotal(roundedNumber);
     }
-
-    const roundedNumber = matchRoundNumber(_total);
-    setTotal(roundedNumber);
-  };
-  // Helper function to sort options by ID
-  const sortOptionsById = (options) => {
-    return options.sort((a, b) => {
-      if (!a._id || !b._id) return 0;
-      return a._id.localeCompare(b._id);
-    });
-  };
-
-  const _checkMenuOption = (menu) => {
-    try {
-      return menu.menuOptions && menu.menuOptions.length > 0
-        ? menu.menuOptions
-        : [];
-    } catch (error) {
-      return [];
-    }
-  };
-
-  const addToCart = async (menu) => {
-    const _menuOptions = _checkMenuOption(menu);
-    let updatedSelectedMenus = [...SelectedMenus];
-
-    if (_menuOptions.length > 0) {
-      setMenuOptions(_menuOptions);
-      setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
-      setSelectedOptionsArray({
-        [menu._id]: _menuOptions.map((option) => ({ ...option, quantity: 0 })),
+    // Helper function to sort options by ID
+    const sortOptionsById = (options) => {
+      return options.sort((a, b) => {
+        if (!a._id || !b._id) return 0;
+        return a._id.localeCompare(b._id);
       });
-      handleShow();
-      return;
-    }
-
-    const activePromotions =
-      menu.promotionId?.filter((promo) => promo.status === "ACTIVE") || [];
-
-    const finalPrice = calculateDiscount(menu);
-
-    const mainMenuData = {
-      id: menu._id,
-      name: menu.name,
-      quantity: 1,
-      price: finalPrice,
-      priceDiscount: Math.max(menu?.price - finalPrice, 0),
-      categoryId: menu?.categoryId,
-      printer: menu?.categoryId?.printer,
-      shiftId: shiftCurrent[0]?._id,
-      discount: activePromotions.reduce(
-        (sum, promo) => sum + (promo.discountValue || 0),
-        0
-      ),
-      status: "SERVED",
-      note: "",
-      isWeightMenu: menu?.isWeightMenu,
-      menuImage: menu?.images[0],
     };
 
-    // const existingMenuIndex = updatedSelectedMenus.findIndex(
-    //   (item) => item.id === menu._id
-    // );
-    // if (existingMenuIndex !== -1) {
-    //   updatedSelectedMenus[existingMenuIndex].quantity += 1;
-    // } else {
-    //   updatedSelectedMenus.push(mainMenuData);
-    // }
-
-    updatedSelectedMenus.push(mainMenuData);
-
-    // biome-ignore lint/complexity/noForEach: <explanation>
-
-    // biome-ignore lint/complexity/noForEach: <explanation>
-    activePromotions.forEach((promotion) => {
-      if (
-        promotion?.type === "BUY_X_GET_Y" &&
-        promotion.freeItems?.length > 0
-      ) {
-        // biome-ignore lint/complexity/noForEach: <explanation>
-        promotion.freeItems.forEach((freeItem) => {
-          const freeItemId = freeItem?._id?._id || freeItem?._id;
-          const freeItemName = freeItem?._id?.name || "Unknown";
-
-          if (freeItem?.mainMenuId?._id !== menu._id) return;
-
-          const existingFreeItemIndex = updatedSelectedMenus.findIndex(
-            (item) =>
-              item.id === freeItemId &&
-              item.isFree &&
-              item.mainMenuId === menu._id
-          );
-
-          if (existingFreeItemIndex !== -1) {
-            updatedSelectedMenus[existingFreeItemIndex].quantity +=
-              promotion.getQuantity;
-          } else {
-            updatedSelectedMenus.push({
-              id: freeItemId,
-              name: freeItemName,
-              price: 0,
-              quantity: 1,
-              categoryId: menu?.categoryId,
-              printer: menu?.categoryId?.printer,
-              shiftId: shiftCurrent[0]?._id,
-              isWeightMenu: menu?.isWeightMenu,
-              isFree: true,
-              mainMenuId: menu._id,
-            });
-          }
-        });
-      }
-    });
-
-    setSelectedMenus(updatedSelectedMenus);
-  };
-
-  const handleAddOption = (menuId, option) => {
-    setSelectedOptionsArray((prevOptions) => {
-      const menuOptions = prevOptions[menuId] || [];
-      const existingOption = menuOptions.find((opt) => opt._id === option._id);
-
-      if (existingOption) {
-        return {
-          ...prevOptions,
-          [menuId]: menuOptions.map((opt) =>
-            opt._id === option._id
-              ? { ...opt, quantity: opt.quantity + 1 }
-              : opt
-          ),
-        };
-      }
-
-      return {
-        ...prevOptions,
-        [menuId]: [...menuOptions, { ...option, quantity: 1 }],
-      };
-    });
-  };
-
-  const handleRemoveOption = (menuId, option) => {
-    setSelectedOptionsArray((prevOptions) => {
-      const menuOptions = prevOptions[menuId] || [];
-      const existingOption = menuOptions.find((opt) => opt._id === option._id);
-
-      if (existingOption && existingOption.quantity > 1) {
-        return {
-          ...prevOptions,
-          [menuId]: menuOptions.map((opt) =>
-            opt._id === option._id
-              ? { ...opt, quantity: opt.quantity - 1 }
-              : opt
-          ),
-        };
-      }
-
-      return {
-        ...prevOptions,
-        [menuId]: menuOptions.filter((opt) => opt._id !== option._id),
-      };
-    });
-  };
-
-  const calculateTotalPrice = (menu, selectedOptionsArray) => {
-    if (!menu || !menu._id) {
-      return 0;
-    }
-
-    const menuOptions = selectedOptionsArray[menu._id] || [];
-    const optionsTotalPrice = menuOptions.reduce(
-      (sum, option) => sum + option.price * option.quantity,
-      0
-    );
-    return calculateDiscount(menu) + optionsTotalPrice;
-  };
-
-  console.log("SelectedMenus", SelectedMenus);
-
-  const createBillCancelCafeData = async () => {
-    try {
-      // await createBillCancelCafe();
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleConfirmOptions = () => {
-    const filteredOptions =
-      selectedOptionsArray[selectedItem._id]?.filter(
-        (option) => option.quantity >= 1
-      ) || [];
-
-    const sortedFilteredOptionsForComparison = sortOptionsById([
-      ...filteredOptions,
-    ]);
-
-    const totalOptionPrice = filteredOptions.reduce(
-      (total, option) => total + option.price * option.quantity,
-      0
-    );
-
-    const activePromotions =
-      selectedItem.promotionId?.filter((promo) => promo.status === "ACTIVE") ||
-      [];
-
-    const finalPrice = calculateDiscount(selectedItem);
-
-    const mainMenuData = {
-      id: selectedItem._id,
-      name: selectedItem.name,
-      quantity: 1,
-      price: finalPrice,
-      priceDiscount: Math.max(selectedItem?.price - finalPrice, 0),
-      categoryId: selectedItem?.categoryId,
-      printer: selectedItem?.categoryId?.printer,
-      note: addComments,
-      menuOptions: selectedItem.menuOptions,
-      options: filteredOptions,
-      shiftId: shiftCurrent[0]?._id,
-      discount: activePromotions.reduce(
-        (sum, promo) => sum + (promo.discountValue || 0),
-        0
-      ),
-      totalOptionPrice: totalOptionPrice,
-      totalPrice: finalPrice + totalOptionPrice,
-      isWeightMenu: selectedItem?.isWeightMenu,
-    };
-
-    setSelectedMenus((prevMenu) => {
-      let updatedMenu = [...prevMenu];
-
-      const existingMenuIndex = updatedMenu.findIndex((item) => {
-        const sortedItemOptionsForComparison = item.options
-          ? sortOptionsById([...item.options])
+    const _checkMenuOption = (menu) => {
+      try {
+        return menu.menuOptions && menu.menuOptions.length > 0
+          ? menu.menuOptions
           : [];
-        return (
-          item.id === selectedItem._id &&
-          JSON.stringify(sortedItemOptionsForComparison) ===
-            JSON.stringify(sortedFilteredOptionsForComparison)
-        );
-      });
-
-      if (existingMenuIndex !== -1) {
-        updatedMenu[existingMenuIndex].quantity += 1;
-        updatedMenu[existingMenuIndex].options = filteredOptions;
-        updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
-        updatedMenu[existingMenuIndex].totalPrice =
-          updatedMenu[existingMenuIndex].price *
-            updatedMenu[existingMenuIndex].quantity +
-          totalOptionPrice;
-      } else {
-        updatedMenu.push(mainMenuData);
+      } catch (error) {
+        return [];
       }
+    };
+
+    const addToCart = async (menu) => {
+      const _menuOptions = _checkMenuOption(menu);
+      let updatedSelectedMenus = [...SelectedMenus];
+
+      if (_menuOptions.length > 0) {
+        setMenuOptions(_menuOptions);
+        setSelectedItem({ ...menu, printer: menu?.categoryId?.printer });
+        setSelectedOptionsArray({
+          [menu._id]: _menuOptions.map((option) => ({
+            ...option,
+            quantity: 0,
+          })),
+        });
+        handleShow();
+        return;
+      }
+
+      const activePromotions =
+        menu.promotionId?.filter((promo) => promo.status === "ACTIVE") || [];
+
+      const finalPrice = calculateDiscount(menu);
+
+      const mainMenuData = {
+        id: menu._id,
+        name: menu.name,
+        quantity: 1,
+        price: finalPrice,
+        priceDiscount: Math.max(menu?.price - finalPrice, 0),
+        categoryId: menu?.categoryId,
+        printer: menu?.categoryId?.printer,
+        shiftId: shiftCurrent[0]?._id,
+        discount: activePromotions.reduce(
+          (sum, promo) => sum + (promo.discountValue || 0),
+          0
+        ),
+        status: "SERVED",
+        note: "",
+        isWeightMenu: menu?.isWeightMenu,
+        menuImage: menu?.images[0],
+      };
+
+      // const existingMenuIndex = updatedSelectedMenus.findIndex(
+      //   (item) => item.id === menu._id
+      // );
+      // if (existingMenuIndex !== -1) {
+      //   updatedSelectedMenus[existingMenuIndex].quantity += 1;
+      // } else {
+      //   updatedSelectedMenus.push(mainMenuData);
+      // }
+
+      updatedSelectedMenus.push(mainMenuData);
+
+      // biome-ignore lint/complexity/noForEach: <explanation>
 
       // biome-ignore lint/complexity/noForEach: <explanation>
       activePromotions.forEach((promotion) => {
         if (
-          promotion.type === "BUY_X_GET_Y" &&
+          promotion?.type === "BUY_X_GET_Y" &&
           promotion.freeItems?.length > 0
         ) {
           // biome-ignore lint/complexity/noForEach: <explanation>
@@ -684,963 +504,1151 @@ function HomecafeEdit() {
             const freeItemId = freeItem?._id?._id || freeItem?._id;
             const freeItemName = freeItem?._id?.name || "Unknown";
 
-            // เช็กว่า freeItem นี้แถมให้สินค้านี้จริงๆ
-            if (freeItem?.mainMenuId?._id !== selectedItem._id) return;
+            if (freeItem?.mainMenuId?._id !== menu._id) return;
 
-            const existingFreeItemIndex = updatedMenu.findIndex(
+            const existingFreeItemIndex = updatedSelectedMenus.findIndex(
               (item) =>
                 item.id === freeItemId &&
                 item.isFree &&
-                item.mainMenuId === selectedItem._id
+                item.mainMenuId === menu._id
             );
 
             if (existingFreeItemIndex !== -1) {
-              updatedMenu[existingFreeItemIndex].quantity +=
+              updatedSelectedMenus[existingFreeItemIndex].quantity +=
                 promotion.getQuantity;
             } else {
-              updatedMenu.push({
+              updatedSelectedMenus.push({
                 id: freeItemId,
                 name: freeItemName,
                 price: 0,
                 quantity: 1,
-                categoryId: selectedItem?.categoryId,
-                printer: selectedItem?.categoryId?.printer,
+                categoryId: menu?.categoryId,
+                printer: menu?.categoryId?.printer,
                 shiftId: shiftCurrent[0]?._id,
-                isWeightMenu: selectedItem?.isWeightMenu,
+                isWeightMenu: menu?.isWeightMenu,
                 isFree: true,
-                mainMenuId: selectedItem._id,
+                mainMenuId: menu._id,
               });
             }
           });
         }
       });
 
-      return updatedMenu;
-    });
-
-    handleClose();
-    setAddComments("");
-    setEditComments("");
-  };
-
-  const AlertMessage = () => {
-    Swal.fire({
-      icon: "error",
-      title: "ກະລຸນາເລຶອກລາຍການສິນຄ້າກ່ອນ",
-      showConfirmButton: false,
-      timer: 2500,
-    });
-  };
-
-  const TotalAmount = () => {
-    return SelectedMenus?.reduce((currentValue, nextValue) => {
-      if (nextValue.status !== "CANCELED") {
-        return currentValue + nextValue.quantity;
-      }
-      return currentValue;
-    }, 0);
-  };
-
-  const TotalPrice = () => {
-    return SelectedMenus?.reduce((currentValue, nextValue) => {
-      return currentValue + nextValue.price * nextValue.quantity;
-    }, 0);
-  };
-
-  const onRemoveFromCart = async (data) => {
-    setIsLoading(true);
-    const storeId = storeDetail?._id;
-    const updatedSelectedMenus = SelectedMenus.map((menu) =>
-      menu._id === data._id ? { ...menu, status: "CANCELED" } : menu
-    );
-    await updateOrderCafeItemV7(updatedSelectedMenus, storeId);
-    // await deleteOrderCafeItemV7(data, storeId);
-    GetOneItemsCafe();
-    setIsRemoveItem(false);
-    setIsLoading(false);
-  };
-  useEffect(() => {
-    const getDataTax = async () => {
-      const { DATA } = await getLocalData();
-      const _res = await axios.get(
-        END_POINT_SEVER + "/v4/tax/" + DATA?.storeId
-      );
-      setTaxPercent(_res?.data?.taxPercent);
+      setSelectedMenus(updatedSelectedMenus);
     };
-    getDataTax();
-    fetchDataProduction();
-  }, []);
 
-  const fetchDataProduction = async () => {
-    setIsLoading(true);
-    const { data } = await GetAllPromotion();
-    setPromotion(data);
-    setIsLoading(false);
-  };
-
-  const handleAddCommentInCart = () => {
-    const dataArray = [];
-    for (const i of SelectedMenus) {
-      let _data = { ...i };
-      if (noteItems?.id === i?.id) {
-        if (noteItems?.note === "") {
-          _data = { ..._data, note: addComments };
-        } else {
-          _data = { ..._data, note: editComments };
-        }
-      }
-      dataArray.push(_data);
-    }
-    setSelectedMenu(dataArray);
-    setSelectedMenus(dataArray);
-    setIsPupup(false);
-    setAddComments("");
-    setEditComments("");
-  };
-
-  const handleUpdateCommentInCart = () => {
-    const dataArray = [];
-    for (const i of SelectedMenus) {
-      let _data = { ...i };
-      if (noteItems?.id === i?.id) {
-        if (noteItems?.note === "") {
-          _data = { ..._data, note: "" };
-        } else {
-          _data = { ..._data, note: "" };
-        }
-      }
-      dataArray.push(_data);
-    }
-    setSelectedMenu(dataArray);
-    setSelectedMenus(dataArray);
-    setIsPupup(false);
-    setAddComments("");
-    setEditComments("");
-  };
-
-  const updateOrderCancel = async (data) => {
-    try {
-      const res = await updateOrderCafeItemV7(data, storeDetail?._id);
-    } catch (error) {}
-  };
-
-  const onConfirmRemoveItem = (item) => {
-    // const updatedSelectedMenus = SelectedMenus.map((menu) =>
-    //   menu._id === item._id ? { ...menu, status: "CANCELED" } : menu
-    // );
-    // console.log("updatedSelectedMenus", updatedSelectedMenus);
-    // updateOrderCafeItemV7(data, storeDetail?._id);
-    // updateOrderCancel(updatedSelectedMenus);
-    setIsRemoveItem(true);
-    setItemDeleting(item);
-  };
-
-  const onPrintDrawer = async () => {
-    try {
-      let urlForPrinter = "";
-      const _printerCounters = JSON.parse(printerCounter?.prints);
-      const printerBillData = printers?.find(
-        (e) => e?._id === _printerCounters?.BILL
-      );
-
-      if (printerBillData?.type === "ETHERNET") {
-        urlForPrinter = "http://localhost:9150/ethernet/drawer";
-      }
-      if (printerBillData?.type === "BLUETOOTH") {
-        urlForPrinter = "http://localhost:9150/bluetooth/drawer";
-      }
-      if (printerBillData?.type === "USB") {
-        urlForPrinter = "http://localhost:9150/usb/drawer";
-      }
-
-      var bodyFormData = new FormData();
-      bodyFormData.append("ip", printerBillData?.ip);
-      bodyFormData.append("port", "9100");
-
-      // await axios({
-      //   method: "post",
-      //   url: urlForPrinter,
-      //   data: bodyFormData,
-      //   headers: { "Content-Type": "multipart/form-data" },
-      // });
-
-      await axios.post(urlForPrinter, {
-        ip: printerBillData?.ip,
-        port: 9100,
-      });
-    } catch (err) {
-      console.log(err);
-      await Swal.fire({
-        icon: "error",
-        title: `${t("open_drawer_fail")}`,
-        showConfirmButton: false,
-        timer: 1500,
-      });
-    }
-  };
-
-  const [widthBill80, setWidthBill80] = useState(0);
-  const [widthBill58, setWidthBill58] = useState(0);
-
-  const qrSmartOrder80Ref = useRef(null);
-
-  const bill80Ref = useRef(null);
-  const bill58Ref = useRef(null);
-
-  useLayoutEffect(() => {
-    setWidthBill80(bill80Ref.current.offsetWidth);
-    // setWidthBill58(bill58Ref.current.offsetWidth);
-  }, [bill80Ref, bill58Ref]);
-
-  // ສ້າງປະຫວັດການພິມບິນຂອງແຕ່ລະໂຕະ
-  const _createHistoriesPrinter = async (data) => {
-    try {
-      const headers = await getHeaders();
-      const _url = `${END_POINT_APP}/v3/logs/create-histories-printer`;
-      const updateTable = await axios({
-        method: "post",
-        url: _url,
-        data: data,
-        headers: headers,
-      });
-
-      if (updateTable?.status < 300) {
-        console.log("success create printer bil...");
-      }
-    } catch (err) {
-      console.log({ err });
-    }
-  };
-
-  const convertHtmlToBase64 = (orderSelect) => {
-    const base64ArrayAndPrinter = [];
-    // biome-ignore lint/complexity/noForEach: <explanation>
-    orderSelect.forEach((data) => {
-      if (data) {
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
-
-        const baseHeight = 250;
-        const extraHeightPerOption = 30;
-        const extraHeightForNote = data?.note ? 40 : 0;
-        const dynamicHeight =
-          baseHeight +
-          (data.options?.length || 0) * extraHeightPerOption +
-          extraHeightForNote;
-        const width = 510;
-
-        canvas.width = width;
-        canvas.height = dynamicHeight;
-
-        context.fillStyle = "#fff";
-        context.fillRect(0, 0, width, dynamicHeight);
-
-        function wrapText(context, text, x, y, maxWidth, lineHeight) {
-          const words = text.split(" ");
-          let line = "";
-          for (let n = 0; n < words.length; n++) {
-            let testLine = line + words[n] + " ";
-            let metrics = context.measureText(testLine);
-            const testWidth = metrics.width;
-            if (testWidth > maxWidth && n > 0) {
-              context.fillText(line, x, y);
-              line = words[n] + " ";
-              y += lineHeight;
-            } else {
-              line = testLine;
-            }
-          }
-          context.fillText(line, x, y);
-          return y + lineHeight;
-        }
-
-        context.fillStyle = "#000";
-        context.font = "bold 32px NotoSansLao, Arial, sans-serif";
-        let yPosition = 30;
-
-        // Render "Queue no" at the top and center it
-        context.textAlign = "center"; // Center align the text
-        context.fillText(`${t("queue no")} ${bill}`, width / 2, yPosition);
-        yPosition += 40; // Add some space after "Queue no"
-        // Render data.name below "Queue no"
-        context.textAlign = "left"; // Reset alignment to left for other text
-        yPosition = wrapText(
-          context,
-          `${data?.name} (${data?.quantity})`,
-          10,
-          yPosition,
-          width - 20,
-          36
+    const handleAddOption = (menuId, option) => {
+      setSelectedOptionsArray((prevOptions) => {
+        const menuOptions = prevOptions[menuId] || [];
+        const existingOption = menuOptions.find(
+          (opt) => opt._id === option._id
         );
 
-        if (data?.note) {
-          const noteLabel = "note: ";
-          const noteText = data.note;
+        if (existingOption) {
+          return {
+            ...prevOptions,
+            [menuId]: menuOptions.map((opt) =>
+              opt._id === option._id
+                ? { ...opt, quantity: opt.quantity + 1 }
+                : opt
+            ),
+          };
+        }
 
-          context.fillStyle = "#666";
-          context.font = "bold italic 24px Arial, sans-serif";
-          context.fillText(noteLabel, 10, yPosition);
+        return {
+          ...prevOptions,
+          [menuId]: [...menuOptions, { ...option, quantity: 1 }],
+        };
+      });
+    };
 
-          const noteLabelWidth = context.measureText(noteLabel).width;
+    const handleRemoveOption = (menuId, option) => {
+      setSelectedOptionsArray((prevOptions) => {
+        const menuOptions = prevOptions[menuId] || [];
+        const existingOption = menuOptions.find(
+          (opt) => opt._id === option._id
+        );
 
-          context.font = "italic 24px Arial, sans-serif";
-          yPosition = wrapText(
-            context,
-            noteText,
-            10 + noteLabelWidth,
-            yPosition,
-            width - 20 - noteLabelWidth,
-            30
+        if (existingOption && existingOption.quantity > 1) {
+          return {
+            ...prevOptions,
+            [menuId]: menuOptions.map((opt) =>
+              opt._id === option._id
+                ? { ...opt, quantity: opt.quantity - 1 }
+                : opt
+            ),
+          };
+        }
+
+        return {
+          ...prevOptions,
+          [menuId]: menuOptions.filter((opt) => opt._id !== option._id),
+        };
+      });
+    };
+
+    const calculateTotalPrice = (menu, selectedOptionsArray) => {
+      if (!menu || !menu._id) {
+        return 0;
+      }
+
+      const menuOptions = selectedOptionsArray[menu._id] || [];
+      const optionsTotalPrice = menuOptions.reduce(
+        (sum, option) => sum + option.price * option.quantity,
+        0
+      );
+      return calculateDiscount(menu) + optionsTotalPrice;
+    };
+
+    console.log("SelectedMenus", SelectedMenus);
+
+    const createBillCancelCafeData = async () => {
+      try {
+        // await createBillCancelCafe();
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const handleConfirmOptions = () => {
+      const filteredOptions =
+        selectedOptionsArray[selectedItem._id]?.filter(
+          (option) => option.quantity >= 1
+        ) || [];
+
+      const sortedFilteredOptionsForComparison = sortOptionsById([
+        ...filteredOptions,
+      ]);
+
+      const totalOptionPrice = filteredOptions.reduce(
+        (total, option) => total + option.price * option.quantity,
+        0
+      );
+
+      const activePromotions =
+        selectedItem.promotionId?.filter(
+          (promo) => promo.status === "ACTIVE"
+        ) || [];
+
+      const finalPrice = calculateDiscount(selectedItem);
+
+      const mainMenuData = {
+        id: selectedItem._id,
+        name: selectedItem.name,
+        quantity: 1,
+        price: finalPrice,
+        priceDiscount: Math.max(selectedItem?.price - finalPrice, 0),
+        categoryId: selectedItem?.categoryId,
+        printer: selectedItem?.categoryId?.printer,
+        note: addComments,
+        menuOptions: selectedItem.menuOptions,
+        options: filteredOptions,
+        shiftId: shiftCurrent[0]?._id,
+        discount: activePromotions.reduce(
+          (sum, promo) => sum + (promo.discountValue || 0),
+          0
+        ),
+        totalOptionPrice: totalOptionPrice,
+        totalPrice: finalPrice + totalOptionPrice,
+        isWeightMenu: selectedItem?.isWeightMenu,
+      };
+
+      setSelectedMenus((prevMenu) => {
+        let updatedMenu = [...prevMenu];
+
+        const existingMenuIndex = updatedMenu.findIndex((item) => {
+          const sortedItemOptionsForComparison = item.options
+            ? sortOptionsById([...item.options])
+            : [];
+          return (
+            item.id === selectedItem._id &&
+            JSON.stringify(sortedItemOptionsForComparison) ===
+              JSON.stringify(sortedFilteredOptionsForComparison)
           );
+        });
 
-          yPosition += 10;
+        if (existingMenuIndex !== -1) {
+          updatedMenu[existingMenuIndex].quantity += 1;
+          updatedMenu[existingMenuIndex].options = filteredOptions;
+          updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
+          updatedMenu[existingMenuIndex].totalPrice =
+            updatedMenu[existingMenuIndex].price *
+              updatedMenu[existingMenuIndex].quantity +
+            totalOptionPrice;
+        } else {
+          updatedMenu.push(mainMenuData);
         }
 
-        if (data.options && data.options.length > 0) {
-          context.fillStyle = "#000";
-          context.font = "24px NotoSansLao, Arial, sans-serif";
-          // biome-ignore lint/complexity/noForEach: <explanation>
-          data.options.forEach((option) => {
-            const optionPriceText = option?.price
-              ? ` - ${moneyCurrency(option?.price)}`
-              : "";
-            const optionText = `- ${option?.name}${optionPriceText} x ${
-              option?.quantity || 1
-            }`;
-            yPosition = wrapText(
-              context,
-              optionText,
-              10,
-              yPosition,
-              width - 20,
-              30
-            );
-          });
+        // biome-ignore lint/complexity/noForEach: <explanation>
+        activePromotions.forEach((promotion) => {
+          if (
+            promotion.type === "BUY_X_GET_Y" &&
+            promotion.freeItems?.length > 0
+          ) {
+            // biome-ignore lint/complexity/noForEach: <explanation>
+            promotion.freeItems.forEach((freeItem) => {
+              const freeItemId = freeItem?._id?._id || freeItem?._id;
+              const freeItemName = freeItem?._id?.name || "Unknown";
 
-          context.strokeStyle = "#ccc";
-          context.setLineDash([4, 2]);
-          context.beginPath();
-          context.moveTo(0, yPosition);
-          context.lineTo(width, yPosition);
-          context.stroke();
-          context.setLineDash([]);
-          yPosition += 20;
-        }
+              // เช็กว่า freeItem นี้แถมให้สินค้านี้จริงๆ
+              if (freeItem?.mainMenuId?._id !== selectedItem._id) return;
 
-        context.fillStyle = "#000";
-        context.font = "24px NotoSansLao, Arial, sans-serif";
-        yPosition = wrapText(
-          context,
-          `${t("total")} ${moneyCurrency(
-            data?.price + (data?.totalOptionPrice ?? 0)
-          )} ${t(storeDetail?.firstCurrency)}`,
-          10,
-          yPosition,
-          width - 20,
-          46
-        );
+              const existingFreeItemIndex = updatedMenu.findIndex(
+                (item) =>
+                  item.id === freeItemId &&
+                  item.isFree &&
+                  item.mainMenuId === selectedItem._id
+              );
 
-        context.fillStyle = "#000";
-        context.font = "28px NotoSansLao, Arial, sans-serif";
-        context.textAlign = "right";
-        context.textBaseline = "bottom";
-
-        context.strokeStyle = "#000";
-        context.setLineDash([4, 2]);
-        context.beginPath();
-        context.moveTo(0, yPosition - 25);
-        context.lineTo(width, yPosition - 25);
-        context.stroke();
-        context.setLineDash([]);
-
-        context.font = "bold 24px NotoSansLao, Arial, sans-serif";
-        context.fillStyle = "#000";
-
-        context.textAlign = "left";
-        context.fillText(
-          data?.createdBy?.data?.firstname || profile?.data?.firstname,
-          10,
-          yPosition + 10
-        );
-
-        context.textAlign = "right";
-        context.fillStyle = "#6e6e6e";
-        context.font = "22px NotoSansLao, Arial, sans-serif";
-        context.fillText(
-          `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
-            data?.createdAt
-          ).format("LT")}`,
-          width - 10,
-          yPosition + 10
-        );
-
-        // Add Queue no
-        context.fillStyle = "#000";
-        context.font = "bold 28px NotoSansLao, Arial, sans-serif";
-        context.textAlign = "center";
-
-        const dataUrl = canvas.toDataURL("image/png");
-
-        const printer = printers.find((e) => e?._id === data?.printer);
-        if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
-      }
-    });
-
-    // console.log("base64ArrayAndPrinter", base64ArrayAndPrinter);
-
-    return base64ArrayAndPrinter;
-  };
-
-  const runPrint = async (dataUrl, index, printer) => {
-    try {
-      const printFile = base64ToBlob(dataUrl);
-      var bodyFormData = new FormData();
-
-      bodyFormData.append("ip", printer?.ip);
-      if (index === 0) {
-        bodyFormData.append("beep1", 1);
-        bodyFormData.append("beep2", 9);
-      }
-      bodyFormData.append("isdrawer", false);
-      bodyFormData.append("port", "9100");
-      bodyFormData.append("image", printFile);
-      bodyFormData.append("paper", printer?.width === "58mm" ? 58 : 80);
-
-      let urlForPrinter = "";
-      if (printer?.type === "ETHERNET") urlForPrinter = ETHERNET_PRINTER_PORT;
-      if (printer?.type === "BLUETOOTH") urlForPrinter = BLUETOOTH_PRINTER_PORT;
-      if (printer?.type === "USB") urlForPrinter = USB_PRINTER_PORT;
-
-      await printFlutter(
-        {
-          imageBuffer: dataUrl,
-          ip: printer?.ip,
-          type: printer?.type,
-          port: "9100",
-          width: printer?.width === "58mm" ? 400 : 580,
-        },
-        async () => {
-          await axios({
-            method: "post",
-            url: urlForPrinter,
-            data: bodyFormData,
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-        }
-      );
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  const onPrintForCher = async () => {
-    try {
-      const base64ArrayAndPrinter = convertHtmlToBase64(SelectedMenus);
-
-      let arrayPrint = [];
-      for (var index = 0; index < base64ArrayAndPrinter.length; index++) {
-        arrayPrint.push(
-          runPrint(
-            base64ArrayAndPrinter[index].dataUrl,
-            index,
-            base64ArrayAndPrinter[index].printer
-          )
-        );
-      }
-
-      const result = await Promise.all(arrayPrint);
-      const hasError = result.some((result) => !result.success);
-
-      if (hasError) {
-        Swal.fire({
-          icon: "success",
-          title: t("print_success"),
-          showConfirmButton: false,
-          timer: 1500,
+              if (existingFreeItemIndex !== -1) {
+                updatedMenu[existingFreeItemIndex].quantity +=
+                  promotion.getQuantity;
+              } else {
+                updatedMenu.push({
+                  id: freeItemId,
+                  name: freeItemName,
+                  price: 0,
+                  quantity: 1,
+                  categoryId: selectedItem?.categoryId,
+                  printer: selectedItem?.categoryId?.printer,
+                  shiftId: shiftCurrent[0]?._id,
+                  isWeightMenu: selectedItem?.isWeightMenu,
+                  isFree: true,
+                  mainMenuId: selectedItem._id,
+                });
+              }
+            });
+          }
         });
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: t("print_fail"),
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      }
-    } catch (error) {
-      console.log("error", error);
-      return error;
-    }
-  };
 
-  const billForCherCancel80 = useRef([]);
-
-  if (billForCherCancel80.current.length !== arrLength) {
-    // add or remove refs
-    billForCherCancel80.current = Array(arrLength)
-      .fill()
-      .map((_, i) => billForCherCancel80.current[i]);
-  }
-
-  const onPrintForCherLaBel = async () => {
-    // setOnPrinting(true);
-
-    let _dataBill = {
-      ...bill,
-      typePrint: "PRINT_BILL_LABEL",
-    };
-    await _createHistoriesPrinter(_dataBill);
-
-    const orderSelect = selectedMenu?.filter((e) => e);
-
-    let _index = 0;
-    const printDate = [...billForCherCancel80.current];
-
-    let dataUrls = [];
-    for (const _ref of printDate) {
-      if (_ref) {
-        // Ensure _ref is a valid element
-        const dataUrl = await html2canvas(_ref, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-          scale: 530 / widthBill80,
-        });
-        dataUrls.push(dataUrl);
-      }
-    }
-
-    for (const _ref of printDate) {
-      const _printer = printers.find((e) => {
-        return e?._id === orderSelect?.[_index]?.printer;
+        return updatedMenu;
       });
 
+      handleClose();
+      setAddComments("");
+      setEditComments("");
+    };
+
+    const AlertMessage = () => {
+      Swal.fire({
+        icon: "error",
+        title: "ກະລຸນາເລຶອກລາຍການສິນຄ້າກ່ອນ",
+        showConfirmButton: false,
+        timer: 2500,
+      });
+    };
+
+    const TotalAmount = () => {
+      return SelectedMenus?.reduce((currentValue, nextValue) => {
+        if (nextValue.status !== "CANCELED") {
+          if (nextValue.isWeightMenu) {
+            return currentValue + convertkgToG(nextValue.quantity);
+          } else {
+            return currentValue + nextValue.quantity;
+          }
+        }
+      }, 0);
+    };
+
+    const TotalPrice = () => {
+      return SelectedMenus?.reduce((currentValue, nextValue) => {
+        return currentValue + nextValue.price * nextValue.quantity;
+      }, 0);
+    };
+
+    const onRemoveFromCart = async (data) => {
+      setIsLoading(true);
+      const storeId = storeDetail?._id;
+      const updatedSelectedMenus = SelectedMenus.map((menu) =>
+        menu._id === data._id ? { ...menu, status: "CANCELED" } : menu
+      );
+      await updateOrderCafeItemV7(updatedSelectedMenus, storeId);
+      // await deleteOrderCafeItemV7(data, storeId);
+      GetOneItemsCafe();
+      setIsRemoveItem(false);
+      setIsLoading(false);
+    };
+    useEffect(() => {
+      const getDataTax = async () => {
+        const { DATA } = await getLocalData();
+        const _res = await axios.get(
+          END_POINT_SEVER + "/v4/tax/" + DATA?.storeId
+        );
+        setTaxPercent(_res?.data?.taxPercent);
+      };
+      getDataTax();
+    }, []);
+
+    const handleAddCommentInCart = () => {
+      const dataArray = [];
+      for (const i of SelectedMenus) {
+        let _data = { ...i };
+        if (noteItems?.id === i?.id) {
+          if (noteItems?.note === "") {
+            _data = { ..._data, note: addComments };
+          } else {
+            _data = { ..._data, note: editComments };
+          }
+        }
+        dataArray.push(_data);
+      }
+      setSelectedMenu(dataArray);
+      setSelectedMenus(dataArray);
+      setIsPupup(false);
+      setAddComments("");
+      setEditComments("");
+    };
+
+    const handleUpdateCommentInCart = () => {
+      const dataArray = [];
+      for (const i of SelectedMenus) {
+        let _data = { ...i };
+        if (noteItems?.id === i?.id) {
+          if (noteItems?.note === "") {
+            _data = { ..._data, note: "" };
+          } else {
+            _data = { ..._data, note: "" };
+          }
+        }
+        dataArray.push(_data);
+      }
+      setSelectedMenu(dataArray);
+      setSelectedMenus(dataArray);
+      setIsPupup(false);
+      setAddComments("");
+      setEditComments("");
+    };
+
+    const updateOrderCancel = async (data) => {
+      try {
+        const res = await updateOrderCafeItemV7(data, storeDetail?._id);
+      } catch (error) {}
+    };
+
+    const onConfirmRemoveItem = (item) => {
+      // const updatedSelectedMenus = SelectedMenus.map((menu) =>
+      //   menu._id === item._id ? { ...menu, status: "CANCELED" } : menu
+      // );
+      // console.log("updatedSelectedMenus", updatedSelectedMenus);
+      // updateOrderCafeItemV7(data, storeDetail?._id);
+      // updateOrderCancel(updatedSelectedMenus);
+      setIsRemoveItem(true);
+      setItemDeleting(item);
+    };
+
+    const onPrintDrawer = async () => {
       try {
         let urlForPrinter = "";
-        let dataUrl = dataUrls[_index];
+        const _printerCounters = JSON.parse(printerCounter?.prints);
+        const printerBillData = printers?.find(
+          (e) => e?._id === _printerCounters?.BILL
+        );
 
-        urlForPrinter = USB_LABEL_PRINTER_PORT;
-
-        const _file = await base64ToBlob(dataUrl.toDataURL());
+        if (printerBillData?.type === "ETHERNET") {
+          urlForPrinter = "http://localhost:9150/ethernet/drawer";
+        }
+        if (printerBillData?.type === "BLUETOOTH") {
+          urlForPrinter = "http://localhost:9150/bluetooth/drawer";
+        }
+        if (printerBillData?.type === "USB") {
+          urlForPrinter = "http://localhost:9150/usb/drawer";
+        }
 
         var bodyFormData = new FormData();
-        bodyFormData.append("ip", _printer?.ip);
-        bodyFormData.append("isdrawer", false);
+        bodyFormData.append("ip", printerBillData?.ip);
         bodyFormData.append("port", "9100");
-        bodyFormData.append("image", _file);
-        bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
-        if (_index === 0) {
+
+        // await axios({
+        //   method: "post",
+        //   url: urlForPrinter,
+        //   data: bodyFormData,
+        //   headers: { "Content-Type": "multipart/form-data" },
+        // });
+
+        await axios.post(urlForPrinter, {
+          ip: printerBillData?.ip,
+          port: 9100,
+        });
+      } catch (err) {
+        console.log(err);
+        await Swal.fire({
+          icon: "error",
+          title: `${t("open_drawer_fail")}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    };
+
+    const [widthBill80, setWidthBill80] = useState(0);
+    const [widthBill58, setWidthBill58] = useState(0);
+
+    const qrSmartOrder80Ref = useRef(null);
+
+    const bill80Ref = useRef(null);
+    const bill58Ref = useRef(null);
+
+    useLayoutEffect(() => {
+      setWidthBill80(bill80Ref.current.offsetWidth);
+      // setWidthBill58(bill58Ref.current.offsetWidth);
+    }, [bill80Ref, bill58Ref]);
+
+    // ສ້າງປະຫວັດການພິມບິນຂອງແຕ່ລະໂຕະ
+    const _createHistoriesPrinter = async (data) => {
+      try {
+        const headers = await getHeaders();
+        const _url = `${END_POINT_APP}/v3/logs/create-histories-printer`;
+        const updateTable = await axios({
+          method: "post",
+          url: _url,
+          data: data,
+          headers: headers,
+        });
+
+        if (updateTable?.status < 300) {
+          console.log("success create printer bil...");
+        }
+      } catch (err) {
+        console.log({ err });
+      }
+    };
+
+    const convertHtmlToBase64 = (orderSelect) => {
+      const base64ArrayAndPrinter = [];
+      // biome-ignore lint/complexity/noForEach: <explanation>
+      orderSelect.forEach((data) => {
+        if (data) {
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+
+          const baseHeight = 250;
+          const extraHeightPerOption = 30;
+          const extraHeightForNote = data?.note ? 40 : 0;
+          const dynamicHeight =
+            baseHeight +
+            (data.options?.length || 0) * extraHeightPerOption +
+            extraHeightForNote;
+          const width = 510;
+
+          canvas.width = width;
+          canvas.height = dynamicHeight;
+
+          context.fillStyle = "#fff";
+          context.fillRect(0, 0, width, dynamicHeight);
+
+          function wrapText(context, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(" ");
+            let line = "";
+            for (let n = 0; n < words.length; n++) {
+              let testLine = line + words[n] + " ";
+              let metrics = context.measureText(testLine);
+              const testWidth = metrics.width;
+              if (testWidth > maxWidth && n > 0) {
+                context.fillText(line, x, y);
+                line = words[n] + " ";
+                y += lineHeight;
+              } else {
+                line = testLine;
+              }
+            }
+            context.fillText(line, x, y);
+            return y + lineHeight;
+          }
+
+          context.fillStyle = "#000";
+          context.font = "bold 32px NotoSansLao, Arial, sans-serif";
+          let yPosition = 30;
+
+          // Render "Queue no" at the top and center it
+          context.textAlign = "center"; // Center align the text
+          context.fillText(`${t("queue no")} ${bill}`, width / 2, yPosition);
+          yPosition += 40; // Add some space after "Queue no"
+          // Render data.name below "Queue no"
+          context.textAlign = "left"; // Reset alignment to left for other text
+          yPosition = wrapText(
+            context,
+            `${data?.name} (${data?.quantity})`,
+            10,
+            yPosition,
+            width - 20,
+            36
+          );
+
+          if (data?.note) {
+            const noteLabel = "note: ";
+            const noteText = data.note;
+
+            context.fillStyle = "#666";
+            context.font = "bold italic 24px Arial, sans-serif";
+            context.fillText(noteLabel, 10, yPosition);
+
+            const noteLabelWidth = context.measureText(noteLabel).width;
+
+            context.font = "italic 24px Arial, sans-serif";
+            yPosition = wrapText(
+              context,
+              noteText,
+              10 + noteLabelWidth,
+              yPosition,
+              width - 20 - noteLabelWidth,
+              30
+            );
+
+            yPosition += 10;
+          }
+
+          if (data.options && data.options.length > 0) {
+            context.fillStyle = "#000";
+            context.font = "24px NotoSansLao, Arial, sans-serif";
+            // biome-ignore lint/complexity/noForEach: <explanation>
+            data.options.forEach((option) => {
+              const optionPriceText = option?.price
+                ? ` - ${moneyCurrency(option?.price)}`
+                : "";
+              const optionText = `- ${option?.name}${optionPriceText} x ${
+                option?.quantity || 1
+              }`;
+              yPosition = wrapText(
+                context,
+                optionText,
+                10,
+                yPosition,
+                width - 20,
+                30
+              );
+            });
+
+            context.strokeStyle = "#ccc";
+            context.setLineDash([4, 2]);
+            context.beginPath();
+            context.moveTo(0, yPosition);
+            context.lineTo(width, yPosition);
+            context.stroke();
+            context.setLineDash([]);
+            yPosition += 20;
+          }
+
+          context.fillStyle = "#000";
+          context.font = "24px NotoSansLao, Arial, sans-serif";
+          yPosition = wrapText(
+            context,
+            `${t("total")} ${moneyCurrency(
+              data?.price + (data?.totalOptionPrice ?? 0)
+            )} ${t(storeDetail?.firstCurrency)}`,
+            10,
+            yPosition,
+            width - 20,
+            46
+          );
+
+          context.fillStyle = "#000";
+          context.font = "28px NotoSansLao, Arial, sans-serif";
+          context.textAlign = "right";
+          context.textBaseline = "bottom";
+
+          context.strokeStyle = "#000";
+          context.setLineDash([4, 2]);
+          context.beginPath();
+          context.moveTo(0, yPosition - 25);
+          context.lineTo(width, yPosition - 25);
+          context.stroke();
+          context.setLineDash([]);
+
+          context.font = "bold 24px NotoSansLao, Arial, sans-serif";
+          context.fillStyle = "#000";
+
+          context.textAlign = "left";
+          context.fillText(
+            data?.createdBy?.data?.firstname || profile?.data?.firstname,
+            10,
+            yPosition + 10
+          );
+
+          context.textAlign = "right";
+          context.fillStyle = "#6e6e6e";
+          context.font = "22px NotoSansLao, Arial, sans-serif";
+          context.fillText(
+            `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
+              data?.createdAt
+            ).format("LT")}`,
+            width - 10,
+            yPosition + 10
+          );
+
+          // Add Queue no
+          context.fillStyle = "#000";
+          context.font = "bold 28px NotoSansLao, Arial, sans-serif";
+          context.textAlign = "center";
+
+          const dataUrl = canvas.toDataURL("image/png");
+
+          const printer = printers.find((e) => e?._id === data?.printer);
+          if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
+        }
+      });
+
+      // console.log("base64ArrayAndPrinter", base64ArrayAndPrinter);
+
+      return base64ArrayAndPrinter;
+    };
+
+    const runPrint = async (dataUrl, index, printer) => {
+      try {
+        const printFile = base64ToBlob(dataUrl);
+        var bodyFormData = new FormData();
+
+        bodyFormData.append("ip", printer?.ip);
+        if (index === 0) {
           bodyFormData.append("beep1", 1);
           bodyFormData.append("beep2", 9);
         }
-        await axios({
-          method: "post",
-          url: urlForPrinter,
-          data: bodyFormData,
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        // if (_index === 0) {
-        //   await Swal.fire({
-        //     icon: "success",
-        //     title: `${t("print_success")}`,
-        //     showConfirmButton: false,
-        //     timer: 1500,
-        //   });
-        // }
-      } catch (err) {
-        console.log(err);
-        if (_index === 0) {
-          // setOnPrinting(false);
-          await Swal.fire({
-            icon: "error",
-            title: "ປິ້ນສະຕິກເກີ້ບໍ່ສຳເລັດ",
+        bodyFormData.append("isdrawer", false);
+        bodyFormData.append("port", "9100");
+        bodyFormData.append("image", printFile);
+        bodyFormData.append("paper", printer?.width === "58mm" ? 58 : 80);
+
+        let urlForPrinter = "";
+        if (printer?.type === "ETHERNET") urlForPrinter = ETHERNET_PRINTER_PORT;
+        if (printer?.type === "BLUETOOTH")
+          urlForPrinter = BLUETOOTH_PRINTER_PORT;
+        if (printer?.type === "USB") urlForPrinter = USB_PRINTER_PORT;
+
+        await printFlutter(
+          {
+            imageBuffer: dataUrl,
+            ip: printer?.ip,
+            type: printer?.type,
+            port: "9100",
+            width: printer?.width === "58mm" ? 400 : 580,
+          },
+          async () => {
+            await axios({
+              method: "post",
+              url: urlForPrinter,
+              data: bodyFormData,
+              headers: { "Content-Type": "multipart/form-data" },
+            });
+          }
+        );
+        return true;
+      } catch {
+        return false;
+      }
+    };
+
+    const onPrintForCher = async () => {
+      try {
+        const base64ArrayAndPrinter = convertHtmlToBase64(SelectedMenus);
+
+        let arrayPrint = [];
+        for (var index = 0; index < base64ArrayAndPrinter.length; index++) {
+          arrayPrint.push(
+            runPrint(
+              base64ArrayAndPrinter[index].dataUrl,
+              index,
+              base64ArrayAndPrinter[index].printer
+            )
+          );
+        }
+
+        const result = await Promise.all(arrayPrint);
+        const hasError = result.some((result) => !result.success);
+
+        if (hasError) {
+          Swal.fire({
+            icon: "success",
+            title: t("print_success"),
             showConfirmButton: false,
             timer: 1500,
           });
-          return { error: true, err };
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: t("print_fail"),
+            showConfirmButton: false,
+            timer: 1500,
+          });
         }
+      } catch (error) {
+        console.log("error", error);
+        return error;
       }
-      _index++;
-    }
-    // setOnPrinting(false);
-  };
+    };
 
-  const onPrintBill = async () => {
-    try {
-      setIsLoading(true);
-      const _dataBill = {
-        typePrint: "PRINT_BILL_CHECKOUT",
+    const billForCherCancel80 = useRef([]);
+
+    if (billForCherCancel80.current.length !== arrLength) {
+      // add or remove refs
+      billForCherCancel80.current = Array(arrLength)
+        .fill()
+        .map((_, i) => billForCherCancel80.current[i]);
+    }
+
+    const onPrintForCherLaBel = async () => {
+      // setOnPrinting(true);
+
+      let _dataBill = {
+        ...bill,
+        typePrint: "PRINT_BILL_LABEL",
       };
       await _createHistoriesPrinter(_dataBill);
 
-      let urlForPrinter = "";
-      const _printerCounters = JSON.parse(printerCounter?.prints);
-      const printerBillData = printers?.find(
-        (e) => e?._id === _printerCounters?.BILL
-      );
-      let dataImageForPrint;
-      if (printerBillData?.width === "80mm") {
-        dataImageForPrint = await html2canvas(bill80Ref.current, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-          scale: 530 / widthBill80,
+      const orderSelect = selectedMenu?.filter((e) => e);
+
+      let _index = 0;
+      const printDate = [...billForCherCancel80.current];
+
+      let dataUrls = [];
+      for (const _ref of printDate) {
+        if (_ref) {
+          // Ensure _ref is a valid element
+          const dataUrl = await html2canvas(_ref, {
+            useCORS: true,
+            scrollX: 10,
+            scrollY: 0,
+            scale: 530 / widthBill80,
+          });
+          dataUrls.push(dataUrl);
+        }
+      }
+
+      for (const _ref of printDate) {
+        const _printer = printers.find((e) => {
+          return e?._id === orderSelect?.[_index]?.printer;
         });
-      }
 
-      if (printerBillData?.width === "58mm") {
-        dataImageForPrint = await html2canvas(bill58Ref.current, {
-          useCORS: true,
-          scrollX: 10,
-          scrollY: 0,
-          scale: 350 / widthBill58,
-        });
-      }
-      if (printerBillData?.type === "ETHERNET") {
-        urlForPrinter = ETHERNET_PRINTER_PORT;
-      }
-      if (printerBillData?.type === "BLUETOOTH") {
-        urlForPrinter = BLUETOOTH_PRINTER_PORT;
-      }
-      if (printerBillData?.type === "USB") {
-        urlForPrinter = USB_PRINTER_PORT;
-      }
+        try {
+          let urlForPrinter = "";
+          let dataUrl = dataUrls[_index];
 
-      const _file = await base64ToBlob(dataImageForPrint.toDataURL());
-      var bodyFormData = new FormData();
-      bodyFormData.append("ip", printerBillData?.ip);
-      bodyFormData.append("port", "9100");
-      bodyFormData.append("image", _file);
-      bodyFormData.append("beep1", 1);
-      bodyFormData.append("beep2", 9);
-      bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
+          urlForPrinter = USB_LABEL_PRINTER_PORT;
 
-      // printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
-      await printFlutter(
-        {
-          imageBuffer: dataImageForPrint.toDataURL(),
-          ip: printerBillData?.ip,
-          type: printerBillData?.type,
-          port: "9100",
-          width: printerBillData?.width === "58mm" ? 400 : 580,
-        },
-        async () => {
+          const _file = await base64ToBlob(dataUrl.toDataURL());
+
+          var bodyFormData = new FormData();
+          bodyFormData.append("ip", _printer?.ip);
+          bodyFormData.append("isdrawer", false);
+          bodyFormData.append("port", "9100");
+          bodyFormData.append("image", _file);
+          bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
+          if (_index === 0) {
+            bodyFormData.append("beep1", 1);
+            bodyFormData.append("beep2", 9);
+          }
           await axios({
             method: "post",
             url: urlForPrinter,
             data: bodyFormData,
             headers: { "Content-Type": "multipart/form-data" },
           });
+          // if (_index === 0) {
+          //   await Swal.fire({
+          //     icon: "success",
+          //     title: `${t("print_success")}`,
+          //     showConfirmButton: false,
+          //     timer: 1500,
+          //   });
+          // }
+        } catch (err) {
+          console.log(err);
+          if (_index === 0) {
+            // setOnPrinting(false);
+            await Swal.fire({
+              icon: "error",
+              title: "ປິ້ນສະຕິກເກີ້ບໍ່ສຳເລັດ",
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            return { error: true, err };
+          }
         }
-      );
-      await onPrintForCherLaBel();
-      setIsLoading(false);
-      setSelectedTable();
-      getTableDataStore();
-      setSelectedMenu([]);
-      setSelectedMenus([]);
-      clearSelectedMenus();
+        _index++;
+      }
+      // setOnPrinting(false);
+    };
 
-      await Swal.fire({
-        icon: "success",
-        title: `${t("print_success")}`,
-        showConfirmButton: false,
-        timer: 1500,
-      });
-    } catch (err) {
-      setIsLoading(false);
-      await Swal.fire({
-        icon: "error",
-        title: `${t("print_fial")}`,
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      return err;
-    }
-  };
+    const onPrintBill = async () => {
+      try {
+        setIsLoading(true);
+        const _dataBill = {
+          typePrint: "PRINT_BILL_CHECKOUT",
+        };
+        await _createHistoriesPrinter(_dataBill);
 
-  const {
-    t,
-    i18n: { language },
-  } = useTranslation();
+        let urlForPrinter = "";
+        const _printerCounters = JSON.parse(printerCounter?.prints);
+        const printerBillData = printers?.find(
+          (e) => e?._id === _printerCounters?.BILL
+        );
+        let dataImageForPrint;
+        if (printerBillData?.width === "80mm") {
+          dataImageForPrint = await html2canvas(bill80Ref.current, {
+            useCORS: true,
+            scrollX: 10,
+            scrollY: 0,
+            scale: 530 / widthBill80,
+          });
+        }
 
-  const handleQuantityChange = (e, row) => {
-    const floatQuantity = Number.parseFloat(e.target.value) || 0; // Ensure it's a valid number
-    const index = SelectedMenus.findIndex((item) => item.id === row.id); // Find the index of the item
+        if (printerBillData?.width === "58mm") {
+          dataImageForPrint = await html2canvas(bill58Ref.current, {
+            useCORS: true,
+            scrollX: 10,
+            scrollY: 0,
+            scale: 350 / widthBill58,
+          });
+        }
+        if (printerBillData?.type === "ETHERNET") {
+          urlForPrinter = ETHERNET_PRINTER_PORT;
+        }
+        if (printerBillData?.type === "BLUETOOTH") {
+          urlForPrinter = BLUETOOTH_PRINTER_PORT;
+        }
+        if (printerBillData?.type === "USB") {
+          urlForPrinter = USB_PRINTER_PORT;
+        }
 
-    if (index !== -1) {
-      // Update the item at the found index
-      const updatedMenu = [...SelectedMenus];
-      updatedMenu[index] = { ...updatedMenu[index], quantity: floatQuantity };
+        const _file = await base64ToBlob(dataImageForPrint.toDataURL());
+        var bodyFormData = new FormData();
+        bodyFormData.append("ip", printerBillData?.ip);
+        bodyFormData.append("port", "9100");
+        bodyFormData.append("image", _file);
+        bodyFormData.append("beep1", 1);
+        bodyFormData.append("beep2", 9);
+        bodyFormData.append(
+          "paper",
+          printerBillData?.width === "58mm" ? 58 : 80
+        );
 
-      setSelectedMenu(updatedMenu);
-      setSelectedMenus(updatedMenu);
-    }
-  };
+        // printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
+        await printFlutter(
+          {
+            imageBuffer: dataImageForPrint.toDataURL(),
+            ip: printerBillData?.ip,
+            type: printerBillData?.type,
+            port: "9100",
+            width: printerBillData?.width === "58mm" ? 400 : 580,
+          },
+          async () => {
+            await axios({
+              method: "post",
+              url: urlForPrinter,
+              data: bodyFormData,
+              headers: { "Content-Type": "multipart/form-data" },
+            });
+          }
+        );
+        await onPrintForCherLaBel();
+        setIsLoading(false);
+        setSelectedTable();
+        getTableDataStore();
+        setSelectedMenu([]);
+        setSelectedMenus([]);
+        clearSelectedMenus();
 
-  const saveQuantity = () => {
-    setEditingRowId(null); // Exit editing mode
-  };
+        await Swal.fire({
+          icon: "success",
+          title: `${t("print_success")}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } catch (err) {
+        setIsLoading(false);
+        await Swal.fire({
+          icon: "error",
+          title: `${t("print_fial")}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        return err;
+      }
+    };
 
-  const calculateDiscount = (menu) => {
-    if (
-      !menu ||
-      !menu.price ||
-      !Array.isArray(menu.promotionId) ||
-      menu.promotionId.length === 0
-    ) {
-      return menu?.price || 0;
-    }
+    const {
+      t,
+      i18n: { language },
+    } = useTranslation();
 
-    let finalPrice = menu.price;
+    const handleQuantityChange = (e, row) => {
+      const floatQuantity = parseFloat(e.target.value) || 0; // Ensure it's a valid number
+      const index = SelectedMenus.findIndex((item) => item.id === row.id); // Find the index of the item
 
-    const activePromotions = menu.promotionId.filter(
-      (promotion) => promotion.status === "ACTIVE"
-    );
+      if (index !== -1) {
+        // Update the item at the found index
+        const updatedMenu = [...SelectedMenus];
+        updatedMenu[index] = { ...updatedMenu[index], quantity: floatQuantity };
 
-    if (activePromotions.length === 0) {
-      return finalPrice;
-    }
+        setSelectedMenu(updatedMenu);
+        setSelectedMenus(updatedMenu);
+      }
+    };
 
-    // biome-ignore lint/complexity/noForEach: <explanation>
-    activePromotions.forEach((promotion) => {
+    const saveQuantity = () => {
+      setEditingRowId(null); // Exit editing mode
+    };
+
+    const calculateDiscount = (menu) => {
       if (
-        !promotion ||
-        !promotion.discountType ||
-        promotion.discountValue == null
+        !menu ||
+        !menu.price ||
+        !Array.isArray(menu.promotionId) ||
+        menu.promotionId.length === 0
       ) {
-        console.error("Invalid promotion data", promotion);
-        return;
+        return menu?.price || 0;
       }
 
-      let discountAmount = 0;
+      let finalPrice = menu.price;
 
-      if (promotion.discountType === "PERCENTAGE") {
-        if (promotion.discountValue < 0 || promotion.discountValue > 100) {
-          console.warn("Invalid discount percentage:", promotion.discountValue);
-          return;
-        }
-        discountAmount = (finalPrice * promotion.discountValue) / 100;
-      } else if (promotion.discountType === "FIXED_AMOUNT") {
-        if (promotion.discountValue < 0) {
-          console.warn(
-            "Invalid fixed discount amount:",
-            promotion.discountValue
-          );
-          return;
-        }
-        discountAmount = promotion.discountValue;
+      const activePromotions = menu.promotionId.filter(
+        (promotion) => promotion.status === "ACTIVE"
+      );
+
+      if (activePromotions.length === 0) {
+        return finalPrice;
       }
 
-      // ✅ คำนวณส่วนลดให้ราคาไม่ต่ำกว่า 0
-      finalPrice = Math.max(finalPrice - discountAmount, 0);
-    });
+      // biome-ignore lint/complexity/noForEach: <explanation>
+      activePromotions.forEach((promotion) => {
+        if (
+          !promotion ||
+          !promotion.discountType ||
+          promotion.discountValue == null
+        ) {
+          console.error("Invalid promotion data", promotion);
+          return;
+        }
 
-    return finalPrice;
-  };
+        let discountAmount = 0;
 
-  const findCategoryName = (categoryId, menuCategories) => {
-    const category = menuCategories.find((cat) => cat._id === categoryId);
-    return category ? category.name : "";
-  };
+        if (promotion.discountType === "PERCENTAGE") {
+          if (promotion.discountValue < 0 || promotion.discountValue > 100) {
+            console.warn(
+              "Invalid discount percentage:",
+              promotion.discountValue
+            );
+            return;
+          }
+          discountAmount = (finalPrice * promotion.discountValue) / 100;
+        } else if (promotion.discountType === "FIXED_AMOUNT") {
+          if (promotion.discountValue < 0) {
+            console.warn(
+              "Invalid fixed discount amount:",
+              promotion.discountValue
+            );
+            return;
+          }
+          discountAmount = promotion.discountValue;
+        }
 
-  return (
-    <div>
-      <CafeContent
-        style={{
-          position: "relative",
-        }}
-      >
-        <CafeMenu>
-          <div className="py-2 sticky top-0 z-10 bg-white flex flex-col">
-            <div className="w-full px-2 py-1">
-              <input
-                placeholder={t("search")}
-                className={cn("form-control", fontMap[language])}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-            <div
-              ref={sliderRef}
-              className="w-full overflow-x-auto flex flex-row whitespace-nowrap p-2 gap-2 flex-1"
-            >
-              <button
-                type="button"
-                key={"category-all"}
-                className={cn(
-                  "rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
-                  selectedCategory === "All"
-                    ? "text-color-app"
-                    : "text-gray-700",
-                  fontMap[language]
-                )}
-                onClick={() => setSelectedCategory("All")}
-              >
-                {t("all")}
-                <div className="ml-12" />
-              </button>
-              {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
-              {menuCategories &&
-                menuCategories?.map((data, index) => {
-                  return (
-                    <button
-                      type="button"
-                      key={`category${data?._id}`}
-                      className={cn(
-                        "rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
-                        selectedCategory === data?._id
-                          ? "text-color-app"
-                          : "text-gray-700",
-                        fontMap[language]
-                      )}
-                      onClick={() => setSelectedCategory(data?._id)}
-                    >
-                      {data?.name}
-                      <div className="ml-12" />
-                    </button>
-                  );
-                })}
-            </div>
-          </div>
+        // ✅ คำนวณส่วนลดให้ราคาไม่ต่ำกว่า 0
+        finalPrice = Math.max(finalPrice - discountAmount, 0);
+      });
 
-          <div
-            className={
-              afterSearch.length === 0
-                ? "grid grid-cols-1 px-2"
-                : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 px-2"
-            }
-          >
-            {isLoading || isMenuLoading ? (
-              <Loading />
-            ) : afterSearch.length === 0 ? (
-              <div className="w-full pt-36 flex justify-center items-center">
-                {AnimationLoading()}
+      return finalPrice;
+    };
+
+    const findCategoryName = (categoryId, menuCategories) => {
+      const category = menuCategories.find((cat) => cat._id === categoryId);
+      return category ? category.name : "";
+    };
+
+    return (
+      <div>
+        <CafeContent
+          style={{
+            position: "relative",
+          }}
+        >
+          <CafeMenu>
+            <div className="py-2 sticky top-0 z-10 bg-white flex flex-col">
+              <div className="w-full px-2 py-1">
+                <input
+                  placeholder={t("search")}
+                  className={cn("form-control", fontMap[language])}
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
               </div>
-            ) : (
-              afterSearch?.map((data, index) => {
-                if (data?.type === "MENU") {
-                  return (
-                    <div
-                      onKeyDown={() => {}}
-                      key={`menu${data?._id}`}
-                      onClick={() => {
-                        addToCart(data);
-                      }}
-                      className="rounded-lg border border-orange-400 shadow-sm cursor-pointer overflow-hidden"
-                    >
-                      <div className="relative w-full pt-[75%] overflow-hidden">
-                        <img
-                          src={
-                            data?.images?.length > 0
-                              ? URL_PHOTO_AW3 + data?.images[0]
-                              : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
-                          }
-                          alt=""
-                          className="absolute top-0 left-0 w-full h-full object-cover"
-                        />
-                      </div>
-                      <div className="bg-white h-full text-gray-700 relative px-2 py-1">
-                        <span className="text-sm">{data?.name}</span>
-                        <br />
-
-                        {data?.promotionId?.length > 0 &&
-                        data.promotionId.some(
-                          (promotion) => promotion?.status === "ACTIVE"
-                        ) ? (
-                          data.promotionId
-                            .filter(
-                              (promotion) => promotion?.status === "ACTIVE"
-                            )
-                            .map((promotion, index) => {
-                              const filteredFreeItems =
-                                promotion?.freeItems?.filter(
-                                  (freeItem) =>
-                                    freeItem?.mainMenuId?._id === data._id
-                                ) || [];
-
-                              return (
-                                <div
-                                  key={promotion._id}
-                                  className="flex flex-col"
-                                >
-                                  {/* ส่วนลด */}
-                                  {promotion?.discountValue ? (
-                                    <div className="flex flex-col">
-                                      <span className="text-color-app font-medium text-base">
-                                        {moneyCurrency(
-                                          calculateDiscount(data) > 0
-                                            ? matchRoundNumber(
-                                                calculateDiscount(data)
-                                              )
-                                            : 0
-                                        )}{" "}
-                                        {storeDetail?.firstCurrency}
-                                      </span>
-
-                                      <div className="flex justify-between items-center">
-                                        <>
-                                          <span className="text-[14px] text-gray-500 line-through text-end">
-                                            {moneyCurrency(
-                                              matchRoundNumber(data?.price)
-                                            )}{" "}
-                                            {storeDetail?.firstCurrency}
-                                          </span>
-                                          <span className="flex flex-col text-center font-bold text-red-500 text-[12px] ">
-                                            <span>ສ່ວນຫຼຸດ</span>
-                                            <span>
-                                              {moneyCurrency(
-                                                promotion?.discountValue
-                                              )}{" "}
-                                              {promotion?.discountType ===
-                                              "PERCENTAGE"
-                                                ? "%"
-                                                : storeDetail?.firstCurrency}
-                                            </span>
-                                          </span>
-                                        </>
-                                      </div>
-                                    </div>
-                                  ) : null}
-
-                                  {/* เมนูแถม */}
-                                  {filteredFreeItems.length > 0 && (
-                                    <>
-                                      <span className="text-color-app font-medium text-base">
-                                        {moneyCurrency(data?.price)}{" "}
-                                        {storeDetail?.firstCurrency}
-                                      </span>
-                                      <span className="flex flex-col font-bold text-red-500 text-[14px]">
-                                        {`ແຖມ ${filteredFreeItems.length} ລາຍການ`}
-                                      </span>
-                                    </>
-                                  )}
-                                </div>
-                              );
-                            })
-                        ) : (
-                          <span className="text-color-app font-medium text-base">
-                            {moneyCurrency(data?.price)}{" "}
-                            {storeDetail?.firstCurrency}
-                          </span>
+              <div
+                ref={sliderRef}
+                className="w-full overflow-x-auto flex flex-row whitespace-nowrap p-2 gap-2 flex-1"
+              >
+                <button
+                  type="button"
+                  key={"category-all"}
+                  className={cn(
+                    "rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
+                    selectedCategory === "All"
+                      ? "text-color-app"
+                      : "text-gray-700",
+                    fontMap[language]
+                  )}
+                  onClick={() => setSelectedCategory("All")}
+                >
+                  {t("all")}
+                  <div className="ml-12" />
+                </button>
+                {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
+                {menuCategories &&
+                  menuCategories?.map((data, index) => {
+                    return (
+                      <button
+                        type="button"
+                        key={`category${data?._id}`}
+                        className={cn(
+                          "rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
+                          selectedCategory === data?._id
+                            ? "text-color-app"
+                            : "text-gray-700",
+                          fontMap[language]
                         )}
-                      </div>
-                    </div>
-                  );
-                } else {
-                  return null;
-                }
-              })
-            )}
-          </div>
-        </CafeMenu>
+                        onClick={() => setSelectedCategory(data?._id)}
+                      >
+                        {data?.name}
+                        <div className="ml-12" />
+                      </button>
+                    );
+                  })}
+              </div>
+            </div>
 
-        {!isMobile ? (
-          <div className="w-[480px] lg:w-[560px] max-w-[480px] lg:max-w-[560px] min-w-[480px] lg:min-w-[560px] h-[90vh] overflow-y-scroll bg-white border-gray-500 ">
-            <div className="container">
-              <div className="row">
-                <div className="col-lg-12 col-md-12">
-                  {/* <Table responsive className="table">
+            <div
+              className={
+                afterSearch.length === 0
+                  ? "grid grid-cols-1 px-2"
+                  : "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 px-2"
+              }
+            >
+              {isLoading || isMenuLoading ? (
+                <Loading />
+              ) : afterSearch.length === 0 ? (
+                <div className="w-full pt-36 flex justify-center items-center">
+                  {AnimationLoading()}
+                </div>
+              ) : (
+                afterSearch?.map((data, index) => {
+                  if (data?.type === "MENU") {
+                    return (
+                      <div
+                        onKeyDown={() => {}}
+                        key={`menu${data?._id}`}
+                        onClick={() => {
+                          addToCart(data);
+                        }}
+                        className="rounded-lg border border-orange-400 shadow-sm cursor-pointer overflow-hidden"
+                      >
+                        <div className="relative w-full pt-[75%] overflow-hidden">
+                          <img
+                            src={
+                              data?.images?.length > 0
+                                ? URL_PHOTO_AW3 + data?.images[0]
+                                : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
+                            }
+                            alt=""
+                            className="absolute top-0 left-0 w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="bg-white h-full text-gray-700 relative px-2 py-1">
+                          <span className="text-sm">{data?.name}</span>
+                          <br />
+
+                          {data?.promotionId?.length > 0 &&
+                          data.promotionId.some(
+                            (promotion) => promotion?.status === "ACTIVE"
+                          ) ? (
+                            data.promotionId
+                              .filter(
+                                (promotion) => promotion?.status === "ACTIVE"
+                              )
+                              .map((promotion, index) => {
+                                const filteredFreeItems =
+                                  promotion?.freeItems?.filter(
+                                    (freeItem) =>
+                                      freeItem?.mainMenuId?._id === data._id
+                                  ) || [];
+
+                                return (
+                                  <div
+                                    key={promotion._id}
+                                    className="flex flex-col"
+                                  >
+                                    {/* ส่วนลด */}
+                                    {promotion?.discountValue ? (
+                                      <div className="flex flex-col">
+                                        <span className="text-color-app font-medium text-base">
+                                          {moneyCurrency(
+                                            calculateDiscount(data) > 0
+                                              ? matchRoundNumber(
+                                                  calculateDiscount(data)
+                                                )
+                                              : 0
+                                          )}{" "}
+                                          {storeDetail?.firstCurrency}
+                                        </span>
+
+                                        <div className="flex justify-between items-center">
+                                          <>
+                                            <span className="text-[14px] text-gray-500 line-through text-end">
+                                              {moneyCurrency(
+                                                matchRoundNumber(data?.price)
+                                              )}{" "}
+                                              {storeDetail?.firstCurrency}
+                                            </span>
+                                            <span className="flex flex-col text-center font-bold text-red-500 text-[12px] ">
+                                              <span>ສ່ວນຫຼຸດ</span>
+                                              <span>
+                                                {moneyCurrency(
+                                                  promotion?.discountValue
+                                                )}{" "}
+                                                {promotion?.discountType ===
+                                                "PERCENTAGE"
+                                                  ? "%"
+                                                  : storeDetail?.firstCurrency}
+                                              </span>
+                                            </span>
+                                          </>
+                                        </div>
+                                      </div>
+                                    ) : null}
+
+                                    {/* เมนูแถม */}
+                                    {filteredFreeItems.length > 0 && (
+                                      <>
+                                        <span className="text-color-app font-medium text-base">
+                                          {moneyCurrency(data?.price)}{" "}
+                                          {storeDetail?.firstCurrency}
+                                        </span>
+                                        <span className="flex flex-col font-bold text-red-500 text-[14px]">
+                                          {`ແຖມ ${filteredFreeItems.length} ລາຍການ`}
+                                        </span>
+                                      </>
+                                    )}
+                                  </div>
+                                );
+                              })
+                          ) : (
+                            <span className="text-color-app font-medium text-base">
+                              {moneyCurrency(data?.price)}{" "}
+                              {storeDetail?.firstCurrency}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  } else {
+                    return null;
+                  }
+                })
+              )}
+            </div>
+          </CafeMenu>
+
+          {!isMobile ? (
+            <div className="w-[480px] lg:w-[560px] max-w-[480px] lg:max-w-[560px] min-w-[480px] lg:min-w-[560px] h-[90vh] overflow-y-scroll bg-white border-gray-500 ">
+              <div className="container">
+                <div className="row">
+                  <div className="col-lg-12 col-md-12">
+                    {/* <Table responsive className="table">
                     <thead style={{ backgroundColor: "#F1F1F1" }}>
                       <tr style={{ fontSize: "bold", border: "none" }}>
                         <th style={{ border: "none" }}>#</th>
@@ -1829,28 +1837,341 @@ function HomecafeEdit() {
                       )}
                     </tbody>
                   </Table> */}
-                  <div className="mt-1">
-                    <h3 className="text-lg font-semibold">{t("order_item")}</h3>
-                    {SelectedMenus.length === 0 ? (
-                      <div className="h-[400px] flex justify-center items-center">
-                        <div className="flex flex-col items-center">
-                          <BsCartXFill className="text-[100px] text-orange-500 animate-bounce" />
-                          <p className="text-[16] mt-3 font-bold text-orange-500">
-                            {t("no_order_list")}
-                          </p>
+                    <div className="mt-1">
+                      <h3 className="text-lg font-semibold">
+                        {t("order_item")}
+                      </h3>
+                      {SelectedMenus.length === 0 ? (
+                        <div className="h-[400px] flex justify-center items-center">
+                          <div className="flex flex-col items-center">
+                            <BsCartXFill className="text-[100px] text-orange-500 animate-bounce" />
+                            <p className="text-[16] mt-3 font-bold text-orange-500">
+                              {t("no_order_list")}
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {SelectedMenus?.map((item) => {
+                            if (item?.status === "CANCELED") {
+                              return <div></div>;
+                            }
+                            const optionsString =
+                              item.options &&
+                              item.options.length > 0 &&
+                              item?.status === "CANCELED"
+                                ? item.options
+                                    .map((option) =>
+                                      option.quantity > 1
+                                        ? `[${option.quantity} x ${option.name}]`
+                                        : `[${option.name}]`
+                                    )
+                                    .join(" ")
+                                : "";
+                            const totalOptionPrice =
+                              item?.totalOptionPrice || 0;
+                            const itemPrice = item?.price + totalOptionPrice;
+                            const category = findCategoryName(
+                              item?.categoryId,
+                              menuCategories
+                            );
+
+                            return (
+                              <div
+                                key={item?._id}
+                                className="flex items-center space-x-4 px-2.5 py-1 rounded-xl border bg-card"
+                              >
+                                <div className="relative h-20 w-20 overflow-hidden rounded-md">
+                                  <Image
+                                    src={
+                                      item?.menuImage?.length > 0
+                                        ? URL_PHOTO_AW3 + item?.menuImage
+                                        : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
+                                    }
+                                    alt={item.name}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-medium text-sm">
+                                    {item.name}
+                                  </h4>
+                                  <Badge
+                                    variant="outline"
+                                    className="mt-1 text-xs"
+                                  >
+                                    {category || item?.categoryId?.name}
+                                  </Badge>
+                                  <p className="text-sm font-semibold mt-1">
+                                    {optionsString}
+                                  </p>
+                                  <p className="text-sm font-semibold mt-1">
+                                    {moneyCurrency(itemPrice)}{" "}
+                                    {storeDetail?.firstCurrency}
+                                  </p>
+                                </div>
+
+                                <div className={cn("flex items-center gap-2")}>
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-8 w-8 rounded-full"
+                                    onClick={() => handleSetQuantity(-1, item)}
+                                  >
+                                    <Minus className="h-3 w-3" />
+                                  </Button>
+
+                                  {editingRowId === item?.id ? (
+                                    <Input
+                                      type="number"
+                                      step={item.isWeightMenu ? "0.001" : "1"}
+                                      min="0"
+                                      value={item?.quantity}
+                                      onChange={(e) =>
+                                        handleQuantityChange(e, item)
+                                      }
+                                      onBlur={() => saveQuantity()}
+                                      autoFocus
+                                      className="w-16 h-8 text-center px-1 py-0 border-2"
+                                    />
+                                  ) : // <Input
+                                  //   type="number"
+                                  //   step="0.1"
+                                  //   min="0"
+                                  //   value={item?.quantity}
+                                  //   autoFocus
+                                  //   onChange={(e) =>
+                                  //     handleQuantityChange(e, item)
+                                  //   }
+                                  //   onBlur={() => saveQuantity()}
+                                  //   style={{
+                                  //     width: "60px",
+                                  //     textAlign: "center",
+                                  //     border: `2px solid ${theme.primaryColor}`,
+                                  //     borderRadius: "5px",
+                                  //     padding: "2px",
+                                  //     outline: "none",
+                                  //   }}
+                                  // />
+                                  item?.isWeightMenu ? (
+                                    <div
+                                      onClick={() => setEditingRowId(item?.id)}
+                                      className="flex justify-center items-center w-16 h-8 border-2 rounded cursor-pointer px-1 gap-2"
+                                      role="button"
+                                      tabIndex={0}
+                                      aria-label={`Edit quantity: ${Number.parseFloat(
+                                        item.quantity.toString()
+                                      ).toFixed(3)}`}
+                                    >
+                                      {convertkgToG(item?.quantity)}
+                                    </div>
+                                  ) : (
+                                    // <p
+                                    //   style={{
+                                    //     display: "flex",
+                                    //     justifyContent: "center",
+                                    //     alignItems: "center",
+                                    //     gap: 10,
+                                    //     margin: "0px 5px",
+                                    //     cursor: "pointer",
+                                    //     border: `2px solid ${theme.primaryColor}`,
+                                    //     borderRadius: "5px",
+                                    //     padding: "2px",
+                                    //   }}
+                                    //   onClick={() => setEditingRowId(item?.id)}
+                                    // >
+                                    //   {Number.parseFloat(
+                                    //     item?.quantity
+                                    //   ).toFixed(3)}
+                                    // </p>
+                                    <div className="flex justify-center items-center w-10 h-8">
+                                      {item.quantity}
+                                    </div>
+                                  )}
+
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-8 w-8 rounded-full"
+                                    onClick={() => handleSetQuantity(1, item)}
+                                  >
+                                    <Plus className="h-3 w-3" />
+                                  </Button>
+
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                                    onClick={() => onConfirmRemoveItem(item)}
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                    <hr></hr>
+                    {SelectedMenus?.length > 0 ? (
+                      <div className="mb-3">
+                        <h3 className="text-lg font-semibold">
+                          {t("order_summry")}
+                        </h3>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">
+                            {t("amountTotal")} :{" "}
+                          </span>
+                          <span>
+                            {TotalAmount()}
+                            {t("item_amount")}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">
+                            {t("pricesTotal")} :
+                          </span>
+                          <span>
+                            {moneyCurrency(matchRoundNumber(total))}{" "}
+                            {t("nameCurrency")}
+                          </span>
+                        </div>
+                        <hr></hr>
+                        <div className="flex justify-between font-bold">
+                          <span>{t("pricesTotal")} :</span>
+                          <span>
+                            {moneyCurrency(matchRoundNumber(total))}{" "}
+                            {t("nameCurrency")}
+                          </span>
                         </div>
                       </div>
                     ) : (
-                      <div className="space-y-4">
-                        {SelectedMenus?.map((item) => {
-                          if (item?.status === "CANCELED") {
-                            return <div></div>;
-                          }
+                      ""
+                    )}
+                  </div>
+                  <div className="col-lg-12 col-md-12">
+                    <Button
+                      size="lg"
+                      className="w-full bg-color-app hover:bg-orange-300 text-md font-bold text-white"
+                      onClick={() => {
+                        SelectedMenus.length === 0
+                          ? AlertMessage()
+                          : setPopup({ CheckOutType: true });
+                      }}
+                      disabled={SelectedMenus.length === 0}
+                    >
+                      {t("order_checkout")}
+                      <CreditCard className="mr-0 h-8 w-8" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="w-full mt-2 text-red-500 text-md font-bold"
+                      onClick={() => {
+                        createBillCancelCafeData(SelectedMenus);
+                      }}
+                    >
+                      {t("cancel_order")}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </CafeContent>
+
+        {isMobile ? (
+          <button
+            className="d-flex justify-content-center align-items-center"
+            type="button"
+            style={{
+              position: "absolute",
+              bottom: "5%",
+              display: "fixed",
+              right: "5%",
+              backgroundColor: theme.primaryColor,
+              color: "#ffffff",
+              fontWeight: "bold",
+              border: "none",
+              padding: "10px 20px",
+              fontSize: 20,
+            }}
+            onClick={() => setCartModal(true)}
+          >
+            <RiListOrdered2 /> ກະຕ່າລາຍການ
+            <span style={{ marginLeft: "5px" }}>({SelectedMenus.length})</span>
+          </button>
+        ) : null}
+
+        <Modal
+          show={cartModal}
+          centered
+          size="lg"
+          onHide={() => setCartModal(false)}
+        >
+          <Modal.Body>
+            <div className="container">
+              <div className="row">
+                <div
+                  className="col-lg-12 col-md-12"
+                  style={{
+                    maxHeight: 500,
+                    overflow: "auto",
+                  }}
+                >
+                  <Table responsive className="table">
+                    <thead style={{ backgroundColor: "#F1F1F1" }}>
+                      <tr style={{ fontSize: "bold", border: "none" }}>
+                        <th style={{ border: "none", textWrap: "nowrap" }}>
+                          #
+                        </th>
+                        <th
+                          style={{
+                            border: "none",
+                            textWrap: "nowrap",
+                            textAlign: "left",
+                          }}
+                        >
+                          {t("menu_name")}
+                        </th>
+                        <th
+                          style={{
+                            border: "none",
+                            textWrap: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {t("amount")}
+                        </th>
+                        <th
+                          style={{
+                            border: "none",
+                            textWrap: "nowrap",
+                            textAlign: "center",
+                          }}
+                        >
+                          {t("price")}
+                        </th>
+                        <th
+                          style={{
+                            border: "none",
+                            textWrap: "nowrap",
+                            textAlign: "right",
+                          }}
+                        >
+                          {t("manage")}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {SelectedMenus?.length > 0 ? (
+                        SelectedMenus?.map((data, index) => {
+                          // Create the options string if options exist
                           const optionsString =
-                            item.options &&
-                            item.options.length > 0 &&
-                            item?.status === "CANCELED"
-                              ? item.options
+                            data.options && data.options.length > 0
+                              ? data.options
                                   .map((option) =>
                                     option.quantity > 1
                                       ? `[${option.quantity} x ${option.name}]`
@@ -1858,483 +2179,176 @@ function HomecafeEdit() {
                                   )
                                   .join(" ")
                               : "";
-                          const totalOptionPrice = item?.totalOptionPrice || 0;
-                          const itemPrice = item?.price + totalOptionPrice;
-                          const category = findCategoryName(
-                            item?.categoryId,
-                            menuCategories
-                          );
-
+                          const totalOptionPrice = data?.totalOptionPrice || 0;
+                          const itemPrice = data?.price + totalOptionPrice;
                           return (
-                            <div
-                              key={item?._id}
-                              className="flex items-center space-x-4 px-2.5 py-1 rounded-xl border bg-card"
-                            >
-                              <div className="relative h-20 w-20 overflow-hidden rounded-md">
-                                <Image
-                                  src={
-                                    item?.menuImage?.length > 0
-                                      ? URL_PHOTO_AW3 + item?.menuImage
-                                      : "https://media.istockphoto.com/vectors/thumbnail-image-vector-graphic-vector-id1147544807?k=20&m=1147544807&s=612x612&w=0&h=pBhz1dkwsCMq37Udtp9sfxbjaMl27JUapoyYpQm0anc="
-                                  }
-                                  alt={item.name}
-                                  fill
-                                  className="object-cover"
-                                />
-                              </div>
-
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-medium text-sm">
-                                  {item.name}
-                                </h4>
-                                <Badge
-                                  variant="outline"
-                                  className="mt-1 text-xs"
+                            <tr key={"selectMenu" + index}>
+                              <td style={{ width: 20 }}>{index + 1}</td>
+                              <td
+                                style={{ textAlign: "left", paddingBottom: 0 }}
+                              >
+                                <p>{`${data.name} ${optionsString}`}</p>
+                                <p
+                                  style={{ fontSize: 12, marginTop: "-1.5em" }}
                                 >
-                                  {category || item?.categoryId?.name}
-                                </Badge>
-                                <p className="text-sm font-semibold mt-1">
-                                  {optionsString}
+                                  {data?.note ?? ""}
                                 </p>
-                                <p className="text-sm font-semibold mt-1">
-                                  {moneyCurrency(itemPrice)}{" "}
-                                  {storeDetail?.firstCurrency}
-                                </p>
-                              </div>
+                              </td>
 
-                              <div className={cn("flex items-center gap-2")}>
-                                <Button
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-8 w-8 rounded-full"
-                                  onClick={() => handleSetQuantity(-1, item)}
+                              <td
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                  justifyContent: "space-around",
+                                  marginTop: "-.05em",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <button
+                                  style={{
+                                    color: "blue",
+                                    border: "none",
+                                    width: 25,
+                                  }}
+                                  onClick={() => handleSetQuantity(-1, data)}
                                 >
-                                  <Minus className="h-3 w-3" />
-                                </Button>
-
-                                {editingRowId === item?.id ? (
-                                  <Input
+                                  -
+                                </button>
+                                {editingRowId === data.id ? (
+                                  <input
                                     type="number"
-                                    step={item.isWeightMenu ? "0.001" : "1"}
+                                    step="0.1"
                                     min="0"
-                                    value={item?.quantity}
+                                    value={data.quantity}
+                                    autoFocus
                                     onChange={(e) =>
-                                      handleQuantityChange(e, item)
+                                      handleQuantityChange(e, data)
                                     }
                                     onBlur={() => saveQuantity()}
-                                    autoFocus
-                                    className="w-16 h-8 text-center px-1 py-0 border-2"
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      gap: 10,
+                                      padding: "2px",
+                                      margin: "0px 5px",
+                                      cursor: "pointer",
+                                      border: `2px solid ${theme.primaryColor}`,
+                                      borderRadius: "5px",
+                                      fontSize: 14,
+                                    }}
                                   />
-                                ) : // <Input
-                                //   type="number"
-                                //   step="0.1"
-                                //   min="0"
-                                //   value={item?.quantity}
-                                //   autoFocus
-                                //   onChange={(e) =>
-                                //     handleQuantityChange(e, item)
-                                //   }
-                                //   onBlur={() => saveQuantity()}
-                                //   style={{
-                                //     width: "60px",
-                                //     textAlign: "center",
-                                //     border: `2px solid ${theme.primaryColor}`,
-                                //     borderRadius: "5px",
-                                //     padding: "2px",
-                                //     outline: "none",
-                                //   }}
-                                // />
-                                item?.isWeightMenu ? (
-                                  <div
-                                    onClick={() => setEditingRowId(item?.id)}
-                                    className="flex justify-center items-center w-16 h-8 border-2 rounded cursor-pointer px-1 gap-2"
-                                    role="button"
-                                    tabIndex={0}
-                                    aria-label={`Edit quantity: ${Number.parseFloat(
-                                      item.quantity.toString()
-                                    ).toFixed(3)}`}
+                                ) : data?.isWeightMenu ? (
+                                  <p
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      gap: 10,
+                                      margin: "0px 5px",
+                                      cursor: "pointer",
+                                      border: `2px solid ${theme.primaryColor}`,
+                                      borderRadius: "5px",
+                                      fontSize: 14,
+                                    }}
+                                    onClick={() => setEditingRowId(data?.id)}
                                   >
-                                    {Number.parseFloat(
-                                      item.quantity.toString()
-                                    ).toFixed(3)}
-                                  </div>
+                                    {convertkgToG(data?.quantity)}
+                                  </p>
                                 ) : (
-                                  // <p
-                                  //   style={{
-                                  //     display: "flex",
-                                  //     justifyContent: "center",
-                                  //     alignItems: "center",
-                                  //     gap: 10,
-                                  //     margin: "0px 5px",
-                                  //     cursor: "pointer",
-                                  //     border: `2px solid ${theme.primaryColor}`,
-                                  //     borderRadius: "5px",
-                                  //     padding: "2px",
-                                  //   }}
-                                  //   onClick={() => setEditingRowId(item?.id)}
-                                  // >
-                                  //   {Number.parseFloat(
-                                  //     item?.quantity
-                                  //   ).toFixed(3)}
-                                  // </p>
-                                  <div className="flex justify-center items-center w-10 h-8">
-                                    {item.quantity}
-                                  </div>
+                                  <p
+                                    style={{
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      gap: 10,
+                                      margin: "0px 5px",
+                                    }}
+                                  >
+                                    {data?.quantity}
+                                  </p>
                                 )}
-
-                                <Button
-                                  variant="outline"
-                                  size="icon"
-                                  className="h-8 w-8 rounded-full"
-                                  onClick={() => handleSetQuantity(1, item)}
+                                <button
+                                  style={{
+                                    color: "red",
+                                    border: "none",
+                                    width: 25,
+                                  }}
+                                  onClick={() => handleSetQuantity(1, data)}
                                 >
-                                  <Plus className="h-3 w-3" />
-                                </Button>
+                                  +
+                                </button>
+                              </td>
 
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
-                                  onClick={() => onConfirmRemoveItem(item)}
+                              <td>
+                                <p>
+                                  {moneyCurrency(matchRoundNumber(itemPrice))}
+                                </p>
+                              </td>
+
+                              <td style={{ padding: 0, textAlign: "right" }}>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "end",
+                                    gap: 10,
+                                    paddingLeft: 10,
+                                    paddingTop: 5,
+                                  }}
                                 >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
+                                  <div
+                                    style={{
+                                      cursor: "pointer",
+                                      fontSize: 25,
+                                      color: theme.primaryColor,
+                                    }}
+                                    onClick={() => onConfirmRemoveItem(data)}
+                                  >
+                                    <MdDelete />
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan={5}>
+                            <div className="h-[400] flex justify-center items-center">
+                              <div className="flex flex-col items-center">
+                                <BsCartXFill className="text-[100px] text-orange-500 animate-bounce" />
+                                <p className="text-[16] mt-2 font-bold text-orange-500">
+                                  {t("no_order_list")}
+                                </p>
                               </div>
                             </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                  <hr></hr>
-                  {SelectedMenus?.length > 0 ? (
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </Table>
+                </div>
+                <div className="col-12">
+                  {SelectedMenus.length > 0 ? (
                     <div className="mb-3">
-                      <h3 className="text-lg font-semibold">
-                        {t("order_summry")}
-                      </h3>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">
-                          {t("amountTotal")} :{" "}
-                        </span>
-                        <span>
-                          {Number.parseFloat(TotalAmount())} {t("item_amount")}
-                        </span>
+                      <div>
+                        <span>{t("amountTotal")} : </span>
+                        <span>{TotalAmount()}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">
-                          {t("pricesTotal")} :
-                        </span>
+                      <div>
+                        <span>{t("pricesTotal")} : </span>
                         <span>
-                          {moneyCurrency(matchRoundNumber(total))}{" "}
-                          {t("nameCurrency")}
-                        </span>
-                      </div>
-                      <hr></hr>
-                      <div className="flex justify-between font-bold">
-                        <span>{t("pricesTotal")} :</span>
-                        <span>
-                          {moneyCurrency(matchRoundNumber(total))}{" "}
-                          {t("nameCurrency")}
+                          {moneyCurrency(total)} {t("nameCurrency")}
                         </span>
                       </div>
                     </div>
                   ) : (
                     ""
                   )}
-                </div>
-                <div className="col-lg-12 col-md-12">
-                  <Button
-                    size="lg"
-                    className="w-full bg-color-app hover:bg-orange-300 text-md font-bold text-white"
-                    onClick={() => {
-                      SelectedMenus.length === 0
-                        ? AlertMessage()
-                        : setPopup({ CheckOutType: true });
-                    }}
-                    disabled={SelectedMenus.length === 0}
-                  >
-                    {t("order_checkout")}
-                    <CreditCard className="mr-0 h-8 w-8" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full mt-2 text-red-500 text-md font-bold"
-                    onClick={() => {
-                      createBillCancelCafeData(SelectedMenus);
-                    }}
-                  >
-                    {t("cancel_order")}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : null}
-      </CafeContent>
-
-      {isMobile ? (
-        <button
-          className="d-flex justify-content-center align-items-center"
-          type="button"
-          style={{
-            position: "absolute",
-            bottom: "5%",
-            display: "fixed",
-            right: "5%",
-            backgroundColor: theme.primaryColor,
-            color: "#ffffff",
-            fontWeight: "bold",
-            border: "none",
-            padding: "10px 20px",
-            fontSize: 20,
-          }}
-          onClick={() => setCartModal(true)}
-        >
-          <RiListOrdered2 /> ກະຕ່າລາຍການ
-          <span style={{ marginLeft: "5px" }}>({SelectedMenus.length})</span>
-        </button>
-      ) : null}
-
-      <Modal
-        show={cartModal}
-        centered
-        size="lg"
-        onHide={() => setCartModal(false)}
-      >
-        <Modal.Body>
-          <div className="container">
-            <div className="row">
-              <div
-                className="col-lg-12 col-md-12"
-                style={{
-                  maxHeight: 500,
-                  overflow: "auto",
-                }}
-              >
-                <Table responsive className="table">
-                  <thead style={{ backgroundColor: "#F1F1F1" }}>
-                    <tr style={{ fontSize: "bold", border: "none" }}>
-                      <th style={{ border: "none", textWrap: "nowrap" }}>#</th>
-                      <th
-                        style={{
-                          border: "none",
-                          textWrap: "nowrap",
-                          textAlign: "left",
-                        }}
-                      >
-                        {t("menu_name")}
-                      </th>
-                      <th
-                        style={{
-                          border: "none",
-                          textWrap: "nowrap",
-                          textAlign: "center",
-                        }}
-                      >
-                        {t("amount")}
-                      </th>
-                      <th
-                        style={{
-                          border: "none",
-                          textWrap: "nowrap",
-                          textAlign: "center",
-                        }}
-                      >
-                        {t("price")}
-                      </th>
-                      <th
-                        style={{
-                          border: "none",
-                          textWrap: "nowrap",
-                          textAlign: "right",
-                        }}
-                      >
-                        {t("manage")}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {SelectedMenus?.length > 0 ? (
-                      SelectedMenus?.map((data, index) => {
-                        // Create the options string if options exist
-                        const optionsString =
-                          data.options && data.options.length > 0
-                            ? data.options
-                                .map((option) =>
-                                  option.quantity > 1
-                                    ? `[${option.quantity} x ${option.name}]`
-                                    : `[${option.name}]`
-                                )
-                                .join(" ")
-                            : "";
-                        const totalOptionPrice = data?.totalOptionPrice || 0;
-                        const itemPrice = data?.price + totalOptionPrice;
-                        return (
-                          <tr key={"selectMenu" + index}>
-                            <td style={{ width: 20 }}>{index + 1}</td>
-                            <td style={{ textAlign: "left", paddingBottom: 0 }}>
-                              <p>{`${data.name} ${optionsString}`}</p>
-                              <p style={{ fontSize: 12, marginTop: "-1.5em" }}>
-                                {data?.note ?? ""}
-                              </p>
-                            </td>
-
-                            <td
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-around",
-                                marginTop: "-.05em",
-                                alignItems: "center",
-                              }}
-                            >
-                              <button
-                                style={{
-                                  color: "blue",
-                                  border: "none",
-                                  width: 25,
-                                }}
-                                onClick={() => handleSetQuantity(-1, data)}
-                              >
-                                -
-                              </button>
-                              {editingRowId === data.id ? (
-                                <input
-                                  type="number"
-                                  step="0.1"
-                                  min="0"
-                                  value={data.quantity}
-                                  autoFocus
-                                  onChange={(e) =>
-                                    handleQuantityChange(e, data)
-                                  }
-                                  onBlur={() => saveQuantity()}
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    gap: 10,
-                                    padding: "2px",
-                                    margin: "0px 5px",
-                                    cursor: "pointer",
-                                    border: `2px solid ${theme.primaryColor}`,
-                                    borderRadius: "5px",
-                                    fontSize: 14,
-                                  }}
-                                />
-                              ) : data?.isWeightMenu ? (
-                                <p
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    gap: 10,
-                                    margin: "0px 5px",
-                                    cursor: "pointer",
-                                    border: `2px solid ${theme.primaryColor}`,
-                                    borderRadius: "5px",
-                                    fontSize: 14,
-                                  }}
-                                  onClick={() => setEditingRowId(data?.id)}
-                                >
-                                  {Number.parseFloat(data?.quantity).toFixed(3)}
-                                </p>
-                              ) : (
-                                <p
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    gap: 10,
-                                    margin: "0px 5px",
-                                  }}
-                                >
-                                  {data?.quantity}
-                                </p>
-                              )}
-                              <button
-                                style={{
-                                  color: "red",
-                                  border: "none",
-                                  width: 25,
-                                }}
-                                onClick={() => handleSetQuantity(1, data)}
-                              >
-                                +
-                              </button>
-                            </td>
-
-                            <td>
-                              <p>
-                                {moneyCurrency(matchRoundNumber(itemPrice))}
-                              </p>
-                            </td>
-
-                            <td style={{ padding: 0, textAlign: "right" }}>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "end",
-                                  gap: 10,
-                                  paddingLeft: 10,
-                                  paddingTop: 5,
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    cursor: "pointer",
-                                    fontSize: 25,
-                                    color: theme.primaryColor,
-                                  }}
-                                  onClick={() => onConfirmRemoveItem(data)}
-                                >
-                                  <MdDelete />
-                                </div>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      <tr>
-                        <td colSpan={5}>
-                          <div className="h-[400] flex justify-center items-center">
-                            <div className="flex flex-col items-center">
-                              <BsCartXFill className="text-[100px] text-orange-500 animate-bounce" />
-                              <p className="text-[16] mt-2 font-bold text-orange-500">
-                                {t("no_order_list")}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </Table>
-              </div>
-              <div className="col-12">
-                {SelectedMenus.length > 0 ? (
-                  <div className="mb-3">
-                    <div>
-                      <span>{t("amountTotal")} : </span>
-                      <span>
-                        {Number.parseFloat(TotalAmount()).toFixed(3)}{" "}
-                      </span>
-                    </div>
-                    <div>
-                      <span>{t("pricesTotal")} : </span>
-                      <span>
-                        {moneyCurrency(total)} {t("nameCurrency")}
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  ""
-                )}
-                <div className="row" style={{ margin: 0 }}>
-                  {SelectedMenus.length > 0 ? (
-                    <>
-                      {/* <Button
+                  <div className="row" style={{ margin: 0 }}>
+                    {SelectedMenus.length > 0 ? (
+                      <>
+                        {/* <Button
                         variant="outline-warning"
                         className="hover-me"
                         style={{
@@ -2351,334 +2365,336 @@ function HomecafeEdit() {
                       >
                         {t("cancel")}
                       </Button> */}
-                      <Button
-                        variant="light"
-                        className="hover-me"
-                        style={{
-                          marginRight: 15,
-                          backgroundColor: theme.primaryColor,
-                          color: "#ffffff",
-                          fontWeight: "bold",
-                          flex: 1,
-                        }}
-                        onClick={() => {
-                          SelectedMenus.length === 0
-                            ? AlertMessage()
-                            : setPopup({ CheckOutType: true });
-                        }}
-                      >
-                        {/* {t("print_bill")} */}
-                        CheckOut
-                      </Button>
-                    </>
-                  ) : (
-                    ""
-                  )}
+                        <Button
+                          variant="light"
+                          className="hover-me"
+                          style={{
+                            marginRight: 15,
+                            backgroundColor: theme.primaryColor,
+                            color: "#ffffff",
+                            fontWeight: "bold",
+                            flex: 1,
+                          }}
+                          onClick={() => {
+                            SelectedMenus.length === 0
+                              ? AlertMessage()
+                              : setPopup({ CheckOutType: true });
+                          }}
+                        >
+                          {/* {t("print_bill")} */}
+                          CheckOut
+                        </Button>
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </Modal.Body>
-      </Modal>
+          </Modal.Body>
+        </Modal>
 
-      <Modal show={show} onHide={handleClose} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <div style={{ fontSize: 24 }}>
-              {selectedItem?.name} (
-              {moneyCurrency(calculateDiscount(selectedItem))}{" "}
-              {storeDetail?.firstCurrency})
-            </div>
-            <div style={{ fontSize: 18 }}>
-              {t("menu_option")}:
-              {selectedOptionsArray[selectedItem?._id]?.map(
-                (option) =>
-                  option.quantity > 0 && (
-                    <span key={option._id} style={{ marginRight: "5px" }}>
-                      {option.quantity > 1
-                        ? `[${option.quantity} x ${option.name}]`
-                        : `[${option.name}]`}
-                    </span>
-                  )
-              )}
-            </div>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group>
-            {menuOptions.map((option, index) => (
-              <div
-                key={index}
-                className="d-flex justify-content-between align-items-center mb-2"
-                style={
-                  selectedOptionsArray[selectedItem?._id]?.find(
-                    (selectedOption) => selectedOption._id === option._id
-                  )?.quantity >= 1
-                    ? {
-                        backgroundColor: "#fd8b66",
-                        borderRadius: "5px",
-                        padding: 5,
-                      }
-                    : {}
-                }
-              >
-                <div>
-                  <strong>{option.name}</strong> - {moneyCurrency(option.price)}{" "}
-                  {storeDetail?.firstCurrency}
-                </div>
-                <div className="d-flex align-items-center">
-                  <Button
-                    variant="outline-secondary"
-                    size="sm"
-                    onClick={() =>
-                      handleRemoveOption(selectedItem?._id, option)
-                    }
-                  >
-                    -
-                  </Button>
-                  <span className="mx-2">
-                    {selectedOptionsArray[selectedItem?._id]?.find(
+        <Modal show={show} onHide={handleClose} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>
+              <div style={{ fontSize: 24 }}>
+                {selectedItem?.name} (
+                {moneyCurrency(calculateDiscount(selectedItem))}{" "}
+                {storeDetail?.firstCurrency})
+              </div>
+              <div style={{ fontSize: 18 }}>
+                {t("menu_option")}:
+                {selectedOptionsArray[selectedItem?._id]?.map(
+                  (option) =>
+                    option.quantity > 0 && (
+                      <span key={option._id} style={{ marginRight: "5px" }}>
+                        {option.quantity > 1
+                          ? `[${option.quantity} x ${option.name}]`
+                          : `[${option.name}]`}
+                      </span>
+                    )
+                )}
+              </div>
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form.Group>
+              {menuOptions.map((option, index) => (
+                <div
+                  key={index}
+                  className="d-flex justify-content-between align-items-center mb-2"
+                  style={
+                    selectedOptionsArray[selectedItem?._id]?.find(
                       (selectedOption) => selectedOption._id === option._id
-                    )?.quantity || 0}
-                  </span>
-                  <Button
-                    variant="outline-secondary"
-                    size="sm"
-                    onClick={() => handleAddOption(selectedItem?._id, option)}
-                  >
-                    +
-                  </Button>
+                    )?.quantity >= 1
+                      ? {
+                          backgroundColor: "#fd8b66",
+                          borderRadius: "5px",
+                          padding: 5,
+                        }
+                      : {}
+                  }
+                >
+                  <div>
+                    <strong>{option.name}</strong> -{" "}
+                    {moneyCurrency(option.price)} {storeDetail?.firstCurrency}
+                  </div>
+                  <div className="d-flex align-items-center">
+                    <Button
+                      variant="outline-secondary"
+                      size="sm"
+                      onClick={() =>
+                        handleRemoveOption(selectedItem?._id, option)
+                      }
+                    >
+                      -
+                    </Button>
+                    <span className="mx-2">
+                      {selectedOptionsArray[selectedItem?._id]?.find(
+                        (selectedOption) => selectedOption._id === option._id
+                      )?.quantity || 0}
+                    </span>
+                    <Button
+                      variant="outline-secondary"
+                      size="sm"
+                      onClick={() => handleAddOption(selectedItem?._id, option)}
+                    >
+                      +
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </Form.Group>
-          <div className="mt-3">
-            <strong>
-              {t("total_price_with_options")}:{" "}
-              {moneyCurrency(
-                calculateTotalPrice(selectedItem, selectedOptionsArray)
-              )}{" "}
-              {storeDetail?.firstCurrency}
-            </strong>
-          </div>
-          <Form.Group className="mt-3">
-            <Form.Label>
-              {selectedItem?.note === ""
-                ? t("comment_taste")
-                : t("edit_comment")}
-            </Form.Label>
-            <Form.Control
-              ref={selectedItem?.note === "" ? inputRef : null}
-              as="textarea"
-              rows={3}
-              value={addComments}
-              onChange={(e) => setAddComments(e.target.value)}
-              placeholder={t("fill_desc")}
-              className="w-100"
-            />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            {t("cancel")}
-          </Button>
-          <Button variant="primary" onClick={handleConfirmOptions}>
-            {t("confirm")}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* modal comment of items   */}
-      <Modal centered show={isPopup} onHide={() => setIsPupup(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>{noteItems?.name}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="p-4">
-          <Form.Group>
-            <Form.Label>
-              {noteItems?.note === ""
-                ? `${t("commend_how_is_food")}`
-                : `${t("edit_commend")}`}
-            </Form.Label>
-            <Form.Control
-              ref={noteItems?.note === "" ? inputRef : null}
-              as="textarea"
-              rows={3}
-              value={noteItems?.note === "" ? addComments : editComments}
-              onChange={(e) =>
-                noteItems?.note === ""
-                  ? setAddComments(e.target.value)
-                  : setEditComments(e.target.value)
-              }
-              placeholder={t("fill_desc")}
-              className="w-100"
-            />
-          </Form.Group>
-          <div style={{ display: "flex", gap: 10, marginTop: 5 }}>
-            {noteItems?.note !== "" && (
-              <Button
-                variant="outline-danger"
-                className="w-100 p-2"
-                onClick={handleUpdateCommentInCart}
-              >
-                {t("delete_all")}
-              </Button>
-            )}
-            <Button className="w-100 p-2" onClick={handleAddCommentInCart}>
-              {noteItems?.note !== "" ? (
-                `${t("edit")}`
-              ) : (
-                <>
-                  <MdAdd style={{ fontSize: 28 }} />
-                  {t("add_new")}
-                </>
-              )}
-            </Button>
-          </div>
-        </Modal.Body>
-      </Modal>
-
-      {/* modal confirm delete item from cart */}
-      <PopUpConfirmDeletion
-        open={isRemoveItem}
-        text={itemDeleting?.name}
-        onClose={() => setIsRemoveItem(false)}
-        onSubmit={async () => onRemoveFromCart(itemDeleting)}
-      />
-      <CheckOutPopupCafe
-        bill={bill}
-        onPrintForCher={onPrintForCher}
-        onQueue={billData}
-        onPrintBill={onPrintBill}
-        onPrintForCherLaBel={onPrintForCherLaBel}
-        onPrintDrawer={onPrintDrawer}
-        dataBill={SelectedMenus}
-        open={popup?.CheckOutType}
-        onClose={() => setPopup()}
-        setDataBill={setDataBill}
-        taxPercent={taxPercent}
-        TotalPrice={TotalPrice()}
-        setIsLoading={setIsLoading}
-        statusBill={true}
-        billId={billId}
-      />
-
-      <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
-        <BillForCheckOutCafe80
-          data={bill}
-          storeDetail={storeDetail}
-          dataBill={SelectedMenus}
-          taxPercent={taxPercent}
-          profile={profile}
-          memberData={dataBill}
-        />
-      </div>
-      {SelectedMenus?.map((val, i) => {
-        const totalPrice = () => {
-          const totalOptionPrice = val?.totalOptionPrice || 0;
-          return val?.price + totalOptionPrice;
-        };
-        return Array.from({ length: val?.quantity }).map((_, index) => {
-          const key = `${val._id}-${index}`;
-          return (
-            <div
-              key={key}
-              // style={{
-              //   width: "80mm",
-              //   paddingRight: "20px",
-              //   paddingBottom: "10px",
-              // }}
-              className="w-[80mm] pr-[20px pb-[10px]"
-              ref={(el) => {
-                if (el) {
-                  billForCherCancel80.current[i] = el;
-                }
-              }}
-            >
-              <PrintLabel
-                data={bill}
-                bill={{ ...val }}
-                totalPrice={totalPrice}
-              />
+              ))}
+            </Form.Group>
+            <div className="mt-3">
+              <strong>
+                {t("total_price_with_options")}:{" "}
+                {moneyCurrency(
+                  calculateTotalPrice(selectedItem, selectedOptionsArray)
+                )}{" "}
+                {storeDetail?.firstCurrency}
+              </strong>
             </div>
-          );
-        });
-      })}
-    </div>
-  );
-}
+            <Form.Group className="mt-3">
+              <Form.Label>
+                {selectedItem?.note === ""
+                  ? t("comment_taste")
+                  : t("edit_comment")}
+              </Form.Label>
+              <Form.Control
+                ref={selectedItem?.note === "" ? inputRef : null}
+                as="textarea"
+                rows={3}
+                value={addComments}
+                onChange={(e) => setAddComments(e.target.value)}
+                placeholder={t("fill_desc")}
+                className="w-100"
+              />
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              {t("cancel")}
+            </Button>
+            <Button variant="primary" onClick={handleConfirmOptions}>
+              {t("confirm")}
+            </Button>
+          </Modal.Footer>
+        </Modal>
 
-const CafeContent = styled.div`
-  display: flex;
-  overflow: hidden;
-`;
+        {/* modal comment of items   */}
+        <Modal centered show={isPopup} onHide={() => setIsPupup(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>{noteItems?.name}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="p-4">
+            <Form.Group>
+              <Form.Label>
+                {noteItems?.note === ""
+                  ? `${t("commend_how_is_food")}`
+                  : `${t("edit_commend")}`}
+              </Form.Label>
+              <Form.Control
+                ref={noteItems?.note === "" ? inputRef : null}
+                as="textarea"
+                rows={3}
+                value={noteItems?.note === "" ? addComments : editComments}
+                onChange={(e) =>
+                  noteItems?.note === ""
+                    ? setAddComments(e.target.value)
+                    : setEditComments(e.target.value)
+                }
+                placeholder={t("fill_desc")}
+                className="w-100"
+              />
+            </Form.Group>
+            <div style={{ display: "flex", gap: 10, marginTop: 5 }}>
+              {noteItems?.note !== "" && (
+                <Button
+                  variant="outline-danger"
+                  className="w-100 p-2"
+                  onClick={handleUpdateCommentInCart}
+                >
+                  {t("delete_all")}
+                </Button>
+              )}
+              <Button className="w-100 p-2" onClick={handleAddCommentInCart}>
+                {noteItems?.note !== "" ? (
+                  `${t("edit")}`
+                ) : (
+                  <>
+                    <MdAdd style={{ fontSize: 28 }} />
+                    {t("add_new")}
+                  </>
+                )}
+              </Button>
+            </div>
+          </Modal.Body>
+        </Modal>
 
-const CafeMenu = styled.div`
-  width: 80rem;
-  /* flex-grow: 1; */
-  height: 90vh;
-  overflow-y: scroll;
-`;
-const SubCafeMenu = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+        {/* modal confirm delete item from cart */}
+        <PopUpConfirmDeletion
+          open={isRemoveItem}
+          text={itemDeleting?.name}
+          onClose={() => setIsRemoveItem(false)}
+          onSubmit={async () => onRemoveFromCart(itemDeleting)}
+        />
+        <CheckOutPopupCafe
+          bill={bill}
+          onPrintForCher={onPrintForCher}
+          onQueue={billData}
+          onPrintBill={onPrintBill}
+          onPrintForCherLaBel={onPrintForCherLaBel}
+          onPrintDrawer={onPrintDrawer}
+          dataBill={SelectedMenus}
+          open={popup?.CheckOutType}
+          onClose={() => setPopup()}
+          setDataBill={setDataBill}
+          taxPercent={taxPercent}
+          TotalPrice={TotalPrice()}
+          setIsLoading={setIsLoading}
+          statusBill={true}
+          billId={billId}
+        />
 
-  .images-menu-cafe {
-    height: 200px;
-  }
+        <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
+          <BillForCheckOutCafe80
+            data={bill}
+            storeDetail={storeDetail}
+            dataBill={SelectedMenus}
+            taxPercent={taxPercent}
+            profile={profile}
+            memberData={dataBill}
+          />
+        </div>
+        {SelectedMenus?.map((val, i) => {
+          const totalPrice = () => {
+            const totalOptionPrice = val?.totalOptionPrice || 0;
+            return val?.price + totalOptionPrice;
+          };
+          return Array.from({ length: val?.quantity }).map((_, index) => {
+            const key = `${val._id}-${index}`;
+            return (
+              <div
+                key={key}
+                // style={{
+                //   width: "80mm",
+                //   paddingRight: "20px",
+                //   paddingBottom: "10px",
+                // }}
+                className="w-[80mm] pr-[20px pb-[10px]"
+                ref={(el) => {
+                  if (el) {
+                    billForCherCancel80.current[i] = el;
+                  }
+                }}
+              >
+                <PrintLabel
+                  data={bill}
+                  bill={{ ...val }}
+                  totalPrice={totalPrice}
+                />
+              </div>
+            );
+          });
+        })}
+      </div>
+    );
+  };
 
-  @media (max-width: 1024px) {
+  const CafeContent = styled.div`
+    display: flex;
+    overflow: hidden;
+  `;
+
+  const CafeMenu = styled.div`
+    width: 80rem;
+    /* flex-grow: 1; */
+    height: 90vh;
+    overflow-y: scroll;
+  `;
+  const SubCafeMenu = styled.div`
+    display: grid;
     grid-template-columns: repeat(4, 1fr);
 
     .images-menu-cafe {
-      height: 150px;
+      height: 200px;
     }
-  }
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(3, 1fr);
 
-    .images-menu-cafe {
-      height: 100px;
+    @media (max-width: 1024px) {
+      grid-template-columns: repeat(4, 1fr);
+
+      .images-menu-cafe {
+        height: 150px;
+      }
     }
-  }
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
+    @media (max-width: 900px) {
+      grid-template-columns: repeat(3, 1fr);
 
-    .images-menu-cafe {
-      height: 100px;
+      .images-menu-cafe {
+        height: 100px;
+      }
     }
-  }
-  @media (max-width: 820px) {
-    grid-template-columns: repeat(3, 1fr);
+    @media (max-width: 768px) {
+      grid-template-columns: repeat(3, 1fr);
 
-    .images-menu-cafe {
-      height: 100px;
+      .images-menu-cafe {
+        height: 100px;
+      }
     }
-  }
-`;
+    @media (max-width: 820px) {
+      grid-template-columns: repeat(3, 1fr);
 
-const CafeCart = styled.div`
-  width: 60rem;
-  background-color: #fff;
-  max-height: 90vh;
-  border-color: black;
-  overflow-y: scroll;
-  border-width: 1;
-  padding-left: 20;
-  padding-top: 20;
-  margin-top: 15px;
+      .images-menu-cafe {
+        height: 100px;
+      }
+    }
+  `;
 
-  @media (max-width: 768px) {
-    width: 80rem;
+  const CafeCart = styled.div`
+    width: 60rem;
+    background-color: #fff;
+    max-height: 90vh;
+    border-color: black;
+    overflow-y: scroll;
+    border-width: 1;
+    padding-left: 20;
+    padding-top: 20;
     margin-top: 15px;
-  }
-  @media (max-width: 820px) {
-    width: 80rem;
-    margin-top: 15px;
-  }
-  @media (max-width: 900px) {
-    width: 80rem;
-    margin-top: 15px;
-  }
-`;
+
+    @media (max-width: 768px) {
+      width: 80rem;
+      margin-top: 15px;
+    }
+    @media (max-width: 820px) {
+      width: 80rem;
+      margin-top: 15px;
+    }
+    @media (max-width: 900px) {
+      width: 80rem;
+      margin-top: 15px;
+    }
+  `;
+}
+
 export default HomecafeEdit;

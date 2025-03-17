@@ -15,19 +15,15 @@ import {
   moneyCurrency,
 } from "./../../helpers";
 import { useTranslation } from "react-i18next";
-import { stringify } from "query-string";
-import AnimationLoading from "../../constants/loading";
-import Box from "../../components/Box";
 import { getHeaders } from "../../services/auth";
 import { useStore } from "../../store";
 import useQuery from "../../helpers/useQuery";
-import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
-import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
 import Loading from "../../components/Loading";
 import { getCountBills } from "../../services/bill";
 
 import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
+import { convertkgToG } from "../../helpers/convertKgToG";
 
 import {
   BLUETOOTH_PRINTER_PORT,
@@ -544,42 +540,52 @@ export default function DashboardFinance({
   const mapOrderData = (orderId, formatMenuName, orderStatus) => {
     if (!orderId || !Array.isArray(orderId)) return [];
 
-    return orderId.map((item, index) => {
-      const isCanceled = item?.status === "CANCELED";
+    return orderId.map((item, index) => ({
+      index: index + 1,
+      menuName: formatMenuName
+        ? formatMenuName(item?.name || "", item?.options || [])
+        : "-",
+      quantity: item?.quantity || 0,
+      status: item?.status || "UNKNOWN",
+      statusColor: getStatusColor(item?.status),
+      createdBy: item?.createdBy?.firstname || "-",
+      isWeightMenu: item?.isWeightMenu,
+      totalPrice: (() => {
+        if (isCanceled) return "CANCELED";
+        try {
+          const basePrice = item?.price || 0;
+          const optionPrice = item?.totalOptionPrice || 0;
+          const quantity = item?.quantity || 0;
+          const isWeightMenu = item?.isWeightMenu;
+          const totalPriceFromItem = item?.totalPrice;
+          const isWeightMenuQuantity = convertkgToG(item?.quantity);
 
-      return {
-        index: index + 1,
-        menuName: formatMenuName
-          ? formatMenuName(item?.name || "", item?.options || [])
-          : "-",
-        quantity: item?.quantity || 0,
-        status: item?.status || "UNKNOWN",
-        statusColor: getStatusColor(item?.status),
-        createdBy: item?.createdBy?.firstname || "-",
-        totalPrice: (() => {
-          if (isCanceled) return "CANCELED";
-          try {
-            const calculatedPrice =
-              item?.totalPrice ||
-              ((item?.price || 0) + (item?.totalOptionPrice || 0)) *
-                (item?.quantity || 0);
+          const calculatedPrice =
+            totalPriceFromItem *
+            (isWeightMenu ? isWeightMenuQuantity : quantity);
 
-            return new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-              calculatedPrice
-            );
-          } catch {
+          if (isNaN(calculatedPrice) || typeof calculatedPrice !== "number") {
+            console.error("Invalid calculated price:", calculatedPrice);
             return "0";
           }
-        })(),
-        deliveryCode: item?.deliveryCode || "-",
-        createdAt: item?.createdAt
-          ? moment(item.createdAt).format("DD/MM/YYYY HH:mm")
-          : "-",
-        updatedAt: item?.updatedAt
-          ? moment(item.updatedAt).format("DD/MM/YYYY HH:mm")
-          : "-",
-      };
-    });
+
+          return new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
+            calculatedPrice
+          );
+        } catch (error) {
+          console.error("Error in calculating totalPrice:", error);
+          return "0";
+        }
+      })(),
+
+      deliveryCode: item?.deliveryCode || "-",
+      createdAt: item?.createdAt
+        ? moment(item.createdAt).format("DD/MM/YYYY HH:mm")
+        : "-",
+      updatedAt: item?.updatedAt
+        ? moment(item.updatedAt).format("DD/MM/YYYY HH:mm")
+        : "-",
+    }));
   };
 
   const getStatusColor = (status) => {
@@ -1065,8 +1071,14 @@ export default function DashboardFinance({
               ).map((item) => (
                 <tr key={item.index}>
                   <td>{item.index}</td>
-                  <td>{item.menuName}</td>
-                  <td>{item.quantity}</td>
+                  <td>
+                    {item.menuName} {item?.isWeightMenu}
+                  </td>
+                  <td>
+                    {item?.isWeightMenu
+                      ? convertkgToG(item.quantity)
+                      : item.quantity}
+                  </td>
                   <td style={{ color: item.statusColor }}>
                     {orderStatus(item.status)}
                   </td>

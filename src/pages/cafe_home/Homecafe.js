@@ -1,17 +1,13 @@
 /* eslint-disable no-loop-func */
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
-import styled from "styled-components";
-import Row from "react-bootstrap/Row";
 import Table from "react-bootstrap/Table";
 import axios from "axios";
-import ReactToPrint from "react-to-print";
 import BillForCheckOutCafe80 from "../../components/bill/BillForCheckOutCafe80";
 import PrintLabel from "./components/PrintLabel";
 import _ from "lodash";
 import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
 import { useTranslation } from "react-i18next";
-import { Formik } from "formik";
 import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
 import { base64ToBlob } from "../../helpers";
 import { RiListOrdered2 } from "react-icons/ri";
@@ -22,10 +18,6 @@ import { BsCartXFill } from "react-icons/bs";
  **/
 
 import {
-  TITLE_HEADER,
-  BODY,
-  DIV_NAV,
-  USER_KEY,
   URL_PHOTO_AW3,
   USB_PRINTER_PORT,
   BLUETOOTH_PRINTER_PORT,
@@ -34,27 +26,19 @@ import {
 } from "../../constants/index";
 
 import {
-  CATEGORY,
   END_POINT_SEVER,
   getLocalData,
-  MENUS,
-  USERS,
   END_POINT_APP,
 } from "../../constants/api";
 import { moneyCurrency } from "../../helpers";
 import { getHeaders } from "../../services/auth";
 import Loading from "../../components/Loading";
-// import { BillForChef } from "./components/BillForChef";
-import { faCashRegister } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { json, useNavigate, useParams } from "react-router-dom";
+
+import { useParams } from "react-router-dom";
 import { getBillCafe, getBills } from "../../services/bill";
 import { GetAllPromotion } from "../../services/promotion";
 import { useStore } from "../../store";
-import BillForChef80 from "../../components/bill/BillForChef80";
-import BillForChef58 from "../../components/bill/BillForChef58";
 import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
-import { RiChatNewFill } from "react-icons/ri";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import CheckOutPopupCafe from "../table/components/CheckOutPopupCafe";
 import printFlutter from "../../helpers/printFlutter";
@@ -69,14 +53,11 @@ import { useMenuSelectStore } from "../../zustand/menuSelectStore";
 
 import theme from "../../theme";
 import moment from "moment";
-import url from "socket.io-client/lib/url";
-import CheckOutPopupCafeNew from "../table/components/CheckOutPopupCafeNew";
 import { getAllStorePoints } from "../../services/member.service";
 import AnimationLoading from "../../constants/loading";
+import { convertkgToG } from "./../../helpers/convertKgToG";
 
 function Homecafe() {
-  const params = useParams();
-  const [billId, setBillId] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
   const [selectedMenu, setSelectedMenu] = useState([]);
@@ -339,16 +320,6 @@ function Homecafe() {
   }
 
   useEffect(() => {
-    (async () => {
-      let findby = "?";
-      findby += `storeId=${storeDetail?._id}`;
-      // findby += `&code=${code}`;
-      const data = await getBillCafe(findby);
-      setBillId(data?.[0]);
-    })();
-  }, []);
-
-  useEffect(() => {
     if (selectedMenu && selectedMenu.length > 0) {
       setSelectedMenus(selectedMenu);
     }
@@ -364,7 +335,11 @@ function Homecafe() {
       const totalOptionPrice = _data?.totalOptionPrice || 0;
       const itemPrice = _data?.price + totalOptionPrice;
       // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
-      _total += _data?.quantity * itemPrice;
+      if (storeDetail?.isStatusCafe && _data?.isWeightMenu) {
+        _total += convertkgToG(_data?.quantity) * itemPrice;
+      } else {
+        _total += _data?.quantity * itemPrice;
+      }
     }
 
     const roundedNumber = matchRoundNumber(_total);
@@ -425,31 +400,19 @@ function Homecafe() {
       isWeightMenu: menu?.isWeightMenu,
     };
 
-    console.log("mainMenuData", mainMenuData);
-
-    // const existingMenuIndex = updatedSelectedMenus.findIndex(
-    //   (item) => item.id === menu._id
-    // );
-    // if (existingMenuIndex !== -1) {
-    //   updatedSelectedMenus[existingMenuIndex].quantity += 1;
-    // } else {
-    //   updatedSelectedMenus.push(mainMenuData);
-    // }
-
     updatedSelectedMenus.push(mainMenuData);
 
     // biome-ignore lint/complexity/noForEach: <explanation>
-
     activePromotions.forEach((promotion) => {
       if (
         promotion?.type === "BUY_X_GET_Y" &&
         promotion.freeItems?.length > 0
       ) {
+        // biome-ignore lint/complexity/noForEach: <explanation>
         promotion.freeItems.forEach((freeItem) => {
           const freeItemId = freeItem?._id?._id || freeItem?._id;
           const freeItemName = freeItem?._id?.name || "Unknown";
 
-          // เช็กว่า freeItem นี้แถมให้สินค้านี้จริงๆ ไม่ใช่เมนูอื่น
           if (freeItem?.mainMenuId?._id !== menu._id) return;
 
           const existingFreeItemIndex = updatedSelectedMenus.findIndex(
@@ -671,7 +634,11 @@ function Homecafe() {
 
   const TotalAmount = () => {
     return SelectedMenus?.reduce((currentValue, nextValue) => {
-      return currentValue + nextValue.quantity;
+      if (nextValue.isWeightMenu) {
+        return currentValue + convertkgToG(nextValue.quantity);
+      } else {
+        return currentValue + nextValue.quantity;
+      }
     }, 0);
   };
 
@@ -1103,8 +1070,6 @@ function Homecafe() {
       .map((_, i) => billForCherCancel80.current[i]);
   }
 
-  console.log("billForCherCancel80", billForCherCancel80);
-
   const onPrintForCherLaBel = async () => {
     // setOnPrinting(true);
 
@@ -1162,14 +1127,6 @@ function Homecafe() {
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
-        // if (_index === 0) {
-        //   await Swal.fire({
-        //     icon: "success",
-        //     title: `${t("print_success")}`,
-        //     showConfirmButton: false,
-        //     timer: 1500,
-        //   });
-        // }
       } catch (err) {
         console.log(err);
         if (_index === 0) {
@@ -1263,7 +1220,7 @@ function Homecafe() {
       setSelectedMenu([]);
       setSelectedMenus([]);
       clearSelectedMenus();
-
+      setDataBill();
       await Swal.fire({
         icon: "success",
         title: `${t("print_success")}`,
@@ -1288,7 +1245,8 @@ function Homecafe() {
   } = useTranslation();
 
   const handleQuantityChange = (e, row) => {
-    const floatQuantity = Number.parseFloat(e.target.value) || 0; // Ensure it's a valid number
+    const floatQuantity = parseFloat(e.target.value) || 0; // Allow decimals
+
     const index = SelectedMenus.findIndex((item) => item.id === row.id); // Find the index of the item
 
     if (index !== -1) {
@@ -1355,7 +1313,6 @@ function Homecafe() {
         discountAmount = promotion.discountValue;
       }
 
-      // ✅ คำนวณส่วนลดให้ราคาไม่ต่ำกว่า 0
       finalPrice = Math.max(finalPrice - discountAmount, 0);
     });
 
@@ -1364,12 +1321,8 @@ function Homecafe() {
 
   return (
     <div>
-      <CafeContent
-        style={{
-          position: "relative",
-        }}
-      >
-        <CafeMenu>
+      <div className="flex overflow-hidden relative">
+        <div className="w-[80rem] h-[90vh] overflow-y-scroll">
           <div className="py-2 sticky top-0 z-10 bg-white flex flex-col">
             <div className="w-full px-2 py-1">
               <input
@@ -1387,7 +1340,7 @@ function Homecafe() {
                 type="button"
                 key={"category-all"}
                 className={cn(
-                  `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
+                  "rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
                   selectedCategory === "All"
                     ? "text-color-app"
                     : "text-gray-700",
@@ -1396,7 +1349,7 @@ function Homecafe() {
                 onClick={() => setSelectedCategory("All")}
               >
                 {t("all")}
-                <div className="ml-12"></div>
+                <div className="ml-12" />
               </button>
               {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
               {menuCategories &&
@@ -1406,7 +1359,7 @@ function Homecafe() {
                       type="button"
                       key={"category" + index}
                       className={cn(
-                        `rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none`,
+                        "rounded-full px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
                         selectedCategory === data?._id
                           ? "text-color-app"
                           : "text-gray-700",
@@ -1415,7 +1368,7 @@ function Homecafe() {
                       onClick={() => setSelectedCategory(data?._id)}
                     >
                       {data?.name}
-                      <div className="ml-12"></div>
+                      <div className="ml-12" />
                     </button>
                   );
                 })}
@@ -1440,7 +1393,8 @@ function Homecafe() {
                 if (data?.type === "MENU") {
                   return (
                     <div
-                      key={"menu" + index}
+                      onKeyDown={() => {}}
+                      key={`menu${index}`}
                       onClick={() => {
                         addToCart(data);
                       }}
@@ -1461,70 +1415,6 @@ function Homecafe() {
                         <span className="text-sm">{data?.name}</span>
                         <br />
 
-                        {/* {data?.promotionId?.length > 0 ? (
-                          data.promotionId.map((promotion, index) => {
-                            const filteredFreeItems =
-                              promotion?.freeItems?.filter(
-                                (freeItem) =>
-                                  freeItem?.mainMenuId?._id === data._id
-                              ) || [];
-
-                            return (
-                              <div
-                                key={promotion._id}
-                                className="flex flex-col"
-                              >
-                                {promotion?.discountValue ? (
-                                  <div className="flex flex-col">
-                                    <span className="text-color-app font-medium text-base">
-                                      {moneyCurrency(calculateDiscount(data))}{" "}
-                                      {storeDetail?.firstCurrency}
-                                    </span>
-
-                                    <div className="flex justify-between items-center">
-                                      <>
-                                        <span className="text-[14px] text-gray-500 line-through text-end">
-                                          {moneyCurrency(data?.price)}{" "}
-                                          {storeDetail?.firstCurrency}
-                                        </span>
-                                        <span className="flex flex-col text-center font-bold text-red-500 text-[12px] ">
-                                          <span>ສ່ວນຫຼຸດ</span>
-                                          <span>
-                                            {moneyCurrency(
-                                              promotion?.discountValue
-                                            )}{" "}
-                                            {promotion?.discountType ===
-                                            "PERCENTAGE"
-                                              ? "%"
-                                              : storeDetail?.firstCurrency}
-                                          </span>
-                                        </span>
-                                      </>
-                                    </div>
-                                  </div>
-                                ) : null}
-
-                               
-                                {filteredFreeItems.length > 0 && (
-                                  <>
-                                    <span className="text-color-app font-medium text-base">
-                                      {moneyCurrency(data?.price)}
-                                      {storeDetail?.firstCurrency}
-                                    </span>
-                                    <span className="flex flex-col font-bold text-red-500 text-[14px]">
-                                      {`ແຖມ ${filteredFreeItems.length} ລາຍການ`}
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                            );
-                          })
-                        ) : (
-                          <span className="text-color-app font-medium text-base">
-                            {moneyCurrency(data?.price)}
-                            {storeDetail?.firstCurrency}
-                          </span>
-                        )} */}
                         {data?.promotionId?.length > 0 &&
                         data.promotionId.some(
                           (promotion) => promotion?.status === "ACTIVE"
@@ -1584,7 +1474,6 @@ function Homecafe() {
                                     </div>
                                   ) : null}
 
-                                  {/* เมนูแถม */}
                                   {filteredFreeItems.length > 0 && (
                                     <>
                                       <span className="text-color-app font-medium text-base">
@@ -1614,7 +1503,7 @@ function Homecafe() {
               })
             )}
           </div>
-        </CafeMenu>
+        </div>
 
         {!isMobile ? (
           <div className="w-[480px] lg:w-[560px] max-w-[480px] lg:max-w-[560px] min-w-[480px] lg:min-w-[560px] h-[90vh] overflow-y-scroll bg-white border-gray-500 ">
@@ -1690,6 +1579,7 @@ function Homecafe() {
                                 }}
                               >
                                 <button
+                                  type="button"
                                   style={{
                                     color: "blue",
                                     border: "none",
@@ -1704,7 +1594,8 @@ function Homecafe() {
                                     type="number"
                                     step="0.1"
                                     min="0"
-                                    value={data.quantity}
+                                    // value={convertkgToG(data?.quantity)}
+                                    value={data?.quantity}
                                     autoFocus
                                     onChange={(e) =>
                                       handleQuantityChange(e, data)
@@ -1731,12 +1622,15 @@ function Homecafe() {
                                       border: `2px solid ${theme.primaryColor}`,
                                       borderRadius: "5px",
                                       padding: "2px",
+                                      width: "60px",
                                     }}
+                                    onKeyDown={() => {}}
                                     onClick={() => setEditingRowId(data?.id)}
                                   >
-                                    {Number.parseFloat(data?.quantity).toFixed(
+                                    {/* {Number.parseFloat(data?.quantity).toFixed(
                                       3
-                                    )}
+                                    )} */}
+                                    {convertkgToG(data?.quantity)}
                                   </p>
                                 ) : (
                                   <p
@@ -1786,6 +1680,7 @@ function Homecafe() {
                                       color: theme.primaryColor,
                                     }}
                                     onClick={() => onConfirmRemoveItem(data)}
+                                    onKeyDown={() => {}}
                                   >
                                     <MdDelete />
                                   </div>
@@ -1816,11 +1711,7 @@ function Homecafe() {
                         <span className={fontMap[language]}>
                           {t("amountTotal")} :{" "}
                         </span>
-                        <span>
-                          {storeDetail?.isStatusCafe
-                            ? Number.parseFloat(TotalAmount())
-                            : Number.parseFloat(TotalAmount()).toFixed(3)}
-                        </span>
+                        <span>{TotalAmount()}</span>
                       </div>
                       <div>
                         <span className={fontMap[language]}>
@@ -1886,8 +1777,8 @@ function Homecafe() {
             </div>
           </div>
         ) : null}
-      </CafeContent>
-
+      </div>
+      {/* ============================== isMobile ========================= */}
       {isMobile ? (
         <button
           className="d-flex justify-content-center align-items-center"
@@ -1986,7 +1877,7 @@ function Homecafe() {
                         const totalOptionPrice = data?.totalOptionPrice || 0;
                         const itemPrice = data?.price + totalOptionPrice;
                         return (
-                          <tr key={"selectMenu" + index}>
+                          <tr key={`selectMenu${index}`}>
                             <td style={{ width: 20 }}>{index + 1}</td>
                             <td style={{ textAlign: "left", paddingBottom: 0 }}>
                               <p>{`${data.name} ${optionsString}`}</p>
@@ -2011,6 +1902,7 @@ function Homecafe() {
                                   width: 25,
                                 }}
                                 onClick={() => handleSetQuantity(-1, data)}
+                                type="button"
                               >
                                 -
                               </button>
@@ -2036,6 +1928,7 @@ function Homecafe() {
                                     border: `2px solid ${theme.primaryColor}`,
                                     borderRadius: "5px",
                                     fontSize: 14,
+                                    width: "60px",
                                   }}
                                 />
                               ) : data?.isWeightMenu ? (
@@ -2050,10 +1943,13 @@ function Homecafe() {
                                     border: `2px solid ${theme.primaryColor}`,
                                     borderRadius: "5px",
                                     fontSize: 14,
+                                    width: "60px",
                                   }}
                                   onClick={() => setEditingRowId(data?.id)}
+                                  onKeyDown={() => {}}
                                 >
-                                  {Number.parseFloat(data?.quantity).toFixed(3)}
+                                  {/* {Number.parseFloat(data?.quantity).toFixed(3)} */}
+                                  {convertkgToG(data?.quantity)}
                                 </p>
                               ) : (
                                 <p
@@ -2075,6 +1971,7 @@ function Homecafe() {
                                   width: 25,
                                 }}
                                 onClick={() => handleSetQuantity(1, data)}
+                                type="button"
                               >
                                 +
                               </button>
@@ -2103,6 +2000,7 @@ function Homecafe() {
                                     color: theme.primaryColor,
                                   }}
                                   onClick={() => onConfirmRemoveItem(data)}
+                                  onKeyDown={() => {}}
                                 >
                                   <MdDelete />
                                 </div>
@@ -2133,9 +2031,7 @@ function Homecafe() {
                   <div className="mb-3">
                     <div>
                       <span>{t("amountTotal")} : </span>
-                      <span>
-                        {Number.parseFloat(TotalAmount()).toFixed(3)}{" "}
-                      </span>
+                      <span>{TotalAmount()}</span>
                     </div>
                     <div>
                       <span>{t("pricesTotal")} : </span>
@@ -2391,8 +2287,16 @@ function Homecafe() {
       {SelectedMenus?.map((val, i) => {
         const totalPrice = () => {
           const totalOptionPrice = val?.totalOptionPrice || 0;
-          return val?.price + totalOptionPrice;
+          const price = val?.price || 0;
+          const quantity = val?.quantity || 0;
+
+          if (val?.isWeightMenu) {
+            return (price + totalOptionPrice) * convertkgToG(quantity);
+          } else {
+            return price + totalOptionPrice;
+          }
         };
+
         return Array.from({ length: val?.quantity }).map((_, index) => {
           const key = `${val._id}-${index}`;
           return (
@@ -2423,77 +2327,4 @@ function Homecafe() {
   );
 }
 
-const CafeContent = styled.div`
-  display: flex;
-  overflow: hidden;
-`;
-
-const CafeMenu = styled.div`
-  width: 80rem;
-  /* flex-grow: 1; */
-  height: 90vh;
-  overflow-y: scroll;
-`;
-const SubCafeMenu = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-
-  .images-menu-cafe {
-    height: 200px;
-  }
-
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
-
-    .images-menu-cafe {
-      height: 150px;
-    }
-  }
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(3, 1fr);
-
-    .images-menu-cafe {
-      height: 100px;
-    }
-  }
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
-
-    .images-menu-cafe {
-      height: 100px;
-    }
-  }
-  @media (max-width: 820px) {
-    grid-template-columns: repeat(3, 1fr);
-
-    .images-menu-cafe {
-      height: 100px;
-    }
-  }
-`;
-
-const CafeCart = styled.div`
-  width: 60rem;
-  background-color: #fff;
-  max-height: 90vh;
-  border-color: black;
-  overflow-y: scroll;
-  border-width: 1;
-  padding-left: 20;
-  padding-top: 20;
-  margin-top: 15px;
-
-  @media (max-width: 768px) {
-    width: 80rem;
-    margin-top: 15px;
-  }
-  @media (max-width: 820px) {
-    width: 80rem;
-    margin-top: 15px;
-  }
-  @media (max-width: 900px) {
-    width: 80rem;
-    margin-top: 15px;
-  }
-`;
 export default Homecafe;

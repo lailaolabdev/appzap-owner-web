@@ -10,7 +10,7 @@ import { getHeaders } from "../../../services/auth";
 import Swal from "sweetalert2";
 import { errorAdd, successAdd } from "../../../helpers/sweetalert";
 import { BiSolidPrinter, BiRotateRight } from "react-icons/bi";
-import { FaSearch } from "react-icons/fa";
+import { convertkgToG } from "../../../helpers/convertKgToG";
 
 import _ from "lodash";
 
@@ -251,6 +251,10 @@ export default function CheckOutPopupCafe({
       if (_data.status !== "CANCELED") {
         const totalOptionPrice = _data?.totalOptionPrice || 0;
         const itemPrice = _data?.price + totalOptionPrice;
+      // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
+      if (storeDetail?.isStatusCafe && _data?.isWeightMenu) {
+        _total += convertkgToG(_data?.quantity) * itemPrice;
+      } else {
         _total += _data?.quantity * itemPrice;
       }
     }
