@@ -2507,7 +2507,9 @@ export default function TableList() {
                         + {t("addOrder")}
                       </ButtonCustom>
                       <ButtonCustom
-                        disabled={!selectedTable?.isOrderingPaid}
+                        disabled={
+                          !isCheckedOrderItem.every((e) => e?.status === "PAID")
+                        }
                         onClick={() => setOpenConfirmCloseTable(true)}
                       >
                         {t("confirm_close_table")}
