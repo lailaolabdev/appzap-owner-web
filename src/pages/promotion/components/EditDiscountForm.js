@@ -13,6 +13,8 @@ import { moneyCurrency } from "../../../helpers";
 import { useStoreStore } from "../../../zustand/storeStore";
 import { useMenuStore } from "../../../zustand/menuStore";
 import { errorAdd } from "../../../helpers/sweetalert";
+import Swal from "sweetalert2";
+import { COLOR_APP, COLOR_APP_CANCEL } from "../../../constants";
 import {
   UpdateDisCountPromotion,
   GetOnePromotion,
@@ -67,7 +69,7 @@ const EditDiscountForm = () => {
     };
     fetchData();
     getcategory();
-    if (promotionId) getOnePromotion(promotionId);
+    if (promotionId) getOnePromotion();
   }, [promotionId]);
 
   useEffect(() => {
@@ -141,9 +143,9 @@ const EditDiscountForm = () => {
     }
   };
 
-  const getOnePromotion = async (id) => {
+  const getOnePromotion = async () => {
     setIsLoading(true);
-    const response = await GetOnePromotion(id);
+    const response = await GetOnePromotion(promotionId);
     if (response?.status === 200) {
       const data = response?.data;
 
@@ -267,11 +269,55 @@ const EditDiscountForm = () => {
         navigate("/promotion");
       })
       .catch((err) => {
-        console.log("errors", err?.response?.data?.isExits);
         if (err?.response?.data?.isExits) {
-          errorAdd("ລາຍການນີ້ຖຶກເພີ່ມໄປແລ້ວ");
+          // Validate menuId structure
+          if (!Array.isArray(err?.response?.data?.data?.menuId)) {
+            console.error("Invalid response data structure");
+            return;
+          }
+
+          // Identify duplicate menus
+          const duplicateMenus = formData.selectedMenus
+            .map((mId) => {
+              const foundMenu = err?.response?.data?.data?.menuId.find(
+                (m) => m._id === mId
+              );
+              return foundMenu
+                ? { name: foundMenu.name, id: foundMenu._id }
+                : null;
+            })
+            .filter((menu) => menu !== null);
+
+          // Handle case where no duplicates are found
+          if (duplicateMenus.length === 0) {
+            errorAdd("ບໍ່ພົບລາຍການທີ່ຊ້ຳກັນ");
+            return;
+          }
+
+          // Extract names and IDs
+          const duplicateMenuNames = duplicateMenus
+            .map((menu) => menu.name)
+            .join(", ");
+          const duplicateMenuIds = duplicateMenus.map((menu) => menu.id);
+
+          // Display warning message
+          Swal.fire({
+            title: "ເກີດຂໍ້ຜິດພາດ",
+            text: `ລາຍການ ${duplicateMenuNames} ນີ້ຖຶກເພີ່ມໄປແລ້ວ, ກະລຸນາເພີ່ມລາຍການໃໝ່`,
+            icon: "warning",
+            showCancelButton: false,
+            confirmButtonColor: COLOR_APP,
+            cancelButtonColor: COLOR_APP_CANCEL,
+            confirmButtonText: "ເພີ່ມໃໝ່",
+            cancelButtonText: "ຍົກເລິກ",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // duplicateMenuIds.forEach((id) => handleRemoveMenu(id));
+              getOnePromotion();
+            }
+          });
         } else {
-          errorAdd("ແກ້ໄຂບໍ່ສຳເລັດ");
+          errorAdd("ເພີ່ມບໍ່ສຳເລັດ");
         }
       });
 
@@ -294,7 +340,7 @@ const EditDiscountForm = () => {
       const response = await RemoveMenuFromDiscount(promotionId, data);
 
       if (response?.status === 200) {
-        getOnePromotion(promotionId);
+        getOnePromotion();
         const updatedMenus = formData.selectedMenus.filter(
           (id) => id !== menuId?._id
         );
@@ -509,7 +555,7 @@ const EditDiscountForm = () => {
             <button
               type="reset"
               onClick={() => navigate("/promotion")}
-              className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition duration-200 mt-4"
+              className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition duration-200 mt-4"
             >
               ຍ້ອນກັບ
             </button>
@@ -617,7 +663,7 @@ const EditDiscountForm = () => {
             </div>
           </div>
         </Modal.Body>
-        {/* <Modal.Footer>
+        <Modal.Footer className="d-flex justify-content-center">
           <button
             type="button"
             onClick={closeModal}
@@ -627,12 +673,12 @@ const EditDiscountForm = () => {
           </button>
           <button
             type="submit"
-            onClick={handleSaveAllMenu}
+            onClick={closeModal}
             className="bg-color-app w-[150px] hover:bg-orange-400 text-[14px] p-2 rounded-md text-white"
           >
             {t("save")}
           </button>
-        </Modal.Footer> */}
+        </Modal.Footer>
       </Modal>
     </div>
   );

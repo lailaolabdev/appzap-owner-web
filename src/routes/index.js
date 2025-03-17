@@ -99,6 +99,8 @@ import EditBuyXGetYForm from "../pages/promotion/components/EditBuyXGetYForm";
 import HistoryBankTransferClaim from "../pages/claim/HistoryBankTransferClaim";
 import HomecafeEdit from "../pages/cafe_home/HomecafeEdit";
 import EditMenu from "../pages/menu/EditMenu";
+import BuyXGetYDetail from "../pages/promotion/components/BuyXGetYDetail";
+import DiscountDetail from "../pages/promotion/components/DiscountDetail";
 function Router() {
   return useRoutes([
     {
@@ -161,12 +163,20 @@ function Router() {
           element: <EditDiscountForm />,
         },
         {
+          path: "/promotion/discount/detail/:promotionId",
+          element: <DiscountDetail />,
+        },
+        {
           path: "/promotion/buyXGetX/:type",
           element: <BuyXGetYForm />,
         },
         {
           path: "/promotion/buyXGetX/edit/:promotionId",
           element: <EditBuyXGetYForm />,
+        },
+        {
+          path: "/promotion/buyXGetX/detail/:promotionId",
+          element: <BuyXGetYDetail />,
         },
         {
           path: "/settingStore/storeDetail/:id",

@@ -12,6 +12,8 @@ import {
 import { useStoreStore } from "../../../zustand/storeStore";
 import { useMenuStore } from "../../../zustand/menuStore";
 import { errorAdd } from "../../../helpers/sweetalert";
+import Swal from "sweetalert2";
+import { COLOR_APP, COLOR_APP_CANCEL } from "../../../constants";
 
 import {
   UpdateFreePromotion,
@@ -46,6 +48,7 @@ const EditBuyXGetYForm = () => {
   const [filterName, setFilterName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingGetOne, setIsLoadingGetOne] = useState(false);
+  const [showListMenu, setShowListMenu] = useState(false);
 
   const {
     menus,
@@ -72,36 +75,6 @@ const EditBuyXGetYForm = () => {
   useEffect(() => {
     fetchPromotion();
   }, [promotionId]);
-
-  // const fetchPromotion = async () => {
-  //   setIsLoadingGetOne(true);
-  //   try {
-  //     if (!promotionId) return;
-
-  //     const response = await GetOnePromotion(promotionId);
-  //     if (response?.status === 200) {
-  //       const promoData = response.data;
-
-  //       const mappedMenus = promoData.menuId.map((menu) => ({
-  //         _id: menu || [],
-  //         freeItems: promoData.freeItems || [],
-  //       }));
-
-  //       setFormData({
-  //         name: promoData.name,
-  //         buyQuantity: promoData.buyQuantity,
-  //         getQuantity: promoData.getQuantity,
-  //         validFrom: promoData.validFrom.split("T")[0],
-  //         validUntil: promoData.validUntil.split("T")[0],
-  //         selectedMenus: mappedMenus,
-  //       });
-  //     }
-  //     setIsLoadingGetOne(false);
-  //   } catch (err) {
-  //     setIsLoadingGetOne(false);
-  //     console.log(err);
-  //   }
-  // };
 
   const fetchPromotion = async () => {
     try {
@@ -274,20 +247,6 @@ const EditBuyXGetYForm = () => {
     });
   };
 
-  // const handleRemoveMenu = async (menuId) => {
-  //   console.log("handleRemoveMenu", menuId);
-  //   if (menuId) {
-  //     await RemoveMenuFromDiscount(promotionId, menuId);
-  //     fetchPromotion();
-  //   }
-  //   setFormData((prevState) => ({
-  //     ...prevState,
-  //     selectedMenus: prevState.selectedMenus.filter(
-  //       (menu) => menu._id !== menuId
-  //     ),
-  //   }));
-  // };
-
   const handleRemoveMenu = async (menuId) => {
     if (!menuId) return;
 
@@ -378,12 +337,47 @@ const EditBuyXGetYForm = () => {
       status: "ACTIVE",
     };
 
-    const response = await UpdateFreePromotion(promotionId, data);
-    if (response?.status === 200) {
-      navigate("/promotion");
-    } else {
-      errorAdd("ເພີ່ມບໍ່ສຳເລັດ");
-    }
+    const response = await UpdateFreePromotion(promotionId, data)
+      .then((res) => {
+        navigate("/promotion");
+      })
+      .catch((err) => {
+        if (err?.response?.data?.isExits) {
+          const duplicateMenus = formData.selectedMenus
+            .map((menu) => {
+              const foundMenu = err?.response?.data?.data?.menuId.find(
+                (m) => m._id === menu._id
+              );
+              return foundMenu
+                ? { name: foundMenu.name, id: foundMenu._id }
+                : null;
+            })
+            .filter((menu) => menu !== null);
+
+          const duplicateMenuNames = duplicateMenus
+            .map((menu) => menu.name)
+            .join(", ");
+          const duplicateMenuIds = duplicateMenus.map((menu) => menu.id);
+
+          Swal.fire({
+            title: "ເກີດຂໍ້ຜິດພາດ",
+            text: `ລາຍການ ${duplicateMenuNames} ນີ້ຖຶກເພີ່ມໄປແລ້ວ, ກະລຸນາເພີ່ມລາຍການໃໝ່`,
+            icon: "warning",
+            showCancelButton: false,
+            confirmButtonColor: COLOR_APP,
+            cancelButtonColor: COLOR_APP_CANCEL,
+            confirmButtonText: "ເພີ່ມໃໝ່",
+            cancelButtonText: "ຍົກເລິກ",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // duplicateMenuIds.forEach((id) => handleRemoveMenu(id));
+              fetchPromotion();
+            }
+          });
+        } else {
+          errorAdd("ເພີ່ມບໍ່ສຳເລັດ");
+        }
+      });
     fetchData();
   };
 
@@ -404,6 +398,17 @@ const EditBuyXGetYForm = () => {
         return menu;
       }),
     }));
+  };
+
+  useEffect(() => {
+    if (formData?.selectedMenus?.length === 0) {
+      setShowListMenu(false);
+    }
+  }, [formData?.selectedMenus]);
+
+  const handleShowListMainMenu = () => {
+    setModalOpen(false);
+    setShowListMenu(true);
   };
 
   return (
@@ -562,7 +567,7 @@ const EditBuyXGetYForm = () => {
               <button
                 type="reset"
                 onClick={() => navigate("/promotion")}
-                className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition duration-200 mt-4"
+                className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition duration-200 mt-4"
               >
                 ຍ້ອນກັບ
               </button>
@@ -654,6 +659,27 @@ const EditBuyXGetYForm = () => {
             </table>
           </div>
         </Modal.Body>
+        <Modal.Footer className="d-flex justify-content-center">
+          <button
+            onClick={() => setModalOpen(false)}
+            type="button"
+            className="bg-red-500 w-[150px] hover:bg-red-400 text-[14px] p-2 rounded-md text-white"
+          >
+            {t("cancel")}
+          </button>
+          <button
+            onClick={() => handleShowListMainMenu()}
+            type="button"
+            disabled={formData.selectedMenus?.length === 0}
+            className={`${
+              formData.selectedMenus?.length === 0
+                ? " w-[150px] bg-orange-400 text-[14px] p-2 rounded-md text-white"
+                : "bg-color-app w-[150px] hover:bg-orange-400 text-[14px] p-2 rounded-md text-white"
+            }`}
+          >
+            {t("save")}
+          </button>
+        </Modal.Footer>
       </Modal>
 
       <Modal show={modalFreeItemOpen} onHide={closeModalFreeItem} size="lg">
@@ -686,20 +712,6 @@ const EditBuyXGetYForm = () => {
             />
           </div>
           <div className="h-[400px] overflow-auto">
-            {/* {menuData.map((menu) => (
-              <div key={menu._id}>
-                <input
-                  type="checkbox"
-                  value={menu._id}
-                  onChange={handleMenuSelect}
-                  checked={formData.selectedMenus.some(
-                    (m) => m._id === menu._id
-                  )}
-                />
-                {menu.name}
-              </div>
-            ))} */}
-
             <table className="w-full">
               <thead>
                 <tr>
@@ -765,6 +777,22 @@ const EditBuyXGetYForm = () => {
             </table>
           </div>
         </Modal.Body>
+        <Modal.Footer className="d-flex justify-content-center">
+          <button
+            onClick={() => closeModalFreeItem()}
+            type="button"
+            className="bg-red-500 w-[150px] hover:bg-red-400 text-[14px] p-2 rounded-md text-white"
+          >
+            {t("cancel")}
+          </button>
+          <button
+            onClick={() => closeModalFreeItem()}
+            type="button"
+            className="bg-color-app w-[150px] hover:bg-orange-400 text-[14px] p-2 rounded-md text-white"
+          >
+            {t("save")}
+          </button>
+        </Modal.Footer>
       </Modal>
     </div>
   );

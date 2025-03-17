@@ -218,22 +218,78 @@ function Homecafe() {
   };
   const handleClose = () => setShow(false);
 
+  // const handleSetQuantity = (int, data) => {
+  //   const dataArray = [];
+  //   for (const i of SelectedMenus) {
+  //     let _data = { ...i };
+
+  //     if (
+  //       data?.id === i?.id &&
+  //       JSON.stringify(data?.options) === JSON.stringify(i?.options)
+  //     ) {
+  //       _data = { ..._data, quantity: _data?.quantity + int };
+  //     }
+
+  //     if (_data.quantity > 0) {
+  //       dataArray.push(_data);
+  //     }
+  //   }
+  //   setSelectedMenu(dataArray);
+  //   setSelectedMenus(dataArray);
+  // };
+
   const handleSetQuantity = (int, data) => {
-    const dataArray = [];
-    for (const i of SelectedMenus) {
-      let _data = { ...i };
+    let dataArray = [...SelectedMenus]; // Clone current selected menu list
 
-      if (
-        data?.id === i?.id &&
-        JSON.stringify(data?.options) === JSON.stringify(i?.options)
-      ) {
-        _data = { ..._data, quantity: _data?.quantity + int };
-      }
+    let mainMenuIndex = dataArray.findIndex(
+      (item) =>
+        item.id === data.id &&
+        JSON.stringify(item.options) === JSON.stringify(data.options)
+    );
 
-      if (_data.quantity > 0) {
-        dataArray.push(_data);
-      }
+    if (mainMenuIndex !== -1) {
+      dataArray[mainMenuIndex].quantity = Math.max(
+        0,
+        dataArray[mainMenuIndex].quantity + int
+      );
     }
+
+    const activePromotions =
+      data?.promotionId?.filter(
+        (promotion) =>
+          promotion?.type === "BUY_X_GET_Y" && promotion?.status === "ACTIVE"
+      ) || [];
+
+    activePromotions.forEach((promotion) => {
+      const buyQuantity = promotion?.buyQuantity || 1;
+      const getQuantity = promotion?.getQuantity || 1;
+
+      if (buyQuantity > 0 && getQuantity > 0) {
+        const freeMultiplier = Math.floor(
+          (dataArray[mainMenuIndex]?.quantity || 0) / buyQuantity
+        );
+
+        promotion.freeItems.forEach((freeItem) => {
+          const freeItemId =
+            typeof freeItem._id === "object" ? freeItem._id._id : freeItem._id;
+          const freeItemCount = freeMultiplier * getQuantity;
+
+          let freeItemInCart = dataArray.find(
+            (item) =>
+              item.id === freeItemId &&
+              item.isFree &&
+              item.mainMenuId === data.id
+          );
+
+          if (freeItemInCart) {
+            freeItemInCart.quantity = freeItemCount;
+          }
+        });
+      }
+    });
+
+    dataArray = dataArray.filter((item) => !(item.quantity === 0));
+
     setSelectedMenu(dataArray);
     setSelectedMenus(dataArray);
   };
@@ -293,6 +349,14 @@ function Homecafe() {
   useEffect(() => {
     billData();
     fetchPointsData();
+    const getDataTax = async () => {
+      const { DATA } = await getLocalData();
+      const _res = await axios.get(
+        END_POINT_SEVER + "/v4/tax/" + DATA?.storeId
+      );
+      setTaxPercent(_res?.data?.taxPercent);
+    };
+    getDataTax();
   }, []);
 
   const fetchPointsData = async () => {
@@ -437,6 +501,8 @@ function Homecafe() {
       categoryId: menu?.categoryId,
       printer: menu?.categoryId?.printer,
       shiftId: shiftCurrent[0]?._id,
+      promotionId: menu.promotionId,
+      activePromotions: activePromotions,
       discount: activePromotions.reduce(
         (sum, promo) => sum + (promo.discountValue || 0),
         0
@@ -461,8 +527,7 @@ function Homecafe() {
     }
 
     // updatedSelectedMenus.push(mainMenuData);
-
-    // biome-ignore lint/complexity/noForEach: <explanation>
+    updatedSelectedMenus.push(mainMenuData);
 
     activePromotions.forEach((promotion) => {
       if (
@@ -1559,7 +1624,7 @@ function Homecafe() {
                                         {storeDetail?.firstCurrency}
                                       </span>
                                       <span className="flex flex-col font-bold text-red-500 text-[14px]">
-                                        {`ແຖມ ${filteredFreeItems.length} ລາຍການ`}
+                                        {`ຊື້ ${promotion?.buyQuantity} ແຖມ ${promotion?.getQuantity} ລາຍການ`}
                                       </span>
                                     </>
                                   )}
