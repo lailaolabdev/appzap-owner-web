@@ -15,19 +15,15 @@ import {
   moneyCurrency,
 } from "./../../helpers";
 import { useTranslation } from "react-i18next";
-import { stringify } from "query-string";
-import AnimationLoading from "../../constants/loading";
-import Box from "../../components/Box";
 import { getHeaders } from "../../services/auth";
 import { useStore } from "../../store";
 import useQuery from "../../helpers/useQuery";
-import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
-import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
 import Loading from "../../components/Loading";
 import { getCountBills } from "../../services/bill";
 
 import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
+import { convertkgToG } from "../../helpers/convertKgToG";
 
 import {
   BLUETOOTH_PRINTER_PORT,
@@ -137,8 +133,6 @@ export default function DashboardFinance({
         urlForPrinter = USB_PRINTER_PORT;
       }
 
-      console.log({ dataImageForPrint });
-
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
       var bodyFormData = new FormData();
       bodyFormData.append("ip", printerBillData?.ip);
@@ -148,8 +142,6 @@ export default function DashboardFinance({
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
       bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
-
-      console.log({ bodyFormData });
 
       await printFlutter(
         {
@@ -214,7 +206,6 @@ export default function DashboardFinance({
 
   const handleShow = (item) => {
     setShow(true);
-    console.log("ITEM", item);
     setDataModal(item);
   };
 
@@ -566,20 +557,34 @@ export default function DashboardFinance({
       status: item?.status || "UNKNOWN",
       statusColor: getStatusColor(item?.status),
       createdBy: item?.createdBy?.firstname || "-",
+      isWeightMenu: item?.isWeightMenu,
       totalPrice: (() => {
         try {
+          const basePrice = item?.price || 0;
+          const optionPrice = item?.totalOptionPrice || 0;
+          const quantity = item?.quantity || 0;
+          const isWeightMenu = item?.isWeightMenu;
+          const totalPriceFromItem = item?.totalPrice;
+          const isWeightMenuQuantity = convertkgToG(item?.quantity);
+
           const calculatedPrice =
-            item?.totalPrice ||
-            ((item?.price || 0) + (item?.totalOptionPrice || 0)) *
-              (item?.quantity || 0);
+            totalPriceFromItem *
+            (isWeightMenu ? isWeightMenuQuantity : quantity);
+
+          if (isNaN(calculatedPrice) || typeof calculatedPrice !== "number") {
+            console.error("Invalid calculated price:", calculatedPrice);
+            return "0";
+          }
 
           return new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
             calculatedPrice
           );
-        } catch {
+        } catch (error) {
+          console.error("Error in calculating totalPrice:", error);
           return "0";
         }
       })(),
+
       deliveryCode: item?.deliveryCode || "-",
       createdAt: item?.createdAt
         ? moment(item.createdAt).format("DD/MM/YYYY HH:mm")
@@ -1074,8 +1079,14 @@ export default function DashboardFinance({
               ).map((item) => (
                 <tr key={item.index}>
                   <td>{item.index}</td>
-                  <td>{item.menuName}</td>
-                  <td>{item.quantity}</td>
+                  <td>
+                    {item.menuName} {item?.isWeightMenu}
+                  </td>
+                  <td>
+                    {item?.isWeightMenu
+                      ? convertkgToG(item.quantity)
+                      : item.quantity}
+                  </td>
                   <td style={{ color: item.statusColor }}>
                     {orderStatus(item.status)}
                   </td>

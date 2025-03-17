@@ -41,9 +41,8 @@ import {
 import { moneyCurrency } from "../../helpers";
 import { getHeaders } from "../../services/auth";
 import Loading from "../../components/Loading";
-import { json, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getBillCafe, getBills } from "../../services/bill";
-import { GetAllPromotion } from "../../services/promotion";
 import { useStore } from "../../store";
 import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
@@ -64,12 +63,14 @@ import { getAllStorePoints } from "../../services/member.service";
 import AnimationLoading from "../../constants/loading";
 
 import { deleteOrderCafeItemV7 } from "../../services/order";
+import { convertkgToG } from "./../../helpers/convertKgToG";
 
 function HomecafeEdit() {
   const { billId } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
-
   const [selectedMenu, setSelectedMenu] = useState([]);
   const [selectedItem, setSelectedItem] = useState();
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -94,7 +95,6 @@ function HomecafeEdit() {
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
   const [bill, setBill] = useState(0);
-  const [promotion, setPromotion] = useState([]);
 
   const [isMobile, setIsMobile] = useState(
     window.matchMedia("(max-width: 767px)").matches
@@ -106,6 +106,24 @@ function HomecafeEdit() {
   const { shiftCurrent } = useShiftStore();
   const { setSelectedMenus, SelectedMenus, clearSelectedMenus } =
     useMenuSelectStore();
+
+  useEffect(() => {
+    return () => {
+      console.log("Leaving HomecafeEdit, clearing Zustand state...");
+      clearSelectedMenus();
+    };
+  }, []);
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      clearSelectedMenus();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, []);
 
   const sliderRef = useRef();
   useEffect(() => {
@@ -197,26 +215,6 @@ function HomecafeEdit() {
     setShow(true);
   };
   const handleClose = () => setShow(false);
-
-  // const handleSetQuantity = (int, data) => {
-  //   const dataArray = [];
-  //   for (const i of SelectedMenus) {
-  //     let _data = { ...i };
-
-  //     if (
-  //       data?.id === i?.id &&
-  //       JSON.stringify(data?.options) === JSON.stringify(i?.options)
-  //     ) {
-  //       _data = { ..._data, quantity: _data?.quantity + int };
-  //     }
-
-  //     if (_data.quantity > 0) {
-  //       dataArray.push(_data);
-  //     }
-  //   }
-  //   setSelectedMenu(dataArray);
-  //   setSelectedMenus(dataArray);
-  // };
 
   const handleSetQuantity = async (int, data) => {
     const dataArray = [];
@@ -366,6 +364,7 @@ function HomecafeEdit() {
     findby += `storeId=${storeDetail?._id}`;
     findby += `&billId=${billId}`;
     const data = await getBillCafe(findby);
+    console.log("GetOneItemsCafe", data);
     setSelectedMenus(data?.orderId);
   };
 
@@ -384,10 +383,12 @@ function HomecafeEdit() {
     for (const _data of SelectedMenus || []) {
       const totalOptionPrice = _data?.totalOptionPrice || 0;
       const itemPrice = _data?.price + totalOptionPrice;
-      // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
-      _total += _data?.quantity * itemPrice;
+      if (storeDetail?.isStatusCafe && _data?.isWeightMenu) {
+        _total += convertkgToG(_data?.quantity) * itemPrice;
+      } else {
+        _total += _data?.quantity * itemPrice;
+      }
     }
-
     const roundedNumber = matchRoundNumber(_total);
     setTotal(roundedNumber);
   };
@@ -690,7 +691,11 @@ function HomecafeEdit() {
 
   const TotalAmount = () => {
     return SelectedMenus?.reduce((currentValue, nextValue) => {
-      return currentValue + nextValue.quantity;
+      if (nextValue.isWeightMenu) {
+        return currentValue + convertkgToG(nextValue.quantity);
+      } else {
+        return currentValue + nextValue.quantity;
+      }
     }, 0);
   };
 
@@ -717,15 +722,7 @@ function HomecafeEdit() {
       setTaxPercent(_res?.data?.taxPercent);
     };
     getDataTax();
-    fetchDataProduction();
   }, []);
-
-  const fetchDataProduction = async () => {
-    setIsLoading(true);
-    const { data } = await GetAllPromotion();
-    setPromotion(data);
-    setIsLoading(false);
-  };
 
   const handleAddCommentInCart = () => {
     const dataArray = [];
@@ -1301,7 +1298,7 @@ function HomecafeEdit() {
   } = useTranslation();
 
   const handleQuantityChange = (e, row) => {
-    const floatQuantity = Number.parseFloat(e.target.value) || 0; // Ensure it's a valid number
+    const floatQuantity = parseFloat(e.target.value) || 0; // Ensure it's a valid number
     const index = SelectedMenus.findIndex((item) => item.id === row.id); // Find the index of the item
 
     if (index !== -1) {
@@ -1667,6 +1664,7 @@ function HomecafeEdit() {
                                       borderRadius: "5px",
                                       padding: "2px",
                                       outline: "none",
+                                      width: "60px",
                                     }}
                                   />
                                 ) : data?.isWeightMenu ? (
@@ -1681,12 +1679,14 @@ function HomecafeEdit() {
                                       border: `2px solid ${theme.primaryColor}`,
                                       borderRadius: "5px",
                                       padding: "2px",
+                                      width: "60px",
                                     }}
                                     onClick={() => setEditingRowId(data?.id)}
                                   >
-                                    {Number.parseFloat(data?.quantity).toFixed(
+                                    {/* {Number.parseFloat(data?.quantity).toFixed(
                                       3
-                                    )}
+                                    )} */}
+                                    {convertkgToG(data?.quantity)}
                                   </p>
                                 ) : (
                                   <p
@@ -1982,6 +1982,7 @@ function HomecafeEdit() {
                                     border: `2px solid ${theme.primaryColor}`,
                                     borderRadius: "5px",
                                     fontSize: 14,
+                                    width: "60px",
                                   }}
                                 />
                               ) : data?.isWeightMenu ? (
@@ -1996,10 +1997,12 @@ function HomecafeEdit() {
                                     border: `2px solid ${theme.primaryColor}`,
                                     borderRadius: "5px",
                                     fontSize: 14,
+                                    width: "60px",
                                   }}
                                   onClick={() => setEditingRowId(data?.id)}
                                 >
-                                  {Number.parseFloat(data?.quantity).toFixed(3)}
+                                  {/* {Number.parseFloat(data?.quantity).toFixed(3)} */}
+                                  {convertkgToG(data?.quantity)}
                                 </p>
                               ) : (
                                 <p
@@ -2079,9 +2082,7 @@ function HomecafeEdit() {
                   <div className="mb-3">
                     <div>
                       <span>{t("amountTotal")} : </span>
-                      <span>
-                        {Number.parseFloat(TotalAmount()).toFixed(3)}{" "}
-                      </span>
+                      <span>{TotalAmount()}</span>
                     </div>
                     <div>
                       <span>{t("pricesTotal")} : </span>
@@ -2338,7 +2339,14 @@ function HomecafeEdit() {
       {SelectedMenus?.map((val, i) => {
         const totalPrice = () => {
           const totalOptionPrice = val?.totalOptionPrice || 0;
-          return val?.price + totalOptionPrice;
+          const price = val?.price || 0;
+          const quantity = val?.quantity || 0;
+
+          if (val?.isWeightMenu) {
+            return (price + totalOptionPrice) * convertkgToG(quantity);
+          } else {
+            return price + totalOptionPrice;
+          }
         };
         return Array.from({ length: val?.quantity }).map((_, index) => {
           const key = `${val._id}-${index}`;
