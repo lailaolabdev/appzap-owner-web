@@ -1263,6 +1263,9 @@
   "order_item": "Order Item",
   "order_checkout": "Order Checkout",
   "cancel_order": "Cancel Order",
-  "order_status": "Order Status"
+  "order_status": "Order Status",
+  "total_amount_menu_discount": "Total Amount Menu Discount",
+  "menu_discount":"Menu Discount",
+  "menu_free": "Menu Free"
   
 }

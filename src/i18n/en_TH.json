@@ -1226,5 +1226,9 @@
   "order_item": "รายการคำสั่งซื้อ",
   "order_checkout": "เช็คเอาท์คำสั่งซื้อ",
   "cancel_order": "ยกเลิกคำสั่งซื้อ",
-  "order_status": "สถานะการสั่งซื้อ"
+  "order_status": "สถานะการสั่งซื้อ",
+  "total_amount_menu_discount": "ยอดรวมส่วนลดเมนู",
+  "menu_discount":"ส่วนลดเมนู",
+  "menu_free": "เมนูที่แถม"
+  
 }

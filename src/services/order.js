@@ -132,6 +132,26 @@ export const updateOrderItemV7 = async (updateItems, storeId) => {
     throw new Error("Failed to update order status");
   }
 };
+export const updateOrderCafeItemV7 = async (updateItems, storeId) => {
+  try {
+    const body = {
+      orders: updateItems,
+      storeId,
+    };
+
+    const response = await axios.put(
+      `${END_POINT_SEVER_BILL_ORDER}/v7/orders/cafe/updateMany`,
+      body,
+      {
+        headers: await getHeaders(),
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    throw new Error("Failed to update order status");
+  }
+};
 export const deleteOrderCafeItemV7 = async (updateItems, storeId) => {
   try {
     const body = {

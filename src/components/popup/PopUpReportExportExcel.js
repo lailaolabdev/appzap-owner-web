@@ -370,23 +370,132 @@ export default function PopUpReportExportExcel({
         storeDetail?._id
       }${findByData()}`;
       const _res = await axios.get(url);
+      if (storeDetail?.isStatusCafe) {
+        const dataExcel = _res?.data?.promotion[0];
 
-      if (_res?.data?.exportUrl) {
-        const response = await axios.get(_res?.data?.exportUrl, {
-          responseType: "blob", // Important to get the response as a Blob
+        const header = [
+          t("no"),
+          t("discount_bill"),
+          t("all_discount"),
+          t("total_amount_menu_discount"),
+          t("total_money") + `(${t("menu_discount")})`,
+          t("total_money") + t("menu_free"),
+          t("total_money") + `(${t("menu_free")})`,
+          t("date"),
+        ];
+        const workbook = new ExcelJS.Workbook();
+        const sheet = workbook.addWorksheet("Expenses");
+
+        // Set header row
+        sheet.getRow(2).values = header;
+
+        // Format header row
+        for (let i = 1; i <= header.length; i++) {
+          const cell = sheet.getRow(2).getCell(i);
+
+          cell.border = {
+            top: { style: "thin", color: { argb: "FFCC8400" } },
+            left: { style: "thin", color: { argb: "FFCC8400" } },
+            bottom: { style: "thin", color: { argb: "FFCC8400" } },
+            right: { style: "thin", color: { argb: "FFCC8400" } },
+          };
+
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: COLOR_APP,
+          };
+
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 14,
+            bold: true,
+            color: { argb: "FF000000" }, // ປ່ຽນເປັນສີດຳ
+          };
+
+          cell.alignment = {
+            horizontal: i === 1 ? "center" : "left",
+            vertical: "middle",
+            wrapText: true,
+          };
+        }
+        sheet.columns = [
+          { key: "no", width: 10 },
+          { key: "discount_bill", width: 18 },
+          { key: "all_discount", width: 18 },
+          { key: "total_amount_menu_discount", width: 18 },
+          { key: "total_money_discount", width: 18 },
+          { key: "total_amount_menu_free", width: 18 },
+          { key: "total_money_free", width: 18 },
+          { key: "date", width: 18 },
+        ];
+        const formattedDate = moment(dataExcel?.createdAt).format("DD/MM/YYYY");
+
+        const row = sheet.addRow({
+          no: dataExcel?.length + 1,
+          discount_bill: dataExcel?.count || 0,
+          all_discount: dataExcel.totalPromotionCount || 0,
+          total_amount_menu_discount: dataExcel?.totalDiscountedItemCount || 0,
+          total_money_discount: dataExcel?.totalDiscountValue || 0,
+          total_amount_menu_free: dataExcel?.totalFreeItemCount || 0,
+          total_money_free: dataExcel?.totalFreeMenuPrice || 0,
+          date: formattedDate,
         });
 
-        // Create a Blob from the response data
-        // console.log("response", response.data);
-        const fileBlob = new Blob([response.data], {
+        // Format data rows
+        row.eachCell((cell, colNumber) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 14,
+          };
+
+          cell.alignment = {
+            horizontal: colNumber === 1 ? "center" : "left",
+            vertical: "middle",
+            wrapText: true,
+          };
+        });
+        // Set width for total row
+        sheet.columns.forEach((column) => {
+          column.width = 18;
+        });
+
+        // Set row heights
+        for (let i = 1; i <= dataExcel.length + 2; i++) {
+          sheet.getRow(i).height = 45;
+        }
+
+        // Generate Excel file
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
 
-        // Use the file-saver library to save the file with a new name
-        saveAs(
-          fileBlob,
-          `${storeDetail?.name} ${t("promotion")}.xlsx` || "export.xlsx"
-        );
+        // Download the file
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = downloadUrl;
+        anchor.download = `${storeDetail?.name} - ExportExel.xlsx`;
+        anchor.click();
+        window.URL.revokeObjectURL(downloadUrl);
+      } else {
+        if (_res?.data?.exportUrl) {
+          const response = await axios.get(_res?.data?.exportUrl, {
+            responseType: "blob", // Important to get the response as a Blob
+          });
+
+          // Create a Blob from the response data
+          // console.log("response", response.data);
+          const fileBlob = new Blob([response.data], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+
+          // Use the file-saver library to save the file with a new name
+          saveAs(
+            fileBlob,
+            `${storeDetail?.name} ${t("promotion")}.xlsx` || "export.xlsx"
+          );
+        }
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -401,22 +510,107 @@ export default function PopUpReportExportExcel({
 
       const _res = await axios.get(url);
 
-      if (_res?.data?.exportUrl) {
-        const response = await axios.get(_res?.data?.exportUrl, {
-          responseType: "blob", // Important to get the response as a Blob
+      if (storeDetail?.isStatusCafe) {
+        const dataExcel = _res?.data?.bank || [];
+
+        const header = [t("no"), t("bank_Name"), t("amount")];
+
+        const workbook = new ExcelJS.Workbook();
+        const sheet = workbook.addWorksheet("Bank Summary");
+
+        // Set header row
+        sheet.getRow(2).values = header;
+
+        // Format header row
+        for (let i = 1; i <= header.length; i++) {
+          const cell = sheet.getRow(2).getCell(i);
+          cell.border = {
+            top: { style: "thin", color: { argb: "FFCC8400" } },
+            left: { style: "thin", color: { argb: "FFCC8400" } },
+            bottom: { style: "thin", color: { argb: "FFCC8400" } },
+            right: { style: "thin", color: { argb: "FFCC8400" } },
+          };
+
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: COLOR_APP,
+          };
+
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 14,
+            bold: true,
+            color: { argb: "FF000000" },
+          };
+
+          cell.alignment = {
+            horizontal: i === 1 ? "center" : "left",
+            vertical: "middle",
+            wrapText: true,
+          };
+        }
+
+        sheet.columns = [
+          { key: "no", width: 10 },
+          { key: "bank_Name", width: 30 },
+          { key: "amount", width: 25 },
+        ];
+
+        dataExcel.forEach((bank, index) => {
+          const row = sheet.addRow({
+            no: index + 1,
+            bank_Name: bank?.bankDetails?.bankName || t("unknown"),
+            amount: bank?.bankTotalAmount || 0,
+          });
+
+          row.eachCell((cell, colNumber) => {
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 14,
+            };
+
+            cell.alignment = {
+              horizontal: colNumber === 1 ? "center" : "left",
+              vertical: "middle",
+              wrapText: true,
+            };
+          });
         });
 
-        // Create a Blob from the response data
-        // console.log("response", response.data);
-        const fileBlob = new Blob([response.data], {
+        for (let i = 1; i <= dataExcel.length + 2; i++) {
+          sheet.getRow(i).height = 45;
+        }
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
 
-        // Use the file-saver library to save the file with a new name
-        saveAs(
-          fileBlob,
-          `${storeDetail?.name} ${t("bank_total")}.xlsx` || "export.xlsx"
-        );
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = downloadUrl;
+        anchor.download = `${storeDetail?.name} - BankSummary.xlsx`;
+        anchor.click();
+        window.URL.revokeObjectURL(downloadUrl);
+      } else {
+        if (_res?.data?.exportUrl) {
+          const response = await axios.get(_res?.data?.exportUrl, {
+            responseType: "blob", // Important to get the response as a Blob
+          });
+
+          // Create a Blob from the response data
+          // console.log("response", response.data);
+          const fileBlob = new Blob([response.data], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+
+          // Use the file-saver library to save the file with a new name
+          saveAs(
+            fileBlob,
+            `${storeDetail?.name} ${t("bank_total")}.xlsx` || "export.xlsx"
+          );
+        }
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -460,22 +654,171 @@ export default function PopUpReportExportExcel({
       }${findByData()}`;
       const _res = await axios.post(url);
 
-      if (_res?.data?.exportUrl) {
-        const response = await axios.get(_res?.data?.exportUrl, {
-          responseType: "blob", // Important to get the response as a Blob
+      if (storeDetail?.isStatusCafe) {
+        const dataExcel = _res?.data?.bill || {};
+
+        const header = [
+          t("no"),
+          t("bill_type"), // ປະເພດບີນ
+          t("bill_count"), // ຈຳນວນບີນ
+          t("total_bill_amount") + `(${t("currency")})`, // ຍອດບີນລວມ
+        ];
+
+        const workbook = new ExcelJS.Workbook();
+        const sheet = workbook.addWorksheet("Bills");
+
+        // Set header row
+        sheet.getRow(2).values = header;
+
+        // Format header row
+        for (let i = 1; i <= header.length; i++) {
+          const cell = sheet.getRow(2).getCell(i);
+          cell.border = {
+            top: { style: "thin", color: { argb: "FFCC8400" } },
+            left: { style: "thin", color: { argb: "FFCC8400" } },
+            bottom: { style: "thin", color: { argb: "FFCC8400" } },
+            right: { style: "thin", color: { argb: "FFCC8400" } },
+          };
+
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: COLOR_APP,
+          };
+
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 14,
+            bold: true,
+            color: { argb: "FF000000" },
+          };
+
+          cell.alignment = {
+            horizontal: i === 1 ? "center" : "left",
+            vertical: "middle",
+            wrapText: true,
+          };
+        }
+
+        sheet.columns = [
+          { key: "no", width: 10 },
+          { key: "bill_type", width: 30 },
+          { key: "bill_amount", width: 15 },
+          { key: "total_price", width: 25 },
+        ];
+
+        const deliveryRevenue =
+          dataExcel?.delivery?.[0]?.revenueByPlatform?.find(
+            (p) => p._id === "Panda"
+          ) || {};
+
+        const rows = [
+          {
+            no: 1,
+            bill_type: t("total_bill"),
+            bill_count: dataExcel?.successAmount?.numberOfBills || 0,
+            total_bill_amount: dataExcel?.successAmount?.totalBalance || 0,
+          },
+          {
+            no: 2,
+            bill_type: t("total_cash"),
+            bill_count: dataExcel?.successAmount?.cashCount || 0,
+            total_bill_amount: dataExcel?.successAmount?.payByCash || 0,
+          },
+          {
+            no: 3,
+            bill_type: t("total_tsf"),
+            bill_count: dataExcel?.successAmount?.transferCount || 0,
+            total_bill_amount: dataExcel?.successAmount?.transferPayment || 0,
+          },
+          {
+            no: 4,
+            bill_type: t("money_from_appzap"),
+            bill_count: 0,
+            total_bill_amount: 0,
+          },
+          {
+            no: 5,
+            bill_type: t("total_debt"),
+            bill_count: 0,
+            total_bill_amount: 0,
+          },
+          {
+            no: 6,
+            bill_type: t("delivery_panda"),
+            bill_count: deliveryRevenue?.totalOrders || 0,
+            total_bill_amount: deliveryRevenue?.totalRevenue || 0,
+          },
+          {
+            no: 7,
+            bill_type: t("point"),
+            bill_count: 0,
+            total_bill_amount: 0,
+          },
+          {
+            no: 8,
+            bill_type: t("service_charge"),
+            bill_count: 0,
+            total_bill_amount: 0,
+          },
+          { no: 9, bill_type: t("tax"), bill_count: 0, total_bill_amount: 0 },
+          {
+            no: 10,
+            bill_type: t("total_tax_service_charge"),
+            bill_count: 0,
+            total_bill_amount: 0,
+          },
+        ];
+
+        rows.forEach((row) => {
+          sheet.addRow(row).eachCell((cell, colNumber) => {
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 14,
+            };
+
+            cell.alignment = {
+              horizontal: colNumber === 1 ? "center" : "left",
+              vertical: "middle",
+              wrapText: true,
+            };
+          });
         });
 
-        // Create a Blob from the response data
-        // console.log("response", response.data);
-        const fileBlob = new Blob([response.data], {
+        for (let i = 1; i <= rows.length + 2; i++) {
+          sheet.getRow(i).height = 45;
+        }
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
 
-        // Use the file-saver library to save the file with a new name
-        saveAs(
-          fileBlob,
-          `${storeDetail?.name} ${t("bill_detial")}` + ".xlsx" || "export.xlsx"
-        );
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = downloadUrl;
+        anchor.download = `${storeDetail?.name} - BillsExport.xlsx`;
+        anchor.click();
+        window.URL.revokeObjectURL(downloadUrl);
+      } else {
+        if (_res?.data?.exportUrl) {
+          const response = await axios.get(_res?.data?.exportUrl, {
+            responseType: "blob", // Important to get the response as a Blob
+          });
+
+          // Create a Blob from the response data
+          // console.log("response", response.data);
+          const fileBlob = new Blob([response.data], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+
+          // Use the file-saver library to save the file with a new name
+          saveAs(
+            fileBlob,
+            `${storeDetail?.name} ${t("bill_detial")}` + ".xlsx" ||
+              "export.xlsx"
+          );
+        }
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -489,22 +832,120 @@ export default function PopUpReportExportExcel({
       }${findByData()}`;
       const _res = await axios.get(url);
 
-      if (_res?.data?.exportUrl) {
-        const response = await axios.get(_res?.data?.exportUrl, {
-          responseType: "blob", // Important to get the response as a Blob
+      if (storeDetail?.isStatusCafe) {
+        const dataExcel = _res?.data?.user || [];
+
+        const header = [
+          t("no"),
+          t("user"),
+          t("order"),
+          t("order_cancel"),
+          t("order_paid"),
+          t("total_amount"),
+        ];
+
+        const workbook = new ExcelJS.Workbook();
+        const sheet = workbook.addWorksheet("Staff Sales");
+
+        // Set header row
+        sheet.getRow(2).values = header;
+
+        // Format header row
+        for (let i = 1; i <= header.length; i++) {
+          const cell = sheet.getRow(2).getCell(i);
+          cell.border = {
+            top: { style: "thin", color: { argb: "FFCC8400" } },
+            left: { style: "thin", color: { argb: "FFCC8400" } },
+            bottom: { style: "thin", color: { argb: "FFCC8400" } },
+            right: { style: "thin", color: { argb: "FFCC8400" } },
+          };
+
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: COLOR_APP,
+          };
+
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 14,
+            bold: true,
+            color: { argb: "FF000000" },
+          };
+
+          cell.alignment = {
+            horizontal: i === 1 ? "center" : "left",
+            vertical: "middle",
+            wrapText: true,
+          };
+        }
+
+        sheet.columns = [
+          { key: "no", width: 10 },
+          { key: "user", width: 30 },
+          { key: "order", width: 15 },
+          { key: "order_cancel", width: 15 },
+          { key: "order_paid", width: 15 },
+          { key: "total_amount", width: 25 },
+        ];
+
+        dataExcel.forEach((staff, index) => {
+          const row = sheet.addRow({
+            no: index + 1,
+            username: staff?.userId?.userId || t("unknown"),
+            order: (staff?.served || 0) + (staff?.canceled || 0),
+            cancel_order: staff?.canceled || 0,
+            order_paid: 0, // Order paid not provided in API
+            total_amount: staff?.totalSaleAmount || 0,
+          });
+
+          row.eachCell((cell, colNumber) => {
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 14,
+            };
+
+            cell.alignment = {
+              horizontal: colNumber === 1 ? "center" : "left",
+              vertical: "middle",
+              wrapText: true,
+            };
+          });
         });
 
-        // Create a Blob from the response data
-        // console.log("response", response.data);
-        const fileBlob = new Blob([response.data], {
+        for (let i = 1; i <= dataExcel.length + 2; i++) {
+          sheet.getRow(i).height = 45;
+        }
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
 
-        // Use the file-saver library to save the file with a new name
-        saveAs(
-          fileBlob,
-          `${storeDetail?.name} ${t("staff_info")}.xlsx` || "export.xlsx"
-        );
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = downloadUrl;
+        anchor.download = `${storeDetail?.name} - StaffSales.xlsx`;
+        anchor.click();
+        window.URL.revokeObjectURL(downloadUrl);
+      } else {
+        if (_res?.data?.exportUrl) {
+          const response = await axios.get(_res?.data?.exportUrl, {
+            responseType: "blob", // Important to get the response as a Blob
+          });
+
+          // Create a Blob from the response data
+          // console.log("response", response.data);
+          const fileBlob = new Blob([response.data], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+
+          // Use the file-saver library to save the file with a new name
+          saveAs(
+            fileBlob,
+            `${storeDetail?.name} ${t("staff_info")}.xlsx` || "export.xlsx"
+          );
+        }
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -518,22 +959,126 @@ export default function PopUpReportExportExcel({
       }${findByData()}`;
       const _res = await axios.get(url);
 
-      if (_res?.data?.exportUrl) {
-        const response = await axios.get(_res?.data?.exportUrl, {
-          responseType: "blob", // Important to get the response as a Blob
+      if (storeDetail?.isStatusCafe) {
+        const dataExcel = _res?.data?.daily || [];
+
+        const header = [
+          t("date"),
+          t("order"),
+          t("numberOfBill"),
+          t("delivery"),
+          t("point"),
+          t("discount"),
+          t("debt"),
+          t("total_amount"),
+        ];
+
+        const workbook = new ExcelJS.Workbook();
+        const sheet = workbook.addWorksheet("Daily Sales");
+
+        // Set header row
+        sheet.getRow(2).values = header;
+
+        // Format header row
+        for (let i = 1; i <= header.length; i++) {
+          const cell = sheet.getRow(2).getCell(i);
+          cell.border = {
+            top: { style: "thin", color: { argb: "FFCC8400" } },
+            left: { style: "thin", color: { argb: "FFCC8400" } },
+            bottom: { style: "thin", color: { argb: "FFCC8400" } },
+            right: { style: "thin", color: { argb: "FFCC8400" } },
+          };
+
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: COLOR_APP,
+          };
+
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 14,
+            bold: true,
+            color: { argb: "FF000000" },
+          };
+
+          cell.alignment = {
+            horizontal: i === 1 ? "center" : "left",
+            vertical: "middle",
+            wrapText: true,
+          };
+        }
+
+        sheet.columns = [
+          { key: "date", width: 15 },
+          { key: "order", width: 10 },
+          { key: "numberOfBill", width: 15 },
+          { key: "delivery", width: 15 },
+          { key: "point", width: 15 },
+          { key: "discount", width: 15 },
+          { key: "debt", width: 15 },
+          { key: "total_amount", width: 20 },
+        ];
+
+        dataExcel.forEach((day, index) => {
+          const row = sheet.addRow({
+            date: day?.date || "-",
+            order: day?.order || 0,
+            numberOfBill: day?.bill || 0,
+            delivery: 0,
+            point: day?.billBefore || 0,
+            discount: day?.discount || 0,
+            debt: day?.remainingAmount || 0,
+            total_amount: day?.billAmount || 0,
+          });
+
+          row.eachCell((cell, colNumber) => {
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 14,
+            };
+
+            cell.alignment = {
+              horizontal: colNumber === 1 ? "center" : "left",
+              vertical: "middle",
+              wrapText: true,
+            };
+          });
         });
 
-        // Create a Blob from the response data
-        // console.log("response", response.data);
-        const fileBlob = new Blob([response.data], {
+        for (let i = 1; i <= dataExcel.length + 2; i++) {
+          sheet.getRow(i).height = 45;
+        }
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
 
-        // Use the file-saver library to save the file with a new name
-        saveAs(
-          fileBlob,
-          `${storeDetail?.name} ${t("dialy_sales")}.xlsx` || "export.xlsx"
-        );
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = downloadUrl;
+        anchor.download = `${storeDetail?.name} - DailySales.xlsx`;
+        anchor.click();
+        window.URL.revokeObjectURL(downloadUrl);
+      } else {
+        if (_res?.data?.exportUrl) {
+          const response = await axios.get(_res?.data?.exportUrl, {
+            responseType: "blob", // Important to get the response as a Blob
+          });
+
+          // Create a Blob from the response data
+          // console.log("response", response.data);
+          const fileBlob = new Blob([response.data], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+
+          // Use the file-saver library to save the file with a new name
+          saveAs(
+            fileBlob,
+            `${storeDetail?.name} ${t("dialy_sales")}.xlsx` || "export.xlsx"
+          );
+        }
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);
@@ -546,6 +1091,101 @@ export default function PopUpReportExportExcel({
         storeDetail?._id
       }${findByData()}`;
       const _res = await axios.get(url);
+
+      if (storeDetail?.isStatusCafe) {
+        const dataExcel = _res?.data?.category || [];
+
+        const header = [
+          t("category"),
+          t("order_success"),
+          t("cancel"),
+          t("order_paid"),
+          t("sale_price_amount"),
+        ];
+
+        const workbook = new ExcelJS.Workbook();
+        const sheet = workbook.addWorksheet("Category Sales");
+
+        // Set header row
+        sheet.getRow(2).values = header;
+
+        // Format header row
+        for (let i = 1; i <= header.length; i++) {
+          const cell = sheet.getRow(2).getCell(i);
+          cell.border = {
+            top: { style: "thin", color: { argb: "FFCC8400" } },
+            left: { style: "thin", color: { argb: "FFCC8400" } },
+            bottom: { style: "thin", color: { argb: "FFCC8400" } },
+            right: { style: "thin", color: { argb: "FFCC8400" } },
+          };
+
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: COLOR_APP,
+          };
+
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 14,
+            bold: true,
+            color: { argb: "FF000000" },
+          };
+
+          cell.alignment = {
+            horizontal: i === 1 ? "center" : "left",
+            vertical: "middle",
+            wrapText: true,
+          };
+        }
+
+        sheet.columns = [
+          { key: "category", width: 30 },
+          { key: "order_success", width: 15 },
+          { key: "cancel", width: 15 },
+          { key: "order_paid", width: 15 },
+          { key: "sale_price_amount", width: 20 },
+        ];
+
+        dataExcel.forEach((category) => {
+          const row = sheet.addRow({
+            category: category?.name || t("unknown"),
+            order_success: category?.served || 0,
+            cancel: category?.cenceled || 0,
+            order_paid: category?.paid || 0, // No paid data available in API
+            sale_price_amount: category?.totalSaleAmount || 0,
+          });
+
+          row.eachCell((cell, colNumber) => {
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 14,
+            };
+
+            cell.alignment = {
+              horizontal: colNumber === 1 ? "center" : "left",
+              vertical: "middle",
+              wrapText: true,
+            };
+          });
+        });
+
+        for (let i = 1; i <= dataExcel.length + 2; i++) {
+          sheet.getRow(i).height = 45;
+        }
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = downloadUrl;
+        anchor.download = `${storeDetail?.name} - CategorySales.xlsx`;
+        anchor.click();
+        window.URL.revokeObjectURL(downloadUrl);
+      }
 
       if (_res?.data?.exportUrl) {
         const response = await axios.get(_res?.data?.exportUrl, {
@@ -576,22 +1216,117 @@ export default function PopUpReportExportExcel({
       }${findByData()}`;
       const _res = await axios.get(url);
 
-      if (_res?.data?.exportUrl) {
-        const response = await axios.get(_res?.data?.exportUrl, {
-          responseType: "blob", // Important to get the response as a Blob
+      if (storeDetail?.isStatusCafe) {
+        const dataExcel = _res?.data?.menu || [];
+
+        const header = [
+          t("menu"),
+          t("order_success"),
+          t("cancel"),
+          t("order_paid"),
+          t("sale_price_amount"),
+        ];
+
+        const workbook = new ExcelJS.Workbook();
+        const sheet = workbook.addWorksheet("Menu Sales");
+
+        // Set header row
+        sheet.getRow(2).values = header;
+
+        // Format header row
+        for (let i = 1; i <= header.length; i++) {
+          const cell = sheet.getRow(2).getCell(i);
+          cell.border = {
+            top: { style: "thin", color: { argb: "FFCC8400" } },
+            left: { style: "thin", color: { argb: "FFCC8400" } },
+            bottom: { style: "thin", color: { argb: "FFCC8400" } },
+            right: { style: "thin", color: { argb: "FFCC8400" } },
+          };
+
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: COLOR_APP,
+          };
+
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 14,
+            bold: true,
+            color: { argb: "FF000000" },
+          };
+
+          cell.alignment = {
+            horizontal: i === 1 ? "center" : "left",
+            vertical: "middle",
+            wrapText: true,
+          };
+        }
+
+        sheet.columns = [
+          { key: "menu", width: 40 },
+          { key: "order_success", width: 15 },
+          { key: "cancel", width: 15 },
+          { key: "order_paid", width: 15 },
+          { key: "sale_price_amount", width: 20 },
+        ];
+
+        dataExcel.forEach((menu) => {
+          const row = sheet.addRow({
+            menu: menu?.name || t("unknown"),
+            order_success: menu?.served || 0,
+            cancel: menu?.cenceled || 0,
+            order_paid: menu?.paid || 0, // No paid data available in API
+            sale_price_amount: menu?.totalSaleAmount || 0,
+          });
+
+          row.eachCell((cell, colNumber) => {
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 14,
+            };
+
+            cell.alignment = {
+              horizontal: colNumber === 1 ? "center" : "left",
+              vertical: "middle",
+              wrapText: true,
+            };
+          });
         });
 
-        // Create a Blob from the response data
-        // console.log("response", response.data);
-        const fileBlob = new Blob([response.data], {
+        for (let i = 1; i <= dataExcel.length + 2; i++) {
+          sheet.getRow(i).height = 45;
+        }
+
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
 
-        // Use the file-saver library to save the file with a new name
-        saveAs(
-          fileBlob,
-          `${storeDetail?.name} ${t("menu_info")}.xlsx` || "export.xlsx"
-        );
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = downloadUrl;
+        anchor.download = `${storeDetail?.name} - MenuSales.xlsx`;
+        anchor.click();
+        window.URL.revokeObjectURL(downloadUrl);
+      } else {
+        if (_res?.data?.exportUrl) {
+          const response = await axios.get(_res?.data?.exportUrl, {
+            responseType: "blob", // Important to get the response as a Blob
+          });
+
+          // Create a Blob from the response data
+          // console.log("response", response.data);
+          const fileBlob = new Blob([response.data], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          });
+
+          // Use the file-saver library to save the file with a new name
+          saveAs(
+            fileBlob,
+            `${storeDetail?.name} ${t("menu_info")}.xlsx` || "export.xlsx"
+          );
+        }
       }
     } catch (err) {
       errorAdd(`${t("export_fail")}`);

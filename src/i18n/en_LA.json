@@ -1260,5 +1260,8 @@
   "order_item": "ລາຍການສັ່ງຊື້",
   "order_checkout": "ການຊຳລະສັ່ງຊື້",
   "cancel_order": "ຍົກເລີກອໍເດິ",
-  "order_status": "ສະຖານະອໍເດິ"
+  "order_status": "ສະຖານະອໍເດິ",
+  "total_amount_menu_discount":"ຈຳນວນເມນູທີ່ມີສ່ວນຫຼຸດ",
+  "menu_discount":"ເມນູສ່ວນຫຼຸດ",
+  "menu_free":"ເມນູທີ່ແຖມ"
 }

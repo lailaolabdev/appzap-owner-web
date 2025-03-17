@@ -1222,5 +1222,8 @@
   "order_item": "ធាតុ",
   "order_checkout": "ការបញ្ជាក់",
   "cancel_order": "បោះបង់ការបញ្ជាទិញ",
-  "order_status": "ស្ថានភាពបញ្ជាទិញ"
+  "order_status": "ស្ថានភាពបញ្ជាទិញ",
+  "total_amount_menu_discount": "ចំនួនធាតុ និង បញ្ចុះតម្លៃ",
+  "menu_discount":"បញ្ចុះតម្លៃម៉ឺនុយ",
+  "menu_free": "ម៉ឺនុយទំនេរ"
 }

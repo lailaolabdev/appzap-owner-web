@@ -101,9 +101,6 @@ export default function DashboardFinance({
   const [widthBill80, setWidthBill80] = useState(80);
   let bill80Ref = useRef(null);
 
-  console.log({ bill80Ref });
-  console.log({ widthBill80 });
-
   const onPrintBill = async (isPrintBill) => {
     try {
       setPrintBillLoading(true);
@@ -119,7 +116,6 @@ export default function DashboardFinance({
         (e) => e?._id === _printerCounters?.BILL
       );
 
-      console.log({ printerBillData });
       let dataImageForPrint;
       dataImageForPrint = await html2canvas(bill80Ref.current, {
         useCORS: true,
@@ -137,8 +133,6 @@ export default function DashboardFinance({
         urlForPrinter = USB_PRINTER_PORT;
       }
 
-      console.log({ dataImageForPrint });
-
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
       var bodyFormData = new FormData();
       bodyFormData.append("ip", printerBillData?.ip);
@@ -148,8 +142,6 @@ export default function DashboardFinance({
       bodyFormData.append("beep1", 1);
       bodyFormData.append("beep2", 9);
       bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
-
-      console.log({ bodyFormData });
 
       await printFlutter(
         {
@@ -214,7 +206,6 @@ export default function DashboardFinance({
 
   const handleShow = (item) => {
     setShow(true);
-    console.log("ITEM", item);
     setDataModal(item);
   };
 
@@ -328,8 +319,6 @@ export default function DashboardFinance({
     setData(_formatJson);
     setIsLoading(false);
   };
-
-  //console.log("data: ", data)
 
   useEffect(() => {
     let _disCountDataKib = 0;
@@ -446,9 +435,10 @@ export default function DashboardFinance({
       !menu ||
       !menu.totalPrice ||
       !Array.isArray(menu.promotionId) ||
-      menu.promotionId.length === 0
+      menu.promotionId.length === 0 ||
+      menu.totalPrice === "CANCELED"
     ) {
-      return menu?.totalPrice || 0;
+      return menu?.totalPrice === "CANCELED" ? 0 : menu?.totalPrice || 0;
     }
 
     let finalPrice = menu.totalPrice;
@@ -551,9 +541,6 @@ export default function DashboardFinance({
     );
   }, [data]);
 
-  // console.log("order_id", orderId);
-  // console.log("order_status", orderStatus);
-
   const mapOrderData = (orderId, formatMenuName, orderStatus) => {
     if (!orderId || !Array.isArray(orderId)) return [];
 
@@ -636,8 +623,6 @@ export default function DashboardFinance({
   useEffect(() => {
     setTotalTranferAndPayLast(dataModal?.totalTranferAndPayLast);
   }, [dataModal]);
-
-  console.log("dataModal", dataModal);
 
   return (
     <div style={{ padding: 0 }}>
@@ -927,7 +912,6 @@ export default function DashboardFinance({
             marginPagesDisplayed={1}
             pageRangeDisplayed={3}
             onPageChange={(e) => {
-              console.log(e);
               setPagination(e?.selected + 1);
             }}
             containerClassName={"pagination justify-content-center"} // Bootstrap class for centering

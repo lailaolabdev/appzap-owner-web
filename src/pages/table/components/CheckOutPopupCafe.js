@@ -135,7 +135,6 @@ export default function CheckOutPopupCafe({
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
   const totalBills = totalBillDefualt + taxAmount;
 
-  console.log("dataBill", totalBillDefualt);
   useEffect(() => {
     setMemberDataSearch();
     setCash();
@@ -347,8 +346,6 @@ export default function CheckOutPopupCafe({
         }` ?? "-",
       staffCheckOutId: profile.data._id,
     };
-
-    console.log("DATAS:", datas);
 
     await axios
       .post(
