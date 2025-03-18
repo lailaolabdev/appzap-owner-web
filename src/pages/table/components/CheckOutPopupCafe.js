@@ -23,7 +23,7 @@ import {
 } from "../../../constants/api";
 import NumberKeyboard from "../../../components/keyboard/NumberKeyboard";
 import convertNumber from "../../../helpers/convertNumber";
-import matchRoundNumber from "../../../helpers/matchRound";
+
 import convertNumberReverse from "../../../helpers/convertNumberReverse";
 import { RedeemPoint, PointUser } from "../../../services/point";
 import { BiTransfer } from "react-icons/bi";
@@ -36,6 +36,7 @@ import { useShiftStore } from "../../../zustand/ShiftStore";
 import { data } from "browserslist";
 import { useMenuSelectStore } from "../../../zustand/menuSelectStore";
 import { useChangeMoney } from "../../../zustand/slideImageStore";
+import { convertUnitgramAndKilogram } from "../../../helpers/convertUnitgramAndKilogram";
 
 export default function CheckOutPopupCafe({
   onPrintDrawer,
@@ -251,13 +252,20 @@ export default function CheckOutPopupCafe({
       if (_data.status !== "CANCELED") {
         const totalOptionPrice = _data?.totalOptionPrice || 0;
         const itemPrice = _data?.price + totalOptionPrice;
-        _total += _data?.quantity * itemPrice;
+        if (storeDetail?.isStatusCafe && _data?.isWeightMenu) {
+          _total +=
+            _data?.unitWeightMenu === "g"
+              ? convertUnitgramAndKilogram(_data?.quantity) * itemPrice
+              : _data?.quantity * itemPrice;
+        } else {
+          _total += _data?.quantity * itemPrice;
+        }
       }
     }
 
     setTotal(_total);
     setTotalBill(_total);
-    const roundedNumber = matchRoundNumber(_total);
+    const roundedNumber = _total;
     setTotal(roundedNumber);
   };
   // function
@@ -286,7 +294,7 @@ export default function CheckOutPopupCafe({
       TotalDiscountFinal = totalBill;
     }
 
-    return matchRoundNumber(TotalDiscountFinal);
+    return TotalDiscountFinal;
   };
 
   let AmountDiscountForMember = Math.max(totalBill - DiscountMember(), 0);
@@ -314,10 +322,10 @@ export default function CheckOutPopupCafe({
       storeId: profile.data.storeId,
       isCheckout: "true",
       status: "CHECKOUT",
-      payAmount: matchRoundNumber(cash),
-      transferAmount: matchRoundNumber(transfer),
+      payAmount: cash,
+      transferAmount: transfer,
       billAmount: DiscountMember(),
-      billAmountBefore: matchRoundNumber(totalBill),
+      billAmountBefore: totalBill,
       paymentMethod: forcus,
       shiftId: shiftCurrent[0]?._id,
       taxAmount: null,
@@ -328,7 +336,7 @@ export default function CheckOutPopupCafe({
       phone: null,
       queue: bill,
       point: point,
-      change: matchRoundNumber(moneyChange),
+      change: moneyChange,
       isCafe: true,
       memberId: memberDataSearch?._id,
       memberName: memberDataSearch?.name,
@@ -690,12 +698,11 @@ export default function CheckOutPopupCafe({
   };
 
   const calculateReturnAmount = () => {
-    const parsedCash = Number.parseInt(matchRoundNumber(cash)) || 0;
-    const parsedTransfer = Number.parseInt(matchRoundNumber(transfer)) || 0;
-    const parsedPoint = Number.parseInt(matchRoundNumber(point)) || 0;
+    const parsedCash = Number.parseInt(cash) || 0;
+    const parsedTransfer = Number.parseInt(transfer) || 0;
+    const parsedPoint = Number.parseInt(point) || 0;
 
-    const totalAmount =
-      parsedCash + parsedTransfer + parsedPoint - matchRoundNumber(totalBill);
+    const totalAmount = parsedCash + parsedTransfer + parsedPoint - totalBill;
 
     return totalAmount <= 0 ? 0 : totalAmount;
   };
@@ -833,7 +840,7 @@ export default function CheckOutPopupCafe({
                       value={
                         tab === "cash_transfer"
                           ? convertNumber(transfer)
-                          : convertNumber(matchRoundNumber(transfer || 0))
+                          : convertNumber(transfer || 0)
                       }
                       onClick={() => {
                         setSelectInput("inputTransfer");

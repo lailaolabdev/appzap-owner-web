@@ -40,6 +40,7 @@ import html2canvas from "html2canvas";
 import printFlutter from "../../helpers/printFlutter";
 import BillForCheckOut80 from "../../components/bill/BillForCheckOut80";
 import BillForCheckOutCafe80 from "../../components/bill/BillForCheckOutCafe80";
+import { convertUnitgramAndKilogram } from "../../helpers/convertUnitgramAndKilogram";
 
 const limitData = 50;
 
@@ -431,14 +432,16 @@ export default function DashboardFinance({
   };
 
   const calculateDiscount = (menu) => {
+    console.log("calculateDiscount", menu);
+
     if (
       !menu ||
       !menu.totalPrice ||
       !Array.isArray(menu.promotionId) ||
       menu.promotionId.length === 0 ||
-      menu.totalPrice === "CANCELED"
+      menu.status === "CANCELED"
     ) {
-      return menu?.totalPrice === "CANCELED" ? 0 : menu?.totalPrice || 0;
+      return menu?.status === "CANCELED" ? 0 : menu?.totalPrice || 0;
     }
 
     let finalPrice = menu.totalPrice;
@@ -556,13 +559,23 @@ export default function DashboardFinance({
         status: item?.status || "UNKNOWN",
         statusColor: getStatusColor(item?.status),
         createdBy: item?.createdBy?.firstname || "-",
+        isWeightMenu: item?.isWeightMenu,
+        unitWeightMenu: item?.unitWeightMenu,
         totalPrice: (() => {
           if (isCanceled) return "CANCELED";
           try {
+            const basePrice = item?.price || 0;
+            const optionPrice = item?.totalOptionPrice || 0;
+            const quantity = item?.quantity || 0;
+            const isWeightMenu = item?.isWeightMenu;
+            const totalPriceFromItem = item?.totalPrice;
+            const isWeightMenuQuantity =
+              item?.unitWeightMenu === "g"
+                ? convertUnitgramAndKilogram(item?.quantity)
+                : item?.quantity;
             const calculatedPrice =
-              item?.totalPrice ||
-              ((item?.price || 0) + (item?.totalOptionPrice || 0)) *
-                (item?.quantity || 0);
+              totalPriceFromItem *
+              (isWeightMenu ? isWeightMenuQuantity : quantity);
 
             return new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
               calculatedPrice
@@ -1065,11 +1078,16 @@ export default function DashboardFinance({
                 <tr key={item.index}>
                   <td>{item.index}</td>
                   <td>{item.menuName}</td>
-                  <td>{item.quantity}</td>
+                  <td>
+                    {item?.isWeightMenu
+                      ? `${item?.quantity} /${item?.unitWeightMenu}`
+                      : item.quantity}
+                  </td>
                   <td style={{ color: item.statusColor }}>
                     {orderStatus(item.status)}
                   </td>
                   <td>{item.createdBy}</td>
+
                   <td>{calculateDiscount(item)}</td>
 
                   {storeDetail?.isDelivery && (

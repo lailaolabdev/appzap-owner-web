@@ -15,6 +15,7 @@ import axios from "axios";
 import { useTranslation } from "react-i18next";
 // import emptyLogo from "/public/images/emptyLogo.jpeg";
 import matchRoundNumber from "./../../helpers/matchRound";
+import { convertUnitgramAndKilogram } from "../../helpers/convertUnitgramAndKilogram";
 
 export default function BillForCheckOutCafe80({
   storeDetail,
@@ -57,7 +58,15 @@ export default function BillForCheckOutCafe80({
       if (_data?.status !== "CANCELED") {
         const totalOptionPrice = _data?.totalOptionPrice || 0;
         const itemPrice = _data?.price + totalOptionPrice;
-        _total += _data?.quantity * itemPrice;
+        // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
+        if (storeDetail?.isStatusCafe && _data?.isWeightMenu) {
+          _total +=
+            _data?.unitWeightMenu === "g"
+              ? convertUnitgramAndKilogram(_data?.quantity) * itemPrice
+              : _data?.quantity * itemPrice;
+        } else {
+          _total += _data?.quantity * itemPrice;
+        }
       }
     }
 
@@ -256,7 +265,11 @@ export default function BillForCheckOutCafe80({
           const totalOptionPrice = item?.totalOptionPrice || 0;
           const itemPrice = item?.price + totalOptionPrice;
           // const itemTotal = item?.totalPrice || (itemPrice * item?.quantity);
-          const itemTotal = itemPrice * item?.quantity;
+          const itemTotal = item?.isWeightMenu
+            ? item?.unitWeightMenu === "g"
+              ? itemPrice * convertUnitgramAndKilogram(item?.quantity)
+              : itemPrice * item?.quantity
+            : itemPrice * item?.quantity;
           return (
             <div
               style={{
@@ -276,7 +289,11 @@ export default function BillForCheckOutCafe80({
               >
                 {item?.name} {optionsNames}
               </div>
-              <div style={{ textAlign: "center" }}>{item?.quantity}</div>
+              <div style={{ textAlign: "center" }}>
+                {item?.isWeightMenu
+                  ? `${item?.quantity} /${item?.unitWeightMenu}`
+                  : item?.quantity}
+              </div>
               <div style={{ textAlign: "right" }}>
                 {itemPrice ? moneyCurrency(itemPrice) : "-"}
               </div>
