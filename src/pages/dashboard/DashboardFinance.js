@@ -623,7 +623,6 @@ export default function DashboardFinance({
   useEffect(() => {
     setTotalTranferAndPayLast(dataModal?.totalTranferAndPayLast);
   }, [dataModal]);
-
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <Loading />}

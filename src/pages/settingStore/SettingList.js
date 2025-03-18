@@ -276,8 +276,8 @@ export default function SettingList() {
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faBox} />,
       path: `/settingStore/delivery/${params?.id}`,
       hidden:
-        (!hasMangeDelivery && !appzapStaff.includes(profileRole)) ||
-        storeDetail?.isStatusCafe,
+        (!hasMangeDelivery && !appzapStaff.includes(profileRole)) 
+        //8||storeDetail?.isStatusCafe,
     },
 
     {

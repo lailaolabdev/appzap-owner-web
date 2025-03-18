@@ -14,6 +14,7 @@ export default function NumberKeyboard({
   onClickButtonDrawer,
   setCanCheckOut,
   onClickMember,
+  isDelivery,
 }) {
   const { storeDetail } = useStoreStore();
 
@@ -107,7 +108,7 @@ export default function NumberKeyboard({
           }}
         >
           <Button
-            disabled={payType === "point" || payType === "cash_transfer_point"}
+            disabled={isDelivery ? true : payType === "point" || payType === "cash_transfer_point"}
             onClick={() => {
               onClickMember();
             }}
@@ -116,10 +117,12 @@ export default function NumberKeyboard({
           </Button>
           <Button
             disabled={
-              selectedTable !== "undefined"
-                ? selectedTable ||
+              isDelivery
+                ? false :
+                selectedTable !== "undefined"
+                  ? selectedTable ||
                   (payType !== "cash" && payType !== "delivery")
-                : payType !== "cash" && payType !== "delivery"
+                  : payType !== "cash" && payType !== "delivery"
             }
             onClick={() => {
               // console.log(totalBill);
@@ -135,9 +138,11 @@ export default function NumberKeyboard({
               setCanCheckOut(false);
             }}
             disabled={
-              selectedTable !== "undefined"
-                ? selectedTable || payType === "transfer"
-                : payType === "transfer"
+              isDelivery
+                ? false
+                : selectedTable !== "undefined"
+                  ? selectedTable || payType === "transfer"
+                  : payType === "transfer"
             }
           >
             {t("delete_all")}
@@ -160,13 +165,16 @@ export default function NumberKeyboard({
                   clickButton(e.key);
                 }}
                 disabled={
-                  selectedTable !== "undefined"
-                    ? selectedTable || payType === "transfer"
-                    : payType === "transfer"
+                  isDelivery
+                    ? false
+                    : selectedTable !== "undefined"
+                      ? selectedTable || payType === "transfer"
+                      : payType === "transfer"
                 }
               >
                 {e.name}
               </Button>
+
             );
           })}
         </div>

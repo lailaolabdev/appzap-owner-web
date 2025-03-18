@@ -107,11 +107,12 @@ export default function BillForCheckOutCafe80({
       memberData?.moneyReceived < storeDetail?.pointStore
         ? 0
         : Math.floor(
-            (memberData?.moneyReceived / storeDetail?.pointStore) * 10
-          );
+          (memberData?.moneyReceived / storeDetail?.pointStore) * 10
+        );
 
     return total;
   };
+
 
   return (
     <div className="p-1 bg-white rounded-lg shadow-md w-[285px] ml-[-12px]">
@@ -176,6 +177,21 @@ export default function BillForCheckOutCafe80({
               {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
             </span>
           </div>
+
+          {dataBill[0]?.platform?.length > 0 &&
+            (
+              <>
+                <div>
+                  {t("Delivery")}:{" "}
+                  <span style={{ fontWeight: "bold" }}>
+                    {dataBill[0]?.platform}
+                    {dataBill[0]?.deliveryCode ? ` (${dataBill[0]?.deliveryCode})` : ""}
+                  </span>
+                </div>
+              </>
+            )
+          }
+
           {memberData?.Name && memberData?.Point ? (
             <>
               <div>
@@ -183,11 +199,11 @@ export default function BillForCheckOutCafe80({
                 <span style={{ fontWeight: "bold" }}>
                   {memberData?.memberPhone
                     ? `${memberData?.memberPhone} (${t(
-                        "point"
-                      )} : ${moneyCurrency(
-                        Number(memberData?.Point || 0) -
-                          Number(storeDetail?.point || 0)
-                      )})`
+                      "point"
+                    )} : ${moneyCurrency(
+                      Number(memberData?.Point || 0) -
+                      Number(storeDetail?.point || 0)
+                    )})`
                     : ""}
                 </span>
               </div>
