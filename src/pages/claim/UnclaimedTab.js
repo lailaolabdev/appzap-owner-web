@@ -64,7 +64,7 @@ const UnclaimedTab = ({
     }
   };
 
-  console.log("selectedPayment", totalPageCount);
+  console.log("selectedPayment", selectedPayment);
 
   // Check if all unclaimed items are selected
   const areAllSelected = () => {
@@ -89,18 +89,20 @@ const UnclaimedTab = ({
         <div className="flex justify-end flex-wrap gap-3 mb-3">
           <div className="flex gap-2">
             {/* Conditionally render "Claim Selected" button if items are selected */}
-            {selectedPayment.length > 0 && (
-              <ButtonComponent
-                title="Claim Selected"
-                icon={faPlusCircle}
-                className="bg-orange-500 hover:bg-orange-600"
-                width={"150px"}
-                handleClick={claimSelectedPayment}
-              />
-            )}
+            <ButtonComponent
+              disabled={!selectedPayment.length > 0}
+              title="ເຄລມລາຍການທີ່ເລືອກ"
+              icon={faPlusCircle}
+              className={`bg-orange-500 hover:bg-orange-600 ${
+                !selectedPayment.length > 0
+                  ? "!bg-orange-300 !cursor-default"
+                  : ""
+              }`}
+              handleClick={claimSelectedPayment}
+            />
 
             {/* Conditionally render "Claim All" button if there are unclaimed items */}
-            {unClaimedData?.length > 0 && (
+            {/* {unClaimedData?.length > 0 && (
               <ButtonComponent
                 title="Claim All"
                 icon={faPlusCircle}
@@ -108,18 +110,26 @@ const UnclaimedTab = ({
                 width={"150px"}
                 handleClick={() => setOpenConfirm(true)}
               />
-            )}
+            )} */}
 
             {/* Add Claim and Close Table button */}
-            {selectedPayment.length > 0 && (
-              <ButtonComponent
-                title={t("confirm_close_table") ?? "Claim & Close Table"}
-                icon={faPlusCircle}
-                className="bg-green-500 hover:bg-green-600"
-                width={"180px"}
-                handleClick={() => setOpenConfirmClaimAndClose(true)}
-              />
-            )}
+            <ButtonComponent
+              disabled={
+                selectedPayment.length === 0 ||
+                selectedPayment.filter((item) => !item.isPaidConfirm).length ===
+                  0
+              }
+              title={t("confirm_close_table") ?? "Claim & Close Table"}
+              icon={faPlusCircle}
+              className={`bg-green-500 hover:bg-green-600 ${
+                selectedPayment.length === 0 ||
+                selectedPayment.filter((item) => !item.isPaidConfirm).length ===
+                  0
+                  ? "!bg-green-300 !cursor-default"
+                  : ""
+              }`}
+              handleClick={() => setOpenConfirmClaimAndClose(true)}
+            />
           </div>
         </div>
       </div>
@@ -164,7 +174,10 @@ const UnclaimedTab = ({
               unClaimedData.map((item, index) => {
                 const isSelected = checkPaymentSelected(item);
                 return (
-                  <tr key={index}>
+                  <tr
+                    key={index}
+                    className={`${isSelected ? "!bg-orange-100" : ""}`}
+                  >
                     <td className={`whitespace-nowrap`}>
                       {item?.claimStatus === "UNCLAIMED" && (
                         <Form.Check
@@ -191,7 +204,9 @@ const UnclaimedTab = ({
                     <td
                       className={`whitespace-nowrap text-green-500 text-center`}
                     >
-                      {t(item.status) ?? "-"}
+                      {item?.isPaidConfirm
+                        ? "ຢືນຢັນແລ້ວ"
+                        : t(item.status) ?? "-"}
                     </td>
                     <td
                       className={`whitespace-nowrap text-red-500 text-center`}

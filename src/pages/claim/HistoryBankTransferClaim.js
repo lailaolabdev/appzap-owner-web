@@ -70,7 +70,7 @@ export default function HistoryBankTransferClaim() {
   const [openConfirm, setOpenConfirm] = useState(false);
   const [openConfirmClaimAndClose, setOpenConfirmClaimAndClose] =
     useState(false);
-  const [rowsPerPage] = useState(10); // Using rowsPerPage directly, no need for setter
+  const [rowsPerPage] = useState(20); // Using rowsPerPage directly, no need for setter
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState({
     [CLAIM_STATUSES.UNCLAIMED]: 0,
@@ -173,22 +173,18 @@ export default function HistoryBankTransferClaim() {
   };
 
   const selectPayment = (payment) => {
-    const { tableName, tableCode } = payment;
+    const { tableName, tableCode, billId } = payment;
 
     setSelectedPayment((prevSelected) => {
-      const isAlreadySelected = prevSelected.some(
-        (x) => x.tableName === tableName && x.tableCode === tableCode
-      );
+      const isAlreadySelected = prevSelected.some((x) => x.billId === billId);
 
       if (isAlreadySelected) {
         // Remove selected payments with matching tableName and tableCode
-        return prevSelected.filter(
-          (x) => x.tableName !== tableName || x.tableCode !== tableCode
-        );
+        return prevSelected.filter((x) => x.billId !== billId);
       } else {
         // Add all payments with matching tableName and tableCode
         const paymentsToAdd = claimData[CLAIM_STATUSES.UNCLAIMED].filter(
-          (x) => x.tableName === tableName && x.tableCode === tableCode
+          (x) => x.billId === billId
         );
         return [...prevSelected, ...paymentsToAdd];
       }
@@ -200,9 +196,16 @@ export default function HistoryBankTransferClaim() {
   };
 
   const claimSelectedPayment = async () => {
+    const billIds = selectedPayment
+      .filter((x) => x.isPaidConfirm)
+      .map((x) => x._id);
+
+    if (billIds.length === 0) {
+      errorAdd(`ບໍ່ມີລາຍການທີ່ຢືນຢັນການປິດໂຕະແລ້ວ`); // Ignore spellcheck: ກະລຸນາເລືອກບິນທີ່ຕ້ອງການຊຳລະໄດ້
+      return;
+    }
     try {
       setIsLoading(true);
-      const billIds = selectedPayment.map((x) => x._id);
       const { TOKEN, DATA } = await getLocalData();
 
       const controller = new AbortController();
@@ -269,43 +272,86 @@ export default function HistoryBankTransferClaim() {
 
   const checkBillOrdering = async () => {
     try {
-      const currentPayment = selectedPayment[0];
-      if (!currentPayment) return;
-
-      setIsLoading(true);
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-      const body = {
-        shiftId: shiftCurrent[0]?._id,
-        isCheckout: "true",
-        status: "CHECKOUT",
-        paymentMethod: "APPZAP_TRANSFER", // Ignore spellcheck: APPZAP
-        isOrderingPaid: false,
-        billMode: "false",
-        tableName: currentPayment?.tableName,
-        tableCode: currentPayment?.code,
-        fullnameStaffCheckOut:
-          `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-", // Ignore spellcheck: firstname lastname
-        staffCheckOutId: profile?.data?.id,
-      };
-
-      await axios.put(
-        `${END_POINT}/v7/bill-checkout`,
-        {
-          id: currentPayment?.billId,
-          data: body,
-        },
-        {
-          headers: await getHeaders(),
-          signal: controller.signal,
+      // Get unique tables from selectedPayment without using an unused key variable
+      const uniqueTableData = selectedPayment.reduce((unique, item) => {
+        // Check if this table+code combination already exists in our unique array
+        if (
+          !unique.some(
+            (obj) => obj.tableName === item.tableName && obj.code === item.code
+          )
+        ) {
+          unique.push({
+            billId: item.billId,
+            tableName: item.tableName,
+            code: item.code,
+          });
         }
-      );
+        return unique;
+      }, []);
 
-      clearTimeout(timeoutId);
+      if (uniqueTableData.length === 0) return;
+      setIsLoading(true);
 
+      const headers = await getHeaders();
+
+      // Process each table sequentially with proper timeout handling
+      for (const table of uniqueTableData) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+        const body = {
+          shiftId: shiftCurrent[0]?._id,
+          isCheckout: "true",
+          status: "CHECKOUT",
+          paymentMethod: "APPZAP_TRANSFER", // Ignore spellcheck: APPZAP
+          isOrderingPaid: false,
+          billMode: "false",
+          tableName: table.tableName,
+          tableCode: table.code,
+          fullnameStaffCheckOut:
+            `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-", // Ignore spellcheck: firstname lastname
+          staffCheckOutId: profile?.data?.id,
+        };
+
+        try {
+          // First request
+          await axios.put(
+            `${END_POINT}/v7/bill-checkout`,
+            {
+              id: table.billId,
+              data: body,
+            },
+            {
+              headers,
+              signal: controller.signal,
+            }
+          );
+
+          // Second request
+          await axios.put(
+            `${END_POINT_SERVER_JUSTCAN}/v5/checkout/update-by-bill`, // Ignore spellcheck: JUSTCAN
+            {
+              billId: table.billId,
+              code: table.code,
+            },
+            {
+              headers,
+              signal: controller.signal,
+            }
+          );
+        } catch (err) {
+          // Handle individual table errors but continue with others
+          console.error(`Error processing table ${table.tableName}:`, err);
+        } finally {
+          clearTimeout(timeoutId);
+        }
+      }
+
+      // Update UI state
       setSelectedTable();
       getTableDataStore();
+
+      // Success notification
       Swal.fire({
         // Ignore spellcheck: Swal
         icon: "success",
@@ -324,7 +370,6 @@ export default function HistoryBankTransferClaim() {
   const handleConfirmCloseTable = async () => {
     setOpenConfirmClaimAndClose(false);
     await checkBillOrdering();
-    await claimSelectedPayment();
   };
 
   // Calculate proper pagination values

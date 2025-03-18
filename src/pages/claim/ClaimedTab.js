@@ -50,10 +50,10 @@ const ClaimedTab = ({
                 {t("ຈຳນວນບິນ")}
               </th>
               <th className="text-center" scope="col">
-                {t("ຈຳນວນບິນເງິນ")}
+                {t("ຈຳນວນເງິນ")}
               </th>
               <th className="text-center" scope="col">
-                {t("status")}
+                {t("ສະຖານະເຄລມ")}
               </th>
               <th className="text-center" scope="col">
                 {t("date_time")}

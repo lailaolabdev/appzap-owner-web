@@ -37,6 +37,7 @@ export default function ButtonComponent({
   coloractive,
   type,
   disabled,
+  className,
 }) {
   return (
     <CustomButton
@@ -48,6 +49,7 @@ export default function ButtonComponent({
       hoverbg={hoverbg}
       coloractive={coloractive}
       onClick={handleClick}
+      className={className}
     >
       {icon && <FontAwesomeIcon icon={icon} />}
       &nbsp;
