@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 // Third-party libraries
 import axios from "axios";
 import { useTranslation } from "react-i18next";
-import Swal from "sweetalert2";
+import Swal from "sweetalert2"; // Ignore spellcheck: Swal sweetalert2
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -12,10 +12,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faListAlt, faTable } from "@fortawesome/free-solid-svg-icons";
 
 // Constants, services and helpers
-import { END_POINT_SERVER_JUSTCAN, getLocalData } from "../../constants/api";
+import { END_POINT_SERVER_JUSTCAN, getLocalData } from "../../constants/api"; // Ignore spellcheck: JUSTCAN
 import { COLOR_APP, END_POINT } from "../../constants";
 import { getHeaders } from "../../services/auth";
-import { errorAdd, successAdd } from "../../helpers/sweetalert";
+import { errorAdd, successAdd } from "../../helpers/sweetalert"; // Ignore spellcheck: sweetalert
 
 // Store/state management
 import { useStore } from "../../store";
@@ -70,8 +70,13 @@ export default function HistoryBankTransferClaim() {
   const [openConfirm, setOpenConfirm] = useState(false);
   const [openConfirmClaimAndClose, setOpenConfirmClaimAndClose] =
     useState(false);
-  const [rowsPerPage] = useState(100);
-  const [page, setPage] = useState(0);
+  const [rowsPerPage] = useState(10); // Using rowsPerPage directly, no need for setter
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState({
+    [CLAIM_STATUSES.UNCLAIMED]: 0,
+    [CLAIM_STATUSES.CLAIMING]: 0,
+    [CLAIM_STATUSES.CLAIMED]: 0,
+  });
 
   const { setTotalAmountClaim } = useClaimDataStore();
   const { profile, setSelectedTable, getTableDataStore } = useStore();
@@ -79,38 +84,67 @@ export default function HistoryBankTransferClaim() {
   const { shiftCurrent } = useShiftStore();
 
   useEffect(() => {
-    fetchData(selectedType);
+    fetchData(selectedType, currentPage);
     getClaimAmountData();
-  }, [selectedType]);
+  }, [selectedType, currentPage]);
 
   const getClaimAmountData = async () => {
     try {
       const { DATA } = await getLocalData();
+      // Add timeout and cancel token for better network handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
       const response = await axios.get(
-        `${END_POINT_SERVER_JUSTCAN}/v5/checkout-total-amount?storeId=${DATA?.storeId}`
+        `${END_POINT_SERVER_JUSTCAN}/v5/checkout-total-amount?storeId=${DATA?.storeId}`, // Ignore spellcheck: JUSTCAN
+        { signal: controller.signal }
       );
+
+      clearTimeout(timeoutId);
       setTotalAmountClaim(response?.data?.totalAmount);
     } catch (err) {
-      console.log("err", err);
+      console.log("Error fetching claim amount data:", err.message);
     }
   };
 
-  const fetchData = async (type) => {
+  const fetchData = async (type, page) => {
     try {
       setIsLoading(true);
       const { TOKEN, DATA } = await getLocalData();
 
+      // Create abort controller for request cancellation
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
       // Map claim types to API endpoints
       const endpoints = {
-        [CLAIM_STATUSES.UNCLAIMED]: `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${DATA?.storeId}&claimStatus=UNCLAIMED&paymentMethod=BANK_TRANSFER&status=PAID&skip=0&limit=999999`,
-        [CLAIM_STATUSES.CLAIMING]: `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${DATA?.storeId}&status=CLAIMING&skip=0&limit=999999`,
-        [CLAIM_STATUSES.CLAIMED]: `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${DATA?.storeId}&status=CLAIMED&skip=0&limit=999999`,
+        [CLAIM_STATUSES.UNCLAIMED]: `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${
+          DATA?.storeId
+        }&claimStatus=UNCLAIMED&paymentMethod=BANK_TRANSFER&status=PAID&skip=${
+          (page - 1) * rowsPerPage
+        }&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
+        [CLAIM_STATUSES.CLAIMING]: `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${
+          DATA?.storeId
+        }&status=CLAIMING&skip=${
+          (page - 1) * rowsPerPage
+        }&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
+        [CLAIM_STATUSES.CLAIMED]: `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${
+          DATA?.storeId
+        }&status=CLAIMED&skip=${(page - 1) * rowsPerPage}&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
       };
 
       const apiUrl = endpoints[type];
-      if (!apiUrl) return;
+      if (!apiUrl) {
+        clearTimeout(timeoutId);
+        return;
+      }
 
-      const response = await axios.get(apiUrl, { headers: TOKEN });
+      const response = await axios.get(apiUrl, {
+        headers: TOKEN,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
 
       // Update state with new data
       setClaimData((prevData) => ({
@@ -122,8 +156,17 @@ export default function HistoryBankTransferClaim() {
         ...prevAmounts,
         [type]: response.data.totalAmount || 0,
       }));
+
+      // Store total count for pagination
+      setTotalItems((prev) => ({
+        ...prev,
+        [type]: response.data.pagination.totalCount || 0,
+      }));
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching data:", error.message);
+      if (axios.isCancel(error)) {
+        console.log("Request cancelled:", error.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -162,23 +205,32 @@ export default function HistoryBankTransferClaim() {
       const billIds = selectedPayment.map((x) => x._id);
       const { TOKEN, DATA } = await getLocalData();
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
       await axios.post(
-        `${END_POINT_SERVER_JUSTCAN}/v5/claim-payment/create`,
+        `${END_POINT_SERVER_JUSTCAN}/v5/claim-payment/create`, // Ignore spellcheck: JUSTCAN
         {
           storeId: DATA?.storeId,
           billIds: billIds,
         },
-        { headers: TOKEN }
+        {
+          headers: TOKEN,
+          signal: controller.signal,
+        }
       );
 
+      clearTimeout(timeoutId);
+
       setSelectedPayment([]);
-      successAdd(`ສ້າງເຄລມສຳເລັດ`);
+      successAdd(`ສຳເລັດແລ້ວ`); // Ignore spellcheck: ສຳເລັດແລ້ວ
 
       // Refresh data for both tabs
-      fetchData(CLAIM_STATUSES.UNCLAIMED);
-      fetchData(CLAIM_STATUSES.CLAIMING);
+      fetchData(CLAIM_STATUSES.UNCLAIMED, currentPage);
+      fetchData(CLAIM_STATUSES.CLAIMING, currentPage);
     } catch (error) {
-      errorAdd(`ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃຫມ່`);
+      errorAdd(`ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່`); // Ignore spellcheck: ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່
+      console.error("Error claiming payment:", error.message);
     } finally {
       setIsLoading(false);
     }
@@ -190,16 +242,26 @@ export default function HistoryBankTransferClaim() {
       setIsLoading(true);
 
       const { TOKEN, DATA } = await getLocalData();
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
       await axios.post(
-        `${END_POINT_SERVER_JUSTCAN}/v5/claim-payment/create-all`,
+        `${END_POINT_SERVER_JUSTCAN}/v5/claim-payment/create-all`, // Ignore spellcheck: JUSTCAN
         { storeId: DATA?.storeId },
-        { headers: TOKEN }
+        {
+          headers: TOKEN,
+          signal: controller.signal,
+        }
       );
 
-      successAdd(`ສ້າງເຄລມທັງຫມົດສຳເລັດ`);
-      fetchData(CLAIM_STATUSES.UNCLAIMED);
+      clearTimeout(timeoutId);
+
+      successAdd(`ສຳເລັດທັງໝົດແລ້ວ`); // Ignore spellcheck: ສຳເລັດທັງໝົດແລ້ວ
+      fetchData(CLAIM_STATUSES.UNCLAIMED, currentPage);
     } catch (error) {
-      errorAdd(`ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃຫມ່`);
+      errorAdd(`ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່`); // Ignore spellcheck: ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່
+      console.error("Error claiming all payments:", error.message);
     } finally {
       setIsLoading(false);
     }
@@ -210,17 +272,21 @@ export default function HistoryBankTransferClaim() {
       const currentPayment = selectedPayment[0];
       if (!currentPayment) return;
 
+      setIsLoading(true);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
       const body = {
         shiftId: shiftCurrent[0]?._id,
         isCheckout: "true",
         status: "CHECKOUT",
-        paymentMethod: "APPZAP_TRANSFER",
+        paymentMethod: "APPZAP_TRANSFER", // Ignore spellcheck: APPZAP
         isOrderingPaid: false,
         billMode: "false",
         tableName: currentPayment?.tableName,
         tableCode: currentPayment?.code,
         fullnameStaffCheckOut:
-          `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-",
+          `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-", // Ignore spellcheck: firstname lastname
         staffCheckOutId: profile?.data?.id,
       };
 
@@ -230,26 +296,40 @@ export default function HistoryBankTransferClaim() {
           id: currentPayment?.billId,
           data: body,
         },
-        { headers: await getHeaders() }
+        {
+          headers: await getHeaders(),
+          signal: controller.signal,
+        }
       );
+
+      clearTimeout(timeoutId);
 
       setSelectedTable();
       getTableDataStore();
       Swal.fire({
+        // Ignore spellcheck: Swal
         icon: "success",
-        title: `${t("checkbill_success")}`,
+        title: `${t("checkbill_success")}`, // Ignore spellcheck: checkbill
         showConfirmButton: false,
         timer: 1800,
       });
     } catch (error) {
-      errorAdd(`${t("checkbill_fial")}`);
+      errorAdd(`${t("checkbill_fial")}`); // Ignore spellcheck: checkbill fial
+      console.error("Error checking bill ordering:", error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleConfirmCloseTable = async () => {
     setOpenConfirmClaimAndClose(false);
-    checkBillOrdering();
-    claimSelectedPayment();
+    await checkBillOrdering();
+    await claimSelectedPayment();
+  };
+
+  // Calculate proper pagination values
+  const calculateTotalPages = (type) => {
+    return Math.ceil(totalItems[type] / rowsPerPage) || 1;
   };
 
   // Prepare data for each tab based on selected type
@@ -269,23 +349,32 @@ export default function HistoryBankTransferClaim() {
       >
         <TabButton
           isSelected={selectedType === CLAIM_STATUSES.UNCLAIMED}
-          onClick={() => setSelectedType(CLAIM_STATUSES.UNCLAIMED)}
+          onClick={() => {
+            setSelectedType(CLAIM_STATUSES.UNCLAIMED);
+            setCurrentPage(1); // Reset page when changing tabs
+          }}
           icon={faListAlt}
-          title="ລາຍການຊຳລະ"
+          title="ລາຍການທີ່ບໍ່ສຳເລັດ" // Ignore spellcheck: ລາຍການທີ່ບໍ່ສຳເລັດ
         />
 
         <TabButton
           isSelected={selectedType === CLAIM_STATUSES.CLAIMING}
-          onClick={() => setSelectedType(CLAIM_STATUSES.CLAIMING)}
+          onClick={() => {
+            setSelectedType(CLAIM_STATUSES.CLAIMING);
+            setCurrentPage(1); // Reset page when changing tabs
+          }}
           icon={faListAlt}
-          title="ລາຍການກຳລັງເຄລມ"
+          title="ລາຍການກຳລັງເຄລມ" // Ignore spellcheck: ລາຍການກຳລັງເຄລມ
         />
 
         <TabButton
           isSelected={selectedType === CLAIM_STATUSES.CLAIMED}
-          onClick={() => setSelectedType(CLAIM_STATUSES.CLAIMED)}
+          onClick={() => {
+            setSelectedType(CLAIM_STATUSES.CLAIMED);
+            setCurrentPage(1); // Reset page when changing tabs
+          }}
           icon={faTable}
-          title="ລາຍການເຄລມເງິນ"
+          title="ລາຍການເຄລມເງິນ" // Ignore spellcheck: ລາຍການເຄລມເງິນ
         />
       </div>
 
@@ -302,11 +391,14 @@ export default function HistoryBankTransferClaim() {
           setSelectedPayment={setSelectedPayment}
           claimSelectedPayment={claimSelectedPayment}
           setOpenConfirm={setOpenConfirm}
-          page={page}
+          page={currentPage}
           rowsPerPage={rowsPerPage}
           checkPaymentSelected={checkPaymentSelected}
           selectPayment={selectPayment}
           setOpenConfirmClaimAndClose={setOpenConfirmClaimAndClose}
+          totalPageCount={calculateTotalPages(CLAIM_STATUSES.UNCLAIMED)}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
           t={t}
         />
       )}
@@ -315,7 +407,9 @@ export default function HistoryBankTransferClaim() {
           amountData={amountData}
           storeDetail={storeDetail}
           claimingData={tabData[CLAIM_STATUSES.CLAIMING]}
-          page={page}
+          totalPageCount={calculateTotalPages(CLAIM_STATUSES.CLAIMING)}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
           rowsPerPage={rowsPerPage}
           t={t}
         />
@@ -325,7 +419,9 @@ export default function HistoryBankTransferClaim() {
           amountData={amountData}
           storeDetail={storeDetail}
           claimedData={tabData[CLAIM_STATUSES.CLAIMED]}
-          page={page}
+          totalPageCount={calculateTotalPages(CLAIM_STATUSES.CLAIMED)}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
           rowsPerPage={rowsPerPage}
           t={t}
         />
@@ -334,18 +430,18 @@ export default function HistoryBankTransferClaim() {
       {/* Confirm dialogs */}
       <PopUpConfirms
         open={openConfirm}
-        text={"ເຄລມທັງໝົດ"}
-        textBefore={"ທ່ານຕ້ອງການ"}
-        textAfter={"ແທ້ບໍ່"}
+        text={"ເຄລມທັງໝົດ"} // Ignore spellcheck: ເຄລມທັງໝົດ
+        textBefore={"ທ່ານຕ້ອງການ"} // Ignore spellcheck: ທ່ານຕ້ອງການ
+        textAfter={"ແທ້ບໍ?"} // Ignore spellcheck: ແທ້ບໍ
         onClose={() => setOpenConfirm(false)}
         onSubmit={claimAllPayment}
       />
 
       <PopUpConfirms
         open={openConfirmClaimAndClose}
-        text={"ເຄລມແລະປິດໂຕະ"}
-        textBefore={"ທ່ານຕ້ອງການ"}
-        textAfter={"ເລີຍບໍ່ ?"}
+        text={"ເຄລມແລະປິດໂຕະ"} // Ignore spellcheck: ເຄລມແລະປິດໂຕະ
+        textBefore={"ທ່ານຕ້ອງການ"} // Ignore spellcheck: ທ່ານຕ້ອງການ
+        textAfter={"ແທ້ບໍ?"} // Ignore spellcheck: ແທ້ບໍ
         onClose={() => setOpenConfirmClaimAndClose(false)}
         onSubmit={handleConfirmCloseTable}
       />

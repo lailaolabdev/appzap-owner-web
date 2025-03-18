@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import MoneySummaryCard from "./components/MoneySummaryCard";
 import EmptyState from "./components/EmptyState";
@@ -12,10 +12,8 @@ const UnclaimedTab = ({
   storeDetail,
   selectedPayment,
   unClaimedData,
-  setSelectedPayment,
   claimSelectedPayment,
   setOpenConfirm,
-  page,
   rowsPerPage,
   checkPaymentSelected,
   selectPayment,
@@ -36,6 +34,49 @@ const UnclaimedTab = ({
     }`;
   };
 
+  // Function to handle "select all" checkbox
+  const handleSelectAll = () => {
+    // Get only unclaimed items that can be selected
+    const unclaimedItems = unClaimedData.filter(
+      (item) => item.claimStatus === "UNCLAIMED"
+    );
+
+    // If all unclaimed items are already selected, deselect all
+    const allSelected = unclaimedItems.every((item) =>
+      checkPaymentSelected(item)
+    );
+
+    // Select or deselect all unclaimed items
+    if (allSelected) {
+      // Deselect all items by removing them from selection
+      unclaimedItems.forEach((item) => {
+        if (checkPaymentSelected(item)) {
+          selectPayment(item);
+        }
+      });
+    } else {
+      // Select all items by adding them to selection
+      unclaimedItems.forEach((item) => {
+        if (!checkPaymentSelected(item)) {
+          selectPayment(item);
+        }
+      });
+    }
+  };
+
+  console.log("selectedPayment", totalPageCount);
+
+  // Check if all unclaimed items are selected
+  const areAllSelected = () => {
+    const unclaimedItems = unClaimedData.filter(
+      (item) => item.claimStatus === "UNCLAIMED"
+    );
+    return (
+      unclaimedItems.length > 0 &&
+      unclaimedItems.every((item) => checkPaymentSelected(item))
+    );
+  };
+
   return (
     <div>
       {/* Summary card showing total unclaimed amount */}
@@ -50,9 +91,9 @@ const UnclaimedTab = ({
             {/* Conditionally render "Claim Selected" button if items are selected */}
             {selectedPayment.length > 0 && (
               <ButtonComponent
-                title={"ເຄລມຕາມເລືອກ"}
+                title="Claim Selected"
                 icon={faPlusCircle}
-                colorbg={"#f97316"}
+                className="bg-orange-500 hover:bg-orange-600"
                 width={"150px"}
                 handleClick={claimSelectedPayment}
               />
@@ -61,11 +102,22 @@ const UnclaimedTab = ({
             {/* Conditionally render "Claim All" button if there are unclaimed items */}
             {unClaimedData?.length > 0 && (
               <ButtonComponent
-                title={"ເຄລມທັງຫມົດ"}
+                title="Claim All"
                 icon={faPlusCircle}
-                colorbg={"#f97316"}
+                className="bg-orange-500 hover:bg-orange-600"
                 width={"150px"}
                 handleClick={() => setOpenConfirm(true)}
+              />
+            )}
+
+            {/* Add Claim and Close Table button */}
+            {selectedPayment.length > 0 && (
+              <ButtonComponent
+                title={t("confirm_close_table") ?? "Claim & Close Table"}
+                icon={faPlusCircle}
+                className="bg-green-500 hover:bg-green-600"
+                width={"180px"}
+                handleClick={() => setOpenConfirmClaimAndClose(true)}
               />
             )}
           </div>
@@ -74,35 +126,36 @@ const UnclaimedTab = ({
 
       {/* Table for unclaimed payments */}
       <div className="overflow-x-auto">
-        <table className="table table-hover">
+        <table className="table">
           <thead className="thead-light">
             <tr>
-              <th style={{ textWrap: "nowrap" }} scope="col">
+              <th className="whitespace-nowrap" scope="col">
+                <Form.Check
+                  type="checkbox"
+                  checked={areAllSelected()}
+                  onChange={handleSelectAll}
+                />
+              </th>
+              <th className="whitespace-nowrap" scope="col">
                 {t("no")}
               </th>
-              <th style={{ textWrap: "nowrap" }} scope="col">
+              <th className="whitespace-nowrap text-center" scope="col">
                 {t("tableNumber")}
               </th>
-              <th style={{ textWrap: "nowrap" }} scope="col">
+              <th className="whitespace-nowrap text-center" scope="col">
                 {t("tableCode")}
               </th>
-              <th style={{ textWrap: "nowrap" }} scope="col">
+              <th className="whitespace-nowrap text-center" scope="col">
                 {t("amount")}
               </th>
-              <th style={{ textWrap: "nowrap" }} scope="col">
-                {t("detail")}
-              </th>
-              <th style={{ textWrap: "nowrap" }} scope="col">
+              <th className="whitespace-nowrap text-center" scope="col">
                 {t("status")}
               </th>
-              <th style={{ textWrap: "nowrap" }} scope="col">
-                ສະຖານະເຄລມ
+              <th className="whitespace-nowrap text-center" scope="col">
+                {"ສະຖານະເຄລມ"}
               </th>
-              <th style={{ textWrap: "nowrap" }} scope="col">
+              <th className="whitespace-nowrap text-center" scope="col">
                 {t("date_time")}
-              </th>
-              <th style={{ textWrap: "nowrap" }} scope="col">
-                ຈັດການ
               </th>
             </tr>
           </thead>
@@ -111,98 +164,44 @@ const UnclaimedTab = ({
               unClaimedData.map((item, index) => {
                 const isSelected = checkPaymentSelected(item);
                 return (
-                  <tr
-                    key={index}
-                    style={{ backgroundColor: isSelected ? "#616161" : "" }}
-                  >
-                    <td
-                      style={{
-                        textWrap: "nowrap",
-                        color: isSelected ? "white" : "",
-                      }}
-                    >
+                  <tr key={index}>
+                    <td className={`whitespace-nowrap`}>
+                      {item?.claimStatus === "UNCLAIMED" && (
+                        <Form.Check
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => selectPayment(item)}
+                        />
+                      )}
+                    </td>
+                    <td className={`whitespace-nowrap`}>
                       {startIndex + index + 1}
                     </td>
-                    <td
-                      style={{
-                        textWrap: "nowrap",
-                        color: isSelected ? "white" : "",
-                      }}
-                    >
+                    <td className={`whitespace-nowrap text-center`}>
                       {item?.tableName ?? "-"}
                     </td>
-                    <td
-                      style={{
-                        textWrap: "nowrap",
-                        color: isSelected ? "white" : "",
-                      }}
-                    >
+                    <td className={`whitespace-nowrap text-center`}>
                       {item?.code ?? "-"}
                     </td>
                     <td
-                      style={{
-                        textWrap: "nowrap",
-                        color: isSelected ? "white" : "",
-                      }}
+                      className={`whitespace-nowrap text-center text-green-500`}
                     >
                       {formatCurrency(item?.totalAmount, item?.currency)}
                     </td>
                     <td
-                      style={{
-                        textWrap: "nowrap",
-                        color: isSelected ? "white" : "",
-                      }}
-                    >
-                      {t("checkout") ?? "-"}
-                    </td>
-                    <td
-                      style={{
-                        textWrap: "nowrap",
-                        color: isSelected ? "white" : "",
-                      }}
+                      className={`whitespace-nowrap text-green-500 text-center`}
                     >
                       {t(item.status) ?? "-"}
                     </td>
                     <td
-                      style={{
-                        textWrap: "nowrap",
-                        color: isSelected ? "white" : "",
-                      }}
+                      className={`whitespace-nowrap text-red-500 text-center`}
                     >
-                      {item.claimStatus === "UNCLAIMED" ? "ຖອນເງິນຄືນ" : "-"}
+                      {item.claimStatus === "UNCLAIMED" ? "ຍັງບໍ່ເຄລມ" : "-"}
                     </td>
-                    <td
-                      style={{
-                        textWrap: "nowrap",
-                        color: isSelected ? "white" : "",
-                      }}
-                    >
+                    <td className={`whitespace-nowrap text-center`}>
                       {item?.createdAt
                         ? moment(item.createdAt).format("DD/MM/YYYY HH:mm a")
                         : "-"}
-                    </td>
-                    <td
-                      className={`${
-                        isSelected ? "text-white" : ""
-                      } flex flex-row gap-2`}
-                    >
-                      {item?.claimStatus === "UNCLAIMED" && (
-                        <Button
-                          onClick={() => selectPayment(item)}
-                          variant={isSelected ? "light" : "primary"}
-                        >
-                          {isSelected ? "ຍົກເລີກ" : "ເລືອກ"}
-                        </Button>
-                      )}
-
-                      {item?.claimStatus === "UNCLAIMED" && isSelected && (
-                        <Button
-                          onClick={() => setOpenConfirmClaimAndClose(true)}
-                          variant="success"
-                        >
-                          {t("confirm_close_table")}
-                        </Button>
-                      )}
                     </td>
                   </tr>
                 );
@@ -218,7 +217,7 @@ const UnclaimedTab = ({
       {totalPageCount > 0 && (
         <PaginationControls
           pageCount={totalPageCount}
-          onPageChange={(e) => onPageChange(e?.selected)}
+          onPageChange={(e) => onPageChange(e?.selected + 1)}
           forcePage={currentPage - 1}
           t={t}
         />

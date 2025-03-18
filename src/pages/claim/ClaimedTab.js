@@ -40,25 +40,22 @@ const ClaimedTab = ({
         <table className="table table-hover">
           <thead className="thead-light">
             <tr>
-              <th style={{ textWrap: "nowrap" }} scope="col">
+              <th className="text-start" scope="col">
                 {t("no")}
               </th>
-              <th style={{ textWrap: "nowrap" }} scope="col">
+              <th className="text-center" scope="col">
                 {t("ລະຫັດເຄລມ")}
               </th>
-              <th style={{ textWrap: "nowrap" }} scope="col">
+              <th className="text-center" scope="col">
                 {t("ຈຳນວນບິນ")}
               </th>
-              <th style={{ textWrap: "nowrap" }} scope="col">
+              <th className="text-center" scope="col">
                 {t("ຈຳນວນບິນເງິນ")}
               </th>
-              <th style={{ textWrap: "nowrap" }} scope="col">
-                {t("detail")}
-              </th>
-              <th style={{ textWrap: "nowrap" }} scope="col">
+              <th className="text-center" scope="col">
                 {t("status")}
               </th>
-              <th style={{ textWrap: "nowrap" }} scope="col">
+              <th className="text-center" scope="col">
                 {t("date_time")}
               </th>
             </tr>
@@ -66,24 +63,19 @@ const ClaimedTab = ({
           <tbody>
             {claimedData?.length > 0 ? (
               claimedData.map((item, index) => (
-                <tr key={item._id || index}>
-                  <td style={{ textWrap: "nowrap" }}>
-                    {startIndex + index + 1}
-                  </td>
-                  <td style={{ textWrap: "nowrap" }}>{item?.code ?? "-"}</td>
-                  <td style={{ textWrap: "nowrap" }}>
+                <tr key={index}>
+                  <td className="text-start">{startIndex + index + 1}</td>
+                  <td className="text-center">{item?.code ?? "-"}</td>
+                  <td className="text-center">
                     {item?.billIds?.length ?? "-"}
                   </td>
-                  <td style={{ textWrap: "nowrap" }}>
+                  <td className="text-center text-green-500">
                     {formatCurrency(item?.totalAmount, item?.currency)}
                   </td>
-                  <td style={{ textWrap: "nowrap" }}>{t("checkout") ?? "-"}</td>
-                  <td style={{ textWrap: "nowrap" }}>
-                    {item.status === "CLAIMED"
-                      ? "ຖອນເງິນຄືນແລ້ວ"
-                      : t(item.status) ?? "-"}
+                  <td className="text-center text-green-500">
+                    {item.status === "CLAIMED" ? "ເຄລມແລ້ວ" : "-"}
                   </td>
-                  <td style={{ textWrap: "nowrap" }}>
+                  <td className="text-center">
                     {item?.createdAt
                       ? moment(item.createdAt).format("DD/MM/YYYY HH:mm a")
                       : "-"}
@@ -101,7 +93,7 @@ const ClaimedTab = ({
       {totalPageCount > 0 && (
         <PaginationControls
           pageCount={totalPageCount}
-          onPageChange={(e) => onPageChange(e?.selected)}
+          onPageChange={(e) => onPageChange(e?.selected + 1)}
           forcePage={currentPage - 1}
           t={t}
         />
