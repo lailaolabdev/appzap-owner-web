@@ -497,6 +497,7 @@ function HomecafeEdit() {
       isWeightMenu: menu?.isWeightMenu,
       unitWeightMenu: menu?.unitWeightMenu,
       menuImage: menu?.images[0],
+      storeId: storeDetail?._id,
     };
 
     // const existingMenuIndex = updatedSelectedMenus.findIndex(
@@ -548,6 +549,7 @@ function HomecafeEdit() {
               unitWeightMenu: menu?.unitWeightMenu,
               isFree: true,
               mainMenuId: menu._id,
+              storeId: storeDetail?._id,
             });
           }
         });
@@ -667,6 +669,7 @@ function HomecafeEdit() {
       totalPrice: finalPrice + totalOptionPrice,
       isWeightMenu: selectedItem?.isWeightMenu,
       unitWeightMenu: selectedItem?.unitWeightMenu,
+      storeId: storeDetail?._id,
     };
 
     setSelectedMenus((prevMenu) => {
@@ -732,6 +735,7 @@ function HomecafeEdit() {
                 unitWeightMenu: selectedItem?.unitWeightMenu,
                 isFree: true,
                 mainMenuId: selectedItem._id,
+                storeId: storeDetail?._id,
               });
             }
           });
@@ -1672,7 +1676,9 @@ function HomecafeEdit() {
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        {SelectedMenus?.map((item) => {
+                        {SelectedMenus?.filter(
+                          (item) => item.storeId === storeDetail?._id
+                        )?.map((item) => {
                           if (item?.status === "CANCELED") return;
 
                           const optionsString =
@@ -1758,7 +1764,11 @@ function HomecafeEdit() {
                                       item.quantity.toString()
                                     ).toFixed(3)}`}
                                   >
-                                    {`${item?.quantity}/${item?.unitWeightMenu}`}
+                                    {`${item?.quantity}/${
+                                      item?.unitWeightMenu !== undefined
+                                        ? item?.unitWeightMenu
+                                        : "-"
+                                    }`}
                                   </div>
                                 ) : (
                                   <div className="flex justify-center items-center w-10 h-8">
@@ -2073,7 +2083,9 @@ function HomecafeEdit() {
                   </tbody>
                 </Table> */}
                 <div className="space-y-4">
-                  {SelectedMenus?.map((item) => {
+                  {SelectedMenus?.filter(
+                    (item) => item.storeId === storeDetail?._id
+                  )?.map((item) => {
                     if (item?.status === "CANCELED") return;
 
                     const optionsString =
@@ -2157,7 +2169,11 @@ function HomecafeEdit() {
                                 item.quantity.toString()
                               ).toFixed(3)}`}
                             >
-                              {`${item?.quantity}/${item?.unitWeightMenu}`}
+                              {`${item?.quantity}/${
+                                item?.unitWeightMenu !== undefined
+                                  ? item?.unitWeightMenu
+                                  : "-"
+                              }`}
                             </div>
                           ) : (
                             <div className="flex justify-center items-center w-10 h-8">
