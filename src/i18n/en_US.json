@@ -1267,5 +1267,8 @@
   "total_amount_menu_discount": "Total Amount Menu Discount",
   "menu_discount": "Menu Discount",
   "menu_free": "Menu Free",
-  "re_print_bill": "RePrint Bill Successful"
+  "re_print_bill": "RePrint Bill Successful",
+  "bill_cancel": "Bill Cancel",
+  "cancel_success": "Cancel Success"
+  
 }

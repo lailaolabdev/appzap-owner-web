@@ -3,7 +3,7 @@ import moment from "moment";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import ReactPaginate from "react-paginate";
-import { Table, Modal, Button, Pagination, Spinner } from "react-bootstrap";
+import { Table, Modal, Pagination, Spinner } from "react-bootstrap";
 import * as _ from "lodash";
 import { FaCheckDouble, FaCircleCheck } from "react-icons/fa6";
 import { BsFillExclamationTriangleFill } from "react-icons/bs";
@@ -24,7 +24,7 @@ import useQuery from "../../helpers/useQuery";
 import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
 import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
 import Loading from "../../components/Loading";
-import { getCountBills } from "../../services/bill";
+import { billCancelCafe, getCountBills } from "../../services/bill";
 
 import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
@@ -41,6 +41,7 @@ import printFlutter from "../../helpers/printFlutter";
 import BillForCheckOut80 from "../../components/bill/BillForCheckOut80";
 import BillForCheckOutCafe80 from "../../components/bill/BillForCheckOutCafe80";
 import { convertUnitgramAndKilogram } from "../../helpers/convertUnitgramAndKilogram";
+import { Button } from "../../components/ui/Button";
 
 const limitData = 50;
 
@@ -210,6 +211,8 @@ export default function DashboardFinance({
     setShow(true);
     setDataModal(item);
   };
+
+  console.log("dataModal", dataModal);
 
   const getCurrency = async () => {
     try {
@@ -636,7 +639,31 @@ export default function DashboardFinance({
     setTotalTranferAndPayLast(dataModal?.totalTranferAndPayLast);
   }, [dataModal]);
 
-
+  const confrimCancelBill = async () => {
+    try {
+      const body = {
+        storeId: dataModal?.storeId,
+        order: dataModal?.orderId?.map((item) => ({ _id: item?._id })),
+        code: dataModal?.code,
+        status: "CANCELED",
+        billAmount: dataModal?.payAmount,
+      };
+      const _res = await billCancelCafe(body);
+      if (_res?.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: `${t("cancel_success")}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        handleClose();
+        _fetchFinanceData();
+      }
+      console.log({ _res });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <Loading />}
@@ -775,7 +802,8 @@ export default function DashboardFinance({
 
                 <>
                   <td>
-                    {(item?.orderId[0]?.deliveryCode || item?.orderId[0]?.platform)
+                    {item?.orderId[0]?.deliveryCode ||
+                    item?.orderId[0]?.platform
                       ? ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                         ? new Intl.NumberFormat("ja-JP", {
                             currency: "JPY",
@@ -796,7 +824,7 @@ export default function DashboardFinance({
                 </>
 
                 <td>
-                  { item?.orderId[0]?.platform
+                  {item?.orderId[0]?.platform
                     ? 0
                     : ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                     ? new Intl.NumberFormat("ja-JP", {
@@ -869,6 +897,8 @@ export default function DashboardFinance({
                         ? "red"
                         : item?.status === "ACTIVE"
                         ? "#00496e"
+                        : item?.status === "CANCELED"
+                        ? "red"
                         : "",
                   }}
                 >
@@ -1020,41 +1050,6 @@ export default function DashboardFinance({
                 ""
               )}
             </div>
-            <div className="">
-              {!storeDetail?.isStatusCafe && (
-                <Button
-                  disabled={
-                    disabledEditBill ||
-                    selectOrder?.status === "ACTIVE" ||
-                    profile?.data?.role !== "APPZAP_ADMIN" ||
-                    dataModal?.isDebtPayment === true ||
-                    dataModal?.isDebtAndPay === true
-                  }
-                  onClick={handleEditBill}
-                >
-                  {selectOrder?.status === "ACTIVE"
-                    ? t("editingTheBill")
-                    : t("billEditing")}
-                </Button>
-              )}
-              {storeDetail?.isStatusCafe && (
-                <Button
-                  // disabled={
-                  //   disabledEditBill ||
-                  //   selectOrder?.status === "ACTIVE" ||
-                  //   profile?.data?.role != "APPZAP_ADMIN" ||
-                  //   dataModal?.isDebtPayment === true ||
-                  //   dataModal?.isDebtAndPay === true
-                  // }
-                  onClick={() => navigate(`/cafe/Edit/${dataModal?._id}`)}
-                >
-                  {t("billEditing")}
-                </Button>
-              )}
-              <Button className="ml-2" onClick={() => onPrintBill()}>
-                Print
-              </Button>
-            </div>
           </div>
           <Table striped bordered hover size="sm" style={{ fontSize: 15 }}>
             <thead>
@@ -1196,43 +1191,73 @@ export default function DashboardFinance({
             </div>
           )}
         </Modal.Body>
-        {dataModal?.isCafe ? (
-          <div
-            style={{ width: "80mm", padding: 10, margin: 5 }}
-            ref={bill80Ref}
-          >
-            <BillForCheckOutCafe80
-              storeDetail={storeDetail}
-              profile={profile}
-              dataBill={dataModal?.orderId}
-              data={dataModal?.length}
-              dataModal={dataModal}
-              memberData={""}
-            />
-          </div>
-        ) : (
-          <div
-            style={{ width: "80mm", padding: 10, margin: 5 }}
-            ref={bill80Ref}
-          >
-            <BillForCheckOut80
-              orderPayBefore={0}
-              storeDetail={storeDetail}
-              selectedTable={selectedTable}
-              dataBill={dataModal}
-              totalBillBillForCheckOut80={totalAfter}
-              // taxPercent={taxPercent}
-              profile={profile}
-            />
-          </div>
-        )}
-
         <Modal.Footer>
-          <Button variant="danger" onClick={handleClose}>
-            {t("close")}
+          <Button className="text-white font-bold" onClick={confrimCancelBill}>
+            {t("bill_cancel")}
+          </Button>
+          {!storeDetail?.isStatusCafe && (
+            <Button
+              className="text-white font-bold"
+              disabled={
+                disabledEditBill ||
+                selectOrder?.status === "ACTIVE" ||
+                profile?.data?.role !== "APPZAP_ADMIN" ||
+                dataModal?.isDebtPayment === true ||
+                dataModal?.isDebtAndPay === true
+              }
+              onClick={handleEditBill}
+            >
+              {selectOrder?.status === "ACTIVE"
+                ? t("editingTheBill")
+                : t("billEditing")}
+            </Button>
+          )}
+          {storeDetail?.isStatusCafe && (
+            <Button
+              className="text-white font-bold"
+              // disabled={
+              //   disabledEditBill ||
+              //   selectOrder?.status === "ACTIVE" ||
+              //   profile?.data?.role != "APPZAP_ADMIN" ||
+              //   dataModal?.isDebtPayment === true ||
+              //   dataModal?.isDebtAndPay === true
+              // }
+              onClick={() => navigate(`/cafe/Edit/${dataModal?._id}`)}
+            >
+              {t("billEditing")}
+            </Button>
+          )}
+          <Button
+            className="text-white font-bold"
+            onClick={() => onPrintBill()}
+          >
+            {t("print_bill")}
           </Button>
         </Modal.Footer>
       </Modal>
+      {dataModal?.isCafe ? (
+        <div style={{ width: "80mm", padding: 10, margin: 5 }} ref={bill80Ref}>
+          <BillForCheckOutCafe80
+            storeDetail={storeDetail}
+            profile={profile}
+            dataBill={dataModal?.orderId}
+            data={dataModal?.length}
+            memberData={""}
+          />
+        </div>
+      ) : (
+        <div style={{ width: "80mm", padding: 10, margin: 5 }} ref={bill80Ref}>
+          <BillForCheckOut80
+            orderPayBefore={0}
+            storeDetail={storeDetail}
+            selectedTable={selectedTable}
+            dataBill={dataModal}
+            totalBillBillForCheckOut80={totalAfter}
+            // taxPercent={taxPercent}
+            profile={profile}
+          />
+        </div>
+      )}
     </div>
   );
 }

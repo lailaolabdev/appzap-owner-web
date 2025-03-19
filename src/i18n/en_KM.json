@@ -1225,5 +1225,7 @@
   "order_status": "ស្ថានភាពបញ្ជាទិញ",
   "total_amount_menu_discount": "ចំនួនធាតុ និង បញ្ចុះតម្លៃ",
   "menu_discount":"បញ្ចុះតម្លៃម៉ឺនុយ",
-  "menu_free": "ម៉ឺនុយទំនេរ"
+  "menu_free": "ម៉ឺនុយទំនេរ",
+  "bill_cancel": "បោះបង់វិក្កយបត្រ",
+  "cancel_success": "បោះបង់បានសម្រេច"
 }

@@ -71,3 +71,14 @@ export const createBillCancelCafe = async (data) => {
     return error;
   }
 };
+
+export const billCancelCafe = async (data) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v7/orders/cafe/bill-cancel`;
+    const res = await axios.put(url, data, { headers: _header });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};

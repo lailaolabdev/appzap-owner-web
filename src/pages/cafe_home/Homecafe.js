@@ -445,7 +445,11 @@ function Homecafe() {
       note: "",
       isWeightMenu: menu?.isWeightMenu,
       unitWeightMenu: menu?.unitWeightMenu,
+<<<<<<< HEAD
       storeId: storeDetail?._id,
+=======
+      menuImage: menu?.images[0],
+>>>>>>> 5583a16e (feat: add cancellation functionality and update translations for bill cancellation)
     };
 
     // console.log("mainMenuData", mainMenuData);
@@ -1636,7 +1640,7 @@ function Homecafe() {
                           return (
                             <div
                               key={item?._id}
-                              className="flex justify-between items-center space-x-4 px-2.5 py-1 rounded-xl border bg-card"
+                              className="flex justify-between items-center space-x-4 px-2.5 py-2 rounded-xl border bg-card"
                             >
                               <div className="flex flex-row gap-4 items-center">
                                 <div className="relative h-14 w-16 overflow-hidden rounded-md">
@@ -1737,34 +1741,48 @@ function Homecafe() {
                   ) : (
                     ""
                   )}
+                  {SelectedMenus?.length > 0 && (
+                    <div className="grid grid-cols-2 gap-2 place-content-center w-full">
+                      <button
+                        type="button"
+                        className="w-full rounded-lg h-[40px] bg-red-500 hover:bg-red-400 text-white text-md font-bold"
+                        onClick={() => {
+                          setSelectedMenus([]);
+                          setSelectedMenu([]);
+                        }}
+                      >
+                        {t("cancel_order")}
+                      </button>
+                      <button
+                        type="button"
+                        className="w-full rounded-lg h-[40px] bg-color-app hover:bg-orange-300 text-md font-bold text-white"
+                        onClick={() => {
+                          if (SelectedMenus.length === 0) {
+                            AlertMessage();
+                          } else {
+                            setPopupDelivery({ CheckOutDelivery: true });
+                            setIsDelivery(true);
+                          }
+                        }}
+                        disabled={SelectedMenus.length === 0}
+                      >
+                        {t("delivery")}
+                      </button>
+                      <button
+                        type="button"
+                        className="w-full rounded-lg h-[40px] bg-color-app hover:bg-orange-300 text-md font-bold text-white"
+                        onClick={() => {
+                          SelectedMenus.length === 0
+                            ? AlertMessage()
+                            : setPopup({ CheckOutType: true });
+                        }}
+                        disabled={SelectedMenus.length === 0}
+                      >
+                        {t("order_checkout")}
+                      </button>
+                    </div>
+                  )}
                 </div>
-                {SelectedMenus?.length > 0 && (
-                  <div className="grid grid-cols-2 gap-2 place-content-center w-full">
-                    <button
-                      type="button"
-                      className="w-full rounded-lg h-[40px] bg-red-500 hover:bg-red-400 text-white text-md font-bold"
-                      onClick={() => {
-                        setSelectedMenus([]);
-                        setSelectedMenu([]);
-                      }}
-                    >
-                      {t("cancel_order")}
-                    </button>
-
-                    <button
-                      type="button"
-                      className="w-full rounded-lg h-[40px] bg-color-app hover:bg-orange-300 text-md font-bold text-white"
-                      onClick={() => {
-                        SelectedMenus.length === 0
-                          ? AlertMessage()
-                          : setPopup({ CheckOutType: true });
-                      }}
-                      disabled={SelectedMenus.length === 0}
-                    >
-                      {t("order_checkout")}
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
           </div>
