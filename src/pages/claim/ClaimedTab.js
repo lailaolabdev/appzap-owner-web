@@ -21,7 +21,7 @@ const ClaimedTab = ({
   const formatCurrency = (amount, currency) => {
     if (amount === undefined || amount === null) return "-";
     return `${amount.toLocaleString()} ${
-      currency || storeDetail?.firstCurrency || "LAK"
+      currency || storeDetail?.firstCurrency === "LAK" ? "ກີບ" : "LAK"
     }`;
   };
 

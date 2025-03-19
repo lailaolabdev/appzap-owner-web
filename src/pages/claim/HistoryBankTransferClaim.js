@@ -29,6 +29,7 @@ import Loading from "../../components/Loading";
 import UnclaimedTab from "./UnclaimedTab";
 import ClaimingTab from "./ClaimingTab";
 import ClaimedTab from "./ClaimedTab";
+import ConfirmPopUp from "./components/ConfirmPopUp";
 
 // Constants for claim statuses
 const CLAIM_STATUSES = {
@@ -68,6 +69,7 @@ export default function HistoryBankTransferClaim() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [openSelectClaim, setOpenSelectClaim] = useState(false);
   const [openConfirmClaimAndClose, setOpenConfirmClaimAndClose] =
     useState(false);
   const [rowsPerPage] = useState(20); // Using rowsPerPage directly, no need for setter
@@ -107,9 +109,9 @@ export default function HistoryBankTransferClaim() {
     }
   };
 
-  const fetchData = async (type, page) => {
+  const fetchData = async (type, page, loading = true) => {
     try {
-      setIsLoading(true);
+      if (loading) setIsLoading(true);
       const { TOKEN, DATA } = await getLocalData();
 
       // Create abort controller for request cancellation
@@ -196,6 +198,8 @@ export default function HistoryBankTransferClaim() {
   };
 
   const claimSelectedPayment = async () => {
+    setOpenSelectClaim(false);
+
     const billIds = selectedPayment
       .filter((x) => x.isPaidConfirm)
       .map((x) => x._id);
@@ -270,34 +274,41 @@ export default function HistoryBankTransferClaim() {
     }
   };
 
+  const uniquePaymentData = selectedPayment.reduce((unique, item) => {
+    // Find if this billId already exists in our unique array
+    const existingIndex = unique.findIndex((obj) => obj.billId === item.billId);
+
+    if (existingIndex === -1) {
+      // Add new entry with initial amount
+      unique.push({
+        billId: item.billId,
+        tableName: item.tableName,
+        code: item.code,
+        totalAmount: item.totalAmount || 0,
+        currency: item.currency,
+        isPaidConfirm: item.isPaidConfirm,
+      });
+    } else if (item.totalAmount) {
+      // Add to existing entry's total
+      unique[existingIndex].totalAmount += item.totalAmount;
+    }
+
+    return unique;
+  }, []);
+
   const checkBillOrdering = async () => {
     try {
-      // Get unique tables from selectedPayment without using an unused key variable
-      const uniqueTableData = selectedPayment.reduce((unique, item) => {
-        // Check if this table+code combination already exists in our unique array
-        if (
-          !unique.some(
-            (obj) => obj.tableName === item.tableName && obj.code === item.code
-          )
-        ) {
-          unique.push({
-            billId: item.billId,
-            tableName: item.tableName,
-            code: item.code,
-          });
-        }
-        return unique;
-      }, []);
-
-      if (uniqueTableData.length === 0) return;
+      if (uniquePaymentData.length === 0) return;
       setIsLoading(true);
 
       const headers = await getHeaders();
 
       // Process each table sequentially with proper timeout handling
-      for (const table of uniqueTableData) {
+      for (const table of uniquePaymentData) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+        if (table.isPaidConfirm) return;
 
         const body = {
           shiftId: shiftCurrent[0]?._id,
@@ -339,6 +350,9 @@ export default function HistoryBankTransferClaim() {
               signal: controller.signal,
             }
           );
+
+          await fetchData(CLAIM_STATUSES.UNCLAIMED, currentPage, false);
+          setSelectedPayment([]);
         } catch (err) {
           // Handle individual table errors but continue with others
           console.error(`Error processing table ${table.tableName}:`, err);
@@ -440,6 +454,7 @@ export default function HistoryBankTransferClaim() {
           rowsPerPage={rowsPerPage}
           checkPaymentSelected={checkPaymentSelected}
           selectPayment={selectPayment}
+          setOpenSelectClaim={setOpenSelectClaim}
           setOpenConfirmClaimAndClose={setOpenConfirmClaimAndClose}
           totalPageCount={calculateTotalPages(CLAIM_STATUSES.UNCLAIMED)}
           currentPage={currentPage}
@@ -482,11 +497,59 @@ export default function HistoryBankTransferClaim() {
         onSubmit={claimAllPayment}
       />
 
-      <PopUpConfirms
+      <ConfirmPopUp
+        open={openSelectClaim}
+        header={"ເຄລມເງິນລາຍການທີ່ເລືອກ"} // Ignore spellcheck:
+        content={
+          <div className="flex flex-col items-center text-lg gap-1">
+            <span>ຈຳນວນເງິນເຄລມທັງໝົດ</span>
+            <span className="text-color-app text-2xl font-bold">
+              {selectedPayment
+                .reduce((total, payment) => total + payment.totalAmount, 0)
+                .toLocaleString()}{" "}
+              {selectedPayment[0]?.currency ?? "LAK"}
+            </span>
+          </div>
+        }
+        onClose={() => setOpenSelectClaim(false)}
+        onSubmit={claimSelectedPayment}
+      />
+
+      <ConfirmPopUp
         open={openConfirmClaimAndClose}
-        text={"ເຄລມແລະປິດໂຕະ"} // Ignore spellcheck: ເຄລມແລະປິດໂຕະ
-        textBefore={"ທ່ານຕ້ອງການ"} // Ignore spellcheck: ທ່ານຕ້ອງການ
-        textAfter={"ແທ້ບໍ?"} // Ignore spellcheck: ແທ້ບໍ
+        header={"ຢືນຢັນການຊໍາລະເງິນ ພ້ອມປິດໂຕະ"} // Ignore spellcheck: ເຄລມແລະປິດໂຕະ
+        content={
+          <div className="flex flex-col items-center text-lg gap-2">
+            <div className="flex flex-col gap-0">
+              {uniquePaymentData
+                .filter((payment) => !payment.isPaidConfirm)
+                .map((payment, index) => (
+                  <div
+                    key={index}
+                    className="text-lg font-bold flex flex-row gap-2"
+                  >
+                    <span>{`${payment.tableName} (${payment.code}):`}</span>
+                    <span className="text-color-app">
+                      {payment.totalAmount.toLocaleString()}{" "}
+                      {payment.currency === "LAK" ? "ກີບ" : payment.currency}
+                    </span>
+                  </div>
+                ))}
+            </div>
+            <span className="text-xl font-bold">
+              <span>{`ລວມທັງໝົດ: `}</span>
+              <span className="text-color-app">
+                {uniquePaymentData
+                  .filter((payment) => !payment.isPaidConfirm)
+                  .reduce((total, payment) => total + payment.totalAmount, 0)
+                  .toLocaleString()}{" "}
+                {uniquePaymentData[0]?.currency === "LAK"
+                  ? "ກີບ"
+                  : uniquePaymentData[0]?.currency}
+              </span>
+            </span>
+          </div>
+        }
         onClose={() => setOpenConfirmClaimAndClose(false)}
         onSubmit={handleConfirmCloseTable}
       />

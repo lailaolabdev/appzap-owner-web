@@ -17,6 +17,7 @@ const UnclaimedTab = ({
   rowsPerPage,
   checkPaymentSelected,
   selectPayment,
+  setOpenSelectClaim,
   setOpenConfirmClaimAndClose,
   totalPageCount,
   currentPage,
@@ -30,7 +31,7 @@ const UnclaimedTab = ({
   const formatCurrency = (amount, currency) => {
     if (amount === undefined || amount === null) return "-";
     return `${amount.toLocaleString()} ${
-      currency || storeDetail?.firstCurrency || "LAK"
+      currency || storeDetail?.firstCurrency === "LAK" ? "ກີບ" : "LAK"
     }`;
   };
 
@@ -64,8 +65,6 @@ const UnclaimedTab = ({
     }
   };
 
-  console.log("selectedPayment", selectedPayment);
-
   // Check if all unclaimed items are selected
   const areAllSelected = () => {
     const unclaimedItems = unClaimedData.filter(
@@ -90,15 +89,19 @@ const UnclaimedTab = ({
           <div className="flex gap-2">
             {/* Conditionally render "Claim Selected" button if items are selected */}
             <ButtonComponent
-              disabled={!selectedPayment.length > 0}
+              disabled={
+                !selectedPayment.length > 0 ||
+                selectedPayment.some((item) => !item.isPaidConfirm)
+              }
               title="ເຄລມລາຍການທີ່ເລືອກ"
               icon={faPlusCircle}
               className={`bg-orange-500 hover:bg-orange-600 ${
-                !selectedPayment.length > 0
+                !selectedPayment.length > 0 ||
+                selectedPayment.some((item) => !item.isPaidConfirm)
                   ? "!bg-orange-300 !cursor-default"
                   : ""
               }`}
-              handleClick={claimSelectedPayment}
+              handleClick={() => setOpenSelectClaim(true)}
             />
 
             {/* Conditionally render "Claim All" button if there are unclaimed items */}
@@ -211,7 +214,7 @@ const UnclaimedTab = ({
                     <td
                       className={`whitespace-nowrap text-red-500 text-center`}
                     >
-                      {item.claimStatus === "UNCLAIMED" ? "ຍັງບໍ່ເຄລມ" : "-"}
+                      {item.claimStatus === "UNCLAIMED" ? "ຍັງບໍ່ຂໍເຄລມ" : "-"}
                     </td>
                     <td className={`whitespace-nowrap text-center`}>
                       {item?.createdAt
