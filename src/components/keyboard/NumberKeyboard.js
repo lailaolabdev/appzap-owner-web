@@ -78,8 +78,8 @@ export default function NumberKeyboard({
     if (text === "Delete") {
       if (!selectInput) return setSelectInput("");
       if (selectInput.length <= 0) return setSelectInput("");
-      const _prev = selectInput || "";
-      const _text = _prev.substr(0, _prev.length - 1);
+      const _prev = (selectInput || "").toString();
+      const _text = _prev.substring(0, _prev.length - 1);
       setSelectInput(_text);
     } else {
       const _text = (selectInput || "") + text;

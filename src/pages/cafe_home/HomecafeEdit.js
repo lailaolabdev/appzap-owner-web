@@ -128,7 +128,9 @@ function HomecafeEdit() {
 
   const [cartModal, setCartModal] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null); // Track the row being edited
-
+  const [isDelivery, setIsDelivery] = useState(false);
+  const [platform, setPlatform] = useState("");
+  const [deliveryCode, setDeliveryCode] = useState("");
   const { shiftCurrent } = useShiftStore();
   const { setSelectedMenus, SelectedMenus, clearSelectedMenus } =
     useMenuSelectStore();
@@ -2457,6 +2459,12 @@ function HomecafeEdit() {
         setIsLoading={setIsLoading}
         statusBill={true}
         billId={billId}
+        isDelivery={isDelivery}
+        setIsDelivery={setIsDelivery}
+        setPlatform={setPlatform}
+        setDeliveryCode={setDeliveryCode}
+        platform={platform}
+        deliveryCode={deliveryCode}
       />
 
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
