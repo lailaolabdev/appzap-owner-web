@@ -264,7 +264,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       icon: faHome,
       typeStore: "",
       hidden:
-        (!hasTableStatus && !appzapStaff.includes(profileRole)) ||
+        (!hasTableStatus && appzapStaff.includes(profileRole)) ||
         !storeDetail?.hasPOS,
       system: "tableManagement",
     },
@@ -274,7 +274,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       icon: faAddressCard,
       hidden:
-        (!hasOrders && !appzapStaff.includes(profileRole)) ||
+        (!hasOrders && appzapStaff.includes(profileRole)) ||
         !storeDetail?.hasPOS,
       system: "orderManagement",
     },
@@ -299,8 +299,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       icon: faStoreAlt,
       typeStore: storeDetail?.isRestuarant,
       hidden:
-        (!hasCafe && !appzapStaff.includes(profileRole)) ||
-        !storeDetail?.hasPOS,
+        (!hasCafe && appzapStaff.includes(profileRole)) || !storeDetail?.hasPOS,
       system: "tableManagement",
     },
     // {
@@ -317,7 +316,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       icon: faList,
       typeStore: "",
       hidden:
-        (!hasReservation && !appzapStaff.includes(profileRole)) ||
+        (!hasReservation && appzapStaff.includes(profileRole)) ||
         !storeDetail?.isReservable,
       system: "reservationManagement",
     },
@@ -327,7 +326,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       icon: faBoxOpen,
       hidden:
-        (!hasMenu && !appzapStaff.includes(profileRole)) ||
+        (!hasMenu && appzapStaff.includes(profileRole)) ||
         !storeDetail?.hasSmartMenu,
       system: "menuManagement",
     },
@@ -348,7 +347,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       icon: faLayerGroup,
       typeStore: "",
       system: "reportManagement",
-      hidden: !hasFinancialstatistics && !appzapStaff.includes(profileRole),
+      hidden: !hasFinancialstatistics && appzapStaff.includes(profileRole),
     },
     {
       title: `${t("report_new")}`,
@@ -356,7 +355,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       icon: faChartLine,
       hidden:
-        (!hasReportNew && !appzapStaff.includes(profileRole)) ||
+        (!hasReportNew && appzapStaff.includes(profileRole)) ||
         !storeDetail?.hasPOS,
       system: "reportManagement",
     },
@@ -407,7 +406,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "settingStore",
       typeStore: "",
       icon: faCogs,
-      hidden: !hasShopSetting && profileRole !== "APPZAP_ADMIN",
+      hidden: !hasShopSetting,
       // ( &&
       //    &&
       //   !profileRole !== "APPZAP_ADMIN") ||
@@ -421,7 +420,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       icon: faBeer,
       hidden:
-        (!hasProductExpenses && !appzapStaff.includes(profileRole)) ||
+        (!hasProductExpenses && appzapStaff.includes(profileRole)) ||
         !storeDetail?.hasPOS,
       system: "farkManagement",
     },
@@ -431,7 +430,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       icon: faMoneyBill,
       hidden:
-        (!hasReportDebt && !appzapStaff.includes(profileRole)) ||
+        (!hasReportDebt && appzapStaff.includes(profileRole)) ||
         !storeDetail?.hasPOS,
       system: "reportManagement",
     },

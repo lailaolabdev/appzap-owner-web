@@ -21,7 +21,7 @@ export const preventNegativeValues = (e) =>
 export default function PopUpCreateUser({ open, onClose, callback }) {
   const { t } = useTranslation();
   const [buttonDisabled, setButtonDisabled] = useState(false);
-  const [formData, setFormData] = useState({ role: "APPZAP_DEALER" });
+  const [formData, setFormData] = useState({ role: "APPZAP_COUNTER" });
   const [dataPermission, setDataPermision] = useState([]);
   const { storeDetail } = useStoreStore();
 
@@ -29,7 +29,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
   useEffect(() => {
     if (!open) {
       setButtonDisabled(false);
-      setFormData({ role: "APPZAP_DEALER" });
+      // setFormData({ role: "APPZAP_DEALER" });
       getDataPermissionRole();
     }
   }, [open]);

@@ -15,6 +15,7 @@ const data = {
  * @returns {data}
  */
 const role = (role, user, storeDetail, shiftCurrent, path) => {
+  console.log("3");
   const getDefaultPath = () => {
     if (storeDetail?.isShift) {
       if (shiftCurrent?.[0]?.status === "OPEN") return "/tables";
@@ -37,6 +38,8 @@ const role = (role, user, storeDetail, shiftCurrent, path) => {
     : storeDetail?.isStatusCafe
     ? "/cafe"
     : "/tables";
+
+  console.log({ role });
 
   switch (role) {
     case "APPZAP_ADMIN":

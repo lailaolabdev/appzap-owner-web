@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { COLOR_APP, COLOR_APP_CANCEL } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { Button, Form, Modal, Card, Pagination } from "react-bootstrap";
+import { Form, Modal } from "react-bootstrap";
 import { Formik } from "formik";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Axios from "axios";
@@ -37,6 +37,39 @@ import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import { convertRole } from "../../helpers/convertRole";
 import { useTranslation } from "react-i18next";
 import { useStoreStore } from "../../zustand/storeStore";
+import { Search, MoreHorizontal, Plus, Trash, Edit, Eye } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../components/ui/Card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../../components/ui/Table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "../../components/ui/Pagination";
+import { Badge } from "../../components/ui/Badge";
+import { Button } from "../../components/ui/Button";
+import { Input } from "../../components/ui/Input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../components/ui/DropdownMenu";
 
 const limitData = 10;
 
@@ -108,253 +141,396 @@ export default function UserPage() {
     getData();
   };
 
+  const getRoleBadgeColor = (role) => {
+    console.log({ role: role });
+    switch (role.toLowerCase()) {
+      case "appzap_counter":
+        return "bg-red-100 text-red-800 hover:bg-red-100";
+      case "appzap_admin":
+        return "bg-blue-100 text-blue-800 hover:bg-blue-100";
+      case "appzap_dealer":
+        return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100";
+      default:
+        return "bg-green-100 text-green-800 hover:bg-green-100";
+    }
+  };
+
   return (
-    <>
-      <div
-        style={{
-          padding: "20px 20px 80px 20px",
-          maxHeight: "100vh",
-          height: "100%",
-          overflowY: "auto",
-        }}
-      >
-        <Breadcrumb>
-          <Breadcrumb.Item>{t("staff")}</Breadcrumb.Item>
-          <Breadcrumb.Item active>{t("staff_setting")}</Breadcrumb.Item>
-        </Breadcrumb>
-
-        {/* <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
-          <Form.Control
-            style={{ maxWidth: 220 }}
-            placeholder="ຄົ້ນຫາພະນັກງານ"
-          />
-          <Button variant="primary">ຄົ້ນຫາ</Button>
-        </div> */}
-
-        <Card border="primary" style={{ margin: 0 }}>
-          <Card.Header
-            style={{
-              backgroundColor: COLOR_APP,
-              color: "#fff",
-              fontSize: 18,
-              fontWeight: "bold",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: 10,
-            }}
-          >
-            <span className="flex items-center gap-1">
-              <IoPeople /> {t("staff_report")}
-            </span>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <Button
-                variant="dark"
-                bg="dark"
-                onClick={() => setPopup({ PopUpCreateUser: true })}
-                className="flex items-center gap-1"
-              >
-                {t("add_list")}
-              </Button>
+    <div className="m-8">
+      <Card className="rounded-lg">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Staff Members</CardTitle>
+              <CardDescription>Manage your restaurant staff</CardDescription>
             </div>
-          </Card.Header>
-          <Card.Body
-            style={{
-              overflowX: "auto",
-            }}
-          >
-            {isLoading ? (
-              <div
-                style={{
-                  height: 300,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Spinner animation="border" variant="danger" />
-              </div>
-            ) : (
-              <table style={{ width: "100%" }}>
-                <tr>
-                  <th>#</th>
-                  <th
-                    style={{
-                      textWrap: "nowrap",
-                    }}
-                  >
-                    {t("image")}
-                  </th>
-                  <th
-                    style={{
-                      textWrap: "nowrap",
-                    }}
-                  >
-                    {t("name")}
-                  </th>
-                  <th
-                    style={{
-                      textWrap: "nowrap",
-                    }}
-                  >
-                    {t("user_name")}
-                  </th>
-                  <th
-                    style={{
-                      textWrap: "nowrap",
-                    }}
-                  >
-                    {t("tel")}
-                  </th>
-                  <th
-                    style={{
-                      textWrap: "nowrap",
-                    }}
-                  >
-                    {t("permision")}
-                  </th>
-                  <th
-                    style={{
-                      textWrap: "nowrap",
-                    }}
-                  >
-                    {t("manage")}
-                  </th>
-                </tr>
-                {userData?.map((e, i) => (
-                  <tr>
-                    <td style={{ textAlign: "start" }}>
-                      {(pagination - 1) * limitData + i + 1}
-                    </td>
-                    <td style={{ textAlign: "start" }}>
-                      <div>
-                        <img
-                          src="/images/profile.png"
-                          alt=""
-                          style={{ width: 60, height: 60 }}
-                        />
-                      </div>
-                    </td>
-                    <td style={{ textAlign: "start" }}>
-                      {e?.firstname} {e?.lastname}
-                    </td>
-                    <td
-                      style={{
-                        textAlign: "start",
-                      }}
-                    >
-                      <span
-                        style={{
-                          color: COLOR_APP,
-                          textDecoration: "underline",
-                          cursor: "pointer",
-                        }}
-                      >
-                        {e?.userId}
-                      </span>
-                    </td>
-                    <td style={{ textAlign: "start" }}>
-                      <div>{e?.phone}</div>
-                    </td>
-                    <td style={{ textAlign: "start" }}>
-                      {e?.role === appzapStaff
-                        ? convertRole(e?.permissionRoleId?.roleName) || "---"
-                        : convertRole(e?.role)}
-                    </td>
-                    <td style={{ textAlign: "start" }}>
-                      <div style={{ display: "flex", gap: 10 }}>
-                        {/* <Button>ລັອກ</Button> */}
-                        <Button
-                          onClick={() => {
-                            setSelectUser(e);
-                            setPopup({ PopUpUpdateUser: true });
-                          }}
-                        >
-                          {t("edit")}
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            setSelectUser(e);
-                            setPopup({ PopUpConfirmDeletion: true });
-                          }}
-                        >
-                          {t("remove")}
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </table>
-            )}
-          </Card.Body>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              width: "100%",
-              bottom: 20,
-            }}
-          >
-            <ReactPaginate
-              previousLabel={
-                <span className="glyphicon glyphicon-chevron-left">{`${t(
-                  "previous"
-                )}`}</span>
-              }
-              nextLabel={
-                <span className="glyphicon glyphicon-chevron-right">{`${t(
-                  "next"
-                )}`}</span>
-              }
-              breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
-              breakClassName={"break-me"}
-              pageCount={totalPagination} // Replace with the actual number of pages
-              marginPagesDisplayed={1}
-              pageRangeDisplayed={3}
-              onPageChange={(e) => {
-                console.log(e);
-                setPagination(e?.selected + 1);
-              }}
-              containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
-              pageClassName={"page-item"}
-              pageLinkClassName={"page-link"}
-              activeClassName={"active"}
-              previousClassName={"page-item"}
-              nextClassName={"page-item"}
-              previousLinkClassName={"page-link"}
-              nextLinkClassName={"page-link"}
-            />
+            <Button className="text-white font-semibold">
+              <Plus className="bg-color-app mr-2 h-4 w-4 text-white" />
+              Add Staff
+            </Button>
           </div>
-        </Card>
-      </div>
-      <PopUpConfirmDeletion
-        open={popup?.PopUpConfirmDeletion}
-        onClose={() => {
-          setPopup();
-          setSelectUser();
-        }}
-        onSubmit={handleDeleteUser}
-      />
-      <PopUpUpdateUser
-        open={popup?.PopUpUpdateUser}
-        onClose={() => {
-          setPopup();
-          setSelectUser(); // เพิ่มการเคลียร์ selectUser
-        }}
-        callback={() => {
-          getData();
-        }}
-        userData={selectUser}
-      />
-      <PopUpCreateUser
-        open={popup?.PopUpCreateUser}
-        onClose={() => {
-          setPopup();
-        }}
-        callback={() => {
-          getData();
-        }}
-      />
-    </>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-4">
+            <div className="relative">
+              {/* <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" /> */}
+              <Input
+                type="search"
+                placeholder="Search by name, email or role..."
+                // className="p20"
+                // value={searchQuery}
+                // onChange={(staff) => setSearchQuery(staff.target.value)}
+              />
+            </div>
+          </div>
+
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            <>
+              <div className="rounded-md border w-full">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-md">{t("no")}</TableHead>
+                      {/* <TableHead>{t("image")}</TableHead> */}
+                      <TableHead className="text-md">{t("name")}</TableHead>
+                      <TableHead className="text-md">{t("tel")}</TableHead>
+                      <TableHead className="text-md">{t("role")}</TableHead>
+                      <TableHead className="text-right text-md">
+                        {t("manage")}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {userData.length === 0 ? (
+                      <TableRow>
+                        <TableCell
+                          colSpan={4}
+                          className="text-center py-8 text-muted-foreground"
+                        >
+                          No staff members found
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      userData.map((staff, i) => (
+                        <TableRow key={staff.id}>
+                          <TableCell className="font-medium text-md">
+                            {(pagination - 1) * limitData + i + 1}
+                          </TableCell>
+                          <TableCell className="font-medium text-md">
+                            {staff?.firstname} {staff?.lastname}
+                          </TableCell>
+                          <TableCell className="font-medium text-md">
+                            {staff.phone}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              className={getRoleBadgeColor(staff.role)}
+                              variant="outline"
+                            >
+                              {staff?.role === appzapStaff
+                                ? convertRole(
+                                    staff?.permissionRoleId?.roleName
+                                  ) || "---"
+                                : convertRole(staff?.role)}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* {2 > 1 && (
+              <Pagination className="mt-4">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      // onClick={() =>
+                      //   setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      // }
+                      disabled={currentPage === 1}
+                    />
+                  </PaginationItem>
+
+                  {Array.from({ length: totalPages }).map((_, index) => (
+                    <PaginationItem key={index}>
+                      <PaginationLink
+                        isActive={currentPage === index + 1}
+                        // onClick={() => setCurrentPage(index + 1)}
+                      >
+                        {index + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
+                      disabled={currentPage === totalPages}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )} */}
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+
+    // <>
+    //   <div
+    //     style={{
+    //       padding: "20px 20px 80px 20px",
+    //       maxHeight: "100vh",
+    //       height: "100%",
+    //       overflowY: "auto",
+    //     }}
+    //   >
+    //     <Breadcrumb>
+    //       <Breadcrumb.Item>{t("staff")}</Breadcrumb.Item>
+    //       <Breadcrumb.Item active>{t("staff_setting")}</Breadcrumb.Item>
+    //     </Breadcrumb>
+
+    //     {/* <div style={{ display: "flex", gap: 10, padding: "10px 0" }}>
+    //       <Form.Control
+    //         style={{ maxWidth: 220 }}
+    //         placeholder="ຄົ້ນຫາພະນັກງານ"
+    //       />
+    //       <Button variant="primary">ຄົ້ນຫາ</Button>
+    //     </div> */}
+
+    //     <Card border="primary" style={{ margin: 0 }}>
+    //       <Card.Header
+    //         style={{
+    //           backgroundColor: COLOR_APP,
+    //           color: "#fff",
+    //           fontSize: 18,
+    //           fontWeight: "bold",
+    //           display: "flex",
+    //           justifyContent: "space-between",
+    //           alignItems: "center",
+    //           padding: 10,
+    //         }}
+    //       >
+    //         <span className="flex items-center gap-1">
+    //           <IoPeople /> {t("staff_report")}
+    //         </span>
+    //         <div style={{ display: "flex", alignItems: "center" }}>
+    //           <Button
+    //             variant="dark"
+    //             bg="dark"
+    //             onClick={() => setPopup({ PopUpCreateUser: true })}
+    //             className="flex items-center gap-1"
+    //           >
+    //             {t("add_list")}
+    //           </Button>
+    //         </div>
+    //       </Card.Header>
+    //       <Card.Body
+    //         style={{
+    //           overflowX: "auto",
+    //         }}
+    //       >
+    //         {isLoading ? (
+    //           <div
+    //             style={{
+    //               height: 300,
+    //               display: "flex",
+    //               justifyContent: "center",
+    //               alignItems: "center",
+    //             }}
+    //           >
+    //             <Spinner animation="border" variant="danger" />
+    //           </div>
+    //         ) : (
+    //           <table style={{ width: "100%" }}>
+    //             <tr>
+    //               <th>#</th>
+    //               <th
+    //                 style={{
+    //                   textWrap: "nowrap",
+    //                 }}
+    //               >
+    //                 {t("image")}
+    //               </th>
+    //               <th
+    //                 style={{
+    //                   textWrap: "nowrap",
+    //                 }}
+    //               >
+    //                 {t("name")}
+    //               </th>
+    //               <th
+    //                 style={{
+    //                   textWrap: "nowrap",
+    //                 }}
+    //               >
+    //                 {t("user_name")}
+    //               </th>
+    //               <th
+    //                 style={{
+    //                   textWrap: "nowrap",
+    //                 }}
+    //               >
+    //                 {t("tel")}
+    //               </th>
+    //               <th
+    //                 style={{
+    //                   textWrap: "nowrap",
+    //                 }}
+    //               >
+    //                 {t("permision")}
+    //               </th>
+    //               <th
+    //                 style={{
+    //                   textWrap: "nowrap",
+    //                 }}
+    //               >
+    //                 {t("manage")}
+    //               </th>
+    //             </tr>
+    //             {userData?.map((staff, i) => (
+    //               <tr>
+    //                 <td style={{ textAlign: "start" }}>
+    //                   {(pagination - 1) * limitData + i + 1}
+    //                 </td>
+    //                 <td style={{ textAlign: "start" }}>
+    //                   <div>
+    //                     <img
+    //                       src="/images/profile.png"
+    //                       alt=""
+    //                       style={{ width: 60, height: 60 }}
+    //                     />
+    //                   </div>
+    //                 </td>
+    //                 <td style={{ textAlign: "start" }}>
+    //                   {staff?.firstname} {staff?.lastname}
+    //                 </td>
+    //                 <td
+    //                   style={{
+    //                     textAlign: "start",
+    //                   }}
+    //                 >
+    //                   <span
+    //                     style={{
+    //                       color: COLOR_APP,
+    //                       textDecoration: "underline",
+    //                       cursor: "pointer",
+    //                     }}
+    //                   >
+    //                     {staff?.userId}
+    //                   </span>
+    //                 </td>
+    //                 <td style={{ textAlign: "start" }}>
+    //                   <div>{staff?.phone}</div>
+    //                 </td>
+    //                 <td style={{ textAlign: "start" }}>
+    //                   {staff?.role === appzapStaff
+    //                     ? convertRole(staff?.permissionRoleId?.roleName) || "---"
+    //                     : convertRole(staff?.role)}
+    //                 </td>
+    //                 <td style={{ textAlign: "start" }}>
+    //                   <div style={{ display: "flex", gap: 10 }}>
+    //                     {/* <Button>ລັອກ</Button> */}
+    //                     <Button
+    //                       onClick={() => {
+    //                         setSelectUser(staff);
+    //                         setPopup({ PopUpUpdateUser: true });
+    //                       }}
+    //                     >
+    //                       {t("edit")}
+    //                     </Button>
+    //                     <Button
+    //                       onClick={() => {
+    //                         setSelectUser(staff);
+    //                         setPopup({ PopUpConfirmDeletion: true });
+    //                       }}
+    //                     >
+    //                       {t("remove")}
+    //                     </Button>
+    //                   </div>
+    //                 </td>
+    //               </tr>
+    //             ))}
+    //           </table>
+    //         )}
+    //       </Card.Body>
+    //       <div
+    //         style={{
+    //           display: "flex",
+    //           justifyContent: "center",
+    //           width: "100%",
+    //           bottom: 20,
+    //         }}
+    //       >
+    //         <ReactPaginate
+    //           previousLabel={
+    //             <span className="glyphicon glyphicon-chevron-left">{`${t(
+    //               "previous"
+    //             )}`}</span>
+    //           }
+    //           nextLabel={
+    //             <span className="glyphicon glyphicon-chevron-right">{`${t(
+    //               "next"
+    //             )}`}</span>
+    //           }
+    //           breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
+    //           breakClassName={"break-me"}
+    //           pageCount={totalPagination} // Replace with the actual number of pages
+    //           marginPagesDisplayed={1}
+    //           pageRangeDisplayed={3}
+    //           onPageChange={(staff) => {
+    //             console.log(staff);
+    //             setPagination(staff?.selected + 1);
+    //           }}
+    //           containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
+    //           pageClassName={"page-item"}
+    //           pageLinkClassName={"page-link"}
+    //           activeClassName={"active"}
+    //           previousClassName={"page-item"}
+    //           nextClassName={"page-item"}
+    //           previousLinkClassName={"page-link"}
+    //           nextLinkClassName={"page-link"}
+    //         />
+    //       </div>
+    //     </Card>
+    //   </div>
+    //   <PopUpConfirmDeletion
+    //     open={popup?.PopUpConfirmDeletion}
+    //     onClose={() => {
+    //       setPopup();
+    //       setSelectUser();
+    //     }}
+    //     onSubmit={handleDeleteUser}
+    //   />
+    //   <PopUpUpdateUser
+    //     open={popup?.PopUpUpdateUser}
+    //     onClose={() => {
+    //       setPopup();
+    //       setSelectUser(); // เพิ่มการเคลียร์ selectUser
+    //     }}
+    //     callback={() => {
+    //       getData();
+    //     }}
+    //     userData={selectUser}
+    //   />
+    //   <PopUpCreateUser
+    //     open={popup?.PopUpCreateUser}
+    //     onClose={() => {
+    //       setPopup();
+    //     }}
+    //     callback={() => {
+    //       getData();
+    //     }}
+    //   />
+    // </>
   );
 }

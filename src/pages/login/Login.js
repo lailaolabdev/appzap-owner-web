@@ -53,8 +53,30 @@ function Login() {
     try {
       if (isLoading) return;
       setIsLoading(true);
+
+      // ເຮັດການ login
       const user = await axios.post(`${END_POINT}/v3/admin/login`, values);
 
+      // ກວດສອບວ່າມີ permissionRoleId ຫຼືບໍ່
+      if (!user?.data?.data?.permissionRoleId) {
+        // ຖ້າບໍ່ມີ permissionRoleId, ໄປດຶງຂໍ້ມູນຈາກ API
+        const storeId = user?.data?.data?.storeId;
+        const userId = user?.data?.data?.id; // ຫຼືຟິວອື່ນທີ່ໃຊ້ເປັນ userId
+        const userDetailResponse = await axios.get(
+          `http://localhost:7070/v7/users?storeId=${storeId}&userId=${userId}`
+        );
+
+        // ເພີ່ມ permissionRoleId ໃສ່ user.data.data
+        if (userDetailResponse?.data?.permissionRoleId) {
+          user.data.data.permissionRoleId =
+            userDetailResponse.data.permissionRoleId;
+        } else {
+          // ຖ້າຍັງບໍ່ມີ permissionRoleId, ສົ່ງຂໍ້ຄວາມຜິດພາດ
+          throw new Error("PermissionRoleId not found");
+        }
+      }
+
+      // ດຳເນີນການຕໍ່ໄປ
       let path = redirectByPermission(user, storeDetail);
 
       const { defaultPath } = role(
@@ -68,11 +90,10 @@ function Login() {
       if (defaultPath) {
         clearMenus();
         console.log("4");
-        // localStorage.setItem(USER_KEY, JSON.stringify(user?.data));
         setProfile(user?.data);
-        // zustand store
-        const data = await fetchStoreDetail(user?.data?.data?.storeId);
 
+        // ດຶງຂໍ້ມູນ store detail
+        const data = await fetchStoreDetail(user?.data?.data?.storeId);
         document.title = data?.name;
 
         ReactGA.send({ hitType: "pageview", title: `${data?.name}` });
@@ -80,31 +101,13 @@ function Login() {
         navigate(defaultPath);
       } else {
         console.log("INVALID_USERNAME_OR_PASSWORD");
-        //  _orderSound.play();
-        // toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
-        //   position: "bottom-left",
-        //   autoClose: 1000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        // });
         errorAdd(t("usernam_incorrect"));
         setIsLoading(false);
       }
     } catch (error) {
       setIsLoading(false);
       errorAdd(t("usernam_incorrect"));
-      // toast.error("ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານ ບໍ່ຖືກຕ້ອງ", {
-      //   position: "bottom-left",
-      //   autoClose: 1000,
-      //   hideProgressBar: false,
-      //   closeOnClick: true,
-      //   pauseOnHover: true,
-      //   draggable: true,
-      //   progress: undefined,
-      // });
+      console.error("Login error:", error);
     }
   };
 

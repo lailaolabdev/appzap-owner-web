@@ -1,5 +1,6 @@
 export const redirectByPermission = (user, storeDetail) => {
   const permissions = user?.data?.data?.permissionRoleId?.permissions || [];
+  console.log("permissions", permissions);
   const firstFoundPermission = permissions.find((p) =>
     [
       "REPORT_SALES_SUMMARY",
@@ -41,6 +42,8 @@ export const redirectByPermission = (user, storeDetail) => {
       "PROMOTION",
     ].includes(p)
   );
+
+  console.log("firstFoundPermission", firstFoundPermission);
 
   if (!firstFoundPermission) return "";
 

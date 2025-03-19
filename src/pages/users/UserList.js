@@ -238,608 +238,609 @@ export default function UserList() {
       });
   };
   return (
-    <div>
-      {isLoading ? (
-        <AnimationLoading />
-      ) : (
-        <div>
-          <div style={BODY}>
-            <div className="row" style={{ padding: 30 }}>
-              <div className="col-md-12" style={{ fontSize: "20px" }}>
-                ຈຳນວນພະນັກງານ ( {userData?.total} )
-              </div>
-            </div>
-            <div style={{ paddingBottom: 20 }}>
-              <div className="col-md-12">
-                <button
-                  type="button"
-                  className="btn btn-app col-2 "
-                  style={{
-                    float: "right",
-                    backgroundColor: COLOR_APP,
-                    color: "#ffff",
-                  }}
-                  onClick={handleShow}
-                >
-                  {" "}
-                  ເພີ່ມພະນັກງານ{" "}
-                </button>
-              </div>
-            </div>
-            <div style={{ height: 40 }}></div>
-            <div>
-              <div className="col-sm-12">
-                <table className="table table-hover">
-                  <thead className="thead-light">
-                    <tr>
-                      <th scope="col">#</th>
-                      <th scope="col">ຮູບພາບ</th>
-                      <th scope="col">ຊື່</th>
-                      <th scope="col">ນາມສະກຸນ</th>
-                      <th scope="col">UserId</th>
-                      <th scope="col">ສິດນຳໃຊ້ລະບົບ</th>
-                      <th scope="col">ເບີໂທລະສັບ</th>
-                      <th scope="col">ຈັດການຂໍ້ມູນ</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {userData?.users?.map((data, index) => {
-                      return (
-                        <tr onClick={() => _userDetail(data?._id)}>
-                          <th scope="row">
-                            {index + 1 + parseInt(_limit) * parseInt(_page - 1)}
-                          </th>
-                          <td>
-                            {data?.image ? (
-                              <center>
-                                <Image
-                                  src={URL_PHOTO_AW3 + data?.image}
-                                  alt=""
-                                  width="150"
-                                  height="150"
-                                  style={{
-                                    height: 50,
-                                    width: 50,
-                                    borderRadius: "50%",
-                                  }}
-                                />
-                              </center>
-                            ) : (
-                              <center>
-                                <Image
-                                  src={profileImage}
-                                  alt=""
-                                  width="150"
-                                  height="150"
-                                  style={{
-                                    height: 50,
-                                    width: 50,
-                                    borderRadius: "50%",
-                                  }}
-                                />
-                              </center>
-                            )}
-                          </td>
-                          <td>{data?.firstname}</td>
-                          <td>{data?.lastname}</td>
-                          <td>{data?.userId}</td>
-                          <td>{STATUS_USERS(data?.role)}</td>
-                          <td>{data?.phone}</td>
-                          <td>
-                            <FontAwesomeIcon
-                              icon={faEdit}
-                              style={{ color: COLOR_APP }}
-                              onClick={() => handleShow2(data)}
-                            />
-                            <FontAwesomeIcon
-                              icon={faTrashAlt}
-                              style={{ marginLeft: 20, color: "red" }}
-                              onClick={() =>
-                                handleShow3(data?._id, data?.firstname)
-                              }
-                            />
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-                {/* <div style={{ textAlign: "center" }}>
-                {totalPage?.map((item, index) => {
-                  return (
-                    <button style={{
-                      width: 30,
-                      height: 30,
-                      border: "solid 1px #816aae",
-                      marginLeft: 2,
-                      backgroundColor: parseInt(_page) === index + 1 ? COLOR_APP : "#fff",
-                      color: parseInt(_page) === index + 1 ? "#fff" : "#000",
-                    }} onClick={() => _nextPage(item)}
-                      key={item}
-                    >{item}</button>
-                  )
-                })}
-              </div> */}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      <Modal
-        show={show}
-        onHide={handleClose}
-        backdrop="static"
-        keyboard={false}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>ເພີ່ມພະນັກງານ</Modal.Title>
-        </Modal.Header>
-        <Formik
-          initialValues={{
-            userId: "",
-            password: "",
-            firstname: "",
-            lastname: "",
-            phone: "",
-            role: "APPZAP_STAFF",
-          }}
-          validate={(values) => {
-            const errors = {};
-            if (!values.userId) {
-              errors.userId = "ກະລຸນາປ້ອນ Userid... !";
-            }
-            if (!values.password) {
-              errors.password = "ກະລຸນາປ້ອນ Userid... !";
-            }
-            if (!values.firstname) {
-              errors.firstname = "ກະລຸນາປ້ອນ Userid... !";
-            }
-            if (!values.lastname) {
-              errors.lastname = "ກະລຸນາປ້ອນ Userid... !";
-            }
-            if (!values.phone) {
-              errors.phone = "ກະລຸນາປ້ອນ Userid... !";
-            }
-            return errors;
-          }}
-          onSubmit={(values, { setSubmitting }) => {
-            _createUser(values);
-          }}
-        >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            isSubmitting,
-            /* and other goodies */
-          }) => (
-            <form onSubmit={handleSubmit}>
-              <Modal.Body>
-                <div
-                  className="col-sm-12 center"
-                  style={{ textAlign: "center" }}
-                >
-                  <input
-                    type="file"
-                    id="file-upload"
-                    onChange={handleUpload}
-                    hidden
-                  />
-                  <label for="file-upload">
-                    <div
-                      style={{
-                        backgroundColor: "#E4E4E4E4",
-                        height: 200,
-                        width: 200,
-                        borderRadius: "50%",
-                        cursor: "pointer",
-                        display: "flex",
-                      }}
-                    >
-                      {file ? (
-                        <ImageThumb image={file} />
-                      ) : (
-                        <div
-                          style={{
-                            display: "flex",
-                            height: 200,
-                            width: 200,
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <p
-                            style={{
-                              color: "#fff",
-                              fontSize: 80,
-                              fontWeight: "bold",
-                            }}
-                          >
-                            +
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </label>
-                  {/* progass */}
-                  {imageLoading ? (
-                    <div className="progress" style={{ height: 20 }}>
-                      <div
-                        className="progress-bar"
-                        role="progressbar"
-                        style={{
-                          width: `${imageLoading}%`,
-                          backgroundColor: COLOR_APP,
-                        }}
-                        aria-valuenow={imageLoading}
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                      >
-                        {imageLoading}%
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ height: 20 }} />
-                  )}
-                </div>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>UserId</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="userId"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.userId}
-                    placeholder="UserId..."
-                    isInvalid={errors.userId}
-                  />
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control
-                    type="Password"
-                    name="password"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.password}
-                    placeholder="Password..."
-                    isInvalid={errors.password}
-                  />
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlSelect1">
-                  <Form.Label>ສິດນຳໃຊ້ລະບົບ</Form.Label>
-                  <Form.Control
-                    as="select"
-                    name="role"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.role}
-                  >
-                    <option value="APPZAP_STAFF">ພະນັກງານ</option>
-                    <option value="APPZAP_ADMIN">ຜູ້ບໍລິຫານ</option>
-                    <option value="APPZAP_COUNTER">ເຄົ້າເຕີ</option>
-                    <option value="APPZAP_KITCHEN">ສຳຫຼັບຄົວ</option>
-                  </Form.Control>
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="firstname"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.firstname}
-                    style={{
-                      border:
-                        errors.firstname &&
-                        touched.firstname &&
-                        errors.firstname
-                          ? "solid 1px red"
-                          : "",
-                    }}
-                    placeholder="ຊື່..."
-                  />
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ນາມສະກຸນ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="lastname"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.lastname}
-                    style={{
-                      border:
-                        errors.lastname && touched.lastname && errors.lastname
-                          ? "solid 1px red"
-                          : "",
-                    }}
-                    placeholder="ນາມສະກຸນ..."
-                  />
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ເບີໂທລະສັບ</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="phone"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.phone}
-                    style={{
-                      border:
-                        errors.phone && touched.phone && errors.phone
-                          ? "solid 1px red"
-                          : "",
-                    }}
-                    placeholder="ເບີໂທລະສັບ..."
-                  />
-                </Form.Group>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button
-                  style={{ backgroundColor: COLOR_APP_CANCEL, color: "#ffff" }}
-                  onClick={handleClose}
-                >
-                  ຍົກເລີກ
-                </Button>
-                <Button
-                  style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
-                  onClick={() => handleSubmit()}
-                >
-                  ບັນທືກ
-                </Button>
-              </Modal.Footer>
-            </form>
-          )}
-        </Formik>
-      </Modal>
-      {/* update */}
-      <Modal
-        show={show2}
-        onHide={handleClose2}
-        backdrop="static"
-        keyboard={false}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>ອັບເດດຂໍ້ມູນພະນັກງານ</Modal.Title>
-        </Modal.Header>
-        <Formik
-          initialValues={{
-            userId: dataUpdate?.userId,
-            firstname: dataUpdate?.firstname,
-            lastname: dataUpdate?.lastname,
-            phone: dataUpdate?.phone,
-            role: dataUpdate?.role,
-          }}
-          validate={(values) => {
-            const errors = {};
-            // if (!values.userId) {
-            //   errors.userId = 'ກະລຸນາປ້ອນ Userid... !';
-            // }
-            if (!values.firstname) {
-              errors.firstname = "ກະລຸນາປ້ອນ Userid... !";
-            }
-            if (!values.lastname) {
-              errors.lastname = "ກະລຸນາປ້ອນ Userid... !";
-            }
-            if (!values.phone) {
-              errors.phone = "ກະລຸນາປ້ອນ Userid... !";
-            }
-            return errors;
-          }}
-          onSubmit={(values, { setSubmitting }) => {
-            _updateCategory(values);
-          }}
-        >
-          {({
-            values,
-            errors,
-            touched,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            isSubmitting,
-            /* and other goodies */
-          }) => (
-            <form onSubmit={handleSubmit}>
-              <Modal.Body>
-                <div
-                  className="col-sm-12 center"
-                  style={{ textAlign: "center" }}
-                >
-                  <input
-                    type="file"
-                    id="file-upload"
-                    onChange={handleUpload}
-                    hidden
-                  />
-                  <label for="file-upload">
-                    <div
-                      style={{
-                        backgroundColor: "#E4E4E4E4",
-                        height: 200,
-                        width: 200,
-                        borderRadius: "50%",
-                        cursor: "pointer",
-                        display: "flex",
-                      }}
-                    >
-                      {file ? (
-                        <ImageThumb image={file} />
-                      ) : (
-                        <center>
-                          <Image
-                            src={URL_PHOTO_AW3 + dataUpdate?.image}
-                            alt=""
-                            width="150"
-                            height="150"
-                            style={{
-                              height: 200,
-                              width: 200,
-                              borderRadius: "10%",
-                            }}
-                          />
-                        </center>
-                      )}
-                    </div>
-                  </label>
-                  {/* progass */}
-                  {imageLoading ? (
-                    <div className="progress" style={{ height: 20 }}>
-                      <div
-                        className="progress-bar"
-                        role="progressbar"
-                        style={{
-                          width: `${imageLoading}%`,
-                          backgroundColor: COLOR_APP,
-                        }}
-                        aria-valuenow={imageLoading}
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                      >
-                        {imageLoading}%
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ height: 20 }} />
-                  )}
-                </div>
-                {/* <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>UserId</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="userId"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.userId}
-                    placeholder="UserId..."
-                    style={{ border: errors.userId && touched.userId && errors.userId ? "solid 1px red" : "" }}
-                  />
-                </Form.Group> */}
-                {/* <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control
-                    type="Password"
-                    name="password"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.password}
-                    placeholder="Password..."
+    <div>test</div>
+    // <div>
+    //   {isLoading ? (
+    //     <AnimationLoading />
+    //   ) : (
+    //     <div>
+    //       <div style={BODY}>
+    //         <div className="row" style={{ padding: 30 }}>
+    //           <div className="col-md-12" style={{ fontSize: "20px" }}>
+    //             ຈຳນວນພະນັກງານ ( {userData?.total} )
+    //           </div>
+    //         </div>
+    //         <div style={{ paddingBottom: 20 }}>
+    //           <div className="col-md-12">
+    //             <button
+    //               type="button"
+    //               className="btn btn-app col-2 "
+    //               style={{
+    //                 float: "right",
+    //                 backgroundColor: COLOR_APP,
+    //                 color: "#ffff",
+    //               }}
+    //               onClick={handleShow}
+    //             >
+    //               {" "}
+    //               ເພີ່ມພະນັກງານ{" "}
+    //             </button>
+    //           </div>
+    //         </div>
+    //         <div style={{ height: 40 }}></div>
+    //         <div>
+    //           <div className="col-sm-12">
+    //             <table className="table table-hover">
+    //               <thead className="thead-light">
+    //                 <tr>
+    //                   <th scope="col">#</th>
+    //                   <th scope="col">ຮູບພາບ</th>
+    //                   <th scope="col">ຊື່</th>
+    //                   <th scope="col">ນາມສະກຸນ</th>
+    //                   <th scope="col">UserId</th>
+    //                   <th scope="col">ສິດນຳໃຊ້ລະບົບ</th>
+    //                   <th scope="col">ເບີໂທລະສັບ</th>
+    //                   <th scope="col">ຈັດການຂໍ້ມູນ</th>
+    //                 </tr>
+    //               </thead>
+    //               <tbody>
+    //                 {userData?.users?.map((data, index) => {
+    //                   return (
+    //                     <tr onClick={() => _userDetail(data?._id)}>
+    //                       <th scope="row">
+    //                         {index + 1 + parseInt(_limit) * parseInt(_page - 1)}
+    //                       </th>
+    //                       <td>
+    //                         {data?.image ? (
+    //                           <center>
+    //                             <Image
+    //                               src={URL_PHOTO_AW3 + data?.image}
+    //                               alt=""
+    //                               width="150"
+    //                               height="150"
+    //                               style={{
+    //                                 height: 50,
+    //                                 width: 50,
+    //                                 borderRadius: "50%",
+    //                               }}
+    //                             />
+    //                           </center>
+    //                         ) : (
+    //                           <center>
+    //                             <Image
+    //                               src={profileImage}
+    //                               alt=""
+    //                               width="150"
+    //                               height="150"
+    //                               style={{
+    //                                 height: 50,
+    //                                 width: 50,
+    //                                 borderRadius: "50%",
+    //                               }}
+    //                             />
+    //                           </center>
+    //                         )}
+    //                       </td>
+    //                       <td>{data?.firstname}</td>
+    //                       <td>{data?.lastname}</td>
+    //                       <td>{data?.userId}</td>
+    //                       <td>{STATUS_USERS(data?.role)}</td>
+    //                       <td>{data?.phone}</td>
+    //                       <td>
+    //                         <FontAwesomeIcon
+    //                           icon={faEdit}
+    //                           style={{ color: COLOR_APP }}
+    //                           onClick={() => handleShow2(data)}
+    //                         />
+    //                         <FontAwesomeIcon
+    //                           icon={faTrashAlt}
+    //                           style={{ marginLeft: 20, color: "red" }}
+    //                           onClick={() =>
+    //                             handleShow3(data?._id, data?.firstname)
+    //                           }
+    //                         />
+    //                       </td>
+    //                     </tr>
+    //                   );
+    //                 })}
+    //               </tbody>
+    //             </table>
+    //             {/* <div style={{ textAlign: "center" }}>
+    //             {totalPage?.map((item, index) => {
+    //               return (
+    //                 <button style={{
+    //                   width: 30,
+    //                   height: 30,
+    //                   border: "solid 1px #816aae",
+    //                   marginLeft: 2,
+    //                   backgroundColor: parseInt(_page) === index + 1 ? COLOR_APP : "#fff",
+    //                   color: parseInt(_page) === index + 1 ? "#fff" : "#000",
+    //                 }} onClick={() => _nextPage(item)}
+    //                   key={item}
+    //                 >{item}</button>
+    //               )
+    //             })}
+    //           </div> */}
+    //           </div>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   )}
+    //   <Modal
+    //     show={show}
+    //     onHide={handleClose}
+    //     backdrop="static"
+    //     keyboard={false}
+    //   >
+    //     <Modal.Header closeButton>
+    //       <Modal.Title>ເພີ່ມພະນັກງານ</Modal.Title>
+    //     </Modal.Header>
+    //     <Formik
+    //       initialValues={{
+    //         userId: "",
+    //         password: "",
+    //         firstname: "",
+    //         lastname: "",
+    //         phone: "",
+    //         role: "APPZAP_STAFF",
+    //       }}
+    //       validate={(values) => {
+    //         const errors = {};
+    //         if (!values.userId) {
+    //           errors.userId = "ກະລຸນາປ້ອນ Userid... !";
+    //         }
+    //         if (!values.password) {
+    //           errors.password = "ກະລຸນາປ້ອນ Userid... !";
+    //         }
+    //         if (!values.firstname) {
+    //           errors.firstname = "ກະລຸນາປ້ອນ Userid... !";
+    //         }
+    //         if (!values.lastname) {
+    //           errors.lastname = "ກະລຸນາປ້ອນ Userid... !";
+    //         }
+    //         if (!values.phone) {
+    //           errors.phone = "ກະລຸນາປ້ອນ Userid... !";
+    //         }
+    //         return errors;
+    //       }}
+    //       onSubmit={(values, { setSubmitting }) => {
+    //         _createUser(values);
+    //       }}
+    //     >
+    //       {({
+    //         values,
+    //         errors,
+    //         touched,
+    //         handleChange,
+    //         handleBlur,
+    //         handleSubmit,
+    //         isSubmitting,
+    //         /* and other goodies */
+    //       }) => (
+    //         <form onSubmit={handleSubmit}>
+    //           <Modal.Body>
+    //             <div
+    //               className="col-sm-12 center"
+    //               style={{ textAlign: "center" }}
+    //             >
+    //               <input
+    //                 type="file"
+    //                 id="file-upload"
+    //                 onChange={handleUpload}
+    //                 hidden
+    //               />
+    //               <label for="file-upload">
+    //                 <div
+    //                   style={{
+    //                     backgroundColor: "#E4E4E4E4",
+    //                     height: 200,
+    //                     width: 200,
+    //                     borderRadius: "50%",
+    //                     cursor: "pointer",
+    //                     display: "flex",
+    //                   }}
+    //                 >
+    //                   {file ? (
+    //                     <ImageThumb image={file} />
+    //                   ) : (
+    //                     <div
+    //                       style={{
+    //                         display: "flex",
+    //                         height: 200,
+    //                         width: 200,
+    //                         justifyContent: "center",
+    //                         alignItems: "center",
+    //                       }}
+    //                     >
+    //                       <p
+    //                         style={{
+    //                           color: "#fff",
+    //                           fontSize: 80,
+    //                           fontWeight: "bold",
+    //                         }}
+    //                       >
+    //                         +
+    //                       </p>
+    //                     </div>
+    //                   )}
+    //                 </div>
+    //               </label>
+    //               {/* progass */}
+    //               {imageLoading ? (
+    //                 <div className="progress" style={{ height: 20 }}>
+    //                   <div
+    //                     className="progress-bar"
+    //                     role="progressbar"
+    //                     style={{
+    //                       width: `${imageLoading}%`,
+    //                       backgroundColor: COLOR_APP,
+    //                     }}
+    //                     aria-valuenow={imageLoading}
+    //                     aria-valuemin="0"
+    //                     aria-valuemax="100"
+    //                   >
+    //                     {imageLoading}%
+    //                   </div>
+    //                 </div>
+    //               ) : (
+    //                 <div style={{ height: 20 }} />
+    //               )}
+    //             </div>
+    //             <Form.Group controlId="exampleForm.ControlInput1">
+    //               <Form.Label>UserId</Form.Label>
+    //               <Form.Control
+    //                 type="text"
+    //                 name="userId"
+    //                 onChange={handleChange}
+    //                 onBlur={handleBlur}
+    //                 value={values.userId}
+    //                 placeholder="UserId..."
+    //                 isInvalid={errors.userId}
+    //               />
+    //             </Form.Group>
+    //             <Form.Group controlId="exampleForm.ControlInput1">
+    //               <Form.Label>Password</Form.Label>
+    //               <Form.Control
+    //                 type="Password"
+    //                 name="password"
+    //                 onChange={handleChange}
+    //                 onBlur={handleBlur}
+    //                 value={values.password}
+    //                 placeholder="Password..."
+    //                 isInvalid={errors.password}
+    //               />
+    //             </Form.Group>
+    //             <Form.Group controlId="exampleForm.ControlSelect1">
+    //               <Form.Label>ສິດນຳໃຊ້ລະບົບ</Form.Label>
+    //               <Form.Control
+    //                 as="select"
+    //                 name="role"
+    //                 onChange={handleChange}
+    //                 onBlur={handleBlur}
+    //                 value={values.role}
+    //               >
+    //                 <option value="APPZAP_STAFF">ພະນັກງານ</option>
+    //                 <option value="APPZAP_ADMIN">ຜູ້ບໍລິຫານ</option>
+    //                 <option value="APPZAP_COUNTER">ເຄົ້າເຕີ</option>
+    //                 <option value="APPZAP_KITCHEN">ສຳຫຼັບຄົວ</option>
+    //               </Form.Control>
+    //             </Form.Group>
+    //             <Form.Group controlId="exampleForm.ControlInput1">
+    //               <Form.Label>ຊື່</Form.Label>
+    //               <Form.Control
+    //                 type="text"
+    //                 name="firstname"
+    //                 onChange={handleChange}
+    //                 onBlur={handleBlur}
+    //                 value={values.firstname}
+    //                 style={{
+    //                   border:
+    //                     errors.firstname &&
+    //                     touched.firstname &&
+    //                     errors.firstname
+    //                       ? "solid 1px red"
+    //                       : "",
+    //                 }}
+    //                 placeholder="ຊື່..."
+    //               />
+    //             </Form.Group>
+    //             <Form.Group controlId="exampleForm.ControlInput1">
+    //               <Form.Label>ນາມສະກຸນ</Form.Label>
+    //               <Form.Control
+    //                 type="text"
+    //                 name="lastname"
+    //                 onChange={handleChange}
+    //                 onBlur={handleBlur}
+    //                 value={values.lastname}
+    //                 style={{
+    //                   border:
+    //                     errors.lastname && touched.lastname && errors.lastname
+    //                       ? "solid 1px red"
+    //                       : "",
+    //                 }}
+    //                 placeholder="ນາມສະກຸນ..."
+    //               />
+    //             </Form.Group>
+    //             <Form.Group controlId="exampleForm.ControlInput1">
+    //               <Form.Label>ເບີໂທລະສັບ</Form.Label>
+    //               <Form.Control
+    //                 type="number"
+    //                 name="phone"
+    //                 onChange={handleChange}
+    //                 onBlur={handleBlur}
+    //                 value={values.phone}
+    //                 style={{
+    //                   border:
+    //                     errors.phone && touched.phone && errors.phone
+    //                       ? "solid 1px red"
+    //                       : "",
+    //                 }}
+    //                 placeholder="ເບີໂທລະສັບ..."
+    //               />
+    //             </Form.Group>
+    //           </Modal.Body>
+    //           <Modal.Footer>
+    //             <Button
+    //               style={{ backgroundColor: COLOR_APP_CANCEL, color: "#ffff" }}
+    //               onClick={handleClose}
+    //             >
+    //               ຍົກເລີກ
+    //             </Button>
+    //             <Button
+    //               style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
+    //               onClick={() => handleSubmit()}
+    //             >
+    //               ບັນທືກ
+    //             </Button>
+    //           </Modal.Footer>
+    //         </form>
+    //       )}
+    //     </Formik>
+    //   </Modal>
+    //   {/* update */}
+    //   <Modal
+    //     show={show2}
+    //     onHide={handleClose2}
+    //     backdrop="static"
+    //     keyboard={false}
+    //   >
+    //     <Modal.Header closeButton>
+    //       <Modal.Title>ອັບເດດຂໍ້ມູນພະນັກງານ</Modal.Title>
+    //     </Modal.Header>
+    //     <Formik
+    //       initialValues={{
+    //         userId: dataUpdate?.userId,
+    //         firstname: dataUpdate?.firstname,
+    //         lastname: dataUpdate?.lastname,
+    //         phone: dataUpdate?.phone,
+    //         role: dataUpdate?.role,
+    //       }}
+    //       validate={(values) => {
+    //         const errors = {};
+    //         // if (!values.userId) {
+    //         //   errors.userId = 'ກະລຸນາປ້ອນ Userid... !';
+    //         // }
+    //         if (!values.firstname) {
+    //           errors.firstname = "ກະລຸນາປ້ອນ Userid... !";
+    //         }
+    //         if (!values.lastname) {
+    //           errors.lastname = "ກະລຸນາປ້ອນ Userid... !";
+    //         }
+    //         if (!values.phone) {
+    //           errors.phone = "ກະລຸນາປ້ອນ Userid... !";
+    //         }
+    //         return errors;
+    //       }}
+    //       onSubmit={(values, { setSubmitting }) => {
+    //         _updateCategory(values);
+    //       }}
+    //     >
+    //       {({
+    //         values,
+    //         errors,
+    //         touched,
+    //         handleChange,
+    //         handleBlur,
+    //         handleSubmit,
+    //         isSubmitting,
+    //         /* and other goodies */
+    //       }) => (
+    //         <form onSubmit={handleSubmit}>
+    //           <Modal.Body>
+    //             <div
+    //               className="col-sm-12 center"
+    //               style={{ textAlign: "center" }}
+    //             >
+    //               <input
+    //                 type="file"
+    //                 id="file-upload"
+    //                 onChange={handleUpload}
+    //                 hidden
+    //               />
+    //               <label for="file-upload">
+    //                 <div
+    //                   style={{
+    //                     backgroundColor: "#E4E4E4E4",
+    //                     height: 200,
+    //                     width: 200,
+    //                     borderRadius: "50%",
+    //                     cursor: "pointer",
+    //                     display: "flex",
+    //                   }}
+    //                 >
+    //                   {file ? (
+    //                     <ImageThumb image={file} />
+    //                   ) : (
+    //                     <center>
+    //                       <Image
+    //                         src={URL_PHOTO_AW3 + dataUpdate?.image}
+    //                         alt=""
+    //                         width="150"
+    //                         height="150"
+    //                         style={{
+    //                           height: 200,
+    //                           width: 200,
+    //                           borderRadius: "10%",
+    //                         }}
+    //                       />
+    //                     </center>
+    //                   )}
+    //                 </div>
+    //               </label>
+    //               {/* progass */}
+    //               {imageLoading ? (
+    //                 <div className="progress" style={{ height: 20 }}>
+    //                   <div
+    //                     className="progress-bar"
+    //                     role="progressbar"
+    //                     style={{
+    //                       width: `${imageLoading}%`,
+    //                       backgroundColor: COLOR_APP,
+    //                     }}
+    //                     aria-valuenow={imageLoading}
+    //                     aria-valuemin="0"
+    //                     aria-valuemax="100"
+    //                   >
+    //                     {imageLoading}%
+    //                   </div>
+    //                 </div>
+    //               ) : (
+    //                 <div style={{ height: 20 }} />
+    //               )}
+    //             </div>
+    //             {/* <Form.Group controlId="exampleForm.ControlInput1">
+    //               <Form.Label>UserId</Form.Label>
+    //               <Form.Control
+    //                 type="text"
+    //                 name="userId"
+    //                 onChange={handleChange}
+    //                 onBlur={handleBlur}
+    //                 value={values.userId}
+    //                 placeholder="UserId..."
+    //                 style={{ border: errors.userId && touched.userId && errors.userId ? "solid 1px red" : "" }}
+    //               />
+    //             </Form.Group> */}
+    //             {/* <Form.Group controlId="exampleForm.ControlInput1">
+    //               <Form.Label>Password</Form.Label>
+    //               <Form.Control
+    //                 type="Password"
+    //                 name="password"
+    //                 onChange={handleChange}
+    //                 onBlur={handleBlur}
+    //                 value={values.password}
+    //                 placeholder="Password..."
 
-                  />
-                </Form.Group> */}
-                <Form.Group controlId="exampleForm.ControlSelect1">
-                  <Form.Label>ສິດນຳໃຊ້ລະບົບ</Form.Label>
-                  <Form.Control
-                    as="select"
-                    name="role"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.role}
-                  >
-                    <option value="APPZAP_STAFF">ພະນັກງານ</option>
-                    <option value="APPZAP_ADMIN">ຜູ້ບໍລິຫານ</option>
-                    <option value="APPZAP_COUNTER">ເຄົ້າເຕີ</option>
-                    <option value="APPZAP_KITCHEN">ສຳຫຼັບຄົວ</option>
-                  </Form.Control>
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ຊື່</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="firstname"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.firstname}
-                    style={{
-                      border:
-                        errors.firstname &&
-                        touched.firstname &&
-                        errors.firstname
-                          ? "solid 1px red"
-                          : "",
-                    }}
-                    placeholder="ຊື່..."
-                  />
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ນາມສະກຸນ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="lastname"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.lastname}
-                    style={{
-                      border:
-                        errors.lastname && touched.lastname && errors.lastname
-                          ? "solid 1px red"
-                          : "",
-                    }}
-                    placeholder="ນາມສະກຸນ..."
-                  />
-                </Form.Group>
-                <Form.Group controlId="exampleForm.ControlInput1">
-                  <Form.Label>ເບີໂທລະສັບ</Form.Label>
-                  <Form.Control
-                    type="number"
-                    name="phone"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.phone}
-                    style={{
-                      border:
-                        errors.phone && touched.phone && errors.phone
-                          ? "solid 1px red"
-                          : "",
-                    }}
-                    placeholder="ເບີໂທລະສັບ..."
-                  />
-                </Form.Group>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button
-                  style={{ backgroundColor: COLOR_APP_CANCEL, color: "#ffff" }}
-                  onClick={handleClose2}
-                >
-                  ຍົກເລີກ
-                </Button>
-                <Button
-                  style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
-                  onClick={() => handleSubmit()}
-                >
-                  ບັນທືກ
-                </Button>
-              </Modal.Footer>
-            </form>
-          )}
-        </Formik>
-      </Modal>
+    //               />
+    //             </Form.Group> */}
+    //             <Form.Group controlId="exampleForm.ControlSelect1">
+    //               <Form.Label>ສິດນຳໃຊ້ລະບົບ</Form.Label>
+    //               <Form.Control
+    //                 as="select"
+    //                 name="role"
+    //                 onChange={handleChange}
+    //                 onBlur={handleBlur}
+    //                 value={values.role}
+    //               >
+    //                 <option value="APPZAP_STAFF">ພະນັກງານ</option>
+    //                 <option value="APPZAP_ADMIN">ຜູ້ບໍລິຫານ</option>
+    //                 <option value="APPZAP_COUNTER">ເຄົ້າເຕີ</option>
+    //                 <option value="APPZAP_KITCHEN">ສຳຫຼັບຄົວ</option>
+    //               </Form.Control>
+    //             </Form.Group>
+    //             <Form.Group controlId="exampleForm.ControlInput1">
+    //               <Form.Label>ຊື່</Form.Label>
+    //               <Form.Control
+    //                 type="text"
+    //                 name="firstname"
+    //                 onChange={handleChange}
+    //                 onBlur={handleBlur}
+    //                 value={values.firstname}
+    //                 style={{
+    //                   border:
+    //                     errors.firstname &&
+    //                     touched.firstname &&
+    //                     errors.firstname
+    //                       ? "solid 1px red"
+    //                       : "",
+    //                 }}
+    //                 placeholder="ຊື່..."
+    //               />
+    //             </Form.Group>
+    //             <Form.Group controlId="exampleForm.ControlInput1">
+    //               <Form.Label>ນາມສະກຸນ</Form.Label>
+    //               <Form.Control
+    //                 type="text"
+    //                 name="lastname"
+    //                 onChange={handleChange}
+    //                 onBlur={handleBlur}
+    //                 value={values.lastname}
+    //                 style={{
+    //                   border:
+    //                     errors.lastname && touched.lastname && errors.lastname
+    //                       ? "solid 1px red"
+    //                       : "",
+    //                 }}
+    //                 placeholder="ນາມສະກຸນ..."
+    //               />
+    //             </Form.Group>
+    //             <Form.Group controlId="exampleForm.ControlInput1">
+    //               <Form.Label>ເບີໂທລະສັບ</Form.Label>
+    //               <Form.Control
+    //                 type="number"
+    //                 name="phone"
+    //                 onChange={handleChange}
+    //                 onBlur={handleBlur}
+    //                 value={values.phone}
+    //                 style={{
+    //                   border:
+    //                     errors.phone && touched.phone && errors.phone
+    //                       ? "solid 1px red"
+    //                       : "",
+    //                 }}
+    //                 placeholder="ເບີໂທລະສັບ..."
+    //               />
+    //             </Form.Group>
+    //           </Modal.Body>
+    //           <Modal.Footer>
+    //             <Button
+    //               style={{ backgroundColor: COLOR_APP_CANCEL, color: "#ffff" }}
+    //               onClick={handleClose2}
+    //             >
+    //               ຍົກເລີກ
+    //             </Button>
+    //             <Button
+    //               style={{ backgroundColor: COLOR_APP, color: "#ffff" }}
+    //               onClick={() => handleSubmit()}
+    //             >
+    //               ບັນທືກ
+    //             </Button>
+    //           </Modal.Footer>
+    //         </form>
+    //       )}
+    //     </Formik>
+    //   </Modal>
 
-      {/* ===== delete */}
-      <Modal show={show3} onHide={handleClose3}>
-        <Modal.Header closeButton></Modal.Header>
-        <Modal.Body>
-          <div style={{ textAlign: "center" }}>
-            <div>{t("would_delete")} </div>
-            <div style={{ color: "red" }}>{dateDelete?.name}</div>
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose3}>
-            {t("cancel")}
-          </Button>
-          <Button
-            style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={() => _confirmeDelete()}
-          >
-            ຢືນຢັນການລົບ
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+    //   {/* ===== delete */}
+    //   <Modal show={show3} onHide={handleClose3}>
+    //     <Modal.Header closeButton></Modal.Header>
+    //     <Modal.Body>
+    //       <div style={{ textAlign: "center" }}>
+    //         <div>{t("would_delete")} </div>
+    //         <div style={{ color: "red" }}>{dateDelete?.name}</div>
+    //       </div>
+    //     </Modal.Body>
+    //     <Modal.Footer>
+    //       <Button variant="secondary" onClick={handleClose3}>
+    //         {t("cancel")}
+    //       </Button>
+    //       <Button
+    //         style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+    //         onClick={() => _confirmeDelete()}
+    //       >
+    //         ຢືນຢັນການລົບ
+    //       </Button>
+    //     </Modal.Footer>
+    //   </Modal>
+    // </div>
   );
 }
