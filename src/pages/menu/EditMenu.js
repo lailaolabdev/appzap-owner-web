@@ -65,6 +65,7 @@ export default function EditMenu() {
     defaultValues: data || {
       recommended: false,
       isWeightMenu: false,
+      unitWeightMenu: "g",
       name: "",
       name_en: "",
       name_cn: "",
@@ -99,6 +100,7 @@ export default function EditMenu() {
       const menuData = {
         recommended: formData?.recommended,
         isWeightMenu: formData?.isWeightMenu,
+        unitWeightMenu: formData?.unitWeightMenu,
         name: formData?.name,
         name_en: formData?.name_en,
         name_cn: formData?.name_cn,
@@ -174,6 +176,18 @@ export default function EditMenu() {
                 {watch("isWeightMenu") ? `${t("oppen")}` : `${t("close")}`}
               </label>
             </div>
+            {data?.isWeightMenu && (
+              <>
+                <label>{t("ຫົວໜ່ວຍຂາຍເປັນນ້ຳໜັກ")}</label>
+                <select
+                  {...register("unitWeightMenu")}
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="g">g</option>
+                  <option value="kg">kg</option>
+                </select>
+              </>
+            )}
           </div>
           <div>
             <button

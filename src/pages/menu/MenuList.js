@@ -1070,6 +1070,7 @@ export default function MenuList() {
             initialValues={{
               recommended: false,
               isWeightMenu: false,
+              unitWeightMenu: "g",
               name: "",
               name_en: "",
               name_cn: "",
@@ -1182,6 +1183,33 @@ export default function MenuList() {
                       {values?.isWeightMenu ? `${t("oppen")}` : `${t("close")}`}
                     </label>
                   </div>
+                  {values?.isWeightMenu && (
+                    <Form.Group controlId="exampleForm.ControlSelect1">
+                      <Form.Label>{t("ຫົວໜ່ວຍຂາຍເປັນນ້ຳໜັກ")}</Form.Label>
+                      <Form.Control
+                        as="select"
+                        name="unitWeightMenu"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        value={values.unitWeightMenu}
+                        style={{
+                          border:
+                            errors.unitWeightMenu &&
+                            touched.unitWeightMenu &&
+                            errors.unitWeightMenu
+                              ? "solid 1px red"
+                              : "",
+                        }}
+                      >
+                        <option selected={true} disabled={true} value="">
+                          {t("ເລືອກຫົວໜ່ວຍ")}
+                        </option>
+
+                        <option value="g">g</option>
+                        <option value="kg">kg</option>
+                      </Form.Control>
+                    </Form.Group>
+                  )}
                   <Form.Group>
                     <Form.Label>{t("sequence")}</Form.Label>
                     <Form.Control
