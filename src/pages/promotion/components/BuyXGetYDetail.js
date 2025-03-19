@@ -228,51 +228,93 @@ const BuyXGetYDetail = () => {
 
               <div className="mb-4">
                 {formData.selectedMenus.length > 0 ? (
-                  formData.selectedMenus.map((menu) => (
-                    <div key={menu._id} className="flex items-center border-b">
-                      <div>
-                        <h4 className="font-medium text-lg text-gray-800">
-                          <span className="mr-2">ເມນູຫຼັກ :</span>
-                          {menuData.find((m) => m._id === menu._id)?.name ??
-                            "ບໍ່ມີຊື່ເມນູ"}
-                          <span>
-                            (
-                            {moneyCurrency(
-                              menuData.find((m) => m._id === menu._id)?.price
-                            ) ?? "ບໍ່ມີຊື່ເມນູ"}
-                            )
-                          </span>
-                        </h4>
+                  <>
+                    {formData.selectedMenus.map((menu) => (
+                      <div
+                        key={menu._id}
+                        className="flex items-center border-b"
+                      >
+                        <div>
+                          <h4 className="font-bold text-lg text-gray-800">
+                            <span className="mr-2">ເມນູຫຼັກ :</span>
+                            {menuData.find((m) => m._id === menu._id)?.name ??
+                              "ບໍ່ມີຊື່ເມນູ"}
+                            <span>
+                              (
+                              {moneyCurrency(
+                                menuData.find((m) => m._id === menu._id)?.price
+                              ) ?? "0"}{" "}
+                              {storeDetail?.firstCurrency})
+                            </span>
+                          </h4>
 
-                        {menu.freeItems.length > 0 && (
-                          <ul>
-                            {menu.freeItems.map((freeItemId) => (
-                              <li
-                                key={freeItemId}
-                                className="flex gap-2 items-center"
-                              >
-                                <span className="text-[14px] text-gray-800">
-                                  <span className="mr-2">ເມນູແຖມ :</span>
-                                  {
-                                    menuData.find((m) => m._id === freeItemId)
-                                      ?.name
-                                  }
-                                  <span className="mx-2">
-                                    (
-                                    {moneyCurrency(
+                          {menu.freeItems.length > 0 && (
+                            <ul>
+                              {menu.freeItems.map((freeItemId) => (
+                                <li
+                                  key={freeItemId}
+                                  className="flex gap-2 items-center"
+                                >
+                                  <span className="text-[14px] text-color-app font-bold">
+                                    <span className="mr-2">ເມນູແຖມ :</span>
+                                    {
                                       menuData.find((m) => m._id === freeItemId)
-                                        ?.price
-                                    )}
-                                    )
+                                        ?.name
+                                    }
+                                    <span className="mx-2">
+                                      (
+                                      {moneyCurrency(
+                                        menuData.find(
+                                          (m) => m._id === freeItemId
+                                        )?.price
+                                      )}{" "}
+                                      {storeDetail?.firstCurrency})
+                                    </span>
                                   </span>
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
                       </div>
+                    ))}
+                    <div className="font-bold text-lg text-gray-800 mt-40">
+                      <span>ລາຄາເມນູຫຼັກທັງໝົດ:</span>{" "}
+                      <span>
+                        {moneyCurrency(
+                          formData.selectedMenus.reduce((total, menu) => {
+                            const mainMenu = menuData.find(
+                              (m) => m._id === menu._id
+                            );
+                            return total + (mainMenu ? mainMenu.price : 0);
+                          }, 0)
+                        )}{" "}
+                        {storeDetail?.firstCurrency}
+                      </span>
                     </div>
-                  ))
+                    <div className="font-bold text-lg text-gray-800 mt-2">
+                      <span>ລາຄາເມນູແຖມທັງໝົດ:</span>{" "}
+                      <span>
+                        {moneyCurrency(
+                          formData.selectedMenus.reduce((total, menu) => {
+                            const freeItems = menu.freeItems.map(
+                              (freeItemId) =>
+                                menuData.find((m) => m._id === freeItemId)
+                                  ?.price || 0
+                            );
+                            return (
+                              total +
+                              freeItems.reduce(
+                                (itemTotal, price) => itemTotal + price,
+                                0
+                              )
+                            );
+                          }, 0)
+                        )}{" "}
+                        {storeDetail?.firstCurrency}
+                      </span>
+                    </div>
+                  </>
                 ) : (
                   <p className="text-gray-500 text-center mt-48">
                     ຍັງບໍ່ມີເມນູຫຼັກ
