@@ -11,7 +11,7 @@ import {
   getLocalData,
   END_POINT_SEVER_TABLE_MENU,
 } from "../../../constants/api";
-import { COLOR_APP, COLOR_APP_CANCEL } from "../../../constants";
+import { COLOR_APP, COLOR_APP_CANCEL, COLOR_GRAY } from "../../../constants";
 import { moneyCurrency } from "../../../helpers";
 import { useStoreStore } from "../../../zustand/storeStore";
 import { useShiftStore } from "../../../zustand/ShiftStore";
@@ -21,6 +21,7 @@ import Swal from "sweetalert2";
 import {
   CreateDiscountPromotion,
   AddPromotionToMenu,
+  UpdateDisCountPromotion,
 } from "../../../services/promotion";
 const DiscountForm = () => {
   const [formData, setFormData] = useState({
@@ -28,10 +29,11 @@ const DiscountForm = () => {
     discountType: "",
     discountValue: 0,
     minPurchasePrice: 0,
-    validFrom: "",
+    validFrom: new Date(),
     validUntil: "",
     selectedMenus: [],
   });
+
   const { t } = useTranslation();
   const { storeDetail } = useStoreStore();
   const navigate = useNavigate();
@@ -196,7 +198,7 @@ const DiscountForm = () => {
     // Whenever selectedMenus changes, calculate the total price
     if (formData.selectedMenus.length > 0) {
       const totalPrice = getTotalDiscountPrice();
-      console.log("Total after discount: ", totalPrice);
+      // console.log("Total after discount: ", totalPrice);
     }
   }, [formData.selectedMenus]);
 
@@ -259,7 +261,6 @@ const DiscountForm = () => {
             errorAdd("ບໍ່ພົບລາຍການທີ່ຊ້ຳກັນ");
             return;
           }
-
           // Extract names and IDs
           const duplicateMenuNames = duplicateMenus
             .map((menu) => menu.name)
@@ -269,16 +270,27 @@ const DiscountForm = () => {
           // Display warning message
           Swal.fire({
             title: "ເກີດຂໍ້ຜິດພາດ",
-            text: `ລາຍການ ${duplicateMenuNames} ນີ້ຖຶກເພີ່ມໄປແລ້ວ, ກະລຸນາເພີ່ມລາຍການໃໝ່`,
+            text: `ລາຍການ "${duplicateMenuNames} (${err?.response?.data?.data?.name})" ນີ້ຖຶກເພີ່ມໄປແລ້ວ, ທ່ານຕ້ອງການບັນທືກແທນທີ່ເລີຍບໍ່`,
             icon: "warning",
-            showCancelButton: false,
+            // showCancelButton: true,
+            showDenyButton: true,
             confirmButtonColor: COLOR_APP,
-            cancelButtonColor: COLOR_APP_CANCEL,
-            confirmButtonText: "ເພີ່ມໃໝ່",
-            cancelButtonText: "ຍົກເລິກ",
-          }).then((result) => {
+            // cancelButtonColor: COLOR_APP_CANCEL,
+            denyButtonColor: COLOR_GRAY,
+            confirmButtonText: "ໃຊ້ອັນເກົ່າ",
+            // cancelButtonText: "ຍົກເລິກ",
+            denyButtonText: "ແທນທີ່",
+          }).then(async (result) => {
             if (result.isConfirmed) {
               duplicateMenuIds.forEach((id) => handleRemoveMenu(id));
+            } else if (result.isDenied) {
+              await UpdateDisCountPromotion(
+                err?.response?.data?.data?._id,
+                data
+              );
+              // errorAdd("replace");
+              navigate("/promotion");
+              fetchDataMenu();
             }
           });
         } else {
@@ -320,23 +332,26 @@ const DiscountForm = () => {
   };
 
   // Custom Input Component
-  const CustomInput = ({ value, onClick }) => (
-    <div className="relative flex items-center">
-      <input
-        type="text"
-        value={value}
-        onClick={onClick}
-        readOnly
-        placeholder="ເລືອກວັນທີ"
-        className="w-[220px] h-[45px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
-      />
-      <LuCalendarDays
-        className="absolute right-3 text-gray-500 cursor-pointer"
-        size={20}
-        onClick={onClick} // Trigger date picker when clicking the icon
-      />
-    </div>
-  );
+  const CustomInput = ({ value, onClick }) => {
+    // Format the date in 'dd/MM/yyyy' format
+    return (
+      <div className="relative flex items-center">
+        <input
+          type="text"
+          value={value} // Display the formatted date
+          onClick={onClick}
+          readOnly
+          placeholder="ເລືອກວັນທີ"
+          className="w-[220px] h-[45px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
+        />
+        <LuCalendarDays
+          className="absolute right-3 text-gray-500 cursor-pointer"
+          size={20}
+          onClick={onClick} // Trigger date picker when clicking the icon
+        />
+      </div>
+    );
+  };
 
   return (
     <div className="p-2 bg-gray-50 h-full w-full">

@@ -26,7 +26,7 @@ const BuyXGetYForm = () => {
     name: "",
     buyQuantity: 1,
     getQuantity: 1,
-    validFrom: "",
+    validFrom: new Date(),
     validUntil: "",
     selectedMenus: [],
   });
