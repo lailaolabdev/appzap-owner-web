@@ -639,17 +639,19 @@ function Homecafe() {
         );
       });
 
-      if (existingMenuIndex !== -1) {
-        updatedMenu[existingMenuIndex].quantity += 1;
-        updatedMenu[existingMenuIndex].options = filteredOptions;
-        updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
-        updatedMenu[existingMenuIndex].totalPrice =
-          updatedMenu[existingMenuIndex].price *
-            updatedMenu[existingMenuIndex].quantity +
-          totalOptionPrice;
-      } else {
-        updatedMenu.push(mainMenuData);
-      }
+      // if (existingMenuIndex !== -1) {
+      //   updatedMenu[existingMenuIndex].quantity += 1;
+      //   updatedMenu[existingMenuIndex].options = filteredOptions;
+      //   updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
+      //   updatedMenu[existingMenuIndex].totalPrice =
+      //     updatedMenu[existingMenuIndex].price *
+      //       updatedMenu[existingMenuIndex].quantity +
+      //     totalOptionPrice;
+      // } else {
+      //   updatedMenu.push(mainMenuData);
+      // }
+
+      updatedMenu.push(mainMenuData);
 
       // biome-ignore lint/complexity/noForEach: <explanation>
       activePromotions.forEach((promotion) => {
@@ -2236,11 +2238,11 @@ function Homecafe() {
         />
       </div>
       {SelectedMenus?.map((val, i) => {
+        console.log("INDEX", i);
         const totalPrice = () => {
           const totalOptionPrice = val?.totalOptionPrice || 0;
           const price = val?.price || 0;
           const quantity = val?.quantity || 0;
-
           if (val?.isWeightMenu) {
             return val?.unitWeightMenu === "g"
               ? (price + totalOptionPrice) *
