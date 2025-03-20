@@ -34,7 +34,11 @@ import {
   getSalesInformationReport,
   getTotalBillActiveReport,
 } from "../../services/report";
-import { getCountBills, getCountBillsV7 } from "../../services/bill";
+import {
+  billCancelCafe,
+  getCountBills,
+  getCountBillsV7,
+} from "../../services/bill";
 import { getAllShift } from "../../services/shift";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 import convertNumber from "../../helpers/convertNumber";
@@ -224,6 +228,23 @@ export default function Dashboard() {
       getTotalBillActiveReportData();
     } else {
       setShiftId(option?.value?.shiftID);
+    }
+  };
+
+  const confrimCancelBill = async (body) => {
+    try {
+      const _res = await billCancelCafe(body);
+      if (_res?.status === 200) {
+        getReportData();
+        getSalesInformationReportData();
+        getMoneyReportData();
+        getPromotionReportData();
+        getCountAllBillReportData();
+        getCountBillActiveReportData();
+        getTotalBillActiveReportData();
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -476,6 +497,7 @@ export default function Dashboard() {
       )}
       {changeUi === "CHECKBILL" && (
         <DashboardFinance
+          confrimCancelBill={confrimCancelBill}
           startDate={startDate}
           endDate={endDate}
           startTime={startTime}
