@@ -218,26 +218,6 @@ function Homecafe() {
   };
   const handleClose = () => setShow(false);
 
-  // const handleSetQuantity = (int, data) => {
-  //   const dataArray = [];
-  //   for (const i of SelectedMenus) {
-  //     let _data = { ...i };
-
-  //     if (
-  //       data?.id === i?.id &&
-  //       JSON.stringify(data?.options) === JSON.stringify(i?.options)
-  //     ) {
-  //       _data = { ..._data, quantity: _data?.quantity + int };
-  //     }
-
-  //     if (_data.quantity > 0) {
-  //       dataArray.push(_data);
-  //     }
-  //   }
-  //   setSelectedMenu(dataArray);
-  //   setSelectedMenus(dataArray);
-  // };
-
   const handleSetQuantity = (int, data) => {
     let dataArray = [...SelectedMenus]; // Clone current selected menu list
 
@@ -260,6 +240,7 @@ function Homecafe() {
           promotion?.type === "BUY_X_GET_Y" && promotion?.status === "ACTIVE"
       ) || [];
 
+    // biome-ignore lint/complexity/noForEach: <explanation>
     activePromotions.forEach((promotion) => {
       const buyQuantity = promotion?.buyQuantity || 1;
       const getQuantity = promotion?.getQuantity || 1;
@@ -269,6 +250,7 @@ function Homecafe() {
           (dataArray[mainMenuIndex]?.quantity || 0) / buyQuantity
         );
 
+        // biome-ignore lint/complexity/noForEach: <explanation>
         promotion.freeItems.forEach((freeItem) => {
           const freeItemId =
             typeof freeItem._id === "object" ? freeItem._id._id : freeItem._id;
@@ -495,7 +477,7 @@ function Homecafe() {
     const mainMenuData = {
       id: menu._id,
       name: menu.name,
-      quantity: 1,
+      quantity: activePromotions ? activePromotions[0].buyQuantity : 1,
       price: finalPrice,
       priceDiscount: Math.max(menu?.price - finalPrice, 0),
       categoryId: menu?.categoryId,
@@ -529,16 +511,17 @@ function Homecafe() {
     // updatedSelectedMenus.push(mainMenuData);
     updatedSelectedMenus.push(mainMenuData);
 
+    // biome-ignore lint/complexity/noForEach: <explanation>
     activePromotions.forEach((promotion) => {
       if (
         promotion?.type === "BUY_X_GET_Y" &&
         promotion.freeItems?.length > 0
       ) {
+        // biome-ignore lint/complexity/noForEach: <explanation>
         promotion.freeItems.forEach((freeItem) => {
           const freeItemId = freeItem?._id?._id || freeItem?._id;
           const freeItemName = freeItem?._id?.name || "Unknown";
 
-          // เช็กว่า freeItem นี้แถมให้สินค้านี้จริงๆ ไม่ใช่เมนูอื่น
           if (freeItem?.mainMenuId?._id !== menu._id) return;
 
           const existingFreeItemIndex = updatedSelectedMenus.findIndex(
@@ -556,7 +539,7 @@ function Homecafe() {
               id: freeItemId,
               name: freeItemName,
               price: 0,
-              quantity: 1,
+              quantity: promotion ? promotion?.getQuantity : 1,
               categoryId: menu?.categoryId,
               printer: menu?.categoryId?.printer,
               shiftId: shiftCurrent[0]?._id,
@@ -565,6 +548,7 @@ function Homecafe() {
               isFree: true,
               mainMenuId: menu._id,
               storeId: storeDetail?._id,
+              menuImage: menu?.images[0],
             });
           }
         });
@@ -667,7 +651,7 @@ function Homecafe() {
     const mainMenuData = {
       id: selectedItem._id,
       name: selectedItem.name,
-      quantity: 1,
+      quantity: activePromotions ? activePromotions[0].buyQuantity : 1,
       price: finalPrice,
       priceDiscount: Math.max(selectedItem?.price - finalPrice, 0),
       categoryId: selectedItem?.categoryId,
@@ -687,6 +671,7 @@ function Homecafe() {
       isWeightMenu: selectedItem?.isWeightMenu,
       unitWeightMenu: selectedItem?.unitWeightMenu,
       storeId: storeDetail?._id,
+      menuImage: selectedItem?.images[0],
     };
 
     setSelectedMenus((prevMenu) => {
@@ -746,7 +731,7 @@ function Homecafe() {
                 id: freeItemId,
                 name: freeItemName,
                 price: 0,
-                quantity: 1,
+                quantity: promotion ? promotion.getQuantity : 1,
                 categoryId: selectedItem?.categoryId,
                 printer: selectedItem?.categoryId?.printer,
                 shiftId: shiftCurrent[0]?._id,
@@ -755,6 +740,7 @@ function Homecafe() {
                 isFree: true,
                 mainMenuId: selectedItem._id,
                 storeId: storeDetail?._id,
+                menuImage: selectedItem?.images[0],
               });
             }
           });
@@ -1428,7 +1414,7 @@ function Homecafe() {
         !promotion.discountType ||
         promotion.discountValue == null
       ) {
-        console.error("Invalid promotion data", promotion);
+        // console.error("Invalid promotion data", promotion);
         return;
       }
 
