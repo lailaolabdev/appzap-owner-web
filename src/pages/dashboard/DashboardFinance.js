@@ -635,6 +635,8 @@ export default function DashboardFinance({
   useEffect(() => {
     setTotalTranferAndPayLast(dataModal?.totalTranferAndPayLast);
   }, [dataModal]);
+
+
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <Loading />}
@@ -773,7 +775,7 @@ export default function DashboardFinance({
 
                 <>
                   <td>
-                    {item?.orderId[0]?.deliveryCode
+                    {(item?.orderId[0]?.deliveryCode || item?.orderId[0]?.platform)
                       ? ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                         ? new Intl.NumberFormat("ja-JP", {
                             currency: "JPY",
@@ -794,7 +796,7 @@ export default function DashboardFinance({
                 </>
 
                 <td>
-                  {item?.orderId[0]?.deliveryCode
+                  { item?.orderId[0]?.platform
                     ? 0
                     : ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                     ? new Intl.NumberFormat("ja-JP", {

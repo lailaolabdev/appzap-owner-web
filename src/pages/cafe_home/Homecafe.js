@@ -61,7 +61,6 @@ import {
 } from "lucide-react";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import CheckOutPopupCafe from "../table/components/CheckOutPopupCafe";
-import CheckOutPopupCafeDelivery from "../table/components/CheckOurPopupCafeDelivery";
 import printFlutter from "../../helpers/printFlutter";
 import matchRoundNumber from "../../helpers/matchRound";
 import { cn } from "../../utils/cn";
@@ -1739,58 +1738,33 @@ function Homecafe() {
                     ""
                   )}
                 </div>
+                {SelectedMenus?.length > 0 && (
+                  <div className="grid grid-cols-2 gap-2 place-content-center w-full">
+                    <button
+                      type="button"
+                      className="w-full rounded-lg h-[40px] bg-red-500 hover:bg-red-400 text-white text-md font-bold"
+                      onClick={() => {
+                        setSelectedMenus([]);
+                        setSelectedMenu([]);
+                      }}
+                    >
+                      {t("cancel_order")}
+                    </button>
 
-                {SelectedMenus?.length > 0 &&
-                  SelectedMenus?.filter(
-                    (item) => item.storeId === storeDetail?._id
-                  ) && (
-                    <div className="grid grid-cols-2 gap-2 place-content-center w-full">
-                      <button
-                        type="button"
-                        className="w-full rounded-lg h-[40px] bg-red-500 hover:bg-red-400 text-white text-md font-bold"
-                        onClick={() => {
-                          setSelectedMenus([]);
-                          setSelectedMenu([]);
-                        }}
-                      >
-                        {t("cancel_order")}
-                      </button>
-                      <Button
-                        variant="light"
-                        className={cn("hover-me", fontMap[language])}
-                        style={{
-                          marginRight: 15,
-                          backgroundColor: theme.primaryColor,
-                          color: "#ffffff",
-                          fontWeight: "bold",
-                          flex: 1,
-                        }}
-                        onClick={() => {
-                          if (SelectedMenus.length === 0) {
-                            AlertMessage();
-                          } else {
-                            setPopupDelivery({ CheckOutDelivery: true });
-                            setIsDelivery(true);
-                          }
-                        }}
-                      >
-                        {/* {t("print_bill")} */}
-                        Delivery
-                      </Button>
-                      <button
-                        type="button"
-                        className="w-full rounded-lg h-[40px] bg-color-app hover:bg-orange-300 text-md font-bold text-white"
-                        onClick={() => {
-                          SelectedMenus.length === 0
-                            ? AlertMessage()
-                            : setPopup({ CheckOutType: true });
-                        }}
-                        disabled={SelectedMenus.length === 0}
-                      >
-                        {t("order_checkout")}
-                      </button>
-                    </div>
-                  )}
+                    <button
+                      type="button"
+                      className="w-full rounded-lg h-[40px] bg-color-app hover:bg-orange-300 text-md font-bold text-white"
+                      onClick={() => {
+                        SelectedMenus.length === 0
+                          ? AlertMessage()
+                          : setPopup({ CheckOutType: true });
+                      }}
+                      disabled={SelectedMenus.length === 0}
+                    >
+                      {t("order_checkout")}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -2222,25 +2196,8 @@ function Homecafe() {
         TotalPrice={TotalPrice()}
         setIsLoading={setIsLoading}
         statusBill={false}
-      />
-
-      <CheckOutPopupCafeDelivery
-        bill={bill}
-        onPrintForCher={onPrintForCher}
-        onQueue={billData}
-        onPrintBill={onPrintBill}
-        onPrintForCherLaBel={onPrintForCherLaBel}
-        onPrintDrawer={onPrintDrawer}
-        dataBill={SelectedMenus}
-        open={popupDelivery?.CheckOutDelivery}
-        onClose={() => setPopupDelivery()}
-        setDataBill={setDataBill}
         isDelivery={isDelivery}
         setIsDelivery={setIsDelivery}
-        taxPercent={taxPercent}
-        TotalPrice={TotalPrice()}
-        setIsLoading={setIsLoading}
-        statusBill={false}
         setPlatform={setPlatform}
         setDeliveryCode={setDeliveryCode}
         platform={platform}
