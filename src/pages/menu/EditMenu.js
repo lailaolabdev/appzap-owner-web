@@ -21,6 +21,7 @@ export default function EditMenu() {
   const [detailMenuOption, setDetailMenuOption] = useState(null);
   const [menuOptionsCount, setMenuOptionsCount] = useState({});
   const [categories, setCategories] = useState([]);
+  const [isWeightMenu, setIsWeightMenu] = useState(false);
   const navigate = useNavigate();
   const {
     t,
@@ -53,7 +54,7 @@ export default function EditMenu() {
       console.error("Get categories failed:", error);
     }
   };
-  console.log("DATA", data);
+
   const {
     register,
     handleSubmit,
@@ -93,7 +94,17 @@ export default function EditMenu() {
         setValue(key, data[key]);
       });
     }
+    setIsWeightMenu(data.isWeightMenu);
   }, [data, setValue]);
+
+  const toggleWeightMenu = () => {
+    setIsWeightMenu((prev) => !prev); // Toggle between true and false
+  };
+
+  useEffect(() => {
+    // If needed, update the form state when isWeightMenu changes
+    setValue("isWeightMenu", isWeightMenu);
+  }, [isWeightMenu, setValue]);
 
   const onSubmit = async (formData) => {
     try {
@@ -125,6 +136,10 @@ export default function EditMenu() {
       errorAdd(`${t("edit_failed")}`);
     }
   };
+  console.log("DATA", data);
+  console.log("formData?.isWeightMenu", data?.isWeightMenu);
+  console.log("isWeightMenu", isWeightMenu);
+  console.log("formData?.unitWeightMenu", data?.unitWeightMenu);
 
   return (
     <div style={BODY}>
@@ -168,15 +183,15 @@ export default function EditMenu() {
               <label>{t("menu_sold_by_weight")}</label>
               <input
                 type="checkbox"
-                {...register("isWeightMenu")}
-                checked={watch("isWeightMenu")}
-                onChange={(e) => setValue("isWeightMenu", e.target.checked)}
+                // {...register("isWeightMenu")}
+                checked={isWeightMenu}
+                onChange={toggleWeightMenu} // Toggle the state when checkbox is clicked
               />
               <label>
                 {watch("isWeightMenu") ? `${t("oppen")}` : `${t("close")}`}
               </label>
             </div>
-            {data?.isWeightMenu && (
+            {isWeightMenu && (
               <>
                 <label>{t("ຫົວໜ່ວຍຂາຍເປັນນ້ຳໜັກ")}</label>
                 <select

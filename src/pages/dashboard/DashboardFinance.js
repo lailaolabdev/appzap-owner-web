@@ -167,11 +167,12 @@ export default function DashboardFinance({
       setPrintBillLoading(false);
       await Swal.fire({
         icon: "success",
-        title: `${t("checkbill_success")}`,
+        title: `${t("re_print_bill")}`,
         showConfirmButton: false,
         timer: 1800,
       });
       // setMenuItemDetailModal(false);
+      handleClose();
     } catch (err) {
       console.log("err printer", err);
       setPrintBillLoading(false);
@@ -432,8 +433,6 @@ export default function DashboardFinance({
   };
 
   const calculateDiscount = (menu) => {
-    console.log("calculateDiscount", menu);
-
     if (
       !menu ||
       !menu.totalPrice ||
@@ -1205,6 +1204,7 @@ export default function DashboardFinance({
               profile={profile}
               dataBill={dataModal?.orderId}
               data={dataModal?.length}
+              dataModal={dataModal}
               memberData={""}
             />
           </div>
