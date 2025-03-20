@@ -1,40 +1,45 @@
-import {
-  faListAlt,
-  faPlusCircle,
-  faTable,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import moment from "moment";
-import axios from "axios";
+// React and core dependencies
 import { useEffect, useState } from "react";
-import ReactPaginate from "react-paginate";
-import { Button, Pagination } from "react-bootstrap";
-import { useTranslation } from "react-i18next";
-import { FcEmptyTrash } from "react-icons/fc";
-import { GiMoneyStack } from "react-icons/gi";
-import Swal from "sweetalert2";
 
-import { ButtonComponent } from "../../components";
-import {
-  END_POINT_SERVER_JUSTCAN,
-  END_POINT_SEVER,
-  getLocalData,
-} from "../../constants/api";
-import { END_POINT, COLOR_APP } from "../../constants";
+// Third-party libraries
+import axios from "axios";
+import { useTranslation } from "react-i18next";
+import Swal from "sweetalert2"; // Ignore spellcheck: Swal sweetalert2
+import { Button } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+// Icons
+import { faListAlt, faTable } from "@fortawesome/free-solid-svg-icons";
+
+// Constants, services and helpers
+import { END_POINT_SERVER_JUSTCAN, getLocalData } from "../../constants/api"; // Ignore spellcheck: JUSTCAN
+import { COLOR_APP, END_POINT } from "../../constants";
 import { getHeaders } from "../../services/auth";
-import { errorAdd, successAdd } from "../../helpers/sweetalert";
-import PopUpConfirms from "../../components/popup/PopUpConfirms";
-import Loading from "../../components/Loading";
-import { moneyCurrency } from "./../../helpers/index";
+import { errorAdd, successAdd } from "../../helpers/sweetalert"; // Ignore spellcheck: sweetalert
+
+// Store/state management
 import { useStore } from "../../store";
 import { useShiftStore } from "../../zustand/ShiftStore";
 import { useClaimDataStore } from "../../zustand/claimData";
 import { useStoreStore } from "../../zustand/storeStore";
 
-// Component for the header tabs
+// Components
+import PopUpConfirms from "../../components/popup/PopUpConfirms";
+import Loading from "../../components/Loading";
+import UnclaimedTab from "./UnclaimedTab";
+import ClaimingTab from "./ClaimingTab";
+import ClaimedTab from "./ClaimedTab";
+import ConfirmPopUp from "./components/ConfirmPopUp";
+
+// Constants for claim statuses
+const CLAIM_STATUSES = {
+  UNCLAIMED: "UNCLAIMED",
+  CLAIMING: "CLAIMING",
+  CLAIMED: "CLAIMED",
+};
+
 const TabButton = ({ isSelected, onClick, icon, title }) => (
   <Button
-    onKeyDown={() => {}}
     className="menu-report-stocks"
     style={{
       background: isSelected ? COLOR_APP : "white",
@@ -48,763 +53,387 @@ const TabButton = ({ isSelected, onClick, icon, title }) => (
   </Button>
 );
 
-// Component for the money summary card
-const MoneySummaryCard = ({ amount, currency }) => (
-  <div className="my-3">
-    <div className="max-w-lg p-4 border-2 border-orange-500 bg-white rounded-lg shadow-xl w-[350px] h-[160px]">
-      <div className="flex flex-row items-center gap-3">
-        <span className="bg-orange-500 border border-orange-500 w-[80px] h-[80px] rounded-full relative">
-          <GiMoneyStack className="absolute top-4 right-4 text-[50px] text-white" />
-        </span>
-        <div className="flex flex-col justify-center items-center mt-2">
-          <h4 className="text-lg text-gray-500 font-bold">Total Money Claim</h4>
-          <h2 className="text-3xl font-bold text-orange-600 text-center">
-            {moneyCurrency(amount)} {currency}
-          </h2>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-// Component for the empty state
-const EmptyState = () => (
-  <tr>
-    <td colSpan={9}>
-      <div className="flex flex-col items-center mt-4">
-        <p className="text-orange-500 text-[18px] font-bold">ບໍ່ມີຂໍ້ມູນ</p>
-        <FcEmptyTrash className="text-orange-500 text-[60px] animate-bounce" />
-      </div>
-    </td>
-  </tr>
-);
-
-// Component for pagination
-const PaginationControls = ({ pageCount, onPageChange, t }) => (
-  <ReactPaginate
-    previousLabel={
-      <span className="glyphicon glyphicon-chevron-left">{t("previous")}</span>
-    }
-    nextLabel={
-      <span className="glyphicon glyphicon-chevron-right">{t("next")}</span>
-    }
-    breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
-    breakClassName={"break-me"}
-    pageCount={pageCount || 1}
-    marginPagesDisplayed={1}
-    pageRangeDisplayed={3}
-    onPageChange={onPageChange}
-    containerClassName={"pagination justify-content-center"}
-    pageClassName={"page-item"}
-    pageLinkClassName={"page-link"}
-    activeClassName={"active"}
-    previousClassName={"page-item"}
-    nextClassName={"page-item"}
-    previousLinkClassName={"page-link"}
-    nextLinkClassName={"page-link"}
-  />
-);
-
 export default function HistoryBankTransferClaim() {
   const { t } = useTranslation();
-  const [selectedType, setSelectedType] = useState("UNCLAIMED");
+  const [selectedType, setSelectedType] = useState(CLAIM_STATUSES.UNCLAIMED);
   const [selectedPayment, setSelectedPayment] = useState([]);
-  const [claimedData, setClaimedData] = useState([]);
-  const [claimingData, setClaimingData] = useState([]);
-  const [unClaimedData, setUnClaimedData] = useState([]);
+  const [claimData, setClaimData] = useState({
+    [CLAIM_STATUSES.UNCLAIMED]: [],
+    [CLAIM_STATUSES.CLAIMING]: [],
+    [CLAIM_STATUSES.CLAIMED]: [],
+  });
   const [amountData, setAmountData] = useState({
-    unclaimed: 0,
-    claiming: 0,
-    claimed: 0,
+    [CLAIM_STATUSES.UNCLAIMED]: 0,
+    [CLAIM_STATUSES.CLAIMING]: 0,
+    [CLAIM_STATUSES.CLAIMED]: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [openSelectClaim, setOpenSelectClaim] = useState(false);
   const [openConfirmClaimAndClose, setOpenConfirmClaimAndClose] =
     useState(false);
+  const [rowsPerPage] = useState(20); // Using rowsPerPage directly, no need for setter
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState({
+    [CLAIM_STATUSES.UNCLAIMED]: 0,
+    [CLAIM_STATUSES.CLAIMING]: 0,
+    [CLAIM_STATUSES.CLAIMED]: 0,
+  });
 
-  // Pagination state
-  const [page, setPage] = useState(0);
-  const rowsPerPage = 100;
-  const [pageClaimData, setPageClaimData] = useState(1);
-  const [totalPageClaimData, setTotalPageClaimData] = useState(1);
-  const [pageClaimingData, setPageClaimingData] = useState(1);
-  const [totalPageClaimingData, setTotalPageClaimingData] = useState(1);
-  const [pageUnClaimData, setPageUnClaimData] = useState(1);
-  const [totalPageUnClaimData, setTotalPageUnClaimData] = useState(1);
-  const { setTotalAmountClaim, TotalAmountClaim } = useClaimDataStore();
-
-  // Zustand stores
+  const { setTotalAmountClaim } = useClaimDataStore();
   const { profile, setSelectedTable, getTableDataStore } = useStore();
   const { storeDetail } = useStoreStore();
   const { shiftCurrent } = useShiftStore();
 
   useEffect(() => {
-    if (selectedType === "UNCLAIMED") {
-      getDataAllUnClaim();
-      getClaimAmountData();
-    } else if (selectedType === "CLAIMING") {
-      getClaimAmountData();
-      getDataAllClaiming();
-    } else if (selectedType === "CLAIMED") {
-      getClaimAmountData();
-      getDataAllClaimed();
-    }
-  }, [selectedType]);
+    fetchData(selectedType, currentPage);
+    getClaimAmountData();
+  }, [selectedType, currentPage]);
 
   const getClaimAmountData = async () => {
     try {
       const { DATA } = await getLocalData();
-      const _res = await axios.get(
-        `${END_POINT_SERVER_JUSTCAN}/v5/checkout-total-amount?storeId=${DATA?.storeId}`
+      // Add timeout and cancel token for better network handling
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const response = await axios.get(
+        `${END_POINT_SERVER_JUSTCAN}/v5/checkout-total-amount?storeId=${DATA?.storeId}`, // Ignore spellcheck: JUSTCAN
+        { signal: controller.signal }
       );
-      console.log("_res.data");
-      console.log(_res.data);
-      setTotalAmountClaim(_res?.data?.totalAmount);
+
+      clearTimeout(timeoutId);
+      setTotalAmountClaim(response?.data?.totalAmount);
     } catch (err) {
-      console.log(err);
+      console.log("Error fetching claim amount data:", err.message);
     }
   };
 
-  const getDataAllUnClaim = async () => {
+  const fetchData = async (type, page, loading = true) => {
     try {
-      setIsLoading(true);
+      if (loading) setIsLoading(true);
       const { TOKEN, DATA } = await getLocalData();
-      const apiUrl = `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${DATA?.storeId}&claimStatus=UNCLAIMED&paymentMethod=BANK_TRANSFER&status=PAID&skip=0&limit=999999`;
+
+      // Create abort controller for request cancellation
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+      // Map claim types to API endpoints
+      const endpoints = {
+        [CLAIM_STATUSES.UNCLAIMED]: `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${
+          DATA?.storeId
+        }&claimStatus=UNCLAIMED&paymentMethod=BANK_TRANSFER&status=PAID&skip=${
+          (page - 1) * rowsPerPage
+        }&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
+        [CLAIM_STATUSES.CLAIMING]: `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${
+          DATA?.storeId
+        }&status=CLAIMING&skip=${
+          (page - 1) * rowsPerPage
+        }&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
+        [CLAIM_STATUSES.CLAIMED]: `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${
+          DATA?.storeId
+        }&status=CLAIMED&skip=${(page - 1) * rowsPerPage}&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
+      };
+
+      const apiUrl = endpoints[type];
+      if (!apiUrl) {
+        clearTimeout(timeoutId);
+        return;
+      }
+
       const response = await axios.get(apiUrl, {
         headers: TOKEN,
+        signal: controller.signal,
       });
-      setUnClaimedData(response?.data?.data);
-      setAmountData({ ...amountData, unclaimed: response?.data?.totalAmount });
-      console.log("unclaimed", response?.data);
-      setIsLoading(false);
+
+      clearTimeout(timeoutId);
+
+      // Update state with new data
+      setClaimData((prevData) => ({
+        ...prevData,
+        [type]: response.data.data || [],
+      }));
+
+      setAmountData((prevAmounts) => ({
+        ...prevAmounts,
+        [type]: response.data.totalAmount || 0,
+      }));
+
+      // Store total count for pagination
+      setTotalItems((prev) => ({
+        ...prev,
+        [type]: response.data.pagination.totalCount || 0,
+      }));
     } catch (error) {
-      console.log(error);
+      console.error("Error fetching data:", error.message);
+      if (axios.isCancel(error)) {
+        console.log("Request cancelled:", error.message);
+      }
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const getDataAllClaiming = async () => {
-    try {
-      setIsLoading(true);
-      const { TOKEN, DATA } = await getLocalData();
-      const apiUrl = `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${DATA?.storeId}&status=CLAIMING&skip=0&limit=999999`;
-      const response = await axios.get(apiUrl, { headers: TOKEN });
-      setClaimingData(response?.data?.data);
-      setAmountData({ ...amountData, claiming: response?.data?.totalAmount });
-      console.log("claiming", response?.data);
-      setIsLoading(false);
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
-    }
-  };
-
-  const getDataAllClaimed = async () => {
-    try {
-      setIsLoading(true);
-      const { TOKEN, DATA } = await getLocalData();
-      const apiUrl = `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${DATA?.storeId}&status=CLAIMED&skip=0&limit=999999`;
-      const response = await axios.get(apiUrl, { headers: TOKEN });
-      setClaimedData(response?.data?.data);
-      setAmountData({ ...amountData, claimed: response?.data?.totalAmount });
-      console.log("claimed", response?.data?.data);
-      setIsLoading(false);
-    } catch (error) {
-      console.log(error);
-      setIsLoading(false);
-    }
-  };
-
-  // User interactions
   const selectPayment = (payment) => {
-    let updatedSelection = [...selectedPayment];
-    const isAlreadySelected = updatedSelection.some(
-      (x) =>
-        x.tableName === payment.tableName && x.tableCode === payment.tableCode
-    );
+    const { tableName, tableCode, billId } = payment;
 
-    if (!isAlreadySelected) {
-      // Select all payments with the same tableName and tableCode
-      updatedSelection = [
-        ...updatedSelection,
-        ...unClaimedData.filter(
-          (x) =>
-            x.tableName === payment.tableName &&
-            x.tableCode === payment.tableCode
-        ),
-      ];
-    } else {
-      // Deselect all payments with the same tableName and tableCode
-      updatedSelection = updatedSelection.filter(
-        (x) =>
-          x.tableName !== payment.tableName || x.tableCode !== payment.tableCode
-      );
-    }
+    setSelectedPayment((prevSelected) => {
+      const isAlreadySelected = prevSelected.some((x) => x.billId === billId);
 
-    setSelectedPayment(updatedSelection);
+      if (isAlreadySelected) {
+        // Remove selected payments with matching tableName and tableCode
+        return prevSelected.filter((x) => x.billId !== billId);
+      } else {
+        // Add all payments with matching tableName and tableCode
+        const paymentsToAdd = claimData[CLAIM_STATUSES.UNCLAIMED].filter(
+          (x) => x.billId === billId
+        );
+        return [...prevSelected, ...paymentsToAdd];
+      }
+    });
   };
 
   const checkPaymentSelected = (payment) => {
-    return selectedPayment.findIndex((x) => x._id === payment._id) >= 0;
+    return selectedPayment.some((x) => x._id === payment._id);
   };
 
   const claimSelectedPayment = async () => {
-    setIsLoading(true);
+    setOpenSelectClaim(false);
+
+    const billIds = selectedPayment
+      .filter((x) => x.isPaidConfirm)
+      .map((x) => x._id);
+
+    if (billIds.length === 0) {
+      errorAdd(`ບໍ່ມີລາຍການທີ່ຢືນຢັນການປິດໂຕະແລ້ວ`); // Ignore spellcheck: ກະລຸນາເລືອກບິນທີ່ຕ້ອງການຊຳລະໄດ້
+      return;
+    }
     try {
-      const billIds = selectedPayment.map((x) => x._id);
+      setIsLoading(true);
       const { TOKEN, DATA } = await getLocalData();
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
       await axios.post(
-        `${END_POINT_SERVER_JUSTCAN}/v5/claim-payment/create`,
+        `${END_POINT_SERVER_JUSTCAN}/v5/claim-payment/create`, // Ignore spellcheck: JUSTCAN
         {
           storeId: DATA?.storeId,
           billIds: billIds,
         },
         {
           headers: TOKEN,
+          signal: controller.signal,
         }
       );
 
-      // Reset selected payments
-      setSelectedPayment([]);
-      setIsLoading(false);
-      successAdd(`ສ້າງເຄລມສຳເລັດ`);
+      clearTimeout(timeoutId);
 
-      // Refresh data
-      // getClaimData();
-      getDataAllUnClaim();
-      getDataAllClaiming();
+      setSelectedPayment([]);
+      successAdd(`ສຳເລັດແລ້ວ`); // Ignore spellcheck: ສຳເລັດແລ້ວ
+
+      // Refresh data for both tabs
+      fetchData(CLAIM_STATUSES.UNCLAIMED, currentPage);
+      fetchData(CLAIM_STATUSES.CLAIMING, currentPage);
     } catch (error) {
-      console.log(error);
+      errorAdd(`ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່`); // Ignore spellcheck: ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່
+      console.error("Error claiming payment:", error.message);
+    } finally {
       setIsLoading(false);
-      errorAdd(`ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃຫມ່`);
     }
   };
 
   const claimAllPayment = async () => {
-    setOpenConfirm(false);
-    setIsLoading(true);
     try {
+      setOpenConfirm(false);
+      setIsLoading(true);
+
       const { TOKEN, DATA } = await getLocalData();
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
       await axios.post(
-        `${END_POINT_SERVER_JUSTCAN}/v5/claim-payment/create-all`,
+        `${END_POINT_SERVER_JUSTCAN}/v5/claim-payment/create-all`, // Ignore spellcheck: JUSTCAN
         { storeId: DATA?.storeId },
         {
           headers: TOKEN,
+          signal: controller.signal,
         }
       );
-      setIsLoading(false);
-      successAdd(`ສ້າງເຄລມທັງຫມົດສຳເລັດ`);
 
-      // Refresh data
-      // getClaimData();
-      getDataAllUnClaim();
+      clearTimeout(timeoutId);
+
+      successAdd(`ສຳເລັດທັງໝົດແລ້ວ`); // Ignore spellcheck: ສຳເລັດທັງໝົດແລ້ວ
+      fetchData(CLAIM_STATUSES.UNCLAIMED, currentPage);
     } catch (error) {
-      console.log(error);
+      errorAdd(`ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່`); // Ignore spellcheck: ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່
+      console.error("Error claiming all payments:", error.message);
+    } finally {
       setIsLoading(false);
-      errorAdd(`ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃຫມ່`);
     }
   };
 
+  const uniquePaymentData = selectedPayment.reduce((unique, item) => {
+    // Find if this billId already exists in our unique array
+    const existingIndex = unique.findIndex((obj) => obj.billId === item.billId);
+
+    if (existingIndex === -1) {
+      // Add new entry with initial amount
+      unique.push({
+        billId: item.billId,
+        tableName: item.tableName,
+        code: item.code,
+        totalAmount: item.totalAmount || 0,
+        currency: item.currency,
+        isPaidConfirm: item.isPaidConfirm,
+      });
+    } else if (item.totalAmount) {
+      // Add to existing entry's total
+      unique[existingIndex].totalAmount += item.totalAmount;
+    }
+
+    return unique;
+  }, []);
+
   const checkBillOrdering = async () => {
     try {
-      const body = {
-        shiftId: shiftCurrent[0]?._id,
-        isCheckout: "true",
-        status: "CHECKOUT",
-        paymentMethod: "APPZAP_TRANSFER",
-        isOrderingPaid: false,
-        billMode: "false",
-        tableName: selectedPayment[0]?.tableName,
-        tableCode: selectedPayment[0]?.code,
-        fullnameStaffCheckOut:
-          `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-",
-        staffCheckOutId: profile?.data?.id,
-      };
+      if (uniquePaymentData.length === 0) return;
+      setIsLoading(true);
 
-      await axios.put(
-        `${END_POINT}/v7/bill-checkout`,
-        {
-          id: selectedPayment[0]?.billId,
-          data: body,
-        },
-        { headers: await getHeaders() }
-      );
+      const headers = await getHeaders();
 
+      // Process each table sequentially with proper timeout handling
+      for (const table of uniquePaymentData) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+        if (table.isPaidConfirm) return;
+
+        const body = {
+          shiftId: shiftCurrent[0]?._id,
+          isCheckout: "true",
+          status: "CHECKOUT",
+          paymentMethod: "APPZAP_TRANSFER", // Ignore spellcheck: APPZAP
+          isOrderingPaid: false,
+          billMode: "false",
+          tableName: table.tableName,
+          tableCode: table.code,
+          fullnameStaffCheckOut:
+            `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-", // Ignore spellcheck: firstname lastname
+          staffCheckOutId: profile?.data?.id,
+        };
+
+        try {
+          // First request
+          await axios.put(
+            `${END_POINT}/v7/bill-checkout`,
+            {
+              id: table.billId,
+              data: body,
+            },
+            {
+              headers,
+              signal: controller.signal,
+            }
+          );
+
+          // Second request
+          await axios.put(
+            `${END_POINT_SERVER_JUSTCAN}/v5/checkout/update-by-bill`, // Ignore spellcheck: JUSTCAN
+            {
+              billId: table.billId,
+              code: table.code,
+            },
+            {
+              headers,
+              signal: controller.signal,
+            }
+          );
+
+          await fetchData(CLAIM_STATUSES.UNCLAIMED, currentPage, false);
+          setSelectedPayment([]);
+        } catch (err) {
+          // Handle individual table errors but continue with others
+          console.error(`Error processing table ${table.tableName}:`, err);
+        } finally {
+          clearTimeout(timeoutId);
+        }
+      }
+
+      // Update UI state
       setSelectedTable();
       getTableDataStore();
+
+      // Success notification
       Swal.fire({
+        // Ignore spellcheck: Swal
         icon: "success",
-        title: `${t("checkbill_success")}`,
+        title: `${t("checkbill_success")}`, // Ignore spellcheck: checkbill
         showConfirmButton: false,
         timer: 1800,
       });
     } catch (error) {
-      errorAdd(`${t("checkbill_fial")}`);
+      errorAdd(`${t("checkbill_fial")}`); // Ignore spellcheck: checkbill fial
+      console.error("Error checking bill ordering:", error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleConfirmCloseTable = async () => {
     setOpenConfirmClaimAndClose(false);
-    checkBillOrdering();
-    claimSelectedPayment();
+    await checkBillOrdering();
   };
 
-  // Render functions for tab content
-  const renderUnclaimedTab = () => (
-    <div>
-      <MoneySummaryCard
-        amount={amountData?.unclaimed}
-        currency={storeDetail?.firstCurrency}
-      />
+  // Calculate proper pagination values
+  const calculateTotalPages = (type) => {
+    return Math.ceil(totalItems[type] / rowsPerPage) || 1;
+  };
 
-      <div>
-        <div className="flex justify-end flex-wrap gap-3">
-          <div className="flex gap-2">
-            {selectedPayment.length > 0 && (
-              <ButtonComponent
-                title={"ເຄລມຕາມເລືອກ"}
-                icon={faPlusCircle}
-                colorbg={"#f97316"}
-                width={"150px"}
-                handleClick={() => claimSelectedPayment()}
-              />
-            )}
-            {unClaimedData?.length > 0 && (
-              <ButtonComponent
-                title={"ເຄລມທັງຫມົດ"}
-                icon={faPlusCircle}
-                colorbg={"#f97316"}
-                width={"150px"}
-                handleClick={() => setOpenConfirm(true)}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div style={{ height: 10 }} />
-
-      <table className="table table-hover">
-        <thead className="thead-light">
-          <tr>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("no")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("tableNumber")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("tableCode")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("amount")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("detail")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("status")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              ສະຖານະເຄລມ
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("date_time")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              ຈັດການ
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {unClaimedData?.length > 0 ? (
-            unClaimedData?.map((item, index) => {
-              const isSelected = checkPaymentSelected(item);
-              return (
-                <tr
-                  key={index}
-                  style={{ backgroundColor: isSelected ? "#616161" : "" }}
-                >
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {page * rowsPerPage + index + 1}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {item?.tableName ?? "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {item?.code ?? "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {item?.totalAmount
-                      ? `${item?.totalAmount.toLocaleString()} ${
-                          item?.currency ?? "LAK"
-                        }`
-                      : "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {t("checkout") ?? "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {t(item.status) ?? "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {item.claimStatus === "UNCLAIMED" ? "ຖອນເງິນຄືນ" : "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
-                  </td>
-                  <td
-                    className={`${
-                      isSelected ? "text-white" : ""
-                    } flex flex-row gap-2`}
-                  >
-                    {item?.claimStatus === "UNCLAIMED" && (
-                      <Button onClick={() => selectPayment(item)}>
-                        {isSelected ? "ຍົກເລີກ" : "ເລືອກ"}
-                      </Button>
-                    )}
-
-                    {item?.claimStatus === "UNCLAIMED" && isSelected && (
-                      <Button onClick={() => setOpenConfirmClaimAndClose(true)}>
-                        {t("confirm_close_table")}
-                      </Button>
-                    )}
-                  </td>
-                </tr>
-              );
-            })
-          ) : (
-            <EmptyState />
-          )}
-        </tbody>
-      </table>
-
-      <PaginationControls
-        pageCount={totalPageClaimData}
-        onPageChange={(e) => setPageClaimData(e?.selected + 1)}
-        t={t}
-      />
-    </div>
-  );
-
-  const renderClaimingTab = () => (
-    <>
-      <MoneySummaryCard
-        amount={amountData.claiming}
-        currency={storeDetail?.firstCurrency}
-      />
-
-      <div style={{ height: 10 }} />
-
-      <table className="table table-hover">
-        <thead className="thead-light">
-          <tr>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("no")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("ລະຫັດເຄລມ")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("ຈຳນວນບິນ")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("ຈຳນວນບິນເງິນ")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("detail")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("status")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("date_time")}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {claimingData?.length > 0 ? (
-            claimingData?.map((item, index) => {
-              const isSelected = checkPaymentSelected(item);
-              return (
-                <tr
-                  key={index}
-                  style={{ backgroundColor: isSelected ? "#616161" : "" }}
-                >
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {page * rowsPerPage + index + 1}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {item?.code ?? "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {item?.billIds?.length ?? "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {item?.totalAmount
-                      ? `${item?.totalAmount.toLocaleString()} ${
-                          item?.currency ?? "LAK"
-                        }`
-                      : "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {t("checkout") ?? "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {item.status === "CLAIMING" ? "ກຳລັງຖອນເງິນຄືນ" : "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
-                  </td>
-                </tr>
-              );
-            })
-          ) : (
-            <EmptyState />
-          )}
-        </tbody>
-      </table>
-
-      <PaginationControls
-        pageCount={totalPageUnClaimData}
-        onPageChange={(e) => setPageUnClaimData(e?.selected + 1)}
-        t={t}
-      />
-    </>
-  );
-
-  const renderClaimedTab = () => (
-    <div>
-      <MoneySummaryCard
-        amount={amountData.claimed}
-        currency={storeDetail?.firstCurrency}
-      />
-
-      <div style={{ height: 10 }} />
-      <table className="table table-hover">
-        <thead className="thead-light">
-          <tr>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("no")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("ລະຫັດເຄລມ")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("ຈຳນວນບິນ")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("ຈຳນວນບິນເງິນ")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("detail")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("status")}
-            </th>
-            <th style={{ textWrap: "nowrap" }} scope="col">
-              {t("date_time")}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {claimedData?.length > 0 ? (
-            claimedData?.map((item, index) => {
-              const isSelected = checkPaymentSelected(item);
-              return (
-                <tr
-                  key={index}
-                  style={{ backgroundColor: isSelected ? "#616161" : "" }}
-                >
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {page * rowsPerPage + index + 1}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {item?.code ?? "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {item?.billIds?.length ?? "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {item?.totalAmount
-                      ? `${item?.totalAmount.toLocaleString()} ${
-                          item?.currency ?? "LAK"
-                        }`
-                      : "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {t("checkout") ?? "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {t(item.status) ?? "-"}
-                  </td>
-                  <td
-                    style={{
-                      textWrap: "nowrap",
-                      color: isSelected ? "white" : "",
-                    }}
-                  >
-                    {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
-                  </td>
-                </tr>
-              );
-            })
-          ) : (
-            <EmptyState />
-          )}
-        </tbody>
-      </table>
-
-      <PaginationControls
-        pageCount={totalPageClaimingData}
-        onPageChange={(e) => setPageClaimingData(e?.selected + 1)}
-        t={t}
-      />
-    </div>
-  );
+  // Prepare data for each tab based on selected type
+  const tabData = {
+    [CLAIM_STATUSES.UNCLAIMED]: claimData[CLAIM_STATUSES.UNCLAIMED] || [],
+    [CLAIM_STATUSES.CLAIMING]: claimData[CLAIM_STATUSES.CLAIMING] || [],
+    [CLAIM_STATUSES.CLAIMED]: claimData[CLAIM_STATUSES.CLAIMED] || [],
+  };
 
   return (
     <div className="p-2 bg-gray-50">
       {/* Tabs */}
       <div
         className={`flex gap-2 justify-start items-center ${
-          selectedType === "CLAIMED" ? "mb-3" : "m-1"
+          selectedType === CLAIM_STATUSES.CLAIMED ? "mb-3" : "m-1"
         }`}
       >
         <TabButton
-          isSelected={selectedType === "UNCLAIMED"}
+          isSelected={selectedType === CLAIM_STATUSES.UNCLAIMED}
           onClick={() => {
-            setSelectedType("UNCLAIMED");
-            getDataAllUnClaim();
+            setSelectedType(CLAIM_STATUSES.UNCLAIMED);
+            setCurrentPage(1); // Reset page when changing tabs
           }}
           icon={faListAlt}
-          title="ລາຍການຊຳລະ"
+          title="ລາຍການທີ່ບໍ່ສຳເລັດ" // Ignore spellcheck: ລາຍການທີ່ບໍ່ສຳເລັດ
         />
 
         <TabButton
-          isSelected={selectedType === "CLAIMING"}
+          isSelected={selectedType === CLAIM_STATUSES.CLAIMING}
           onClick={() => {
-            setSelectedType("CLAIMING");
-            getDataAllClaiming();
+            setSelectedType(CLAIM_STATUSES.CLAIMING);
+            setCurrentPage(1); // Reset page when changing tabs
           }}
           icon={faListAlt}
-          title="ລາຍການກຳລັງເຄລມ"
+          title="ລາຍການກຳລັງເຄລມ" // Ignore spellcheck: ລາຍການກຳລັງເຄລມ
         />
 
         <TabButton
-          isSelected={selectedType === "CLAIMED"}
+          isSelected={selectedType === CLAIM_STATUSES.CLAIMED}
           onClick={() => {
-            setSelectedType("CLAIMED");
-            getDataAllClaimed();
+            setSelectedType(CLAIM_STATUSES.CLAIMED);
+            setCurrentPage(1); // Reset page when changing tabs
           }}
           icon={faTable}
-          title="ລາຍການເຄລມເງິນ"
+          title="ລາຍການເຄລມເງິນ" // Ignore spellcheck: ລາຍການເຄລມເງິນ
         />
       </div>
 
@@ -812,25 +441,115 @@ export default function HistoryBankTransferClaim() {
       {isLoading && <Loading />}
 
       {/* Tab content */}
-      {selectedType === "UNCLAIMED" && renderUnclaimedTab()}
-      {selectedType === "CLAIMING" && renderClaimingTab()}
-      {selectedType === "CLAIMED" && renderClaimedTab()}
+      {selectedType === CLAIM_STATUSES.UNCLAIMED && (
+        <UnclaimedTab
+          amountData={amountData}
+          storeDetail={storeDetail}
+          selectedPayment={selectedPayment}
+          unClaimedData={tabData[CLAIM_STATUSES.UNCLAIMED]}
+          setSelectedPayment={setSelectedPayment}
+          claimSelectedPayment={claimSelectedPayment}
+          setOpenConfirm={setOpenConfirm}
+          page={currentPage}
+          rowsPerPage={rowsPerPage}
+          checkPaymentSelected={checkPaymentSelected}
+          selectPayment={selectPayment}
+          setOpenSelectClaim={setOpenSelectClaim}
+          setOpenConfirmClaimAndClose={setOpenConfirmClaimAndClose}
+          totalPageCount={calculateTotalPages(CLAIM_STATUSES.UNCLAIMED)}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          t={t}
+        />
+      )}
+      {selectedType === CLAIM_STATUSES.CLAIMING && (
+        <ClaimingTab
+          amountData={amountData}
+          storeDetail={storeDetail}
+          claimingData={tabData[CLAIM_STATUSES.CLAIMING]}
+          totalPageCount={calculateTotalPages(CLAIM_STATUSES.CLAIMING)}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          rowsPerPage={rowsPerPage}
+          t={t}
+        />
+      )}
+      {selectedType === CLAIM_STATUSES.CLAIMED && (
+        <ClaimedTab
+          amountData={amountData}
+          storeDetail={storeDetail}
+          claimedData={tabData[CLAIM_STATUSES.CLAIMED]}
+          totalPageCount={calculateTotalPages(CLAIM_STATUSES.CLAIMED)}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          rowsPerPage={rowsPerPage}
+          t={t}
+        />
+      )}
 
       {/* Confirm dialogs */}
       <PopUpConfirms
         open={openConfirm}
-        text={"ເຄລມທັງໝົດ"}
-        textBefore={"ທ່ານຕ້ອງການ"}
-        textAfter={"ແທ້ບໍ່"}
+        text={"ເຄລມທັງໝົດ"} // Ignore spellcheck: ເຄລມທັງໝົດ
+        textBefore={"ທ່ານຕ້ອງການ"} // Ignore spellcheck: ທ່ານຕ້ອງການ
+        textAfter={"ແທ້ບໍ?"} // Ignore spellcheck: ແທ້ບໍ
         onClose={() => setOpenConfirm(false)}
         onSubmit={claimAllPayment}
       />
 
-      <PopUpConfirms
+      <ConfirmPopUp
+        open={openSelectClaim}
+        header={"ເຄລມເງິນລາຍການທີ່ເລືອກ"} // Ignore spellcheck:
+        content={
+          <div className="flex flex-col items-center text-lg gap-1">
+            <span>ຈຳນວນເງິນເຄລມທັງໝົດ</span>
+            <span className="text-color-app text-2xl font-bold">
+              {selectedPayment
+                .reduce((total, payment) => total + payment.totalAmount, 0)
+                .toLocaleString()}{" "}
+              {selectedPayment[0]?.currency ?? "LAK"}
+            </span>
+          </div>
+        }
+        onClose={() => setOpenSelectClaim(false)}
+        onSubmit={claimSelectedPayment}
+      />
+
+      <ConfirmPopUp
         open={openConfirmClaimAndClose}
-        text={"ເຄລມແລະປິດໂຕະ"}
-        textBefore={"ທ່ານຕ້ອງການ"}
-        textAfter={"ເລີຍບໍ່ ?"}
+        header={"ຢືນຢັນການຊໍາລະເງິນ ພ້ອມປິດໂຕະ"} // Ignore spellcheck: ເຄລມແລະປິດໂຕະ
+        content={
+          <div className="flex flex-col items-center text-lg gap-2">
+            <div className="flex flex-col gap-0">
+              {uniquePaymentData
+                .filter((payment) => !payment.isPaidConfirm)
+                .map((payment, index) => (
+                  <div
+                    key={index}
+                    className="text-lg font-bold flex flex-row gap-2"
+                  >
+                    <span>{`${payment.tableName} (${payment.code}):`}</span>
+                    <span className="text-color-app">
+                      {payment.totalAmount.toLocaleString()}{" "}
+                      {payment.currency === "LAK" ? "ກີບ" : payment.currency}
+                    </span>
+                  </div>
+                ))}
+            </div>
+            <span className="text-xl font-bold">
+              <span>{`ລວມທັງໝົດ: `}</span>
+              <span className="text-color-app">
+                {uniquePaymentData
+                  .filter((payment) => !payment.isPaidConfirm)
+                  .reduce((total, payment) => total + payment.totalAmount, 0)
+                  .toLocaleString()}{" "}
+                {uniquePaymentData[0]?.currency === "LAK"
+                  ? "ກີບ"
+                  : uniquePaymentData[0]?.currency}
+              </span>
+            </span>
+          </div>
+        }
         onClose={() => setOpenConfirmClaimAndClose(false)}
         onSubmit={handleConfirmCloseTable}
       />

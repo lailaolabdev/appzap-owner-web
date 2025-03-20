@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import socketio from "socket.io-client";
-import { END_POINT_SOCKET } from "../../constants/api";
+import {
+  END_POINT_SERVER_JUSTCAN,
+  END_POINT_SOCKET,
+  getLocalData,
+} from "../../constants/api";
 import { useStoreStore } from "../../zustand/storeStore";
 import { useOrderStore } from "../../zustand/orderStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
@@ -11,6 +15,7 @@ import {
 } from "../../zustand/slideImageStore";
 import { data } from "browserslist";
 import { set } from "lodash";
+import Axios from "axios";
 const { sendToKitchenPrinter } = require("../../helpers/printerHelper");
 
 const socket = socketio.connect(END_POINT_SOCKET, {
@@ -129,11 +134,26 @@ export const useSocketState = ({ setRunSound }) => {
       setUseSlideImageData(data?.data);
     };
 
-    const TotalAmountOrdering = async (data) => {
-      console.log("TotalAmountOrdering", data);
-      setTotalAmountClaim(
-        (Number(data?.totalAmount) || 0) + (Number(TotalAmountClaim) || 0)
-      );
+    const getClaimAmountData = async () => {
+      try {
+        const { DATA } = await getLocalData();
+        if (!DATA?.storeId) {
+          console.error("No storeId found in local data");
+          return;
+        }
+
+        const response = await Axios.get(
+          `${END_POINT_SERVER_JUSTCAN}/v5/checkout-total-amount?storeId=${DATA.storeId}`
+        );
+
+        if (response?.data?.totalAmount !== undefined) {
+          setTotalAmountClaim(response.data.totalAmount);
+        } else {
+          console.warn("Total amount not found in response", response.data);
+        }
+      } catch (err) {
+        console.error("Error fetching claim amount data:", err);
+      }
     };
 
     // Register socket listeners
@@ -158,7 +178,7 @@ export const useSocketState = ({ setRunSound }) => {
     socket.on(`SHOW_SLIDE:${storeDetail._id}`, showSlide);
     socket.on(`OPEN_TWO_SCREEN:${storeDetail._id}`, OpenTwoScreen);
     socket.on(`IMAGE_SLIDE:${storeDetail._id}`, ImageSlidData);
-    socket.on(`CHECKOUT_UPDATED:${storeDetail._id}`, TotalAmountOrdering);
+    socket.on(`CHECKOUT_UPDATED:${storeDetail._id}`, getClaimAmountData);
 
     // Cleanup listeners to prevent duplicates
     return () => {
@@ -187,7 +207,7 @@ export const useSocketState = ({ setRunSound }) => {
       socket.off(`SHOW_SLIDE:${storeDetail._id}`, showSlide);
       socket.off(`OPEN_TWO_SCREEN:${storeDetail._id}`, OpenTwoScreen);
       socket.off(`IMAGE_SLIDE:${storeDetail._id}`, ImageSlidData);
-      socket.off(`CHECKOUT_UPDATED:${storeDetail._id}`, TotalAmountOrdering);
+      socket.off(`CHECKOUT_UPDATED:${storeDetail._id}`, getClaimAmountData);
     };
   }, [storeDetail, setRunSound]);
 
