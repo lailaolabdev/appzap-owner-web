@@ -451,16 +451,16 @@ function Homecafe() {
 
     // console.log("mainMenuData", mainMenuData);
 
-    // const existingMenuIndex = updatedSelectedMenus.findIndex(
-    //   (item) => item.id === menu._id
-    // );
-    // if (existingMenuIndex !== -1) {
-    //   updatedSelectedMenus[existingMenuIndex].quantity += 1;
-    // } else {
-    //   updatedSelectedMenus.push(mainMenuData);
-    // }
+    const existingMenuIndex = updatedSelectedMenus.findIndex(
+      (item) => item.id === menu._id
+    );
+    if (existingMenuIndex !== -1) {
+      updatedSelectedMenus[existingMenuIndex].quantity += 1;
+    } else {
+      updatedSelectedMenus.push(mainMenuData);
+    }
 
-    updatedSelectedMenus.push(mainMenuData);
+    // updatedSelectedMenus.push(mainMenuData);
 
     // biome-ignore lint/complexity/noForEach: <explanation>
 
@@ -636,19 +636,19 @@ function Homecafe() {
         );
       });
 
-      // if (existingMenuIndex !== -1) {
-      //   updatedMenu[existingMenuIndex].quantity += 1;
-      //   updatedMenu[existingMenuIndex].options = filteredOptions;
-      //   updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
-      //   updatedMenu[existingMenuIndex].totalPrice =
-      //     updatedMenu[existingMenuIndex].price *
-      //       updatedMenu[existingMenuIndex].quantity +
-      //     totalOptionPrice;
-      // } else {
-      //   updatedMenu.push(mainMenuData);
-      // }
+      if (existingMenuIndex !== -1) {
+        updatedMenu[existingMenuIndex].quantity += 1;
+        updatedMenu[existingMenuIndex].options = filteredOptions;
+        updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
+        updatedMenu[existingMenuIndex].totalPrice =
+          updatedMenu[existingMenuIndex].price *
+            updatedMenu[existingMenuIndex].quantity +
+          totalOptionPrice;
+      } else {
+        updatedMenu.push(mainMenuData);
+      }
 
-      updatedMenu.push(mainMenuData);
+      // updatedMenu.push(mainMenuData);
 
       // biome-ignore lint/complexity/noForEach: <explanation>
       activePromotions.forEach((promotion) => {
@@ -1138,18 +1138,18 @@ function Homecafe() {
 
   const billForCherCancel80 = useRef([]);
 
+  console.log("billForCherCancel80", billForCherCancel80);
+
   if (billForCherCancel80.current.length !== arrLength) {
-    // add or remove refs
+    // ປັບຂະໜາດ array ໃຫ້ສອດຄ່ອງກັບຈຳນວນຂອງ item
     billForCherCancel80.current = Array(arrLength)
       .fill()
-      .map((_, i) => billForCherCancel80.current[i]);
+      .map((_, i) => billForCherCancel80.current[i] || null);
   }
 
   //console.log("billForCherCancel80", billForCherCancel80);
 
   const onPrintForCherLaBel = async () => {
-    // setOnPrinting(true);
-
     let _dataBill = {
       ...bill,
       typePrint: "PRINT_BILL_LABEL",
@@ -1158,13 +1158,11 @@ function Homecafe() {
 
     const orderSelect = selectedMenu?.filter((e) => e);
 
-    let _index = 0;
-    const printDate = [...billForCherCancel80.current];
+    const printDate = billForCherCancel80.current.flat().filter(Boolean); // Flatten and filter out null/undefined
 
     let dataUrls = [];
     for (const _ref of printDate) {
-      if (_ref) {
-        // Ensure _ref is a valid element
+      try {
         const dataUrl = await html2canvas(_ref, {
           useCORS: true,
           scrollX: 10,
@@ -1172,19 +1170,19 @@ function Homecafe() {
           scale: 530 / widthBill80,
         });
         dataUrls.push(dataUrl);
+      } catch (err) {
+        console.error("Error generating canvas for print:", err);
       }
     }
 
-    for (const _ref of printDate) {
+    for (let _index = 0; _index < printDate.length; _index++) {
       const _printer = printers.find((e) => {
         return e?._id === orderSelect?.[_index]?.printer;
       });
 
       try {
-        let urlForPrinter = "";
+        let urlForPrinter = USB_LABEL_PRINTER_PORT;
         let dataUrl = dataUrls[_index];
-
-        urlForPrinter = USB_LABEL_PRINTER_PORT;
 
         const _file = await base64ToBlob(dataUrl.toDataURL());
 
@@ -1204,18 +1202,9 @@ function Homecafe() {
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
-        // if (_index === 0) {
-        //   await Swal.fire({
-        //     icon: "success",
-        //     title: `${t("print_success")}`,
-        //     showConfirmButton: false,
-        //     timer: 1500,
-        //   });
-        // }
       } catch (err) {
-        console.log(err);
+        console.error("Error printing label:", err);
         if (_index === 0) {
-          // setOnPrinting(false);
           await Swal.fire({
             icon: "error",
             title: "ປິ້ນສະຕິກເກີ້ບໍ່ສຳເລັດ",
@@ -1225,9 +1214,7 @@ function Homecafe() {
           return { error: true, err };
         }
       }
-      _index++;
     }
-    // setOnPrinting(false);
   };
 
   const onPrintBill = async () => {
@@ -2234,23 +2221,22 @@ function Homecafe() {
                   convertUnitgramAndKilogram(quantity)
               : (price + totalOptionPrice) * quantity;
           } else {
-            return price + totalOptionPrice;
+            return (price + totalOptionPrice) * quantity;
           }
         };
+
         return Array.from({ length: val?.quantity }).map((_, index) => {
-          const key = `${val._id}-${index}`;
+          const key = `${index}`;
           return (
             <div
               key={key}
-              // style={{
-              //   width: "80mm",
-              //   paddingRight: "20px",
-              //   paddingBottom: "10px",
-              // }}
-              className="w-[80mm] pr-[20px pb-[10px]"
+              className="w-[80mm] pr-[20px] pb-[10px]"
               ref={(el) => {
                 if (el) {
-                  billForCherCancel80.current[i] = el;
+                  if (!billForCherCancel80.current[i]) {
+                    billForCherCancel80.current[i] = [];
+                  }
+                  billForCherCancel80.current[i][index] = el;
                 }
               }}
             >

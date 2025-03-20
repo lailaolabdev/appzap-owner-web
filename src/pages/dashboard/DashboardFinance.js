@@ -48,6 +48,7 @@ const limitData = 50;
 export default function DashboardFinance({
   startDate,
   endDate,
+  confrimCancelBill = () => {},
   startTime,
   endTime,
   selectedCurrency,
@@ -639,31 +640,6 @@ export default function DashboardFinance({
     setTotalTranferAndPayLast(dataModal?.totalTranferAndPayLast);
   }, [dataModal]);
 
-  const confrimCancelBill = async () => {
-    try {
-      const body = {
-        storeId: dataModal?.storeId,
-        order: dataModal?.orderId?.map((item) => ({ _id: item?._id })),
-        code: dataModal?.code,
-        status: "CANCELED",
-        billAmount: dataModal?.payAmount,
-      };
-      const _res = await billCancelCafe(body);
-      if (_res?.status === 200) {
-        Swal.fire({
-          icon: "success",
-          title: `${t("cancel_success")}`,
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        handleClose();
-        _fetchFinanceData();
-      }
-      console.log({ _res });
-    } catch (error) {
-      console.log(error);
-    }
-  };
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <Loading />}
@@ -1192,7 +1168,23 @@ export default function DashboardFinance({
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button className="text-white font-bold" onClick={confrimCancelBill}>
+          <Button
+            className="text-white font-bold"
+            disabled={dataModal?.status === "CANCELED"}
+            onClick={() => {
+              const body = {
+                storeId: dataModal?.storeId,
+                order: dataModal?.orderId?.map((item) => ({ _id: item?._id })),
+                code: dataModal?.code,
+                status: "CANCELED",
+                billAmount: dataModal?.payAmount,
+              };
+              confrimCancelBill(body).then(() => {
+                handleClose();
+                _fetchFinanceData();
+              });
+            }}
+          >
             {t("bill_cancel")}
           </Button>
           {!storeDetail?.isStatusCafe && (
