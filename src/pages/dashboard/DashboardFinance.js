@@ -1243,6 +1243,7 @@ export default function DashboardFinance({
             dataBill={dataModal?.orderId}
             data={dataModal?.length}
             memberData={""}
+            dataModal={dataModal}
           />
         </div>
       ) : (
