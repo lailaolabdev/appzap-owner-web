@@ -1158,6 +1158,7 @@
   "enter_delivery": "ປ້ອນຊື່ Delivery",
   "edit_delivery": "ແກ້ໄຂ Delivery",
   "setting_delivery": "ຈັດການ Delivery",
+  "no_delivery": "ບໍ່ມີລາຍການ Delivery",
   "manage_branch": "ຈັດການສາຂາ",
   "manage_product_storage": "ຈັດການຝາກສິນຄ້າ",
   "manage_song_requests": "ຈັດການລູກຄ້າຂໍເພງ",

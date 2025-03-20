@@ -58,7 +58,7 @@ export default function CheckOutPopupCafe({
   setDeliveryCode,
   deliveryCode,
   setIsDelivery,
-  isDelivery
+  isDelivery,
 }) {
   // ref
   const inputCashRef = useRef(null);
@@ -134,7 +134,7 @@ export default function CheckOutPopupCafe({
       const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
       setMembersData(_data?.data);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   const totalBillDefualt = _.sumBy(
@@ -153,7 +153,7 @@ export default function CheckOutPopupCafe({
     setSelectInput("inputCash");
     setForcus("CASH");
     setCanCheckOut(false);
-    fetchDelivery()
+    fetchDelivery();
     setDelivery(totalBillMoney);
   }, [open]);
   useEffect(() => {
@@ -172,17 +172,17 @@ export default function CheckOutPopupCafe({
             ? totalBill
             : 0
           : totalBill > 0
-            ? totalBill
-            : 0) <=
-        0
+          ? totalBill
+          : 0) <=
+      0
         ? 0
         : (Number.parseFloat(cash) || 0) +
-        (Number.parseFloat(transfer) || 0) -
-        (dataBill
-          ? totalBill > 0
-            ? totalBill
-            : 0
-          : totalBill > 0
+          (Number.parseFloat(transfer) || 0) -
+          (dataBill
+            ? totalBill > 0
+              ? totalBill
+              : 0
+            : totalBill > 0
             ? totalBill
             : 0);
 
@@ -200,19 +200,19 @@ export default function CheckOutPopupCafe({
             ? totalBill
             : 0
           : totalBill > 0
-            ? totalBill
-            : 0) <=
+          ? totalBill
+          : 0) <=
         0
         ? 0
         : (Number.parseFloat(cash) || 0) +
-        (Number.parseFloat(transfer) || 0) -
-        (dataBill
-          ? totalBill > 0
-            ? totalBill
-            : 0
-          : totalBill > 0
-            ? totalBill
-            : 0)
+            (Number.parseFloat(transfer) || 0) -
+            (dataBill
+              ? totalBill > 0
+                ? totalBill
+                : 0
+              : totalBill > 0
+              ? totalBill
+              : 0)
     );
   }, [cash, transfer, selectCurrency?.name]);
 
@@ -221,7 +221,6 @@ export default function CheckOutPopupCafe({
       setPlatformList(res?.data);
     });
   };
-
 
   useEffect(() => {
     if (!open) return;
@@ -372,7 +371,8 @@ export default function CheckOutPopupCafe({
       discountType: "PERCENT",
       statusPoint: statusPoint,
       fullnameStaffCheckOut:
-        `${profile.data.firstname ? profile.data.firstname : "--"} ${profile.data.lastname ? profile.data.lastname : "--"
+        `${profile.data.firstname ? profile.data.firstname : "--"} ${
+          profile.data.lastname ? profile.data.lastname : "--"
         }` ?? "-",
       staffCheckOutId: profile.data._id,
     };
@@ -424,7 +424,6 @@ export default function CheckOutPopupCafe({
       });
   };
 
-
   const RedeemPointUser = async () => {
     const TotalPrices =
       (Number(cash) || 0) + (Number(transfer) || 0) + (Number(point) || 0);
@@ -433,8 +432,8 @@ export default function CheckOutPopupCafe({
       storeDetail?.tableEdit === undefined
         ? false
         : !storeDetail?.tableEdit
-          ? false
-          : true;
+        ? false
+        : true;
 
     const data = {
       memberId: memberDataSearch?._id,
@@ -638,8 +637,8 @@ export default function CheckOutPopupCafe({
       ? DiscountMember()
       : 0
     : DiscountMember() > 0
-      ? DiscountMember()
-      : 0;
+    ? DiscountMember()
+    : 0;
 
   let totalBillMoney = dataBill
     ? Number.parseFloat(DiscountMember() > 0 ? DiscountMember() : 0)
@@ -738,7 +737,6 @@ export default function CheckOutPopupCafe({
     };
 
     fetchAllBanks();
-
   }, [tab, selectedBank]);
 
   const handleChange = (e) => {
@@ -770,7 +768,7 @@ export default function CheckOutPopupCafe({
         setPlatform("");
         setDeliveryCode("");
         setIsDelivery(false);
-        setDelivery()
+        setDelivery();
       }}
       keyboard={false}
       size="lg"
@@ -797,8 +795,8 @@ export default function CheckOutPopupCafe({
                 {dataBill
                   ? moneyCurrency(DiscountMember() ? DiscountMember() : 0)
                   : moneyCurrency(
-                    DiscountMember() > 0 ? DiscountMember() : 0
-                  )}{" "}
+                      DiscountMember() > 0 ? DiscountMember() : 0
+                    )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
               <span
@@ -821,8 +819,8 @@ export default function CheckOutPopupCafe({
                       ? DiscountMember()
                       : 0
                     : DiscountMember() > 0
-                      ? DiscountMember()
-                      : 0) / rateCurrency
+                    ? DiscountMember()
+                    : 0) / rateCurrency
                 )}{" "}
                 {selectCurrency?.name}
               </span>
@@ -889,14 +887,16 @@ export default function CheckOutPopupCafe({
                     <InputGroup.Text>{t("transfer")}</InputGroup.Text>
                     <Form.Control
                       disabled={
-                        (tab !== "cash_transfer" && tab !== "cash_transfer_point" ) && !isDelivery
+                        tab !== "cash_transfer" &&
+                        tab !== "cash_transfer_point" &&
+                        !isDelivery
                       }
                       type="text"
                       placeholder="0"
                       value={
                         tab === "cash_transfer"
-                        ? convertNumber(transfer)
-                        : convertNumber(transfer || 0)
+                          ? convertNumber(transfer)
+                          : convertNumber(transfer || 0)
                       }
                       onClick={() => {
                         setSelectInput("inputTransfer");
@@ -911,8 +911,8 @@ export default function CheckOutPopupCafe({
                     </InputGroup.Text>
                   </InputGroup>
 
-                  {
-                    isDelivery && (
+                  {isDelivery &&
+                    (platformList.length > 0 ? (
                       <>
                         <Form.Group>
                           <Form.Label>{t("delivery")}</Form.Label>
@@ -925,8 +925,12 @@ export default function CheckOutPopupCafe({
                               setSelectInput("inputDelivery");
                             }}
                             style={{
-                              borderColor: selectInput === "inputDelivery" ? COLOR_APP : '',
-                              borderWidth: selectInput === "inputDelivery" ? '2px' : ''
+                              borderColor:
+                                selectInput === "inputDelivery"
+                                  ? COLOR_APP
+                                  : "",
+                              borderWidth:
+                                selectInput === "inputDelivery" ? "2px" : "",
                             }}
                           />
                         </Form.Group>
@@ -954,9 +958,25 @@ export default function CheckOutPopupCafe({
                           </div>
                         </Form.Group>
                       </>
-                    )
-                  }
+                    ) : (
+                      <div className="my-4 flex gap-2 items-center">
+                        {t("no_delivery")}
 
+                        <Button
+                          variant="primary"
+                          style={{
+                            fontSize: 15,
+                          }}
+                          onClick={() => {
+                            navigate(
+                              `/settingStore/delivery/${storeDetail?._id}`
+                            );
+                          }}
+                        >
+                          {t("add")}
+                        </Button>
+                      </div>
+                    ))}
                 </div>
               </div>
               {tab === "point" || tab === "cash_transfer_point" ? (
@@ -1001,17 +1021,17 @@ export default function CheckOutPopupCafe({
                           {point
                             ? convertNumber(memberDataSearch?.point - point)
                             : convertNumber(memberDataSearch?.point)
-                              ? convertNumber(memberDataSearch?.point)
-                              : "0"}
+                            ? convertNumber(memberDataSearch?.point)
+                            : "0"}
                         </InputGroup.Text>
                       </div>
                       {memberDataSearch &&
-                        memberDataSearch.discountPercentage !== undefined ? (
+                      memberDataSearch.discountPercentage !== undefined ? (
                         <div className="box-name">
                           <InputGroup.Text>
                             {t("discount")}:{" "}
                             {memberDataSearch?.discountPercentage != null &&
-                              memberDataSearch?.discountPercentage > 0
+                            memberDataSearch?.discountPercentage > 0
                               ? memberDataSearch.discountPercentage ===
                                 undefined
                                 ? 0
@@ -1090,17 +1110,17 @@ export default function CheckOutPopupCafe({
                         {point
                           ? convertNumber(memberDataSearch?.point - point)
                           : convertNumber(memberDataSearch?.point)
-                            ? convertNumber(memberDataSearch?.point)
-                            : "0"}
+                          ? convertNumber(memberDataSearch?.point)
+                          : "0"}
                       </InputGroup.Text>
                     </div>
                     {memberDataSearch &&
-                      memberDataSearch.discountPercentage !== undefined ? (
+                    memberDataSearch.discountPercentage !== undefined ? (
                       <div className="box-name">
                         <InputGroup.Text>
                           {t("discount")}:{" "}
                           {memberDataSearch?.discountPercentage != null &&
-                            memberDataSearch?.discountPercentage > 0
+                          memberDataSearch?.discountPercentage > 0
                             ? memberDataSearch.discountPercentage === undefined
                               ? 0
                               : `${memberDataSearch.discountPercentage ?? 0}%`
@@ -1142,13 +1162,17 @@ export default function CheckOutPopupCafe({
                   setTab("cash");
                   setSelectInput("inputCash");
                   setForcus("CASH");
-                  setIsDelivery(false)
+                  setIsDelivery(false);
                 }}
               >
                 {t("cash")}
               </Button>
               <Button
-                variant={(tab === "transfer" && !isDelivery) ? "primary" : "outline-primary"}
+                variant={
+                  tab === "transfer" && !isDelivery
+                    ? "primary"
+                    : "outline-primary"
+                }
                 style={{
                   fontSize: 15,
                 }}
@@ -1162,7 +1186,7 @@ export default function CheckOutPopupCafe({
                   setTransfer(transferCal);
                   setTab("transfer");
                   setForcus("TRANSFER");
-                  setIsDelivery(false)
+                  setIsDelivery(false);
                 }}
               >
                 {t("transfer")}
@@ -1185,7 +1209,7 @@ export default function CheckOutPopupCafe({
                   setTab("cash_transfer");
                   setSelectInput("inputCash");
                   setForcus("TRANSFER_CASH");
-                  setIsDelivery(false)
+                  setIsDelivery(false);
                 }}
               >
                 {t("cash_transfer")}
@@ -1208,14 +1232,18 @@ export default function CheckOutPopupCafe({
                     setTab("cash_transfer_point");
                     setSelectInput("inputCash");
                     setForcus("CASH_TRANSFER_POINT");
-                    setIsDelivery(false)
+                    setIsDelivery(false);
                   }}
                 >
                   {t("transfercashpoint")}
                 </Button>
               )}
               <Button
-                variant={(tab === "transfer" && isDelivery ) ? "primary" : "outline-primary"}
+                variant={
+                  tab === "transfer" && isDelivery
+                    ? "primary"
+                    : "outline-primary"
+                }
                 style={{
                   fontSize: 15,
                 }}
@@ -1230,7 +1258,7 @@ export default function CheckOutPopupCafe({
                   setTransfer(transferCal);
                   setTab("transfer");
                   setForcus("DELIVERY");
-                  setIsDelivery(true)
+                  setIsDelivery(true);
                 }}
               >
                 {t("Delivery")}
@@ -1254,23 +1282,23 @@ export default function CheckOutPopupCafe({
               {(tab === "transfer" ||
                 tab === "cash_transfer" ||
                 tab === "cash_transfer_point") && (
-                  <Form.Control
-                    as="select"
-                    style={{ width: 140 }}
-                    value={selectedBank?.id || ""}
-                    onChange={handleChange}
-                  >
-                    <option value="" disabled>
-                      ເລືອກທະນາຄານ
-                    </option>
-                    {Array.isArray(banks) &&
-                      banks.map((bank) => (
-                        <option key={bank._id} value={bank._id}>
-                          {bank.bankName}
-                        </option>
-                      ))}
-                  </Form.Control>
-                )}
+                <Form.Control
+                  as="select"
+                  style={{ width: 140 }}
+                  value={selectedBank?.id || ""}
+                  onChange={handleChange}
+                >
+                  <option value="" disabled>
+                    ເລືອກທະນາຄານ
+                  </option>
+                  {Array.isArray(banks) &&
+                    banks.map((bank) => (
+                      <option key={bank._id} value={bank._id}>
+                        {bank.bankName}
+                      </option>
+                    ))}
+                </Form.Control>
+              )}
             </div>
             <NumberKeyboard
               onClickMember={() => {
@@ -1366,7 +1394,11 @@ export default function CheckOutPopupCafe({
                 // await onPrintForCher();
               }}
               style={{ display: "flex", gap: "10px", alignItems: "center" }}
-              disabled={!canCheckOut || ( isDelivery && platform.length <= 0 ) || (isDelivery && transfer < totalBill)}
+              disabled={
+                !canCheckOut ||
+                (isDelivery && platform.length <= 0) ||
+                (isDelivery && transfer < totalBill)
+              }
             >
               <BiSolidPrinter />
               {t("print_checkbill")}

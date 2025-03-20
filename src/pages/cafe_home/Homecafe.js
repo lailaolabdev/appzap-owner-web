@@ -1599,7 +1599,7 @@ function Homecafe() {
             <div className="container">
               <div className="row">
                 <div className="col-lg-12 col-md-12">
-                  <div className="mt-1">
+                  <div className="mt-1  h-[450px] overflow-auto">
                     <h3 className="text-lg font-semibold">{t("order_item")}</h3>
                     {SelectedMenus.length === 0 ? (
                       <div className="h-[400px] flex justify-center items-center">
@@ -1724,19 +1724,21 @@ function Homecafe() {
                       </div>
                     )}
                   </div>
-                  <hr />
                   {SelectedMenus.length > 0 &&
                   SelectedMenus?.filter(
                     (item) => item.storeId === storeDetail?._id
                   ) ? (
-                    <div className="mb-3">
-                      <div className="flex flex-row gap-4 font-bold">
-                        <span>{t("pricesTotal")} :</span>
-                        <span>
-                          {moneyCurrency(total)} {t("nameCurrency")}
-                        </span>
+                    <>
+                      <hr />
+                      <div className="mb-3 ">
+                        <div className="flex flex-row gap-4 font-bold">
+                          <span>{t("pricesTotal")} :</span>
+                          <span>
+                            {moneyCurrency(total)} {t("nameCurrency")}
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    </>
                   ) : (
                     ""
                   )}
@@ -1752,21 +1754,7 @@ function Homecafe() {
                       >
                         {t("cancel_order")}
                       </button>
-                      <button
-                        type="button"
-                        className="w-full rounded-lg h-[40px] bg-color-app hover:bg-orange-300 text-md font-bold text-white"
-                        onClick={() => {
-                          if (SelectedMenus.length === 0) {
-                            AlertMessage();
-                          } else {
-                            setPopupDelivery({ CheckOutDelivery: true });
-                            setIsDelivery(true);
-                          }
-                        }}
-                        disabled={SelectedMenus.length === 0}
-                      >
-                        {t("delivery")}
-                      </button>
+
                       <button
                         type="button"
                         className="w-full rounded-lg h-[40px] bg-color-app hover:bg-orange-300 text-md font-bold text-white"
