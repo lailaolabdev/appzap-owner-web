@@ -1229,6 +1229,8 @@
   "order_status": "สถานะการสั่งซื้อ",
   "total_amount_menu_discount": "ยอดรวมส่วนลดเมนู",
   "menu_discount":"ส่วนลดเมนู",
-  "menu_free": "เมนูที่แถม"
+  "menu_free": "เมนูที่แถม",
+  "bill_cancel": "ยกเลิกบิล",
+  "cancel_success": "ยกเลิกสำเร็จ"
   
 }

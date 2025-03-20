@@ -1264,5 +1264,7 @@
   "total_amount_menu_discount": "ຈຳນວນເມນູທີ່ມີສ່ວນຫຼຸດ",
   "menu_discount": "ເມນູສ່ວນຫຼຸດ",
   "menu_free": "ເມນູທີ່ແຖມ",
-  "re_print_bill": "ພິມບິນຄືນສຳເລັດ"
+  "re_print_bill": "ພິມບິນຄືນສຳເລັດ",
+  "bill_cancel": "ຍົກເລີກບິນ",
+  "cancel_success": "ຍົກເລີກສຳເລັດ"
 }

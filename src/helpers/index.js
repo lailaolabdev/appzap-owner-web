@@ -77,6 +77,8 @@ export const _statusCheckBill = (item) => {
     return "ຊຳລະສຳເລັດ";
   } else if (item === "CART") {
     return "ກຳລັງສັ່ງອາຫານ";
+  } else if (item === "CANCELED") {
+    return "ຍົກເລີກບີນ";
   }
 };
 export const STATUS_USERS = (item) => {

@@ -1705,7 +1705,7 @@ function HomecafeEdit() {
                           return (
                             <div
                               key={item?._id}
-                              className="flex justify-between items-center space-x-4 px-2.5 py-1 rounded-xl border bg-card"
+                              className="flex justify-between items-center space-x-4 px-2.5 py-2 rounded-xl border bg-card"
                             >
                               <div className="flex flex-row gap-4 items-center">
                                 <div className="relative h-14 w-16 overflow-hidden rounded-md">
@@ -1815,29 +1815,20 @@ function HomecafeEdit() {
                   ) : (
                     ""
                   )}
-                </div>
-                <div className="grid grid-cols-2 gap-2 place-content-center w-full">
-                  <button
-                    type="button"
-                    className="w-full rounded-lg h-[40px] bg-red-500 hover:bg-red-400 text-white text-md font-bold"
-                    onClick={() => {
-                      createBillCancelCafeData(SelectedMenus);
-                    }}
-                  >
-                    {t("cancel_order")}
-                  </button>
-                  <button
-                    type="button"
-                    className="w-full rounded-lg h-[40px] bg-color-app hover:bg-orange-300 text-md font-bold text-white"
-                    onClick={() => {
-                      SelectedMenus.length === 0
-                        ? AlertMessage()
-                        : setPopup({ CheckOutType: true });
-                    }}
-                    disabled={SelectedMenus.length === 0}
-                  >
-                    {t("order_checkout")}
-                  </button>
+                  <div className="w-full">
+                    <button
+                      type="button"
+                      className="w-full rounded-lg h-[40px] bg-color-app hover:bg-orange-300 text-md font-bold text-white"
+                      onClick={() => {
+                        SelectedMenus.length === 0
+                          ? AlertMessage()
+                          : setPopup({ CheckOutType: true });
+                      }}
+                      disabled={SelectedMenus.length === 0}
+                    >
+                      {t("order_checkout")}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
