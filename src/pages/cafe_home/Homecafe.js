@@ -445,11 +445,8 @@ function Homecafe() {
       note: "",
       isWeightMenu: menu?.isWeightMenu,
       unitWeightMenu: menu?.unitWeightMenu,
-<<<<<<< HEAD
       storeId: storeDetail?._id,
-=======
       menuImage: menu?.images[0],
->>>>>>> 5583a16e (feat: add cancellation functionality and update translations for bill cancellation)
     };
 
     // console.log("mainMenuData", mainMenuData);
