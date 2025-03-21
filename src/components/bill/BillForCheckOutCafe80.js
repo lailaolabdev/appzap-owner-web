@@ -607,7 +607,7 @@ export default function BillForCheckOutCafe80({
                   alignItems: "center",
                 }}
               >
-                {moneyCurrency((total * memberData?.Discount) / 100)}{" "}
+                {moneyCurrency(total - (total * memberData?.Discount) / 100)}{" "}
                 {storeDetail?.firstCurrency}
               </div>
             </div>
