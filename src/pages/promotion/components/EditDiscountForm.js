@@ -372,20 +372,20 @@ const EditDiscountForm = () => {
       {isLoading && <Loading />}
       <Card className="bg-white rounded-xl h-full">
         <form onSubmit={handleSubmit} className="p-4">
-          <h2 className="text-lg font-bold">ໂປຣໂມຊັນສ່ວນຫຼຸດ</h2>
+          <h2 className="text-lg font-bold">{t("discount_promotion")}</h2>
           <div className="flex gap-2">
             <Card className="bg-white w-[500px] rounded-xl h-[425px] overflow-hidden p-4">
               <div className="w-full">
                 <div className="flex flex-col gap-2">
                   <label htmlFor="name" className="mt-2">
-                    ຊື່ໂປຣໂມຊັນ
+                    {t("promotion_name")}
                   </label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="ຊື່ໂປຣໂມຊັນ"
+                    placeholder={t("promotion_name")}
                     className="w-full h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   />
                 </div>
@@ -394,7 +394,7 @@ const EditDiscountForm = () => {
               <div className="flex gap-4">
                 <div className="flex flex-col gap-2">
                   <label htmlFor="discountType" className="mt-2">
-                    ເລຶອກປະເພດສ່ວນຫຼຸດ
+                    {t("choose_type_promotion")}
                   </label>
                   <select
                     name="discountType"
@@ -403,15 +403,15 @@ const EditDiscountForm = () => {
                     className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   >
                     <option value="" disabled>
-                      ເລຶອກປະເພດສ່ວນຫຼຸດ
+                      {t("choose_type_promotion")}
                     </option>
-                    <option value="PERCENTAGE">ເປີເຊັນ (%)</option>
-                    <option value="FIXED_AMOUNT">ຈຳນວນເງິນ</option>
+                    <option value="PERCENTAGE">{t("percent")} (%)</option>
+                    <option value="FIXED_AMOUNT">{t("fixed_amount")}</option>
                   </select>
                 </div>
                 <div className="flex flex-col gap-2">
                   <label htmlFor="discountValue" className="mt-2">
-                    ລາຄາສ່ວນຫຼຸດ
+                    {t("discount_amount")}
                   </label>
                   <input
                     type="number"
@@ -422,24 +422,11 @@ const EditDiscountForm = () => {
                     className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   />
                 </div>
-                {/* <div className="flex flex-col gap-2">
-                  <label htmlFor="minPurchasePrice" className="mt-2">
-                    ລາຄາຊື້ຂັ້ນຕ່ຳ
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    name="minPurchasePrice"
-                    value={formData.minPurchasePrice}
-                    onChange={handleChange}
-                    className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
-                  />
-                </div> */}
               </div>
               <div className="flex gap-4">
                 <div className="flex flex-col gap-2">
                   <label htmlFor="validFrom" className="mt-2">
-                    ມື້ເລີ່ມຕົ້ນ
+                    {t("validFrom")}
                   </label>
                   <input
                     type="date"
@@ -451,7 +438,7 @@ const EditDiscountForm = () => {
                 </div>
                 <div className="flex flex-col gap-2">
                   <label htmlFor="validUntil" className="mt-2">
-                    ມື້ສິນສຸດ
+                    {t("validUntil")}
                   </label>
                   <input
                     type="date"
@@ -466,7 +453,7 @@ const EditDiscountForm = () => {
 
             <Card className="bg-white flex-1 p-4  rounded-xl">
               <h3 className="font-semibold text-[18px] mb-2 text-center">
-                ເມນູທີ່ເລຶອກທັງໝົດ
+                {t("all_selected_menus_offer_discounts")}
               </h3>
 
               <div className="mb-4 flex justify-between items-center">
@@ -487,7 +474,7 @@ const EditDiscountForm = () => {
                     onClick={openModal}
                     className="bg-orange-600 flex justify-center items-center h-[35px] text-white p-2 text-[14px] rounded-md hover:bg-orange-700"
                   >
-                    ເລຶອກເມນູ
+                    {t("choose_menu")}
                   </button>
                 </div>
               </div>
@@ -495,12 +482,12 @@ const EditDiscountForm = () => {
                 <table className="w-full mt-4">
                   <thead>
                     <tr>
-                      <th className="border-b p-2">ຊື່ເມນູ</th>
-                      <th className="border-b p-2">ຊື່ປະເພດ</th>
-                      <th className="border-b p-2">ຕົ້ນທຶນ</th>
-                      <th className="border-b p-2">ລາຄາປົກກະຕິ</th>
-                      <th className="border-b p-2">ລາຄາໂປຣໂມຊັນ</th>
-                      <th className="border-b p-2">ລົບ</th>
+                      <th className="border-b p-2">{t("menuname")}</th>
+                      <th className="border-b p-2">{t("name_type")}</th>
+                      <th className="border-b p-2">{t("cost")}</th>
+                      <th className="border-b p-2">{t("regular_price")}</th>
+                      <th className="border-b p-2">{t("price_promotion")}</th>
+                      <th className="border-b p-2">{t("delete")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -534,7 +521,7 @@ const EditDiscountForm = () => {
                               onClick={() => handleRemoveMenu(menu._id)}
                               className="bg-red-500 flex justify-center items-center text-white p-2 text-[14px] w-[50px] h-[30px] rounded-md hover:bg-red-600"
                             >
-                              ລົບ
+                              {t("delete")}
                             </button>
                           </td>
                         </tr>
@@ -545,7 +532,8 @@ const EditDiscountForm = () => {
               </div>
               <div className="flex justify-end pr-[80px]">
                 <span className="text-[18px] text-orange-500 font-bold mt-2 text-end">
-                  ລາຄາໂປຣໂມຊັນທັງໝົດ : {moneyCurrency(getTotalDiscountPrice())}{" "}
+                  {t("all_promotional_prices")} :{" "}
+                  {moneyCurrency(getTotalDiscountPrice())}{" "}
                   {storeDetail?.firstCurrency}
                 </span>
               </div>
@@ -557,13 +545,13 @@ const EditDiscountForm = () => {
               onClick={() => navigate("/promotion")}
               className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition duration-200 mt-4"
             >
-              ຍ້ອນກັບ
+              {t("back")}
             </button>
             <button
               type="submit"
               className="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition duration-200 mt-4"
             >
-              ບັນທຶກ
+              {t("save")}
             </button>
           </div>
         </form>
@@ -571,7 +559,7 @@ const EditDiscountForm = () => {
 
       <Modal show={modalOpen} size="lg" onHide={closeModal}>
         <Modal.Header closeButton>
-          <Modal.Title>{t("ເລຶອກເມນູທີ່ຕ້ອງການໃຫ້ສ່ວນຫຼຸດ")}</Modal.Title>
+          <Modal.Title>{t("select_menu_for_discount")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="flex justify-center items-center">
@@ -593,7 +581,7 @@ const EditDiscountForm = () => {
                   onChange={(e) => setFilterName(e.target.value)}
                   className="w-[350px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   type="text"
-                  placeholder="ຄົ້ນຫາ....."
+                  placeholder={t("search")}
                 />
               </div>
               <div className="h-[450px] overflow-auto">
@@ -613,12 +601,12 @@ const EditDiscountForm = () => {
                               }
                             }}
                           />
-                          {t("ເລຶອກ")}
+                          {t("select")}
                         </label>
                       </th>
-                      <th className="border-b p-2">ຊື່ເມນູ</th>
-                      <th className="border-b p-2">ຊື່ປະເພດ</th>
-                      <th className="border-b p-2">ລາຄາ</th>
+                      <th className="border-b p-2">{t("username")}</th>
+                      <th className="border-b p-2">{t("name_type")}</th>
+                      <th className="border-b p-2">{t("price")}</th>
                     </tr>
                   </thead>
                   <tbody>

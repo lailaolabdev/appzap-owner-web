@@ -158,16 +158,16 @@ const DiscountDetail = () => {
               className="text-lg flex gap-1 items-center cursor-pointer font-bold text-gray-600"
             >
               <LuArrowLeft />
-              ຍ້ອນກັບ
+              {t("back")}
             </div>
             <button
               type="button"
               onClick={() =>
                 navigate(`/promotion/discount/edit/${promotionId}`)
               }
-              className="bg-orange-600 text-[14px] w-[60px] text-white p-2 rounded-lg hover:bg-orange-700 transition duration-200"
+              className="bg-orange-600 text-[14px] w-[80px] text-white p-2 rounded-lg hover:bg-orange-700 transition duration-200"
             >
-              ແກ້ໄຂ
+              {t("edit_bill")}
             </button>
           </div>
 
@@ -175,13 +175,13 @@ const DiscountDetail = () => {
             {/* Left Column - Promotion Details */}
             <Card className="p-6  h-[400px] overflow-y-auto">
               <h3 className="text-lg font-semibold text-gray-700 mb-4">
-                ລາຍລະອຽດໂປຣໂມຊັນ
+                {t("detail_promotion")}
               </h3>
 
               <div className="space-y-5">
                 <div className="border-b flex gap-4">
                   <p className="text-md font-medium text-gray-500 mb-1">
-                    ຊື່ໂປຣໂມຊັນ:
+                    {t("promotion_name")}:
                   </p>
                   <p className="text-base text-gray-800">{formData?.name}</p>
                 </div>
@@ -189,17 +189,17 @@ const DiscountDetail = () => {
                 <div className="grid grid-cols-2 gap-4 border-b">
                   <div className="flex gap-4">
                     <p className="text-md font-medium text-gray-500 mb-1">
-                      ປະເພດສ່ວນຫຼຸດ:
+                      {t("type_discount")}:
                     </p>
                     <p className="text-base text-gray-800">
                       {formData?.discountType === "FIXED_AMOUNT"
-                        ? "ສ່ວນຫຼຸດເປັນເງິນ"
-                        : "ສ່ວນຫຼຸດເປັນເປີເຊັນ"}
+                        ? t("dis_fixed_amount")
+                        : t("dis_discount_amount")}
                     </p>
                   </div>
                   <div className="flex gap-4">
                     <p className="text-md font-medium text-gray-500 mb-1">
-                      ລາຄາສ່ວນຫຼຸດ:
+                      {t("discount_price")}:
                     </p>
                     <p className="text-base text-gray-800">
                       {moneyCurrency(formData?.discountValue)}{" "}
@@ -213,7 +213,7 @@ const DiscountDetail = () => {
                 <div className="grid grid-cols-2 gap-4 border-b">
                   <div className="flex gap-4">
                     <p className="text-md font-medium text-gray-500 mb-1">
-                      ວັນທີ່ເລີ່ມຕົ້ນ:
+                      {t("validFrom")}:
                     </p>
                     <p className="text-base text-gray-800">
                       {moment(formData.validFrom).format("DD-MM-YYYY")}
@@ -221,7 +221,7 @@ const DiscountDetail = () => {
                   </div>
                   <div className="flex gap-4">
                     <p className="text-md font-medium text-gray-500 mb-1">
-                      ວັນທີ່ສິ້ນສຸດ:
+                      {t("validUntil")}:
                     </p>
                     <p className="text-base text-gray-800">
                       {moment(formData.validUntil).format("DD-MM-YYYY")}
@@ -234,18 +234,18 @@ const DiscountDetail = () => {
             {/* Right Column - Menu Items */}
             <Card className="p-6 h-[400px] overflow-y-auto">
               <h3 className="text-lg font-semibold text-gray-700 mb-4">
-                ລາຍການແຖມ
+                {t("list_for_free")}
               </h3>
 
               <div className="mb-4">
                 <table className="w-full mt-4">
                   <thead>
                     <tr>
-                      <th className="border-b p-2">ຊື່ເມນູ</th>
-                      <th className="border-b p-2">ຊື່ປະເພດ</th>
-                      {/* <th className="border-b p-2">ຕົ້ນທຶນ</th> */}
-                      <th className="border-b p-2">ລາຄາປົກກະຕິ</th>
-                      <th className="border-b p-2">ລາຄາໂປຣໂມຊັນ</th>
+                      <th className="border-b p-2">{t("menuname")}</th>
+                      <th className="border-b p-2">{t("name_type")}</th>
+
+                      <th className="border-b p-2">{t("regular_price")}</th>
+                      <th className="border-b p-2">{t("price_promotion")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -281,7 +281,8 @@ const DiscountDetail = () => {
               </div>
               <div className="flex justify-end">
                 <span className="text-[18px] text-orange-500 font-bold mt-2 text-end">
-                  ລາຄາໂປຣໂມຊັນທັງໝົດ : {moneyCurrency(getTotalDiscountPrice())}{" "}
+                  {t("all_promotional_prices")} :{" "}
+                  {moneyCurrency(getTotalDiscountPrice())}{" "}
                   {storeDetail?.firstCurrency}
                 </span>
               </div>
@@ -289,7 +290,7 @@ const DiscountDetail = () => {
           </div>
 
           <div className="mt-3 text-md text-gray-500 text-center">
-            ຂໍ້ມູນໂປຣໂມຊັນສ້າງລ່າສຸດ{" "}
+            {t("create_promotion_lasted")}{" "}
             {moment(formData?.createdAt).format("DD-MM-YYYY")}
           </div>
         </Card>

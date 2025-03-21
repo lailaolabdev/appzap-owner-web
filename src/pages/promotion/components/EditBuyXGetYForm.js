@@ -227,12 +227,12 @@ const EditBuyXGetYForm = () => {
         ...prevState,
         selectedMenus: prevState.selectedMenus.map((menu) => {
           if (menu._id === menuId) {
-            if (isChecked && menu.freeItems.length >= prevState.getQuantity) {
-              errorAdd(
-                `ທ່ານສາມາດເລືອກເມນູແຖມໄດ້ສູງສຸດ ${prevState.getQuantity} ລາຍການ`
-              );
-              return menu;
-            }
+            // if (isChecked && menu.freeItems.length >= prevState.getQuantity) {
+            //   errorAdd(
+            //     `ທ່ານສາມາດເລືອກເມນູແຖມໄດ້ສູງສຸດ ${prevState.getQuantity} ລາຍການ`
+            //   );
+            //   return menu;
+            // }
 
             return {
               ...menu,
@@ -417,21 +417,21 @@ const EditBuyXGetYForm = () => {
         <Loading />
       ) : (
         <Card className="bg-white rounded-xl p-4">
-          <h2 className="text-lg font-bold">ໂປຣໂມຊັນຊື້ 1 ແຖມ 1</h2>
+          <h2 className="text-lg font-bold">{t("buy_x_get_y")}</h2>
           <form onSubmit={handleSubmit}>
             <div className="flex gap-4">
               <Card className="p-4">
                 <div className="w-full">
                   <div className="flex flex-col gap-2">
                     <label htmlFor="name" className="mt-2">
-                      ຊື່ໂປຣໂມຊັນ
+                      {t("promotion_name")}
                     </label>
                     <input
                       type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      placeholder="ຊື່ໂປຣໂມຊັນ"
+                      placeholder={t("promotion_name")}
                       className="w-full h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                     />
                   </div>
@@ -439,7 +439,7 @@ const EditBuyXGetYForm = () => {
                 <div className="flex gap-4">
                   <div className="flex flex-col gap-2">
                     <label htmlFor="buyQuantity" className="mt-2">
-                      ຈຳນວນທີ່ຊື້
+                      {t("buyQuantity")}
                     </label>
                     <input
                       type="number"
@@ -452,7 +452,7 @@ const EditBuyXGetYForm = () => {
                   </div>
                   <div className="flex flex-col gap-2">
                     <label htmlFor="getQuantity" className="mt-2">
-                      ຈຳນວນທີ່ແຖມ
+                      {t("getQuantity")}
                     </label>
                     <input
                       type="number"
@@ -468,7 +468,7 @@ const EditBuyXGetYForm = () => {
                 <div className="flex gap-4">
                   <div className="flex flex-col gap-2">
                     <label htmlFor="validFrom" className="mt-2">
-                      ວັນທີ່ເລີ່ມຕົ້ນ
+                      {t("validFrom")}
                     </label>
                     <input
                       type="date"
@@ -480,7 +480,7 @@ const EditBuyXGetYForm = () => {
                   </div>
                   <div className="flex flex-col gap-2">
                     <label htmlFor="validUntil" className="mt-2">
-                      ວັນທີ່ສິ້ນສຸດ
+                      {t("validUntil")}
                     </label>
                     <input
                       type="date"
@@ -498,7 +498,7 @@ const EditBuyXGetYForm = () => {
                   className="bg-orange-600 text-[14px] text-white p-2 rounded-lg hover:bg-orange-700 transition duration-200"
                   onClick={() => setModalOpen(true)}
                 >
-                  ເລຶອກເມນູຫຼັກ
+                  {t("choose_menu_main")}
                 </button>
 
                 {formData.selectedMenus.length > 0 ? (
@@ -516,19 +516,18 @@ const EditBuyXGetYForm = () => {
                             className="bg-orange-600 text-[12px] text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition duration-200"
                             onClick={() => openModalFreeItem(menu._id)}
                           >
-                            ເພີ່ມເມນູແຖມ
+                            {t("add_free_menu")}
                           </button>
                           <button
                             className="bg-red-600 text-[12px] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-200"
                             type="button"
                             onClick={() => handleRemoveMenu(menu._id)}
                           >
-                            ລົບ
+                            {t("delete")}
                           </button>
                         </div>
                       </div>
 
-                      {/* แสดงเมนูแถม */}
                       {menu.freeItems.length > 0 && (
                         <ul>
                           {menu.freeItems.map((freeItemId) => (
@@ -558,7 +557,7 @@ const EditBuyXGetYForm = () => {
                   ))
                 ) : (
                   <p className="text-gray-500 text-center mt-48">
-                    ຍັງບໍ່ມີເມນູຫຼັກ
+                    {t("no_menu")}
                   </p>
                 )}
               </Card>
@@ -569,13 +568,13 @@ const EditBuyXGetYForm = () => {
                 onClick={() => navigate("/promotion")}
                 className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition duration-200 mt-4"
               >
-                ຍ້ອນກັບ
+                {t("back")}
               </button>
               <button
                 type="submit"
                 className="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition duration-200 mt-4"
               >
-                ບັນທຶກ
+                {t("save")}
               </button>
             </div>
           </form>
@@ -584,7 +583,7 @@ const EditBuyXGetYForm = () => {
 
       <Modal show={modalOpen} onHide={() => setModalOpen(false)} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>{t("ເລຶອກເມນູຫຼັກ")}</Modal.Title>
+          <Modal.Title>{t("choose_menu_main")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="flex flex-row gap-2 items-center py-3">
@@ -608,17 +607,17 @@ const EditBuyXGetYForm = () => {
               onChange={(e) => setFilterName(e.target.value)}
               className="w-[350px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
               type="text"
-              placeholder="ຄົ້ນຫາ....."
+              placeholder={t("search")}
             />
           </div>
           <div className="h-[400px] overflow-auto">
             <table className="w-full">
               <thead>
                 <tr>
-                  <th className="border-b p-2">ເລຶອກ</th>
-                  <th className="border-b p-2">ຊື່ເມນູ</th>
-                  <th className="border-b p-2">ຊື່ປະເພດ</th>
-                  <th className="border-b p-2">ລາຄາ</th>
+                  <th className="border-b p-2">{t("select")}</th>
+                  <th className="border-b p-2">{t("menuname")}</th>
+                  <th className="border-b p-2">{t("name_type")}</th>
+                  <th className="border-b p-2">{t("price")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -648,9 +647,7 @@ const EditBuyXGetYForm = () => {
                   <tr>
                     <td className="border-b p-2" colSpan="6">
                       <div className="flex justify-center items-center">
-                        <p className="text-lg text-gray-400">
-                          {t("ບໍ່ມີຂໍ້ມູນ")}
-                        </p>
+                        <p className="text-lg text-gray-400">{t("no_data")}</p>
                       </div>
                     </td>
                   </tr>
@@ -684,7 +681,7 @@ const EditBuyXGetYForm = () => {
 
       <Modal show={modalFreeItemOpen} onHide={closeModalFreeItem} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>{t("ເລຶອກເມນູແຖມ")}</Modal.Title>
+          <Modal.Title>{t("choose_menu_free")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="flex flex-row gap-2 items-center py-3">
@@ -708,7 +705,7 @@ const EditBuyXGetYForm = () => {
               onChange={(e) => setFilterName(e.target.value)}
               className="w-[350px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
               type="text"
-              placeholder="ຄົ້ນຫາ....."
+              placeholder={t("search")}
             />
           </div>
           <div className="h-[400px] overflow-auto">
@@ -729,12 +726,13 @@ const EditBuyXGetYForm = () => {
                       }
                     />
                     <label htmlFor="selectAllFreeItems" className="mt-2">
-                      ເລຶອກ
+                      {t("select")}
                     </label>
                   </th>
-                  <th className="border-b p-2">ຊື່ເມນູ</th>
-                  <th className="border-b p-2">ຊື່ປະເພດ</th>
-                  <th className="border-b p-2">ລາຄາ</th>
+
+                  <th className="border-b p-2">{t("menuname")}</th>
+                  <th className="border-b p-2">{t("name_type")}</th>
+                  <th className="border-b p-2">{t("price")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -766,9 +764,7 @@ const EditBuyXGetYForm = () => {
                   <tr>
                     <td className="border-b p-2" colSpan="6">
                       <div className="flex justify-center items-center">
-                        <p className="text-lg text-gray-400">
-                          {t("ບໍ່ມີຂໍ້ມູນ")}
-                        </p>
+                        <p className="text-lg text-gray-400">{t("no_data")}</p>
                       </div>
                     </td>
                   </tr>
