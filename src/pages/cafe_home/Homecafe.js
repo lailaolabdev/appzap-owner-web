@@ -477,7 +477,10 @@ function Homecafe() {
     const mainMenuData = {
       id: menu._id,
       name: menu.name,
-      quantity: activePromotions ? activePromotions[0].buyQuantity : 1,
+      quantity:
+        activePromotions.length > 0 && activePromotions[0].buyQuantity !== null
+          ? activePromotions[0].buyQuantity
+          : 1,
       price: finalPrice,
       priceDiscount: Math.max(menu?.price - finalPrice, 0),
       categoryId: menu?.categoryId,
@@ -522,6 +525,8 @@ function Homecafe() {
           const freeItemId = freeItem?._id?._id || freeItem?._id;
           const freeItemName = freeItem?._id?.name || "Unknown";
 
+          console.log("freeItem", freeItem);
+
           if (freeItem?.mainMenuId?._id !== menu._id) return;
 
           const existingFreeItemIndex = updatedSelectedMenus.findIndex(
@@ -539,7 +544,10 @@ function Homecafe() {
               id: freeItemId,
               name: freeItemName,
               price: 0,
-              quantity: promotion ? promotion?.getQuantity : 1,
+              quantity:
+                promotion && promotion?.getQuantity !== null
+                  ? promotion?.getQuantity
+                  : 1,
               categoryId: menu?.categoryId,
               printer: menu?.categoryId?.printer,
               shiftId: shiftCurrent[0]?._id,
@@ -548,7 +556,7 @@ function Homecafe() {
               isFree: true,
               mainMenuId: menu._id,
               storeId: storeDetail?._id,
-              menuImage: menu?.images[0],
+              menuImage: freeItem?.images,
             });
           }
         });
@@ -651,7 +659,10 @@ function Homecafe() {
     const mainMenuData = {
       id: selectedItem._id,
       name: selectedItem.name,
-      quantity: activePromotions ? activePromotions[0].buyQuantity : 1,
+      quantity:
+        activePromotions?.length > 0 && activePromotions[0].buyQuantity !== null
+          ? activePromotions[0].buyQuantity
+          : 1,
       price: finalPrice,
       priceDiscount: Math.max(selectedItem?.price - finalPrice, 0),
       categoryId: selectedItem?.categoryId,
@@ -713,7 +724,6 @@ function Homecafe() {
             const freeItemId = freeItem?._id?._id || freeItem?._id;
             const freeItemName = freeItem?._id?.name || "Unknown";
 
-            // เช็กว่า freeItem นี้แถมให้สินค้านี้จริงๆ
             if (freeItem?.mainMenuId?._id !== selectedItem._id) return;
 
             const existingFreeItemIndex = updatedMenu.findIndex(
@@ -731,7 +741,10 @@ function Homecafe() {
                 id: freeItemId,
                 name: freeItemName,
                 price: 0,
-                quantity: promotion ? promotion.getQuantity : 1,
+                quantity:
+                  promotion && promotion.getQuantity !== null
+                    ? promotion.getQuantity
+                    : 1,
                 categoryId: selectedItem?.categoryId,
                 printer: selectedItem?.categoryId?.printer,
                 shiftId: shiftCurrent[0]?._id,
@@ -740,7 +753,7 @@ function Homecafe() {
                 isFree: true,
                 mainMenuId: selectedItem._id,
                 storeId: storeDetail?._id,
-                menuImage: selectedItem?.images[0],
+                menuImage: freeItem?.images,
               });
             }
           });
@@ -1200,7 +1213,7 @@ function Homecafe() {
       .map((_, i) => billForCherCancel80.current[i] || null);
   }
 
-  //console.log("billForCherCancel80", billForCherCancel80);
+  console.log("billForCherCancel80", billForCherCancel80);
 
   const onPrintForCherLaBel = async () => {
     let _dataBill = {
@@ -1437,7 +1450,6 @@ function Homecafe() {
         discountAmount = promotion.discountValue;
       }
 
-      // ✅ คำนวณส่วนลดให้ราคาไม่ต่ำกว่า 0
       finalPrice = Math.max(finalPrice - discountAmount, 0);
     });
 
@@ -1586,7 +1598,7 @@ function Homecafe() {
                                             {storeDetail?.firstCurrency}
                                           </span>
                                           <span className="flex flex-col text-center font-bold text-red-500 text-[12px] ">
-                                            <span>ສ່ວນຫຼຸດ</span>
+                                            <span>{t("discount")}</span>
                                             <span>
                                               {moneyCurrency(
                                                 promotion?.discountValue
@@ -1602,7 +1614,6 @@ function Homecafe() {
                                     </div>
                                   ) : null}
 
-                                  {/* เมนูแถม */}
                                   {filteredFreeItems.length > 0 && (
                                     <>
                                       <span className="text-color-app font-medium text-base">
@@ -1610,7 +1621,11 @@ function Homecafe() {
                                         {storeDetail?.firstCurrency}
                                       </span>
                                       <span className="flex flex-col font-bold text-red-500 text-[14px]">
-                                        {`ຊື້ ${promotion?.buyQuantity} ແຖມ ${promotion?.getQuantity} ລາຍການ`}
+                                        {`${t("buy")} ${
+                                          promotion?.buyQuantity
+                                        } ${t("get")} ${
+                                          promotion?.getQuantity
+                                        } ${t("item")}`}
                                       </span>
                                     </>
                                   )}
@@ -1618,10 +1633,17 @@ function Homecafe() {
                               );
                             })
                         ) : (
-                          <span className="text-color-app font-medium text-base">
-                            {moneyCurrency(data?.price)}{" "}
-                            {storeDetail?.firstCurrency}
-                          </span>
+                          <div>
+                            <span className="text-color-app font-medium text-base">
+                              {moneyCurrency(data?.price)}{" "}
+                              {storeDetail?.firstCurrency}
+                            </span>
+                            {data?.isWeightMenu && (
+                              <p className="text-color-app font-bold text-sm text-end mt-1">
+                                {t("sell_is")} {data?.unitWeightMenu}
+                              </p>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>

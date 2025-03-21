@@ -152,16 +152,16 @@ const BuyXGetYDetail = () => {
               className="text-lg flex gap-1 items-center cursor-pointer font-bold text-gray-600"
             >
               <LuArrowLeft />
-              ຍ້ອນກັບ
+              {t("back")}
             </div>
             <button
               type="button"
               onClick={() =>
                 navigate(`/promotion/buyXGetX/edit/${promotionId}`)
               }
-              className="bg-orange-600 text-[14px] w-[60px] text-white p-2 rounded-lg hover:bg-orange-700 transition duration-200"
+              className="bg-orange-600 text-[14px] w-[80px] text-white p-2 rounded-lg hover:bg-orange-700 transition duration-200"
             >
-              ແກ້ໄຂ
+              {t("edit_bill")}
             </button>
           </div>
 
@@ -169,13 +169,13 @@ const BuyXGetYDetail = () => {
             {/* Left Column - Promotion Details */}
             <Card className="p-6  h-[400px] overflow-y-auto">
               <h3 className="text-lg font-semibold text-gray-700 mb-4">
-                ລາຍລະອຽດໂປຣໂມຊັນ
+                {t("detail_promotion")}
               </h3>
 
               <div className="space-y-5">
                 <div className="border-b flex gap-4">
                   <p className="text-md font-medium text-gray-500 mb-1">
-                    ຊື່ໂປຣໂມຊັນ:
+                    {t("promotion_name")}:
                   </p>
                   <p className="text-base text-gray-800">{formData?.name}</p>
                 </div>
@@ -183,7 +183,7 @@ const BuyXGetYDetail = () => {
                 <div className="grid grid-cols-2 gap-4 border-b">
                   <div className="flex gap-4">
                     <p className="text-md font-medium text-gray-500 mb-1">
-                      ຈຳນວນທີ່ຊື້:
+                      {t("buyQuantity")}:
                     </p>
                     <p className="text-base text-gray-800">
                       {formData?.buyQuantity}
@@ -191,7 +191,7 @@ const BuyXGetYDetail = () => {
                   </div>
                   <div className="flex gap-4">
                     <p className="text-md font-medium text-gray-500 mb-1">
-                      ຈຳນວນທີ່ແຖມ:
+                      {t("getQuantity")}:
                     </p>
                     <p className="text-base text-gray-800">
                       {formData?.getQuantity}
@@ -202,7 +202,7 @@ const BuyXGetYDetail = () => {
                 <div className="grid grid-cols-2 gap-4 border-b">
                   <div className="flex gap-4">
                     <p className="text-md font-medium text-gray-500 mb-1">
-                      ວັນທີ່ເລີ່ມຕົ້ນ:
+                      {t("validFrom")}:
                     </p>
                     <p className="text-base text-gray-800">
                       {formData?.validFrom}
@@ -210,7 +210,7 @@ const BuyXGetYDetail = () => {
                   </div>
                   <div className="flex gap-4">
                     <p className="text-md font-medium text-gray-500 mb-1">
-                      ວັນທີ່ສິ້ນສຸດ:
+                      {t("validUntil")}:
                     </p>
                     <p className="text-base text-gray-800">
                       {formData?.validUntil}
@@ -223,7 +223,7 @@ const BuyXGetYDetail = () => {
             {/* Right Column - Menu Items */}
             <Card className="p-6 h-[400px] overflow-y-auto">
               <h3 className="text-lg font-semibold text-gray-700 mb-4">
-                ລາຍການແຖມ
+                {t("list_for_free")}
               </h3>
 
               <div className="mb-4">
@@ -236,7 +236,7 @@ const BuyXGetYDetail = () => {
                       >
                         <div>
                           <h4 className="font-bold text-lg text-gray-800">
-                            <span className="mr-2">ເມນູຫຼັກ :</span>
+                            <span className="mr-2">{t("main_menu")} :</span>
                             {menuData.find((m) => m._id === menu._id)?.name ??
                               "ບໍ່ມີຊື່ເມນູ"}
                             <span>
@@ -256,7 +256,9 @@ const BuyXGetYDetail = () => {
                                   className="flex gap-2 items-center"
                                 >
                                   <span className="text-[14px] text-color-app font-bold">
-                                    <span className="mr-2">ເມນູແຖມ :</span>
+                                    <span className="mr-2">
+                                      {t("free_menu")} :
+                                    </span>
                                     {
                                       menuData.find((m) => m._id === freeItemId)
                                         ?.name
@@ -279,8 +281,8 @@ const BuyXGetYDetail = () => {
                       </div>
                     ))}
                     <div className="font-bold text-lg text-gray-800 mt-40">
-                      <span>ລາຄາເມນູຫຼັກທັງໝົດ:</span>{" "}
-                      <span>
+                      <span>{t("all_main_menu_prices")}:</span>{" "}
+                      <span className="text-color-app">
                         {moneyCurrency(
                           formData.selectedMenus.reduce((total, menu) => {
                             const mainMenu = menuData.find(
@@ -293,8 +295,8 @@ const BuyXGetYDetail = () => {
                       </span>
                     </div>
                     <div className="font-bold text-lg text-gray-800 mt-2">
-                      <span>ລາຄາເມນູແຖມທັງໝົດ:</span>{" "}
-                      <span>
+                      <span>{t("all_inclusive_menu_prices")}:</span>{" "}
+                      <span className="text-color-app">
                         {moneyCurrency(
                           formData.selectedMenus.reduce((total, menu) => {
                             const freeItems = menu.freeItems.map(
@@ -317,7 +319,7 @@ const BuyXGetYDetail = () => {
                   </>
                 ) : (
                   <p className="text-gray-500 text-center mt-48">
-                    ຍັງບໍ່ມີເມນູຫຼັກ
+                    {t("no_data")}
                   </p>
                 )}
               </div>
@@ -325,7 +327,7 @@ const BuyXGetYDetail = () => {
           </div>
 
           <div className="mt-3 text-md text-gray-500 text-center">
-            ຂໍ້ມູນໂປຣໂມຊັນສ້າງລ່າສຸດ{" "}
+            {t("create_promotion_lasted")}{" "}
             {moment(formData?.createdAt).format("DD-MM-YYYY")}
           </div>
         </Card>

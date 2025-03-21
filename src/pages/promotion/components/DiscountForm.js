@@ -269,17 +269,16 @@ const DiscountForm = () => {
 
           // Display warning message
           Swal.fire({
-            title: "ເກີດຂໍ້ຜິດພາດ",
-            text: `ລາຍການ "${duplicateMenuNames} (${err?.response?.data?.data?.name})" ນີ້ຖຶກເພີ່ມໄປແລ້ວ, ທ່ານຕ້ອງການບັນທືກແທນທີ່ເລີຍບໍ່`,
+            title: t("error"),
+            text: `${t("list")} "${duplicateMenuNames} (${
+              err?.response?.data?.data?.name
+            })" ${t("exits_promotion")}`,
             icon: "warning",
-            // showCancelButton: true,
             showDenyButton: true,
             confirmButtonColor: COLOR_APP,
-            // cancelButtonColor: COLOR_APP_CANCEL,
             denyButtonColor: COLOR_GRAY,
-            confirmButtonText: "ໃຊ້ອັນເກົ່າ",
-            // cancelButtonText: "ຍົກເລິກ",
-            denyButtonText: "ແທນທີ່",
+            confirmButtonText: t("use_old"),
+            denyButtonText: t("relace"),
           }).then(async (result) => {
             if (result.isConfirmed) {
               duplicateMenuIds.forEach((id) => handleRemoveMenu(id));
@@ -357,20 +356,20 @@ const DiscountForm = () => {
     <div className="p-2 bg-gray-50 h-full w-full">
       <Card className="bg-white rounded-xl h-full">
         <form onSubmit={handleSubmit} className="p-4">
-          <h2 className="text-lg font-bold">ໂປຣໂມຊັນສ່ວນຫຼຸດ</h2>
+          <h2 className="text-lg font-bold">{t("discount_promotion")}</h2>
           <div className="flex gap-2">
             <Card className="bg-white w-[500px] rounded-xl h-[425px] overflow-hidden p-4">
               <div className="flex gap-4">
                 <div className="flex flex-col gap-2 w-full">
                   <label htmlFor="name" className="mt-2">
-                    ຊື່ໂປຣໂມຊັນ
+                    {t("promotion_name")}
                   </label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="ຊື່ໂປຣໂມຊັນ"
+                    placeholder={t("promotion_name")}
                     className="w-full h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   />
                 </div>
@@ -379,7 +378,7 @@ const DiscountForm = () => {
               <div className="flex gap-4">
                 <div className="flex flex-col gap-2">
                   <label htmlFor="discountType" className="mt-2">
-                    ເລຶອກປະເພດສ່ວນຫຼຸດ
+                    {t("choose_type_promotion")}
                   </label>
                   <select
                     name="discountType"
@@ -388,15 +387,15 @@ const DiscountForm = () => {
                     className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   >
                     <option value="" disabled>
-                      ເລຶອກປະເພດສ່ວນຫຼຸດ
+                      {t("choose_type_promotion")}
                     </option>
-                    <option value="PERCENTAGE">ເປີເຊັນ (%)</option>
-                    <option value="FIXED_AMOUNT">ຈຳນວນເງິນ</option>
+                    <option value="PERCENTAGE">{t("percent")} (%)</option>
+                    <option value="FIXED_AMOUNT">{t("fixed_amount")}</option>
                   </select>
                 </div>
                 <div className="flex flex-col gap-2">
                   <label htmlFor="discountValue" className="mt-2">
-                    ຈຳນວນສ່ວນຫຼຸດ
+                    {t("discount_amount")}
                   </label>
                   <input
                     type="number"
@@ -411,7 +410,7 @@ const DiscountForm = () => {
               <div className="flex gap-4">
                 <div className="flex flex-col gap-2">
                   <label htmlFor="validFrom" className="mt-2">
-                    ມື້ເລີ່ມຕົ້ນ
+                    {t("validFrom")}
                   </label>
 
                   <div className=" w-[220px]">
@@ -422,14 +421,14 @@ const DiscountForm = () => {
                         setFormData({ ...formData, validFrom: date })
                       }
                       customInput={<CustomInput />} // Use the custom input component
-                      placeholderText="ເລືອກວັນທີ"
+                      placeholderText={t("choose_date")}
                       dateFormat="dd/MM/yyyy"
                     />
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
                   <label htmlFor="validUntil" className="mt-2">
-                    ມື້ສິນສຸດ
+                    {t("validUntil")}
                   </label>
 
                   <DatePicker
@@ -438,7 +437,7 @@ const DiscountForm = () => {
                       setFormData({ ...formData, validUntil: date })
                     }
                     customInput={<CustomInput />} // Use the custom input component
-                    placeholderText="ເລືອກວັນທີ"
+                    placeholderText={t("choose_date")}
                     dateFormat="dd/MM/yyyy"
                   />
                 </div>
@@ -446,7 +445,9 @@ const DiscountForm = () => {
             </Card>
 
             <Card className="bg-white flex-1 p-4 h-[425px] overflow-auto rounded-xl">
-              <h3 className="font-semibold text-[18px]">ເມນູທີ່ເລຶອກທັງໝົດ</h3>
+              <h3 className="font-semibold text-[18px]">
+                {t("all_selected_menus_offer_discounts")}
+              </h3>
               <div className="mb-4 flex justify-between items-center">
                 {formData.selectedMenus.length > 1 && showListMenu ? (
                   <div className="flex gap-2">
@@ -455,7 +456,7 @@ const DiscountForm = () => {
                       onClick={handleDeselectAll}
                       className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
                     >
-                      ຍົກເລິກທັງໝົດ
+                      {t("cancel_all")}
                     </button>
                   </div>
                 ) : (
@@ -467,19 +468,19 @@ const DiscountForm = () => {
                     onClick={openModal}
                     className="bg-orange-600 text-white p-2 rounded-md hover:bg-orange-700"
                   >
-                    ເລຶອກເມນູ
+                    {t("choose_menu")}
                   </button>
                 </div>
               </div>
               <table className="w-full mt-4">
                 <thead>
                   <tr>
-                    <th className="border-b p-2">ຊື່ເມນູ</th>
-                    <th className="border-b p-2">ຊື່ປະເພດ</th>
-                    <th className="border-b p-2">ຕົ້ນທຶນ</th>
-                    <th className="border-b p-2">ລາຄາປົກກະຕິ</th>
-                    <th className="border-b p-2">ລາຄາໂປຣໂມຊັນ</th>
-                    <th className="border-b p-2">ລົບ</th>
+                    <th className="border-b p-2">{t("menuname")}</th>
+                    <th className="border-b p-2">{t("name_type")}</th>
+                    <th className="border-b p-2">{t("cost")}</th>
+                    <th className="border-b p-2">{t("regular_price")}</th>
+                    <th className="border-b p-2">{t("price_promotion")}</th>
+                    <th className="border-b p-2">{t("delete")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -507,7 +508,7 @@ const DiscountForm = () => {
                               onClick={() => handleRemoveMenu(menu._id)}
                               className="bg-red-500 text-white p-2 w-[60px] rounded-md hover:bg-red-600"
                             >
-                              ລົບ
+                              {t("delete")}
                             </button>
                           </td>
                         </tr>
@@ -517,7 +518,7 @@ const DiscountForm = () => {
                     <tr>
                       <td colSpan={6}>
                         <p className="text-gray-500 text-center mt-40">
-                          ຍັງບໍ່ມີເມນູ
+                          {t("no_menu")}
                         </p>
                       </td>
                     </tr>
@@ -532,13 +533,13 @@ const DiscountForm = () => {
               onClick={() => navigate("/promotion")}
               className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition duration-200 mt-4"
             >
-              ຍ້ອນກັບ
+              {t("back")}
             </button>
             <button
               type="submit"
               className="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition duration-200 mt-4"
             >
-              ບັນທຶກ
+              {t("save")}
             </button>
           </div>
         </form>
@@ -546,7 +547,7 @@ const DiscountForm = () => {
 
       <Modal show={modalOpen} size="lg" onHide={() => setModalOpen(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>{t("ເລຶອກເມນູທີ່ຕ້ອງການໃຫ້ສ່ວນຫຼຸດ")}</Modal.Title>
+          <Modal.Title>{t("select_menu_for_discount")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="flex justify-center items-center">
@@ -572,7 +573,7 @@ const DiscountForm = () => {
                   onChange={(e) => setFilterName(e.target.value)}
                   className="w-[350px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   type="text"
-                  placeholder="ຄົ້ນຫາ....."
+                  placeholder={t("search")}
                 />
               </div>
               <div className="h-[450px] overflow-auto">
@@ -592,12 +593,12 @@ const DiscountForm = () => {
                               }
                             }}
                           />
-                          {t("ເລຶອກ")}
+                          {t("select")}
                         </label>
                       </th>
-                      <th className="border-b p-2">ຊື່ເມນູ</th>
-                      <th className="border-b p-2">ຊື່ປະເພດ</th>
-                      <th className="border-b p-2">ລາຄາ</th>
+                      <th className="border-b p-2">{t("menuname")}</th>
+                      <th className="border-b p-2">{t("name_type")}</th>
+                      <th className="border-b p-2">{t("price")}</th>
                     </tr>
                   </thead>
                   <tbody>
