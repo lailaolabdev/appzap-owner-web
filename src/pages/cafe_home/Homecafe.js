@@ -616,6 +616,8 @@ function Homecafe() {
         0
       ),
       totalOptionPrice: totalOptionPrice,
+      status: "SERVED",
+      menuImage: selectedItem?.images[0],
       totalPrice: finalPrice + totalOptionPrice,
       isWeightMenu: selectedItem?.isWeightMenu,
       unitWeightMenu: selectedItem?.unitWeightMenu,
