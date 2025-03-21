@@ -7,7 +7,7 @@ import { Formik } from "formik";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Axios from "axios";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
-import { Breadcrumb, Tab, Tabs } from "react-bootstrap";
+import { Breadcrumb, Tab, Tabs, Pagination } from "react-bootstrap";
 import Box from "../../components/Box";
 import { MdAssignmentAdd, MdSettings } from "react-icons/md";
 import { BsImages } from "react-icons/bs";
@@ -53,14 +53,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../components/ui/Table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "../../components/ui/Pagination";
+
 import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
@@ -161,28 +154,30 @@ export default function UserPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Staff Members</CardTitle>
-              <CardDescription>Manage your restaurant staff</CardDescription>
+              <CardTitle>{t("staff_report")}</CardTitle>
             </div>
-            <Button className="text-white font-semibold">
+            <Button
+              onClick={() => setPopup({ PopUpCreateUser: true })}
+              className="text-white font-semibold"
+            >
               <Plus className="bg-color-app mr-2 h-4 w-4 text-white" />
-              Add Staff
+              {t("add_list")}
             </Button>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <div className="relative">
-              {/* <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" /> */}
+              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder="Search by name, email or role..."
-                // className="p20"
-                // value={searchQuery}
-                // onChange={(staff) => setSearchQuery(staff.target.value)}
+                className="p20"
+                value={searchQuery}
+                onChange={(staff) => setSearchQuery(staff.target.value)}
               />
             </div>
-          </div>
+          </div> */}
 
           {isLoading ? (
             <div className="flex justify-center py-8">
@@ -238,51 +233,96 @@ export default function UserPage() {
                                 : convertRole(staff?.role)}
                             </Badge>
                           </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              className="p-2 mr-2 bg-color-app "
+                              onClick={() => {
+                                setSelectUser(staff);
+                                setPopup({ PopUpUpdateUser: true });
+                              }}
+                            >
+                              <Edit className="h-4 w-4 text-muted-foreground text-white font-semibold" />
+                            </Button>
+                            <Button
+                              className="p-2"
+                              onClick={() => {
+                                setSelectUser(staff);
+                                setPopup({ PopUpConfirmDeletion: true });
+                              }}
+                            >
+                              <Trash className="h-4 w-4 text-muted-foreground text-white font-semibold" />
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       ))
                     )}
                   </TableBody>
                 </Table>
               </div>
-
-              {/* {2 > 1 && (
-              <Pagination className="mt-4">
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      // onClick={() =>
-                      //   setCurrentPage((prev) => Math.max(prev - 1, 1))
-                      // }
-                      disabled={currentPage === 1}
-                    />
-                  </PaginationItem>
-
-                  {Array.from({ length: totalPages }).map((_, index) => (
-                    <PaginationItem key={index}>
-                      <PaginationLink
-                        isActive={currentPage === index + 1}
-                        // onClick={() => setCurrentPage(index + 1)}
-                      >
-                        {index + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
-
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                      }
-                      disabled={currentPage === totalPages}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            )} */}
+              <div className="w-full flex justify-center mt-4">
+                <ReactPaginate
+                  previousLabel={
+                    <span className="glyphicon glyphicon-chevron-left">{`${t(
+                      "previous"
+                    )}`}</span>
+                  }
+                  nextLabel={
+                    <span className="glyphicon glyphicon-chevron-right">{`${t(
+                      "next"
+                    )}`}</span>
+                  }
+                  breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
+                  breakClassName={"break-me"}
+                  pageCount={totalPagination} // Replace with the actual number of pages
+                  marginPagesDisplayed={1}
+                  pageRangeDisplayed={3}
+                  onPageChange={(staff) => {
+                    console.log(staff);
+                    setPagination(staff?.selected + 1);
+                  }}
+                  containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
+                  pageClassName={"page-item"}
+                  pageLinkClassName={"page-link"}
+                  activeClassName={"active"}
+                  previousClassName={"page-item"}
+                  nextClassName={"page-item"}
+                  previousLinkClassName={"page-link"}
+                  nextLinkClassName={"page-link"}
+                />
+              </div>
             </>
           )}
         </CardContent>
       </Card>
+
+      <PopUpConfirmDeletion
+        open={popup?.PopUpConfirmDeletion}
+        onClose={() => {
+          setPopup();
+          setSelectUser();
+        }}
+        onSubmit={handleDeleteUser}
+      />
+      <PopUpUpdateUser
+        open={popup?.PopUpUpdateUser}
+        onClose={() => {
+          setPopup();
+          setSelectUser(); // เพิ่มการเคลียร์ selectUser
+        }}
+        callback={() => {
+          getData();
+        }}
+        userData={selectUser}
+      />
+      <PopUpCreateUser
+        open={popup?.PopUpCreateUser}
+        onClose={() => {
+          setPopup();
+        }}
+        callback={() => {
+          getData();
+        }}
+      />
     </div>
 
     // <>
@@ -503,34 +543,7 @@ export default function UserPage() {
     //       </div>
     //     </Card>
     //   </div>
-    //   <PopUpConfirmDeletion
-    //     open={popup?.PopUpConfirmDeletion}
-    //     onClose={() => {
-    //       setPopup();
-    //       setSelectUser();
-    //     }}
-    //     onSubmit={handleDeleteUser}
-    //   />
-    //   <PopUpUpdateUser
-    //     open={popup?.PopUpUpdateUser}
-    //     onClose={() => {
-    //       setPopup();
-    //       setSelectUser(); // เพิ่มการเคลียร์ selectUser
-    //     }}
-    //     callback={() => {
-    //       getData();
-    //     }}
-    //     userData={selectUser}
-    //   />
-    //   <PopUpCreateUser
-    //     open={popup?.PopUpCreateUser}
-    //     onClose={() => {
-    //       setPopup();
-    //     }}
-    //     callback={() => {
-    //       getData();
-    //     }}
-    //   />
+
     // </>
   );
 }
