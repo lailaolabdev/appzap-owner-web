@@ -1317,5 +1317,7 @@
   "list_of_promotion": "ລາຍການຂອງໂປຣໂມຊັນ",
   "choose_status_promotion": "ເລຶອກສະຖະນະໂປຣໂມຊັນ",
   "usage_period": "ໄລຍະເວລາການໃຊ້ງານ",
-  "discount_free_amount": "ຈຳນວນສ່ວນຫຼຸດ/ແຖມ"
+  "discount_free_amount": "ຈຳນວນສ່ວນຫຼຸດ/ແຖມ",
+  "no_promotional_items": "ຍັງບໍ່ມີລາຍການໂປຣໂມຊັນ",
+  "add_promotion_list": "ເພີ່ມລາຍການໂປຣໂມຊັນ"
 }

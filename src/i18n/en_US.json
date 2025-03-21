@@ -1320,5 +1320,7 @@
   "list_of_promotion": "List of promotion",
   "choose_status_promotion": "Choose status promotion",
   "usage_period": "Usage period",
-  "discount_free_amount": "Discount/free amount"
+  "discount_free_amount": "Discount/free amount",
+  "no_promotional_items": "There are no promotional items yet.",
+  "add_promotion_list": "Add promotion"
 }

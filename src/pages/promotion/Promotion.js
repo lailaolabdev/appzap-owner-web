@@ -238,7 +238,7 @@ const Promotion = () => {
             onClick={handleOpenModal}
             className="bg-color-app hover:bg-orange-400 text-[14px] p-2 rounded-md text-white"
           >
-            {t("add_list")}
+            {t("add_promotion_list")}
           </button>
         </div>
         <div className="flex flex-row gap-2 items-center overflow-hidden bg-white px-4 py-3">
@@ -268,7 +268,7 @@ const Promotion = () => {
                   {t("menu_no")}
                 </th>
                 <th className="text-[18px] font-bold text-start">
-                  {t("promtion_name")}
+                  {t("promotion_name")}
                 </th>
                 <th className="text-[18px] font-bold text-start">
                   {t("type")}
@@ -282,7 +282,9 @@ const Promotion = () => {
                 <th className="text-[18px] font-bold text-center">
                   {t("status")}
                 </th>
-                <th className="text-[18px] font-bold text-center">ຈັດການ</th>
+                <th className="text-[18px] font-bold text-center">
+                  {t("manageRaw")}
+                </th>
               </tr>
 
               {isLoading ? (
@@ -301,7 +303,7 @@ const Promotion = () => {
                     </td>
                     <td className="text-center">
                       {data?.freeItems?.length > 0
-                        ? `ແຖມ ${data.freeItems.length} ລາຍການ`
+                        ? `${t("get")} ${data.freeItems.length} ${t("list")}`
                         : `${moneyCurrency(data?.discountValue)} ${
                             data?.discountType === "PERCENTAGE"
                               ? "%"
@@ -351,7 +353,7 @@ const Promotion = () => {
                         }
                         className="bg-gray-500 hover:bg-gray-700 text-[14px] p-2 w-[100px] rounded-md text-white"
                       >
-                        ລາຍລະອຽດ
+                        {t("detial")}
                       </button>
                     </td>
                   </tr>
@@ -360,7 +362,7 @@ const Promotion = () => {
                 <tr>
                   <td colSpan="6">
                     <div className="text-center py-2">
-                      ຍັງບໍ່ມີລາຍການໂປຣໂມຊັນ
+                      {t("no_promotional_items")}
                     </div>
                   </td>
                 </tr>

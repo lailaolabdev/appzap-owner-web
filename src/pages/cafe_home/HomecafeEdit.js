@@ -1765,7 +1765,7 @@ function HomecafeEdit() {
                               {storeDetail?.firstCurrency}
                             </span>
                             {data?.isWeightMenu && (
-                              <p className="text-color-app font-bold text-sm text-end mt-1">
+                              <p className="text-color-app font-bold text-sm text-start mt-1">
                                 {t("sell_is")} {data?.unitWeightMenu}
                               </p>
                             )}
