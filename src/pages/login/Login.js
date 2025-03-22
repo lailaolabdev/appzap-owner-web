@@ -54,29 +54,8 @@ function Login() {
       if (isLoading) return;
       setIsLoading(true);
 
-      // ເຮັດການ login
-      const user = await axios.post(`${END_POINT}/v3/admin/login`, values);
+      const user = await axios.post(`${END_POINT}/v7/admin/login`, values);
 
-      // ກວດສອບວ່າມີ permissionRoleId ຫຼືບໍ່
-      if (!user?.data?.data?.permissionRoleId) {
-        // ຖ້າບໍ່ມີ permissionRoleId, ໄປດຶງຂໍ້ມູນຈາກ API
-        const storeId = user?.data?.data?.storeId;
-        const userId = user?.data?.data?.id; // ຫຼືຟິວອື່ນທີ່ໃຊ້ເປັນ userId
-        const userDetailResponse = await axios.get(
-          `http://localhost:7070/v7/users?storeId=${storeId}&userId=${userId}`
-        );
-
-        // ເພີ່ມ permissionRoleId ໃສ່ user.data.data
-        if (userDetailResponse?.data?.permissionRoleId) {
-          user.data.data.permissionRoleId =
-            userDetailResponse.data.permissionRoleId;
-        } else {
-          // ຖ້າຍັງບໍ່ມີ permissionRoleId, ສົ່ງຂໍ້ຄວາມຜິດພາດ
-          throw new Error("PermissionRoleId not found");
-        }
-      }
-
-      // ດຳເນີນການຕໍ່ໄປ
       let path = redirectByPermission(user, storeDetail);
 
       const { defaultPath } = role(

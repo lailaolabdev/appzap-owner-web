@@ -65,6 +65,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
   const [hasCafe, setHasCafe] = useState(false);
   const [hasCuctomrRequests, setHasCuctomrRequests] = useState(false);
   const [hasMarketing, setHasMarketing] = useState(false);
+  const [hasAudio, setHasAudio] = useState(false);
+  const [hasMusic, setHasMusic] = useState(false);
   const [hasPromotion, setHasPromotion] = useState(false);
   const [hasMenu, setHasMenu] = useState(false);
   const [hasExpenses, setHasExpenses] = useState(false);
@@ -244,6 +246,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
         { set: setHasReportDebt, check: "REPORT_INDEBTED" },
         { set: setHasCuctomrRequests, check: "MANAGE_CUSTOMER_REQUESTS" },
         { set: setHasMarketing, check: "MANAGE_MARKETING" },
+        { set: setHasMusic, check: "MUSIC" },
+        { set: setHasAudio, check: "AUDIO" },
         { set: setHasPromotion, check: "MANAGE_PROMOTION" },
       ];
       if (!permissionMap) return;
@@ -364,7 +368,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "branch",
       typeStore: "",
       icon: faBuilding,
-      hidden: !storeDetail?.hasPOS,
+      hidden: !hasBranches,
       system: "reportManagement",
     },
     {
@@ -372,6 +376,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "expends",
       icon: faBook,
       typeStore: "",
+      hidden: !hasExpenses,
       system: "reportManagement",
     },
   ]
@@ -439,7 +444,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "audio",
       icon: faVolumeUp,
       typeStore: "",
-      hidden: profileRole === "APPZAP_ADMIN",
+      hidden: !hasAudio,
       system: "reportManagement",
     },
   ]
@@ -838,52 +843,64 @@ export default function Sidenav({ location, navigate, onToggle }) {
         ) : (
           ""
         )} */}
-            <NavItem eventKey="songlist">
-              <NavIcon>
-                <FontAwesomeIcon
-                  className={openTableData.length > 0 ? "scale-animation" : ""}
-                  icon={faMusic}
+            {!hasMusic ? (
+              ""
+            ) : (
+              <NavItem eventKey="songlist">
+                <NavIcon>
+                  <FontAwesomeIcon
+                    className={
+                      openTableData.length > 0 ? "scale-animation" : ""
+                    }
+                    icon={faMusic}
+                    style={{
+                      color: UN_SELECTED_TAB_TEXT,
+                    }}
+                  />
+                </NavIcon>
+                <NavText>
+                  <b
+                    style={{
+                      color: UN_SELECTED_TAB_TEXT,
+                    }}
+                    className={fontMap[language]}
+                  >
+                    {t("require_music")}
+                  </b>
+                </NavText>
+              </NavItem>
+            )}
+            {!hasCuctomrRequests ? (
+              ""
+            ) : (
+              <NavItem eventKey="supplier">
+                <NavIcon>
+                  <FontAwesomeIcon
+                    className={
+                      openTableData.length > 0 ? "scale-animation" : ""
+                    }
+                    icon={faShoppingCart}
+                    style={{
+                      color: UN_SELECTED_TAB_TEXT,
+                    }}
+                  />
+                </NavIcon>
+                <NavText
                   style={{
                     color: UN_SELECTED_TAB_TEXT,
                   }}
-                />
-              </NavIcon>
-              <NavText>
-                <b
-                  style={{
-                    color: UN_SELECTED_TAB_TEXT,
-                  }}
-                  className={fontMap[language]}
                 >
-                  {t("require_music")}
-                </b>
-              </NavText>
-            </NavItem>
-            <NavItem eventKey="supplier">
-              <NavIcon>
-                <FontAwesomeIcon
-                  className={openTableData.length > 0 ? "scale-animation" : ""}
-                  icon={faShoppingCart}
-                  style={{
-                    color: UN_SELECTED_TAB_TEXT,
-                  }}
-                />
-              </NavIcon>
-              <NavText
-                style={{
-                  color: UN_SELECTED_TAB_TEXT,
-                }}
-              >
-                <b
-                  style={{
-                    color: COLOR_GRAY,
-                  }}
-                  className={fontMap[language]}
-                >
-                  {t("market")}
-                </b>
-              </NavText>
-            </NavItem>
+                  <b
+                    style={{
+                      color: COLOR_GRAY,
+                    }}
+                    className={fontMap[language]}
+                  >
+                    {t("market")}
+                  </b>
+                </NavText>
+              </NavItem>
+            )}
           </SideNav.Nav>
         )}
       </SideNav>

@@ -2188,7 +2188,7 @@ export default function TableList() {
                               "",
                           table?.isStaffConfirm
                             ? table?.editBill
-                              ? "bg-[#CECE5A] text-gray-500"
+                              ? "bg-[#777760] text-gray-500"
                               : table?.statusBill === "CALL_TO_CHECKOUT"
                               ? "bg-[#FFE17B] text-gray-500"
                               : table?.isOrderingPaid
@@ -2262,10 +2262,12 @@ export default function TableList() {
                               "",
                           table?.isStaffConfirm
                             ? table?.editBill
-                              ? "bg-[#CECE5A] text-gray-500"
+                              ? "bg-[#777760] text-gray-500"
                               : table?.statusBill === "CALL_TO_CHECKOUT"
                               ? "bg-[#FFE17B] text-gray-500"
-                              : "bg-primary-gradient text-white"
+                              : table?.isOrderingPaid
+                              ? "bg-[#00C851]  text-white"
+                              : "bg-color-app text-white"
                             : "text-gray-500"
                         )}
                         onClick={() => {

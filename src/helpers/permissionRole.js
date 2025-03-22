@@ -38,8 +38,7 @@ export const PermissionsConfig = () => {
           [t("manage_cafe")]: "MANAGE_CAFE",
           [t("manage_branch")]: "MANAGE_BRANCHES",
           [t("manage_product_storage")]: "MANAGE_PRODUCT_EXPRESS",
-          [t("manage_song_requests")]: "MANAGE_CUSTOMER_REQUESTS",
-          [t("manage_marketing")]: "MANAGE_MARKETING",
+
           [t("manage_promotion")]: "MANAGE_PROMOTION",
         },
       },
@@ -54,6 +53,7 @@ export const PermissionsConfig = () => {
           [t("pin_setting")]: "CONFIGURE_PIN",
           [t("configure_second_screen")]: "CONFIGURE_SECOND_SCREEN",
           [t("edit_store_details")]: "CONFIGURE_STORE_DETAIL",
+          [t("sound_setting")]: "AUDIO",
         },
       },
       etc: {
@@ -61,6 +61,8 @@ export const PermissionsConfig = () => {
         permissions: {
           [t("transaction_history")]: "HISTORY_USED",
           [t("clear_restaurant_data")]: "CLRAR_HISTORY",
+          [t("manage_song_requests")]: "MANAGE_CUSTOMER_REQUESTS",
+          [t("manage_marketing")]: "MANAGE_MARKETING",
         },
       },
     },
