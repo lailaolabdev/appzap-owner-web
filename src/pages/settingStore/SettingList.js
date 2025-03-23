@@ -287,6 +287,13 @@ export default function SettingList() {
       path: "/setting-screen",
       hidden: !hasMangeSecondScreen && !appzapStaff.includes(profileRole),
     },
+    {
+      id: "64bf476a-cbb6-43e1-abe1-29d4bdce7453",
+      title: t("clear_restaurant_data"),
+      icon:<FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDatabase} /> ,
+      path: "/clear_restaurant",
+      hidden: !hasMangeSecondScreen && !appzapStaff.includes(profileRole),
+    },
     // {
     //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
     //   title: "ຈັດການກະ",
@@ -377,7 +384,7 @@ export default function SettingList() {
               </div>
             </ItemBox>
           ))}
-        {(hasClearHistory && appzapStaff.includes(profileRole)) ||
+        {/* {(hasClearHistory && appzapStaff.includes(profileRole)) ||
         (profileRole && hasClearHistory) ? (
           <ItemBox onClick={clickDeleteHistoryStore}>
             <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDatabase} />
@@ -387,7 +394,7 @@ export default function SettingList() {
           </ItemBox>
         ) : (
           ""
-        )}
+        )} */}
       </Box>
       <PopUpConfirm
         open={showDeletem}
