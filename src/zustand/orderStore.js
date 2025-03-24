@@ -55,7 +55,6 @@ export const useOrderStore = create((set) => ({
         `${END_POINT_SEVER_BILL_ORDER}/v7/orders?${findby}`
       );
 
-      // Update the respective state based on status
       set((state) => {
         if (status === WAITING_STATUS) {
           return { waitingOrders: response?.data || [] };
