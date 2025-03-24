@@ -12,7 +12,7 @@ import Box from "../../components/Box";
 import PopUpQRToken from "../../components/popup/PopUpQRToken";
 
 import { SiAirtable } from "react-icons/si";
-import { END_POINT } from "../../constants/index";
+import { END_POINT, WAITING_STATUS } from "../../constants/index";
 
 /**
  * component
@@ -44,6 +44,7 @@ import { useStore } from "../../store";
 import {
   END_POINT_APP,
   END_POINT_SEVER,
+  END_POINT_SEVER_BILL_ORDER,
   END_POINT_SEVER_TABLE_MENU,
   END_POINT_WEB_CLIENT,
   USERS,
@@ -93,8 +94,10 @@ import { fontMap } from "../../utils/font-map";
 import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
 import { useClaimDataStore } from "../../zustand/claimData";
+import { useOrderStore } from "../../zustand/orderStore";
 import theme from "../../theme";
 import PopUpConfirms from "../../components/popup/PopUpConfirms";
+import { set } from "lodash";
 
 export default function TableList() {
   const navigate = useNavigate();
@@ -146,6 +149,7 @@ export default function TableList() {
   const [openConfirmCloseTable, setOpenConfirmCloseTable] = useState(false);
   const [showBtnCombine, setShowBtnCombine] = useState(false);
   const [selectTable, setSelectTable] = useState(false);
+  const [order, setOrder] = useState([]);
 
   const handleCloseQuantity = () => setQuantity(false);
 
@@ -194,6 +198,7 @@ export default function TableList() {
 
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const { setStatusServedForOrdering } = useClaimDataStore();
+  const { fetchOrdersByStatus, orderItems } = useOrderStore();
 
   const reLoadData = () => {
     setReload(true);
@@ -220,8 +225,6 @@ export default function TableList() {
   const [printBillLoading, setPrintBillLoading] = useState(false);
   const [serviceChangeAmount, setServiceChangeAmount] = useState(0);
   const [printBillCalulate, setPrintBillCalulate] = useState(false);
-
-  console.log("tableOrderItems", tableOrderItems);
 
   useEffect(() => {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
@@ -282,7 +285,22 @@ export default function TableList() {
       setTaxPercent(_res?.data?.taxPercent);
     };
     getDataTax();
-
+    const getOrder = async (status, storeId) => {
+      let findby = "";
+      findby += `status=${status}&`;
+      findby += `storeId=${storeId}&`;
+      findby += `startDate=${moment(moment())
+        .subtract(2, "days")
+        .format("YYYY-MM-DD")}&`;
+      findby += `endDate=${moment(moment()).format("YYYY-MM-DD")}&`;
+      findby += `skip=${0}&`;
+      findby += `limit=${200}`;
+      const response = await axios.get(
+        `${END_POINT_SEVER_BILL_ORDER}/v7/orders?${findby}`
+      );
+      setOrder(response?.data);
+    };
+    getOrder(WAITING_STATUS, storeDetail?._id);
     // const getDataServiceCharge = async () => {
     //   const { DATA } = await getLocalData();
     //   const _res = await axios.get(
@@ -360,7 +378,6 @@ export default function TableList() {
 
   useEffect(() => {
     // setIsCheckedOrderItem([...tableOrderItems]);
-    console.log("tableOrderItems", tableOrderItems);
     if (tableOrderItems?.length > 0)
       updateCheckedOrderItems(isCheckedOrderItem, tableOrderItems);
     else setIsCheckedOrderItem([]);
@@ -1536,9 +1553,6 @@ export default function TableList() {
 
       if (serveItemsReq.length === 0) return setIsServerdLoading(false);
 
-      console.log("serveItemsReq", serveItemsReq);
-      console.log("selectedTable", selectedTable);
-
       // Only send data for items with a valid status change
       // const response = await updateOrderItemV7(serveItemsReq, storeId);
 
@@ -1548,8 +1562,6 @@ export default function TableList() {
         menuId,
         selectedTable
       );
-
-      console.log("response", response?.data);
 
       if (response?.data?.message === "UPDATE_ORDER_SUCCESS") {
         setCheckedBox(!checkedBox);
@@ -1580,8 +1592,6 @@ export default function TableList() {
 
           return updatedItem;
         });
-
-        console.log("updatedOrderItems", updatedOrderItems);
 
         setIsCheckedOrderItem(updatedOrderItems); // Update state
 
@@ -1818,7 +1828,6 @@ export default function TableList() {
   }, [newOrderTransaction, onPrinting, newOrderUpdateStatusTransaction]);
 
   useEffect(() => {
-    console.log("reload", newTableTransaction);
     if (newTableTransaction) {
       if (zoneId) {
         getTableDataStore({ zone: zoneId });
@@ -2159,6 +2168,16 @@ export default function TableList() {
             ""
           )}
 
+          {profile?.data.role === "APPZAP_STAFF" && (
+            <div className="text-end px-3 pb-3">
+              {t("itemNotServed")}{" "}
+              <span className="text-blue-400 font-semibold text-xl">
+                {order.length}
+              </span>{" "}
+              {t("order")}
+            </div>
+          )}
+
           <div className="overflow-y-auto flex-1 pb-[100px] px-3">
             <div style={{ height: 10 }} />
             <div
@@ -2270,7 +2289,9 @@ export default function TableList() {
                               ? "bg-[#CECE5A] text-gray-500"
                               : table?.statusBill === "CALL_TO_CHECKOUT"
                               ? "bg-[#FFE17B] text-gray-500"
-                              : "bg-primary-gradient text-white"
+                              : table?.isOrderingPaid
+                              ? "bg-[#00C851]  text-white"
+                              : "bg-color-app text-white"
                             : "text-gray-500"
                         )}
                         onClick={() => {

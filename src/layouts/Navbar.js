@@ -15,6 +15,7 @@ import { NotifyButton } from "../components/NotifyButton";
 import { useStoreStore } from "../zustand/storeStore";
 import { useMenuStore } from "../zustand/menuStore";
 import { useClaimDataStore } from "../zustand/claimData";
+import { Badge } from "../components/ui/Badge";
 
 // sound
 import messageSound from "../sound/message.mp3";
@@ -121,22 +122,30 @@ export default function NavBar() {
         <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
         <div style={{ flexGrow: 1 }} />
 
-        <div
-          className="mr-2 md:mr-5 cursor-pointer"
-          onClick={async () => {
-            const { DATA } = await getLocalData();
-            navigate(`/claim/${DATA?.storeId}`);
-            // navigate(`/historyUse/${DATA?.storeId}`);
-          }}
-        >
-          <div className="bg-gray-300 rounded-lg px-2 flex flex-col items-center">
-            <p className="m-0 text-sm md:text-base">ຍອດເງິນ</p>
-            <p className="m-0 text-lg md:text-lg font-bold">
-              {/* {newNotify?.totalAmount} ກີບ */}
-              {TotalAmountClaim || 0} ກີບ
-            </p>
+        {profile.data?.permissionRoleId?.roleName === "APPZAP_ADMIN" && (
+          <div
+            className="mr-2 md:mr-5 cursor-pointer"
+            onClick={async () => {
+              const { DATA } = await getLocalData();
+              navigate(`/claim/${DATA?.storeId}`);
+              // navigate(`/historyUse/${DATA?.storeId}`);
+            }}
+          >
+            <div className="bg-gray-300  rounded-lg px-2 flex flex-row items-center">
+              <p className="m-0 pr-2 text-sm md:text-base motion-reduce:">
+                {t("price_amount")}{" "}
+              </p>
+              <p className="m-0  text-lg md:text-lg font-bold">
+                {TotalAmountClaim || 0} {storeDetail?.firstCurrency}
+              </p>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* <Badge>
+          {t("price_amount")} {TotalAmountClaim || 0}{" "}
+          {storeDetail?.firstCurrency}
+        </Badge> */}
 
         <NotifyButton
           notifyFilterToggle={notifyFilterToggle}
