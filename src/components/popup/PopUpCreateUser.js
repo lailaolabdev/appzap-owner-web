@@ -29,8 +29,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
   useEffect(() => {
     if (!open) {
       setButtonDisabled(false);
-      setFormData({ role: "APPZAP_DEALER" });
-      getDataPermissionRole();
+      // getDataPermissionRole();
     }
   }, [open]);
 
@@ -42,14 +41,14 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
     callback();
   };
 
-  const getDataPermissionRole = async () => {
-    try {
-      const permissionData = await getPermissionRoles(storeDetail?._id);
-      setDataPermision(permissionData);
-    } catch (err) {
-      console.error("Error fetching permission roles:", err);
-    }
-  };
+  // const getDataPermissionRole = async () => {
+  //   try {
+  //     const permissionData = await getPermissionRoles(storeDetail?._id);
+  //     setDataPermision(permissionData);
+  //   } catch (err) {
+  //     console.error("Error fetching permission roles:", err);
+  //   }
+  // };
 
   return (
     <Modal show={open} onHide={onClose}>
@@ -76,7 +75,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
               }
             />
           </div>
-          <div>
+          {/* <div>
             <Form.Label>{t("use_system_policy")}</Form.Label>
             <Form.Label>{t("use_system_policy")}</Form.Label>
             <select
@@ -96,8 +95,8 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
                 </option>
               ))}
             </select>
-          </div>
-          {/* <div>
+          </div> */}
+          <div>
             <Form.Label>{t("use_system_policy")}</Form.Label>
             <select
               className="form-control"
@@ -113,7 +112,7 @@ export default function PopUpCreateUser({ open, onClose, callback }) {
               <option value="APPZAP_KITCHEN">{t("chef")}</option>
               <option value="APPZAP_CUSTOM_ROLE">{t("selft_define")}</option>
             </select>
-          </div> */}
+          </div>
 
           <div>
             <Form.Label>{t("phonenumber")}</Form.Label>
