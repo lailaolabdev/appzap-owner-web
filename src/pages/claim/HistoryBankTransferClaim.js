@@ -308,24 +308,28 @@ export default function HistoryBankTransferClaim() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-        if (table.isPaidConfirm) return;
+        if (table.isPaidConfirm) {
+          clearTimeout(timeoutId);
+          continue; // Skip this table and move to the next one
+        }
 
         const body = {
           shiftId: shiftCurrent[0]?._id,
           isCheckout: "true",
           status: "CHECKOUT",
-          paymentMethod: "APPZAP_TRANSFER", // Ignore spellcheck: APPZAP
+          paymentMethod: "APPZAP_TRANSFER" /* cspell:ignore APPZAP */,
           isOrderingPaid: false,
           billMode: "false",
           tableName: table.tableName,
           tableCode: table.code,
           fullnameStaffCheckOut:
-            `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-", // Ignore spellcheck: firstname lastname
+            `${profile?.data?.firstname} ${profile?.data?.lastname}` ??
+            "-" /* cspell:ignore firstname lastname */,
           staffCheckOutId: profile?.data?.id,
         };
 
+        // First request - separated with its own try-catch
         try {
-          // First request
           await axios.put(
             `${END_POINT}/v7/bill-checkout`,
             {
@@ -337,10 +341,19 @@ export default function HistoryBankTransferClaim() {
               signal: controller.signal,
             }
           );
+          console.log(`First request succeeded for table ${table.tableName}`);
+        } catch (firstErr) {
+          console.error(
+            `First request failed for table ${table.tableName}:`,
+            firstErr
+          );
+          // Continue to the second request even if the first fails
+        }
 
-          // Second request
+        // Second request - in its own try-catch
+        try {
           await axios.put(
-            `${END_POINT_SERVER_JUSTCAN}/v5/checkout/update-by-bill`, // Ignore spellcheck: JUSTCAN
+            `${END_POINT_SERVER_JUSTCAN}/v5/checkout/update-by-bill` /* cspell:ignore JUSTCAN */,
             {
               billId: table.billId,
               code: table.code,
@@ -350,16 +363,20 @@ export default function HistoryBankTransferClaim() {
               signal: controller.signal,
             }
           );
-
-          await fetchData(CLAIM_STATUSES.UNCLAIMED, currentPage, false);
-          setSelectedPayment([]);
-        } catch (err) {
-          // Handle individual table errors but continue with others
-          console.error(`Error processing table ${table.tableName}:`, err);
-        } finally {
-          clearTimeout(timeoutId);
+          console.log(`Second request succeeded for table ${table.tableName}`);
+        } catch (secondErr) {
+          console.error(
+            `Second request failed for table ${table.tableName}:`,
+            secondErr
+          );
         }
+
+        clearTimeout(timeoutId);
       }
+
+      // Refresh data and reset selections
+      await fetchData(CLAIM_STATUSES.UNCLAIMED, currentPage, false);
+      setSelectedPayment([]);
 
       // Update UI state
       setSelectedTable();
@@ -367,14 +384,13 @@ export default function HistoryBankTransferClaim() {
 
       // Success notification
       Swal.fire({
-        // Ignore spellcheck: Swal
-        icon: "success",
-        title: `${t("checkbill_success")}`, // Ignore spellcheck: checkbill
+        /* cspell:ignore Swal */ icon: "success",
+        title: `${t("checkbill_success")}` /* cspell:ignore checkbill */,
         showConfirmButton: false,
         timer: 1800,
       });
     } catch (error) {
-      errorAdd(`${t("checkbill_fial")}`); // Ignore spellcheck: checkbill fial
+      errorAdd(`${t("checkbill_fial")}`); /* cspell:ignore checkbill fial */
       console.error("Error checking bill ordering:", error.message);
     } finally {
       setIsLoading(false);
@@ -397,6 +413,8 @@ export default function HistoryBankTransferClaim() {
     [CLAIM_STATUSES.CLAIMING]: claimData[CLAIM_STATUSES.CLAIMING] || [],
     [CLAIM_STATUSES.CLAIMED]: claimData[CLAIM_STATUSES.CLAIMED] || [],
   };
+
+  console.log("tabData:", selectedPayment);
 
   return (
     <div className="p-2 bg-gray-50">
@@ -521,7 +539,7 @@ export default function HistoryBankTransferClaim() {
         content={
           <div className="flex flex-col items-center text-lg gap-2">
             <div className="flex flex-col gap-0">
-              {uniquePaymentData
+              {selectedPayment
                 .filter((payment) => !payment.isPaidConfirm)
                 .map((payment, index) => (
                   <div
