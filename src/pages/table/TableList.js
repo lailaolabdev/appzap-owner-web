@@ -221,6 +221,8 @@ export default function TableList() {
   const [serviceChangeAmount, setServiceChangeAmount] = useState(0);
   const [printBillCalulate, setPrintBillCalulate] = useState(false);
 
+  console.log("tableOrderItems", tableOrderItems);
+
   useEffect(() => {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
     const refs = {};
@@ -358,6 +360,7 @@ export default function TableList() {
 
   useEffect(() => {
     // setIsCheckedOrderItem([...tableOrderItems]);
+    console.log("tableOrderItems", tableOrderItems);
     if (tableOrderItems?.length > 0)
       updateCheckedOrderItems(isCheckedOrderItem, tableOrderItems);
     else setIsCheckedOrderItem([]);
@@ -1815,6 +1818,7 @@ export default function TableList() {
   }, [newOrderTransaction, onPrinting, newOrderUpdateStatusTransaction]);
 
   useEffect(() => {
+    console.log("reload", newTableTransaction);
     if (newTableTransaction) {
       if (zoneId) {
         getTableDataStore({ zone: zoneId });
@@ -1824,6 +1828,7 @@ export default function TableList() {
       setNewTableTransaction(false);
     }
   }, [newTableTransaction]);
+
   useEffect(() => {
     if (userCallCheckout) {
       // getTableDataStore();
@@ -2510,6 +2515,9 @@ export default function TableList() {
                         disabled={
                           !isCheckedOrderItem.every((e) => e?.status === "PAID")
                         }
+                        style={{
+                          backgroundColor: "#00C851",
+                        }}
                         onClick={() => setOpenConfirmCloseTable(true)}
                       >
                         {t("confirm_close_table")}
@@ -2651,7 +2659,7 @@ export default function TableList() {
                                         orderItem?.status === "SERVED"
                                           ? "green"
                                           : orderItem?.status === "PAID"
-                                          ? COLOR_APP
+                                          ? "green"
                                           : orderItem?.status === "DOING"
                                           ? ""
                                           : "red",
@@ -3321,7 +3329,7 @@ export default function TableList() {
   );
 }
 
-const ButtonCustom = ({ children, ...etc }) => {
+const ButtonCustom = ({ children, style, ...etc }) => {
   return (
     <Button
       variant="light"
@@ -3332,6 +3340,7 @@ const ButtonCustom = ({ children, ...etc }) => {
         fontWeight: "bold",
         fontSize: 13,
         padding: "8px 4px",
+        ...style,
       }}
       {...etc}
     >
