@@ -71,6 +71,10 @@ export const useSocketState = ({ setRunSound }) => {
 
           // You can uncomment this line if you need to set new order transaction state
           // setNewOrderTransaction(true);
+          setTimeout(() => {
+            setNewOrderTransaction(true);
+            setNewOrderUpdateStatusTransaction(true);
+          }, 1000);
         } else {
           console.error("Invalid order data received:", data);
         }
@@ -148,6 +152,11 @@ export const useSocketState = ({ setRunSound }) => {
 
         if (response?.data?.totalAmount !== undefined) {
           setTotalAmountClaim(response.data.totalAmount);
+          setTimeout(() => {
+            setNewTableTransaction(true);
+            setNewOrderTransaction(true);
+            setNewOrderUpdateStatusTransaction(true);
+          }, 1000);
         } else {
           console.warn("Total amount not found in response", response.data);
         }

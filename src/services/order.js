@@ -112,11 +112,16 @@ export const updateOrderItem = async (
 };
 
 // Update order items status on the backend
-export const updateOrderItemV7 = async (updateItems, storeId) => {
+export const updateOrderItemV7 = async (
+  updateItems,
+  storeId,
+  seletedCancelOrderItem
+) => {
   try {
     const body = {
       orders: updateItems,
       storeId,
+      remark: seletedCancelOrderItem,
     };
 
     const response = await axios.put(

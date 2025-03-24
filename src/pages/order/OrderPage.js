@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useTranslation } from "react-i18next";
-import { Button, Tabs, Tab, Spinner } from "react-bootstrap";
+import { Button, Tabs, Tab, Spinner, Modal, Form } from "react-bootstrap";
 import Swal from "sweetalert2";
 import { useStore } from "../../store";
 
@@ -52,6 +52,8 @@ export default function OrderPage() {
   const [workAfterPin, setWorkAfterPin] = useState("");
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
+  const [show1, setShow1] = useState(false);
+  const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
 
   const {
     getOrderItemsStore,
@@ -148,10 +150,15 @@ export default function OrderPage() {
       const _updateItems = ordersToUpdate.map((item) => ({
         ...item, // Spread the existing fields to keep them unchanged
         status: toStatus, // Update only the `status` field to `toStatus`
+        seletedCancelOrderItem,
       }));
 
       // Update order status in the backend
-      const response = await updateOrderItemV7(_updateItems, storeDetail?._id);
+      const response = await updateOrderItemV7(
+        _updateItems,
+        storeDetail?._id,
+        seletedCancelOrderItem
+      );
 
       console.log({ response });
 
@@ -435,10 +442,9 @@ export default function OrderPage() {
           <Button
             className="text-white !bg-red-500 border-0"
             disabled={ordersUpdating}
-            onClick={async () => {
+            onClick={() => {
               setCanceledfromStatus(fromStatus);
-              setWorkAfterPin("cancle_order");
-              setPopup({ PopUpPin: true });
+              setShow1(true);
             }}
           >
             {/* ຍົກເລີກ */}
@@ -545,6 +551,79 @@ export default function OrderPage() {
           setPopup();
         }}
       />
+      <Modal show={show1} onHide={() => setShow1(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title className={fontMap[language]}>
+            {t("cause_cancel_order")}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body className={fontMap[language]}>
+          <Form.Group className="mb-3" controlId="formBasicEmail">
+            <select
+              size="8"
+              style={{ overflow: "auto", border: "none", fontSize: "20px" }}
+              className="form-control"
+              onChange={(e) => setSeletedCancelOrderItem(e.target.value)}
+            >
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                {t("wrong_serving")}
+              </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                {t("customer_cancel")}
+              </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                {t("wrong_cooking")}
+              </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                {t("server_wrong_ordering")}
+              </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                {t("wait_long")}
+              </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                {t("food_gone")}
+              </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                {t("drink_gone")}
+              </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                {t("table_no_food")}
+              </option>
+            </select>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer className={fontMap[language]}>
+          <Button variant="danger" onClick={() => setShow1(false)}>
+            {t("cancel")}
+          </Button>
+          <Button
+            variant="success"
+            onClick={async () => {
+              setWorkAfterPin("cancle_order");
+              setPopup({ PopUpPin: true });
+              setShow1(false);
+            }}
+          >
+            {t("save")}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </RootStyle>
   );
 }
