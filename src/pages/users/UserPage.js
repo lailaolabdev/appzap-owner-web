@@ -339,7 +339,7 @@ export default function UserPage() {
         open={popup?.PopUpUpdateUser}
         onClose={() => {
           setPopup();
-          setSelectUser(); // เพิ่มการเคลียร์ selectUser
+          setSelectUser();
         }}
         callback={() => {
           getData();

@@ -122,7 +122,7 @@ export default function NavBar() {
         <ReactAudioPlayer src={messageSound} ref={soundPlayer} />
         <div style={{ flexGrow: 1 }} />
 
-        {profile.data?.permissionRoleId?.roleName === "APPZAP_ADMIN" && (
+        {profile.data?.role !== "APPZAP_STAFF" && (
           <div
             className="mr-2 md:mr-5 cursor-pointer"
             onClick={async () => {

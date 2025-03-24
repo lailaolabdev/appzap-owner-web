@@ -371,8 +371,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "audio",
       icon: faVolumeUp,
       typeStore: "",
-      hidden: profileRole === "APPZAP_ADMIN",
-      system: "reportManagement",
+      system: "audioManagement",
     },
   ]
     .filter((e) => {

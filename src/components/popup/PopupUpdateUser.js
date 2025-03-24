@@ -4,7 +4,7 @@ import { COLOR_APP } from "../../constants";
 import { getLocalData } from "../../constants/api";
 import { useTranslation } from "react-i18next";
 import { userUpdate } from "../../services/user";
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { getPermissionRoles } from "../../services/permissionRole";
 import { useStoreStore } from "../../zustand/storeStore";
 import Swal from "sweetalert2";
@@ -12,272 +12,291 @@ import { convertRole } from "../../helpers/convertRole";
 import { useStore } from "../../store";
 
 export default function PopUpUpdateUser({ open, onClose, callback, userData }) {
-    const { t } = useTranslation();
-    const {profile} = useStore();
-    const [buttonDisabled, setButtonDisabled] = useState(false);
-    const [formData, setFormData] = useState({});
-    const [initialData, setInitialData] = useState({});
-    const [dataPermission, setDataPermision] = useState([]);
-    const { storeDetail } = useStoreStore();
-    const [showPassword, setShowPassword] = useState(false);
-    const [hasChanges, setHasChanges] = useState(false);
-    const [forgetPassword, setForgetPassowrd] = useState(false);
-    const [showErrors, setShowErrors] = useState(false);
-    const [errors, setErrors] = useState({
+  const { t } = useTranslation();
+  const { profile } = useStore();
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [formData, setFormData] = useState({});
+  const [initialData, setInitialData] = useState({});
+  const [dataPermission, setDataPermision] = useState([]);
+  const { storeDetail } = useStoreStore();
+  const [showPassword, setShowPassword] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [forgetPassword, setForgetPassowrd] = useState(false);
+  const [showErrors, setShowErrors] = useState(false);
+  const [errors, setErrors] = useState({
+    firstname: "",
+    phone: "",
+    userId: "",
+    permissionRoleId: "",
+  });
+
+  useEffect(() => {
+    if (open && userData) {
+      const initialFormData = {
+        firstname: userData.firstname,
+        lastname: userData.lastname,
+        phone: userData.phone,
+        userId: userData.userId,
+        role: userData.role,
+        password: "",
+      };
+      setFormData(initialFormData);
+      setInitialData(initialFormData);
+      setHasChanges(false);
+      setShowErrors(false);
+      setForgetPassowrd(false);
+      setErrors({
         firstname: "",
         phone: "",
         userId: "",
         permissionRoleId: "",
+      });
+      //   getDataPermissionRole();
+    }
+  }, [open, userData]);
+
+  useEffect(() => {
+    if (!open) {
+      setForgetPassowrd(false);
+      setButtonDisabled(false);
+      setFormData({});
+      setInitialData({});
+      setShowPassword(false);
+      setHasChanges(false);
+      setShowErrors(false);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    const hasFormChanged = Object.keys(formData).some((key) => {
+      if (key === "password") {
+        return formData[key]?.trim() !== "";
+      }
+      return formData[key] !== initialData[key];
     });
+    setHasChanges(hasFormChanged);
+  }, [formData, initialData]);
 
-
-    useEffect(() => {
-        if (open && userData) {
-            const initialFormData = {
-                firstname: userData.firstname,
-                lastname: userData.lastname,
-                phone: userData.phone,
-                userId: userData.userId,
-                role: userData.role || "APPZAP_DEALER",
-                permissionRoleId: userData.permissionRoleId?._id || "",
-                password: ""
-            };
-            setFormData(initialFormData);
-            setInitialData(initialFormData);
-            setHasChanges(false);
-            setShowErrors(false);
-            setForgetPassowrd(false)
-            setErrors({
-                firstname: "",
-                phone: "",
-                userId: "",
-                permissionRoleId: "",
-            });
-            getDataPermissionRole();
-        }
-    }, [open, userData]);
-
-    useEffect(() => {
-        if (!open) {
-            setForgetPassowrd(false)
-            setButtonDisabled(false);
-            setFormData({});
-            setInitialData({});
-            setShowPassword(false);
-            setHasChanges(false);
-            setShowErrors(false);
-        }
-    }, [open]);
-
-    useEffect(() => {
-        const hasFormChanged = Object.keys(formData).some(key => {
-            if (key === 'password') {
-                return formData[key]?.trim() !== '';
-            }
-            return formData[key] !== initialData[key];
-        });
-        setHasChanges(hasFormChanged);
-    }, [formData, initialData]);
-
-    const validateForm = () => {
-        const newErrors = {
-            firstname: !formData.firstname?.trim() ? t("please_enter_name") : "",
-            phone: !formData.phone?.trim() ? t("please_enter_phone") : "",
-            userId: !formData.userId?.trim() ? t("please_enter_userId") : "",
-            permissionRoleId: !formData.permissionRoleId?.trim() ? t("please_select_rol") : "",
-        };
-
-        setErrors(newErrors);
-        setShowErrors(true);
-
-        return !Object.values(newErrors).some(error => error !== "");
+  const validateForm = () => {
+    const newErrors = {
+      firstname: !formData.firstname?.trim() ? t("please_enter_name") : "",
+      phone: !formData.phone?.trim() ? t("please_enter_phone") : "",
+      userId: !formData.userId?.trim() ? t("please_enter_userId") : "",
     };
 
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
+    setErrors(newErrors);
+    setShowErrors(true);
 
-    const handleUpdateUser = async () => {
-        if (!validateForm()) {
-            return;
-        }
+    return !Object.values(newErrors).some((error) => error !== "");
+  };
 
-        try {
-            setButtonDisabled(true);
-            const { TOKEN } = await getLocalData();
-            const updateData = {
-                firstname: formData.firstname,
-                lastname: formData.lastname,
-                phone: formData.phone,
-                userId: formData.userId,
-                role: 'APPZAP_DEALER',
-                permissionRoleId: String(formData.permissionRoleId),
-                storeId: storeDetail?._id,
-            };
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
-            if (formData.password) {
-                updateData.password = formData.password;
-            }
+  const handleUpdateUser = async () => {
+    if (!validateForm()) {
+      return;
+    }
 
-            await userUpdate(userData._id, updateData, TOKEN);
+    try {
+      setButtonDisabled(true);
+      const { TOKEN } = await getLocalData();
+      const updateData = {
+        firstname: formData.firstname,
+        lastname: formData.lastname,
+        phone: formData.phone,
+        userId: formData.userId,
+        role: formData.role,
+        storeId: storeDetail?._id,
+      };
 
-            Swal.fire({
-                icon: 'success',
-                title: t("success"),
-                text: t("role_updated_successfully"),
-                showConfirmButton: false,
-                timer: 1500
-            });
+      if (formData.password) {
+        updateData.password = formData.password;
+      }
 
-            callback();
-            onClose();
-        } catch (error) {
-            console.error("Error updating user:", error);
-            Swal.fire({
-                icon: 'error',
-                title: t("error"),
-                text: error?.response?.data?.message || t("error_updating_role"),
-                showConfirmButton: true
-            });
-            setButtonDisabled(false);
-        }
-    };
+      await userUpdate(userData._id, updateData, TOKEN);
 
-    const getDataPermissionRole = async () => {
-        try {
-            const permissionData = await getPermissionRoles(storeDetail?._id);
-            setDataPermision(permissionData);
-        } catch (err) {
-            console.error("Error fetching permission roles:", err);
-        }
-    };
+      Swal.fire({
+        icon: "success",
+        title: t("success"),
+        text: t("role_updated_successfully"),
+        showConfirmButton: false,
+        timer: 1500,
+      });
 
-    return (
-        <Modal show={open} onHide={onClose}>
-            <Modal.Header closeButton>{t("edit")}</Modal.Header>
-            <Modal.Body>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    <div>
-                        <Form.Label>{t("name")}</Form.Label>
-                        <Form.Control
-                            placeholder={t("enter_name")}
-                            value={formData?.firstname || ""}
-                            onChange={(e) =>
-                                setFormData((prev) => ({ ...prev, firstname: e.target.value }))
-                            }
-                            isInvalid={showErrors && errors.firstname}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.firstname}
-                        </Form.Control.Feedback>
-                    </div>
-                    <div>
-                        <Form.Label>{t("l_name")}</Form.Label>
-                        <Form.Control
-                            placeholder={t("enter_lname")}
-                            value={formData?.lastname || ""}
-                            onChange={(e) =>
-                                setFormData((prev) => ({ ...prev, lastname: e.target.value }))
-                            }
-                            isInvalid={showErrors && errors.lastname}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.lastname}
-                        </Form.Control.Feedback>
-                    </div>
-                    <div>
-                        <Form.Label>{t("use_system_policy")}</Form.Label>
-                        <select
-                            className={`form-control ${showErrors && errors.permissionRoleId ? 'is-invalid' : ''}`}
-                            value={formData?.permissionRoleId || ""}
-                            disabled={userData?.role === "APPZAP_ADMIN"}
-                            onChange={(e) =>
-                                setFormData((prev) => ({
-                                    ...prev,
-                                    permissionRoleId: e.target.value,
-                                }))
-                            }
-                        >
-                            <option value="">{t("chose_policy_type")}</option>
-                            {dataPermission.map((role) => (
-                                <option key={role._id} value={role._id}>
-                                    {convertRole(role.roleName)}
-                                </option>
-                            ))}
-                        </select>
-                        <div className="invalid-feedback">
-                            {errors.permissionRoleId}
-                        </div>
-                    </div>
-                    <div>
-                        <Form.Label>{t("phonenumber")}</Form.Label>
-                        <Form.Control
-                            placeholder={t("enter_phone")}
-                            value={formData?.phone || ""}
-                            onChange={(e) =>
-                                setFormData((prev) => ({ ...prev, phone: e.target.value }))
-                            }
-                            isInvalid={showErrors && errors.phone}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.phone}
-                        </Form.Control.Feedback>
-                    </div>
-                    <div>
-                        <Form.Label>{t("username_login")}</Form.Label>
-                        <Form.Control
-                            placeholder={t("enter_username")}
-                            value={formData?.userId || ""}
-                            onChange={(e) =>
-                                setFormData((prev) => ({ ...prev, userId: e.target.value }))
-                            }
-                            isInvalid={showErrors && errors.userId}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.userId}
-                        </Form.Control.Feedback>
-                    </div>
-                    {
-                        forgetPassword && (
-                            <>
-                                <Form.Label>{t("password")}</Form.Label>
-                                <InputGroup>
-                                    <Form.Control
-                                        type={showPassword ? "text" : "password"}
-                                        placeholder={t("p_fill_code_new")}
-                                        value={formData?.password || ""}
-                                        onChange={(e) =>
-                                            setFormData((prev) => ({ ...prev, password: e.target.value }))
-                                        }
-                                        isInvalid={showErrors && errors.password}
-                                    />
-                                    <InputGroup.Text
-                                        onClick={togglePasswordVisibility}
-                                        style={{ cursor: 'pointer' }}
-                                    >
-                                        {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                    </InputGroup.Text>
-                                    <Form.Control.Feedback type="invalid">
-                                        {errors.password}
-                                    </Form.Control.Feedback>
-                                </InputGroup>
-                            </>
-                        )
-                    }
-                </div>
-            </Modal.Body>
-            <Modal.Footer className="flex justify-between">
-                <p onClick={() => setForgetPassowrd(true)} className="text-color-app mr-auto cursor-pointer">
-                    {t("p_fill_code_forget")}
-                </p>
-                <Button
-                    disabled={buttonDisabled || !hasChanges}
-                    style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-                    onClick={handleUpdateUser}
+      callback();
+      onClose();
+    } catch (error) {
+      console.error("Error updating user:", error);
+      Swal.fire({
+        icon: "error",
+        title: t("error"),
+        text: error?.response?.data?.message || t("error_updating_role"),
+        showConfirmButton: true,
+      });
+      setButtonDisabled(false);
+    }
+  };
+
+  //   const getDataPermissionRole = async () => {
+  //     try {
+  //       const permissionData = await getPermissionRoles(storeDetail?._id);
+  //       setDataPermision(permissionData);
+  //     } catch (err) {
+  //       console.error("Error fetching permission roles:", err);
+  //     }
+  //   };
+
+  return (
+    <Modal show={open} onHide={onClose}>
+      <Modal.Header closeButton>{t("edit")}</Modal.Header>
+      <Modal.Body>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div>
+            <Form.Label>{t("name")}</Form.Label>
+            <Form.Control
+              placeholder={t("enter_name")}
+              value={formData?.firstname || ""}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, firstname: e.target.value }))
+              }
+              isInvalid={showErrors && errors.firstname}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.firstname}
+            </Form.Control.Feedback>
+          </div>
+          <div>
+            <Form.Label>{t("l_name")}</Form.Label>
+            <Form.Control
+              placeholder={t("enter_lname")}
+              value={formData?.lastname || ""}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, lastname: e.target.value }))
+              }
+              isInvalid={showErrors && errors.lastname}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.lastname}
+            </Form.Control.Feedback>
+          </div>
+          <div>
+            <Form.Label>{t("use_system_policy")}</Form.Label>
+            <select
+              className={`form-control ${
+                showErrors && errors.role ? "is-invalid" : ""
+              }`}
+              value={formData?.role}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, role: e.target.value }))
+              }
+            >
+              <option value="">{t("chose_policy_type")}</option>
+              <option value="APPZAP_ADMIN">{t("ceo")}</option>
+              <option value="APPZAP_STAFF">{t("server_staff")}</option>
+              <option value="APPZAP_COUNTER">{t("counter_staff")}</option>
+              <option value="APPZAP_KITCHEN">{t("chef")}</option>
+              <option value="APPZAP_CUSTOM_ROLE">{t("selft_define")}</option>
+            </select>
+          </div>
+          {/* <div>
+            <Form.Label>{t("use_system_policy")}</Form.Label>
+            <select
+              className={`form-control ${
+                showErrors && errors.permissionRoleId ? "is-invalid" : ""
+              }`}
+              value={formData?.permissionRoleId || ""}
+              disabled={userData?.role === "APPZAP_ADMIN"}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  permissionRoleId: e.target.value,
+                }))
+              }
+            >
+              <option value="">{t("chose_policy_type")}</option>
+              {dataPermission.map((role) => (
+                <option key={role._id} value={role._id}>
+                  {convertRole(role.roleName)}
+                </option>
+              ))}
+            </select>
+            <div className="invalid-feedback">{errors.permissionRoleId}</div>
+          </div> */}
+          <div>
+            <Form.Label>{t("phonenumber")}</Form.Label>
+            <Form.Control
+              placeholder={t("enter_phone")}
+              value={formData?.phone || ""}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, phone: e.target.value }))
+              }
+              isInvalid={showErrors && errors.phone}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.phone}
+            </Form.Control.Feedback>
+          </div>
+          <div>
+            <Form.Label>{t("username_login")}</Form.Label>
+            <Form.Control
+              placeholder={t("enter_username")}
+              value={formData?.userId || ""}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, userId: e.target.value }))
+              }
+              isInvalid={showErrors && errors.userId}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.userId}
+            </Form.Control.Feedback>
+          </div>
+          {forgetPassword && (
+            <>
+              <Form.Label>{t("password")}</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type={showPassword ? "text" : "password"}
+                  placeholder={t("p_fill_code_new")}
+                  value={formData?.password || ""}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      password: e.target.value,
+                    }))
+                  }
+                  isInvalid={showErrors && errors.password}
+                />
+                <InputGroup.Text
+                  onClick={togglePasswordVisibility}
+                  style={{ cursor: "pointer" }}
                 >
-                    {t("confirm")}
-                </Button>
-            </Modal.Footer>
-        </Modal>
-    );
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </InputGroup.Text>
+                <Form.Control.Feedback type="invalid">
+                  {errors.password}
+                </Form.Control.Feedback>
+              </InputGroup>
+            </>
+          )}
+        </div>
+      </Modal.Body>
+      <Modal.Footer className="flex justify-between">
+        <p
+          onClick={() => setForgetPassowrd(true)}
+          className="text-color-app mr-auto cursor-pointer"
+        >
+          {t("p_fill_code_forget")}
+        </p>
+        <Button
+          disabled={buttonDisabled || !hasChanges}
+          style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+          onClick={handleUpdateUser}
+        >
+          {t("confirm")}
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
 }
