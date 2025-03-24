@@ -25,6 +25,7 @@ export default function BillForCheckOutCafe80({
   taxPercent = 0,
   profile,
   dataModal,
+  dataBillEdit,
 }) {
   // state
   const [total, setTotal] = useState();
@@ -458,6 +459,158 @@ export default function BillForCheckOutCafe80({
               >
                 {moneyCurrency(
                   (dataModal?.billAmountBefore * dataModal?.discount) / 100
+                )}{" "}
+                {storeDetail?.firstCurrency}
+              </div>
+            </div>
+          ) : (
+            <div className="w-full flex justify-between text-[16px] font-bold">
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "end",
+                  alignItems: "center",
+                }}
+              >
+                {t("totals")} :{" "}
+              </div>
+              <div
+                style={{
+                  width: "60%",
+                  display: "flex",
+                  justifyContent: "end",
+                  alignItems: "center",
+                }}
+              >
+                {moneyCurrency(total)} {storeDetail?.firstCurrency}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : dataBillEdit?.discount > 0 ? (
+        <div className="mb-2">
+          {dataBillEdit?.discount > 0 && (
+            <>
+              <div className="w-full flex justify-between text-[14px] font-thin">
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "end",
+                    alignItems: "center",
+                  }}
+                >
+                  {t("price_basic")} :{" "}
+                </div>
+
+                <div
+                  style={{
+                    width: "60%",
+                    display: "flex",
+                    justifyContent: "end",
+                    alignItems: "center",
+                  }}
+                >
+                  {`${moneyCurrency(dataBillEdit?.billAmountBefore)}`}{" "}
+                  {storeDetail?.firstCurrency}
+                </div>
+              </div>
+              <div className="w-full flex justify-between text-[14px] font-thin">
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "end",
+                    alignItems: "center",
+                  }}
+                >
+                  {t("member_discount")} :{" "}
+                </div>
+
+                <div
+                  style={{
+                    width: "60%",
+                    display: "flex",
+                    justifyContent: "end",
+                    alignItems: "center",
+                  }}
+                >
+                  {`${moneyCurrency(dataBillEdit?.discount)}%`}{" "}
+                </div>
+              </div>
+            </>
+          )}
+          <div className="w-full flex justify-between text-[14px] font-thin">
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              {t("totalAmount")} :{" "}
+            </div>
+
+            <div
+              style={{
+                width: "60%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              {moneyCurrency(matchRoundNumber(dataBillEdit?.payAmount))}{" "}
+              {storeDetail?.firstCurrency}
+            </div>
+          </div>
+          <div className="w-full flex justify-between text-[14px] font-thin">
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              {t("change")} :{" "}
+            </div>
+
+            <div
+              style={{
+                width: "60%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              {moneyCurrency(dataBillEdit?.change)} {storeDetail?.firstCurrency}
+            </div>
+          </div>
+          {dataBillEdit?.discount > 0 ? (
+            <div className="w-full flex justify-between text-[16px] font-bold">
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "end",
+                  alignItems: "center",
+                }}
+              >
+                {t("totals")} :{" "}
+              </div>
+              <div
+                style={{
+                  width: "60%",
+                  display: "flex",
+                  justifyContent: "end",
+                  alignItems: "center",
+                }}
+              >
+                {moneyCurrency(
+                  (dataBillEdit?.billAmountBefore * dataBillEdit?.discount) /
+                    100
                 )}{" "}
                 {storeDetail?.firstCurrency}
               </div>

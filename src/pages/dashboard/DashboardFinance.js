@@ -213,8 +213,6 @@ export default function DashboardFinance({
     setDataModal(item);
   };
 
-  console.log("dataModal", dataModal);
-
   const getCurrency = async () => {
     try {
       const x = await fetch(
@@ -570,7 +568,7 @@ export default function DashboardFinance({
             const basePrice = item?.price || 0;
             const optionPrice = item?.totalOptionPrice || 0;
             const quantity = item?.quantity || 0;
-            const isWeightMenu = item?.isWeightMenu;
+            const isWeightMenu = basePrice + optionPrice;
             const totalPriceFromItem = item?.totalPrice;
             const isWeightMenuQuantity =
               item?.unitWeightMenu === "g"

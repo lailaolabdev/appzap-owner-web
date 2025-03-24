@@ -120,8 +120,7 @@ function HomecafeEdit() {
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
   const [bill, setBill] = useState(0);
-  const [promotion, setPromotion] = useState([]);
-
+  const [dataBillEdit, setDataBillEdit] = useState([]);
   const [isMobile, setIsMobile] = useState(
     window.matchMedia("(max-width: 767px)").matches
   );
@@ -134,21 +133,29 @@ function HomecafeEdit() {
   const { shiftCurrent } = useShiftStore();
   const { setSelectedMenus, SelectedMenus, clearSelectedMenus } =
     useMenuSelectStore();
+
   useEffect(() => {
-    return () => {
-      console.log("Leaving HomecafeEdit, clearing Zustand state...");
-      clearSelectedMenus();
-    };
-  }, []);
-  useEffect(() => {
+    billData();
+    fetchPointsData();
+
     const handleBeforeUnload = () => {
       clearSelectedMenus();
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
+    const handleResize = () => {
+      setIsMobile(window.matchMedia("(max-width: 767px)").matches);
+    };
+
+    // Add event listener for resize
+    window.addEventListener("resize", handleResize);
+    // Cleanup function to remove event listener when the component unmounts
 
     return () => {
+      window.removeEventListener("resize", handleResize);
       window.removeEventListener("beforeunload", handleBeforeUnload);
+      console.log("Leaving HomecafeEdit, clearing Zustand state...");
+      clearSelectedMenus();
     };
   }, []);
 
@@ -218,18 +225,6 @@ function HomecafeEdit() {
       slider.removeEventListener("mousemove", handleMouseMove);
     };
   }, [sliderRef]);
-
-  useEffect(() => {
-    // Function to update state on window resize
-    const handleResize = () => {
-      setIsMobile(window.matchMedia("(max-width: 767px)").matches);
-    };
-
-    // Add event listener for resize
-    window.addEventListener("resize", handleResize);
-    // Cleanup function to remove event listener when the component unmounts
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   useEffect(() => {
     // Check if the modal is shown and if the ref is attached to an element
@@ -341,11 +336,6 @@ function HomecafeEdit() {
     setMenuCategories,
   ]);
 
-  useEffect(() => {
-    billData();
-    fetchPointsData();
-  }, []);
-
   const fetchPointsData = async () => {
     try {
       const data = await getAllStorePoints();
@@ -411,6 +401,7 @@ function HomecafeEdit() {
     findby += `storeId=${storeDetail?._id}`;
     findby += `&billId=${billId}`;
     const data = await getBillCafe(findby);
+    setDataBillEdit(data);
     setSelectedMenus(data?.orderId);
   };
 
@@ -620,8 +611,6 @@ function HomecafeEdit() {
     return calculateDiscount(menu) + optionsTotalPrice;
   };
 
-  console.log("SelectedMenus", SelectedMenus);
-
   const createBillCancelCafeData = async () => {
     try {
       // await createBillCancelCafe();
@@ -797,15 +786,15 @@ function HomecafeEdit() {
       setTaxPercent(_res?.data?.taxPercent);
     };
     getDataTax();
-    fetchDataProduction();
+    // fetchDataProduction();
   }, []);
 
-  const fetchDataProduction = async () => {
-    setIsLoading(true);
-    const { data } = await GetAllPromotion();
-    setPromotion(data);
-    setIsLoading(false);
-  };
+  // const fetchDataProduction = async () => {
+  //   setIsLoading(true);
+  //   const { data } = await GetAllPromotion();
+  //   setPromotion(data);
+  //   setIsLoading(false);
+  // };
 
   const handleAddCommentInCart = () => {
     const dataArray = [];
@@ -1461,7 +1450,6 @@ function HomecafeEdit() {
         discountAmount = promotion.discountValue;
       }
 
-      // ✅ คำนวณส่วนลดให้ราคาไม่ต่ำกว่า 0
       finalPrice = Math.max(finalPrice - discountAmount, 0);
     });
 
@@ -1807,8 +1795,14 @@ function HomecafeEdit() {
                     <div className="mb-3">
                       <div className="flex flex-row gap-4 font-bold">
                         <span>{t("pricesTotal")} :</span>
+
                         <span>
-                          {moneyCurrency(total)} {t("nameCurrency")}
+                          {dataBillEdit?.discount > 0
+                            ? moneyCurrency(
+                                total - (total * dataBillEdit?.discount) / 100
+                              )
+                            : moneyCurrency(total)}{" "}
+                          {t("nameCurrency")}
                         </span>
                       </div>
                     </div>
@@ -1875,206 +1869,6 @@ function HomecafeEdit() {
                   overflow: "auto",
                 }}
               >
-                {/* <Table responsive className="table">
-                  <thead style={{ backgroundColor: "#F1F1F1" }}>
-                    <tr style={{ fontSize: "bold", border: "none" }}>
-                      <th style={{ border: "none", textWrap: "nowrap" }}>#</th>
-                      <th
-                        style={{
-                          border: "none",
-                          textWrap: "nowrap",
-                          textAlign: "left",
-                        }}
-                      >
-                        {t("menu_name")}
-                      </th>
-                      <th
-                        style={{
-                          border: "none",
-                          textWrap: "nowrap",
-                          textAlign: "center",
-                        }}
-                      >
-                        {t("amount")}
-                      </th>
-                      <th
-                        style={{
-                          border: "none",
-                          textWrap: "nowrap",
-                          textAlign: "center",
-                        }}
-                      >
-                        {t("price")}
-                      </th>
-                      <th
-                        style={{
-                          border: "none",
-                          textWrap: "nowrap",
-                          textAlign: "right",
-                        }}
-                      >
-                        {t("manage")}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {SelectedMenus?.length > 0 ? (
-                      SelectedMenus?.map((data, index) => {
-                        // Create the options string if options exist
-                        const optionsString =
-                          data.options && data.options.length > 0
-                            ? data.options
-                                .map((option) =>
-                                  option.quantity > 1
-                                    ? `[${option.quantity} x ${option.name}]`
-                                    : `[${option.name}]`
-                                )
-                                .join(" ")
-                            : "";
-                        const totalOptionPrice = data?.totalOptionPrice || 0;
-                        const itemPrice = data?.price + totalOptionPrice;
-                        return (
-                          <tr key={"selectMenu" + index}>
-                            <td style={{ width: 20 }}>{index + 1}</td>
-                            <td style={{ textAlign: "left", paddingBottom: 0 }}>
-                              <p>{`${data.name} ${optionsString}`}</p>
-                              <p style={{ fontSize: 12, marginTop: "-1.5em" }}>
-                                {data?.note ?? ""}
-                              </p>
-                            </td>
-
-                            <td
-                              style={{
-                                display: "flex",
-                                flexDirection: "row",
-                                justifyContent: "space-around",
-                                marginTop: "-.05em",
-                                alignItems: "center",
-                              }}
-                            >
-                              <button
-                                style={{
-                                  color: "blue",
-                                  border: "none",
-                                  width: 25,
-                                }}
-                                onClick={() => handleSetQuantity(-1, data)}
-                              >
-                                -
-                              </button>
-                              {editingRowId === data._id || data.id ? (
-                                <input
-                                  type="number"
-                                  step="0.1"
-                                  min="0"
-                                  value={data.quantity}
-                                  autoFocus
-                                  onChange={(e) =>
-                                    handleQuantityChange(e, data)
-                                  }
-                                  onBlur={() => saveQuantity()}
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    gap: 10,
-                                    padding: "2px",
-                                    margin: "0px 5px",
-                                    cursor: "pointer",
-                                    border: `2px solid ${theme.primaryColor}`,
-                                    borderRadius: "5px",
-                                    fontSize: 14,
-                                  }}
-                                />
-                              ) : data?.isWeightMenu ? (
-                                <p
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    gap: 10,
-                                    margin: "0px 5px",
-                                    cursor: "pointer",
-                                    border: `2px solid ${theme.primaryColor}`,
-                                    borderRadius: "5px",
-                                    fontSize: 14,
-                                  }}
-                                  onClick={() =>
-                                    setEditingRowId(data?.id || data?._id)
-                                  }
-                                >
-                                  {`${data?.quantity}/${data?.unitWeightMenu}`}
-                                </p>
-                              ) : (
-                                <p
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    gap: 10,
-                                    margin: "0px 5px",
-                                  }}
-                                >
-                                  {data?.quantity}
-                                </p>
-                              )}
-                              <button
-                                style={{
-                                  color: "red",
-                                  border: "none",
-                                  width: 25,
-                                }}
-                                onClick={() => handleSetQuantity(1, data)}
-                              >
-                                +
-                              </button>
-                            </td>
-
-                            <td>
-                              <p>{moneyCurrency(itemPrice)}</p>
-                            </td>
-
-                            <td style={{ padding: 0, textAlign: "right" }}>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "end",
-                                  gap: 10,
-                                  paddingLeft: 10,
-                                  paddingTop: 5,
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    cursor: "pointer",
-                                    fontSize: 25,
-                                    color: theme.primaryColor,
-                                  }}
-                                  onClick={() => onConfirmRemoveItem(data)}
-                                >
-                                  <MdDelete />
-                                </div>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      <tr>
-                        <td colSpan={5}>
-                          <div className="h-[400] flex justify-center items-center">
-                            <div className="flex flex-col items-center">
-                              <BsCartXFill className="text-[100px] text-orange-500 animate-bounce" />
-                              <p className="text-[16] mt-2 font-bold text-orange-500">
-                                {t("no_order_list")}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </Table> */}
                 <div className="space-y-4">
                   {SelectedMenus?.filter(
                     (item) => item.storeId === storeDetail?._id
@@ -2209,7 +2003,12 @@ function HomecafeEdit() {
                     <div>
                       <span>{t("pricesTotal")} : </span>
                       <span>
-                        {moneyCurrency(total)} {t("nameCurrency")}
+                        {dataBillEdit?.discount > 0
+                          ? moneyCurrency(
+                              total - (total * dataBillEdit?.discount) / 100
+                            )
+                          : moneyCurrency(total)}{" "}
+                        {t("nameCurrency")}
                       </span>
                     </div>
                   </div>
@@ -2456,6 +2255,7 @@ function HomecafeEdit() {
         setDeliveryCode={setDeliveryCode}
         platform={platform}
         deliveryCode={deliveryCode}
+        dataBillEdit={dataBillEdit}
       />
 
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
@@ -2466,13 +2266,30 @@ function HomecafeEdit() {
           taxPercent={taxPercent}
           profile={profile}
           memberData={dataBill}
+          dataBillEdit={dataBillEdit}
         />
       </div>
       {SelectedMenus?.map((val, i) => {
         const totalPrice = () => {
           const totalOptionPrice = val?.totalOptionPrice || 0;
-          return val?.price + totalOptionPrice;
+          const price = val?.price || 0;
+          const quantity = val?.quantity || 0;
+          if (val?.isWeightMenu) {
+            return val?.unitWeightMenu === "g"
+              ? (price + totalOptionPrice) *
+                  convertUnitgramAndKilogram(quantity)
+              : (price + totalOptionPrice) * quantity;
+          } else {
+            return (price + totalOptionPrice) * quantity;
+          }
         };
+
+        const FinalTotalPrice = () => {
+          return dataBillEdit?.discount > 0
+            ? totalPrice() - (totalPrice() * dataBillEdit?.discount) / 100 // Call totalPrice as a function
+            : totalPrice(); // Call totalPrice as a function
+        };
+
         return Array.from({ length: val?.quantity }).map((_, index) => {
           const key = `${val._id}-${index}`;
           return (
@@ -2493,7 +2310,7 @@ function HomecafeEdit() {
               <PrintLabel
                 data={bill}
                 bill={{ ...val }}
-                totalPrice={totalPrice}
+                totalPrice={FinalTotalPrice}
               />
             </div>
           );

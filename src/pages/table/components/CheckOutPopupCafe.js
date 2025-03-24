@@ -59,6 +59,7 @@ export default function CheckOutPopupCafe({
   deliveryCode,
   setIsDelivery,
   isDelivery,
+  dataBillEdit,
 }) {
   // ref
   const inputCashRef = useRef(null);
@@ -143,7 +144,6 @@ export default function CheckOutPopupCafe({
   );
 
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
-  const totalBills = totalBillDefualt + taxAmount;
 
   useEffect(() => {
     setMemberDataSearch();
@@ -255,12 +255,9 @@ export default function CheckOutPopupCafe({
       _calculateTotal();
     }
     _calculateTotal();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataBill]);
-
   useEffect(() => {
     _calculateTotal();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataBill]);
 
   const _calculateTotal = () => {
@@ -307,14 +304,15 @@ export default function CheckOutPopupCafe({
     if (memberDataSearch?.discountPercentage > 0) {
       TotalDiscountFinal =
         totalBill - (totalBill * memberDataSearch?.discountPercentage) / 100;
+    } else if (dataBillEdit?.discount > 0) {
+      TotalDiscountFinal =
+        totalBill - (totalBill * dataBillEdit?.discount) / 100;
     } else {
       TotalDiscountFinal = totalBill;
     }
 
     return TotalDiscountFinal;
   };
-
-  let AmountDiscountForMember = Math.max(totalBill - DiscountMember(), 0);
 
   const _checkBill = async () => {
     setIsLoading(true);
@@ -367,6 +365,8 @@ export default function CheckOutPopupCafe({
       discount:
         memberDataSearch?.discountPercentage > 0
           ? memberDataSearch?.discountPercentage
+          : dataBillEdit.discount > 0
+          ? dataBillEdit.discount
           : 0,
       discountType: "PERCENT",
       statusPoint: statusPoint,
@@ -511,13 +511,25 @@ export default function CheckOutPopupCafe({
       }
     } else if (forcus === "TRANSFER") {
       let discountedTotal = totalBill - (totalBill * memberDiscount) / 100; // Apply member discount to the total bill
-      if (dataBill?.discount) {
+
+      if (dataBill?.discount > 0) {
+        // Apply additional discount based on dataBill
         if (dataBill?.discountType === "PERCENT") {
           discountedTotal -= (discountedTotal * dataBill?.discount) / 100;
         } else {
           discountedTotal -= dataBill?.discount;
         }
+      } else {
+        // Apply discount from dataBillEdit if no discount in dataBill
+        if (dataBillEdit?.discount) {
+          if (dataBillEdit?.discountType === "PERCENT") {
+            discountedTotal -= (discountedTotal * dataBillEdit?.discount) / 100;
+          } else {
+            discountedTotal -= dataBillEdit?.discount;
+          }
+        }
       }
+
       setTransfer(discountedTotal);
       setCanCheckOut(true);
     } else if (forcus === "TRANSFER_CASH") {
@@ -632,13 +644,14 @@ export default function CheckOutPopupCafe({
     memberDataSearch?.discountPercentage,
   ]);
 
-  let transferCal = dataBill
-    ? DiscountMember() > 0
+  let transferCal =
+    dataBill || dataBillEdit
+      ? DiscountMember() > 0
+        ? DiscountMember()
+        : 0
+      : DiscountMember() > 0
       ? DiscountMember()
-      : 0
-    : DiscountMember() > 0
-    ? DiscountMember()
-    : 0;
+      : 0;
 
   let totalBillMoney = dataBill
     ? Number.parseFloat(DiscountMember() > 0 ? DiscountMember() : 0)
