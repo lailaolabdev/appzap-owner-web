@@ -3,19 +3,25 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "../../../components/ui/Card";
 import { Modal } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { LuCalendarDays } from "react-icons/lu";
 import {
   MENUS,
   getLocalData,
   END_POINT_SEVER_TABLE_MENU,
 } from "../../../constants/api";
+import { COLOR_APP, COLOR_APP_CANCEL, COLOR_GRAY } from "../../../constants";
 import { moneyCurrency } from "../../../helpers";
 import { useStoreStore } from "../../../zustand/storeStore";
 import { useShiftStore } from "../../../zustand/ShiftStore";
 import { useMenuStore } from "../../../zustand/menuStore";
 import { errorAdd } from "../../../helpers/sweetalert";
+import Swal from "sweetalert2";
 import {
   CreateDiscountPromotion,
   AddPromotionToMenu,
+  UpdateDisCountPromotion,
 } from "../../../services/promotion";
 const DiscountForm = () => {
   const [formData, setFormData] = useState({
@@ -23,10 +29,11 @@ const DiscountForm = () => {
     discountType: "",
     discountValue: 0,
     minPurchasePrice: 0,
-    validFrom: "",
+    validFrom: new Date(),
     validUntil: "",
     selectedMenus: [],
   });
+
   const { t } = useTranslation();
   const { storeDetail } = useStoreStore();
   const navigate = useNavigate();
@@ -37,6 +44,7 @@ const DiscountForm = () => {
   const [selectAllChecked, setSelectAllChecked] = useState(false);
   const [Categorys, setCategorys] = useState([]);
   const [filterCategory, setFilterCategory] = useState("All");
+  const [showListMenu, setShowListMenu] = useState(false);
 
   const { shiftCurrent } = useShiftStore();
   const {
@@ -108,6 +116,12 @@ const DiscountForm = () => {
       fetchFilter();
     }
   }, [filterName, filterCategory]);
+
+  useEffect(() => {
+    if (formData.selectedMenus.length === 0) {
+      setShowListMenu(false);
+    }
+  }, [formData.selectedMenus]);
 
   const getcategory = async (id) => {
     try {
@@ -184,7 +198,7 @@ const DiscountForm = () => {
     // Whenever selectedMenus changes, calculate the total price
     if (formData.selectedMenus.length > 0) {
       const totalPrice = getTotalDiscountPrice();
-      console.log("Total after discount: ", totalPrice);
+      // console.log("Total after discount: ", totalPrice);
     }
   }, [formData.selectedMenus]);
 
@@ -223,9 +237,61 @@ const DiscountForm = () => {
         navigate("/promotion");
       })
       .catch((err) => {
-        console.log("errors", err?.response?.data?.isExits);
         if (err?.response?.data?.isExits) {
-          errorAdd("ລາຍການນີ້ຖຶກເພີ່ມໄປແລ້ວ");
+          // Validate menuId structure
+          if (!Array.isArray(err?.response?.data?.data?.menuId)) {
+            console.error("Invalid response data structure");
+            return;
+          }
+
+          // Identify duplicate menus
+          const duplicateMenus = formData.selectedMenus
+            .map((mId) => {
+              const foundMenu = err?.response?.data?.data?.menuId.find(
+                (m) => m._id === mId
+              );
+              return foundMenu
+                ? { name: foundMenu.name, id: foundMenu._id }
+                : null;
+            })
+            .filter((menu) => menu !== null);
+
+          // Handle case where no duplicates are found
+          if (duplicateMenus.length === 0) {
+            errorAdd("ບໍ່ພົບລາຍການທີ່ຊ້ຳກັນ");
+            return;
+          }
+          // Extract names and IDs
+          const duplicateMenuNames = duplicateMenus
+            .map((menu) => menu.name)
+            .join(", ");
+          const duplicateMenuIds = duplicateMenus.map((menu) => menu.id);
+
+          // Display warning message
+          Swal.fire({
+            title: t("error"),
+            text: `${t("list")} "${duplicateMenuNames} (${
+              err?.response?.data?.data?.name
+            })" ${t("exits_promotion")}`,
+            icon: "warning",
+            showDenyButton: true,
+            confirmButtonColor: COLOR_APP,
+            denyButtonColor: COLOR_GRAY,
+            confirmButtonText: t("use_old"),
+            denyButtonText: t("relace"),
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              duplicateMenuIds.forEach((id) => handleRemoveMenu(id));
+            } else if (result.isDenied) {
+              await UpdateDisCountPromotion(
+                err?.response?.data?.data?._id,
+                data
+              );
+              // errorAdd("replace");
+              navigate("/promotion");
+              fetchDataMenu();
+            }
+          });
         } else {
           errorAdd("ເພີ່ມບໍ່ສຳເລັດ");
         }
@@ -261,26 +327,49 @@ const DiscountForm = () => {
 
   const handleSaveAllMenu = () => {
     closeModal();
+    setShowListMenu(true);
+  };
+
+  // Custom Input Component
+  const CustomInput = ({ value, onClick }) => {
+    // Format the date in 'dd/MM/yyyy' format
+    return (
+      <div className="relative flex items-center">
+        <input
+          type="text"
+          value={value} // Display the formatted date
+          onClick={onClick}
+          readOnly
+          placeholder="ເລືອກວັນທີ"
+          className="w-[220px] h-[45px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
+        />
+        <LuCalendarDays
+          className="absolute right-3 text-gray-500 cursor-pointer"
+          size={20}
+          onClick={onClick} // Trigger date picker when clicking the icon
+        />
+      </div>
+    );
   };
 
   return (
     <div className="p-2 bg-gray-50 h-full w-full">
       <Card className="bg-white rounded-xl h-full">
         <form onSubmit={handleSubmit} className="p-4">
-          <h2 className="text-lg font-bold">ໂປຣໂມຊັນສ່ວນຫຼຸດ</h2>
+          <h2 className="text-lg font-bold">{t("discount_promotion")}</h2>
           <div className="flex gap-2">
             <Card className="bg-white w-[500px] rounded-xl h-[425px] overflow-hidden p-4">
               <div className="flex gap-4">
                 <div className="flex flex-col gap-2 w-full">
                   <label htmlFor="name" className="mt-2">
-                    ຊື່ໂປຣໂມຊັນ
+                    {t("promotion_name")}
                   </label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="ຊື່ໂປຣໂມຊັນ"
+                    placeholder={t("promotion_name")}
                     className="w-full h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   />
                 </div>
@@ -289,7 +378,7 @@ const DiscountForm = () => {
               <div className="flex gap-4">
                 <div className="flex flex-col gap-2">
                   <label htmlFor="discountType" className="mt-2">
-                    ເລຶອກປະເພດສ່ວນຫຼຸດ
+                    {t("choose_type_promotion")}
                   </label>
                   <select
                     name="discountType"
@@ -298,15 +387,15 @@ const DiscountForm = () => {
                     className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   >
                     <option value="" disabled>
-                      ເລຶອກປະເພດສ່ວນຫຼຸດ
+                      {t("choose_type_promotion")}
                     </option>
-                    <option value="PERCENTAGE">ເປີເຊັນ (%)</option>
-                    <option value="FIXED_AMOUNT">ຈຳນວນເງິນ</option>
+                    <option value="PERCENTAGE">{t("percent")} (%)</option>
+                    <option value="FIXED_AMOUNT">{t("fixed_amount")}</option>
                   </select>
                 </div>
                 <div className="flex flex-col gap-2">
                   <label htmlFor="discountValue" className="mt-2">
-                    ຈຳນວນສ່ວນຫຼຸດ
+                    {t("discount_amount")}
                   </label>
                   <input
                     type="number"
@@ -317,60 +406,61 @@ const DiscountForm = () => {
                     className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   />
                 </div>
-                {/* <div className="flex flex-col gap-2">
-                  <label htmlFor="minPurchasePrice" className="mt-2">
-                    ລາຄາຊື້ຂັ້ນຕ່ຳ
-                  </label>
-                  <input
-                    type="number"
-                    name="minPurchasePrice"
-                    value={formData.minPurchasePrice}
-                    onChange={handleChange}
-                    className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
-                  />
-                </div> */}
               </div>
               <div className="flex gap-4">
                 <div className="flex flex-col gap-2">
                   <label htmlFor="validFrom" className="mt-2">
-                    ມື້ເລີ່ມຕົ້ນ
+                    {t("validFrom")}
                   </label>
-                  <input
-                    type="date"
-                    name="validFrom"
-                    value={formData.validFrom}
-                    onChange={handleChange}
-                    className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
-                  />
+
+                  <div className=" w-[220px]">
+                    {/* Date Picker */}
+                    <DatePicker
+                      selected={formData.validFrom}
+                      onChange={(date) =>
+                        setFormData({ ...formData, validFrom: date })
+                      }
+                      customInput={<CustomInput />} // Use the custom input component
+                      placeholderText={t("choose_date")}
+                      dateFormat="dd/MM/yyyy"
+                    />
+                  </div>
                 </div>
                 <div className="flex flex-col gap-2">
                   <label htmlFor="validUntil" className="mt-2">
-                    ມື້ສິນສຸດ
+                    {t("validUntil")}
                   </label>
-                  <input
-                    type="date"
-                    name="validUntil"
-                    value={formData.validUntil}
-                    onChange={handleChange}
-                    className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
+
+                  <DatePicker
+                    selected={formData.validUntil}
+                    onChange={(date) =>
+                      setFormData({ ...formData, validUntil: date })
+                    }
+                    customInput={<CustomInput />} // Use the custom input component
+                    placeholderText={t("choose_date")}
+                    dateFormat="dd/MM/yyyy"
                   />
                 </div>
               </div>
             </Card>
 
             <Card className="bg-white flex-1 p-4 h-[425px] overflow-auto rounded-xl">
-              <h3 className="font-semibold text-[18px]">ເມນູທີ່ເລຶອກທັງໝົດ</h3>
+              <h3 className="font-semibold text-[18px]">
+                {t("all_selected_menus_offer_discounts")}
+              </h3>
               <div className="mb-4 flex justify-between items-center">
-                {formData.selectedMenus.length > 1 && (
+                {formData.selectedMenus.length > 1 && showListMenu ? (
                   <div className="flex gap-2">
                     <button
                       type="button"
                       onClick={handleDeselectAll}
                       className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
                     >
-                      ຍົກເລິກທັງໝົດ
+                      {t("cancel_all")}
                     </button>
                   </div>
+                ) : (
+                  ""
                 )}
                 <div className="flex flex-col gap-2">
                   <button
@@ -378,23 +468,23 @@ const DiscountForm = () => {
                     onClick={openModal}
                     className="bg-orange-600 text-white p-2 rounded-md hover:bg-orange-700"
                   >
-                    ເລຶອກເມນູ
+                    {t("choose_menu")}
                   </button>
                 </div>
               </div>
               <table className="w-full mt-4">
                 <thead>
                   <tr>
-                    <th className="border-b p-2">ຊື່ເມນູ</th>
-                    <th className="border-b p-2">ຊື່ປະເພດ</th>
-                    <th className="border-b p-2">ຕົ້ນທຶນ</th>
-                    <th className="border-b p-2">ລາຄາປົກກະຕິ</th>
-                    <th className="border-b p-2">ລາຄາໂປຣໂມຊັນ</th>
-                    <th className="border-b p-2">ລົບ</th>
+                    <th className="border-b p-2">{t("menuname")}</th>
+                    <th className="border-b p-2">{t("name_type")}</th>
+                    <th className="border-b p-2">{t("cost")}</th>
+                    <th className="border-b p-2">{t("regular_price")}</th>
+                    <th className="border-b p-2">{t("price_promotion")}</th>
+                    <th className="border-b p-2">{t("delete")}</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {formData?.selectedMenus?.length > 0 ? (
+                  {formData?.selectedMenus?.length > 0 && showListMenu ? (
                     formData?.selectedMenus?.map((menuId) => {
                       const menu = menuData.find((m) => m._id === menuId);
                       return (
@@ -418,7 +508,7 @@ const DiscountForm = () => {
                               onClick={() => handleRemoveMenu(menu._id)}
                               className="bg-red-500 text-white p-2 w-[60px] rounded-md hover:bg-red-600"
                             >
-                              ລົບ
+                              {t("delete")}
                             </button>
                           </td>
                         </tr>
@@ -428,7 +518,7 @@ const DiscountForm = () => {
                     <tr>
                       <td colSpan={6}>
                         <p className="text-gray-500 text-center mt-40">
-                          ຍັງບໍ່ມີເມນູ
+                          {t("no_menu")}
                         </p>
                       </td>
                     </tr>
@@ -441,15 +531,15 @@ const DiscountForm = () => {
             <button
               type="reset"
               onClick={() => navigate("/promotion")}
-              className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition duration-200 mt-4"
+              className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition duration-200 mt-4"
             >
-              ຍ້ອນກັບ
+              {t("back")}
             </button>
             <button
               type="submit"
               className="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition duration-200 mt-4"
             >
-              ບັນທຶກ
+              {t("save")}
             </button>
           </div>
         </form>
@@ -457,7 +547,7 @@ const DiscountForm = () => {
 
       <Modal show={modalOpen} size="lg" onHide={() => setModalOpen(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>{t("ເລຶອກເມນູທີ່ຕ້ອງການໃຫ້ສ່ວນຫຼຸດ")}</Modal.Title>
+          <Modal.Title>{t("select_menu_for_discount")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="flex justify-center items-center">
@@ -483,7 +573,7 @@ const DiscountForm = () => {
                   onChange={(e) => setFilterName(e.target.value)}
                   className="w-[350px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   type="text"
-                  placeholder="ຄົ້ນຫາ....."
+                  placeholder={t("search")}
                 />
               </div>
               <div className="h-[450px] overflow-auto">
@@ -503,12 +593,12 @@ const DiscountForm = () => {
                               }
                             }}
                           />
-                          {t("ເລຶອກ")}
+                          {t("select")}
                         </label>
                       </th>
-                      <th className="border-b p-2">ຊື່ເມນູ</th>
-                      <th className="border-b p-2">ຊື່ປະເພດ</th>
-                      <th className="border-b p-2">ລາຄາ</th>
+                      <th className="border-b p-2">{t("menuname")}</th>
+                      <th className="border-b p-2">{t("name_type")}</th>
+                      <th className="border-b p-2">{t("price")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -564,8 +654,13 @@ const DiscountForm = () => {
           </button>
           <button
             onClick={handleSaveAllMenu}
+            disabled={!formData?.selectedMenus?.length > 0}
             type="button"
-            className="bg-color-app w-[150px] hover:bg-orange-400 text-[14px] p-2 rounded-md text-white"
+            className={`${
+              formData?.selectedMenus?.length > 0
+                ? "bg-color-app w-[150px] hover:bg-orange-400 text-[14px] p-2 rounded-md text-white"
+                : "w-[150px] bg-orange-400 text-[14px] p-2 rounded-md text-white"
+            }`}
           >
             {t("save")}
           </button>

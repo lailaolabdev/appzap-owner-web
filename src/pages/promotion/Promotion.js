@@ -152,6 +152,19 @@ const Promotion = () => {
       navigate(`/promotion/buyXGetX/edit/${promotionId}`);
     }
   };
+  const handleChangePagePromotionDetail = (type, promotionId) => {
+    if (type === "DISCOUNT") {
+      navigate(`/promotion/discount/detail/${promotionId}`);
+    } else if (type === "Bundle_Menu") {
+      navigate("/promotion/bundle-menu");
+    } else if (type === "Bundle_Set_for_Discount_Menu") {
+      navigate("/promotion/bundle-set-for-discount-menu");
+    } else if (type === "Bundle_Set_for_Menu_Free") {
+      navigate("/promotion/bundle-set-for-menu-free");
+    } else if (type === "BUY_X_GET_Y") {
+      navigate(`/promotion/buyXGetX/detail/${promotionId}`);
+    }
+  };
 
   const handleCloseDelete = () => setShowDelete(false);
   const handleShowDelete = (data) => {
@@ -218,14 +231,14 @@ const Promotion = () => {
       <Card className="bg-white rounded-xl h-full overflow-hidden mt-2">
         <div className="flex flex-row justify-between items-center overflow-hidden bg-white px-4 py-3">
           <CardTitle className="text-xl">
-            ລາຍການຂອງໂປຣໂມຊັນ ({promotion?.length || 0}) ລາຍການ
+            {t("list_of_promotion")} ({promotion?.length || 0}) {t("list")}
           </CardTitle>
           <button
             type="button"
             onClick={handleOpenModal}
             className="bg-color-app hover:bg-orange-400 text-[14px] p-2 rounded-md text-white"
           >
-            ເພີ່ມລາຍການ
+            {t("add_promotion_list")}
           </button>
         </div>
         <div className="flex flex-row gap-2 items-center overflow-hidden bg-white px-4 py-3">
@@ -234,36 +247,44 @@ const Promotion = () => {
             className="w-[200px] border h-[40px] p-2 focus:outline-none focus-visible:outline-none rounded-md"
           >
             <option selected disabled>
-              ເລຶອກສະຖະນະໂປຣໂມຊັນ
+              {t("choose_status_promotion")}
             </option>
-            <option value={""}>ທັງໝົດ</option>
-            <option value={"ACTIVE"}>ເປີດ</option>
-            <option value={"INACTIVE"}>ປິດ</option>
+            <option value={""}>{t("all")}</option>
+            <option value={"ACTIVE"}>{t("open")}</option>
+            <option value={"INACTIVE"}>{t("close")}</option>
           </select>
           <input
             onChange={(e) => setTextSearch(e.target.value)}
             className="w-[350px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
             type="text"
-            placeholder="ຄົ້ນຫາ....."
+            placeholder={t("search")}
           />
         </div>
         <div className="border rounded-md  mx-4 my-2">
           <div className="overflow-y-auto max-h-[640px]">
             <table className="w-full rounded-2xl">
               <tr className="bg-orange-500 text-white sticky hover:bg-orange-600  top-0 border-b">
-                <th className="text-[18px] font-bold text-center">ລຳດັບ</th>
+                <th className="text-[18px] font-bold text-center">
+                  {t("menu_no")}
+                </th>
                 <th className="text-[18px] font-bold text-start">
-                  ຊື່ໂປຣໂມຊັນ
+                  {t("promotion_name")}
                 </th>
-                <th className="text-[18px] font-bold text-start">ປະເພດ</th>
+                <th className="text-[18px] font-bold text-start">
+                  {t("type")}
+                </th>
                 <th className="text-[18px] font-bold text-center">
-                  ໄລຍະເວລາການໃຊ້ງານ
+                  {t("usage_period")}
                 </th>
                 <th className="text-[18px] font-bold text-center">
-                  ຈຳນວນສ່ວນຫຼຸດ/ແຖມ
+                  {t("discount_free_amount")}
                 </th>
-                <th className="text-[18px] font-bold text-center">ສະຖານະ</th>
-                <th className="text-[18px] font-bold text-center">ຈັດການ</th>
+                <th className="text-[18px] font-bold text-center">
+                  {t("status")}
+                </th>
+                <th className="text-[18px] font-bold text-center">
+                  {t("manageRaw")}
+                </th>
               </tr>
 
               {isLoading ? (
@@ -282,7 +303,7 @@ const Promotion = () => {
                     </td>
                     <td className="text-center">
                       {data?.freeItems?.length > 0
-                        ? `ແຖມ ${data.freeItems.length} ລາຍການ`
+                        ? `${t("get")} ${data.freeItems.length} ${t("list")}`
                         : `${moneyCurrency(data?.discountValue)} ${
                             data?.discountType === "PERCENTAGE"
                               ? "%"
@@ -291,15 +312,6 @@ const Promotion = () => {
                     </td>
 
                     <td className="text-[18px] font-bold text-center">
-                      {/* <span
-                        className={`px-2 py-1 rounded-md ${
-                          data?.status === "ACTIVE"
-                            ? "bg-green-500 text-white"
-                            : "bg-red-500 text-white"
-                        }`}
-                      >
-                        {data?.status === "ACTIVE" ? "ເປີດ" : "ປິດ"}
-                      </span> */}
                       <div className="flex justify-start items-center gap-2">
                         <Form.Label
                           htmlFor={"switch-status"}
@@ -324,14 +336,24 @@ const Promotion = () => {
                         }
                         className="bg-color-app hover:bg-orange-400 text-[14px] p-2 w-[60px] rounded-md text-white"
                       >
-                        ແກ້ໄຂ
+                        {t("edit_bill")}
                       </button>
                       <button
                         type="button"
                         onClick={() => handleShowDelete(data)}
                         className="bg-red-500 hover:bg-red-400 text-[14px] p-2 w-[60px] rounded-md text-white"
                       >
-                        ລົບ
+                        {t("delete")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          // navigate(`/promotion/discount/edit/${data?._id}`)
+                          handleChangePagePromotionDetail(data?.type, data?._id)
+                        }
+                        className="bg-gray-500 hover:bg-gray-700 text-[14px] p-2 w-[100px] rounded-md text-white"
+                      >
+                        {t("detial")}
                       </button>
                     </td>
                   </tr>
@@ -340,7 +362,7 @@ const Promotion = () => {
                 <tr>
                   <td colSpan="6">
                     <div className="text-center py-2">
-                      ຍັງບໍ່ມີລາຍການໂປຣໂມຊັນ
+                      {t("no_promotional_items")}
                     </div>
                   </td>
                 </tr>

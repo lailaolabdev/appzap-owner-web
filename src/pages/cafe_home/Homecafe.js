@@ -219,21 +219,59 @@ function Homecafe() {
   const handleClose = () => setShow(false);
 
   const handleSetQuantity = (int, data) => {
-    const dataArray = [];
-    for (const i of SelectedMenus) {
-      let _data = { ...i };
+    let dataArray = [...SelectedMenus]; // Clone current selected menu list
 
-      if (
-        data?.id === i?.id &&
-        JSON.stringify(data?.options) === JSON.stringify(i?.options)
-      ) {
-        _data = { ..._data, quantity: _data?.quantity + int };
-      }
+    let mainMenuIndex = dataArray.findIndex(
+      (item) =>
+        item.id === data.id &&
+        JSON.stringify(item.options) === JSON.stringify(data.options)
+    );
 
-      if (_data.quantity > 0) {
-        dataArray.push(_data);
-      }
+    if (mainMenuIndex !== -1) {
+      dataArray[mainMenuIndex].quantity = Math.max(
+        0,
+        dataArray[mainMenuIndex].quantity + int
+      );
     }
+
+    const activePromotions =
+      data?.promotionId?.filter(
+        (promotion) =>
+          promotion?.type === "BUY_X_GET_Y" && promotion?.status === "ACTIVE"
+      ) || [];
+
+    // biome-ignore lint/complexity/noForEach: <explanation>
+    activePromotions.forEach((promotion) => {
+      const buyQuantity = promotion?.buyQuantity || 1;
+      const getQuantity = promotion?.getQuantity || 1;
+
+      if (buyQuantity > 0 && getQuantity > 0) {
+        const freeMultiplier = Math.floor(
+          (dataArray[mainMenuIndex]?.quantity || 0) / buyQuantity
+        );
+
+        // biome-ignore lint/complexity/noForEach: <explanation>
+        promotion.freeItems.forEach((freeItem) => {
+          const freeItemId =
+            typeof freeItem._id === "object" ? freeItem._id._id : freeItem._id;
+          const freeItemCount = freeMultiplier * getQuantity;
+
+          let freeItemInCart = dataArray.find(
+            (item) =>
+              item.id === freeItemId &&
+              item.isFree &&
+              item.mainMenuId === data.id
+          );
+
+          if (freeItemInCart) {
+            freeItemInCart.quantity = freeItemCount;
+          }
+        });
+      }
+    });
+
+    dataArray = dataArray.filter((item) => !(item.quantity === 0));
+
     setSelectedMenu(dataArray);
     setSelectedMenus(dataArray);
   };
@@ -293,6 +331,14 @@ function Homecafe() {
   useEffect(() => {
     billData();
     fetchPointsData();
+    const getDataTax = async () => {
+      const { DATA } = await getLocalData();
+      const _res = await axios.get(
+        END_POINT_SEVER + "/v4/tax/" + DATA?.storeId
+      );
+      setTaxPercent(_res?.data?.taxPercent);
+    };
+    getDataTax();
   }, []);
 
   const fetchPointsData = async () => {
@@ -431,12 +477,17 @@ function Homecafe() {
     const mainMenuData = {
       id: menu._id,
       name: menu.name,
-      quantity: 1,
+      quantity:
+        activePromotions.length > 0 && activePromotions[0].buyQuantity !== null
+          ? activePromotions[0].buyQuantity
+          : 1,
       price: finalPrice,
       priceDiscount: Math.max(menu?.price - finalPrice, 0),
       categoryId: menu?.categoryId,
       printer: menu?.categoryId?.printer,
       shiftId: shiftCurrent[0]?._id,
+      promotionId: menu.promotionId,
+      activePromotions: activePromotions,
       discount: activePromotions.reduce(
         (sum, promo) => sum + (promo.discountValue || 0),
         0
@@ -461,19 +512,21 @@ function Homecafe() {
     }
 
     // updatedSelectedMenus.push(mainMenuData);
+    updatedSelectedMenus.push(mainMenuData);
 
     // biome-ignore lint/complexity/noForEach: <explanation>
-
     activePromotions.forEach((promotion) => {
       if (
         promotion?.type === "BUY_X_GET_Y" &&
         promotion.freeItems?.length > 0
       ) {
+        // biome-ignore lint/complexity/noForEach: <explanation>
         promotion.freeItems.forEach((freeItem) => {
           const freeItemId = freeItem?._id?._id || freeItem?._id;
           const freeItemName = freeItem?._id?.name || "Unknown";
 
-          // เช็กว่า freeItem นี้แถมให้สินค้านี้จริงๆ ไม่ใช่เมนูอื่น
+          console.log("freeItem", freeItem);
+
           if (freeItem?.mainMenuId?._id !== menu._id) return;
 
           const existingFreeItemIndex = updatedSelectedMenus.findIndex(
@@ -491,7 +544,10 @@ function Homecafe() {
               id: freeItemId,
               name: freeItemName,
               price: 0,
-              quantity: 1,
+              quantity:
+                promotion && promotion?.getQuantity !== null
+                  ? promotion?.getQuantity
+                  : 1,
               categoryId: menu?.categoryId,
               printer: menu?.categoryId?.printer,
               shiftId: shiftCurrent[0]?._id,
@@ -500,6 +556,7 @@ function Homecafe() {
               isFree: true,
               mainMenuId: menu._id,
               storeId: storeDetail?._id,
+              menuImage: freeItem?.images,
             });
           }
         });
@@ -602,7 +659,10 @@ function Homecafe() {
     const mainMenuData = {
       id: selectedItem._id,
       name: selectedItem.name,
-      quantity: 1,
+      quantity:
+        activePromotions?.length > 0 && activePromotions[0].buyQuantity !== null
+          ? activePromotions[0].buyQuantity
+          : 1,
       price: finalPrice,
       priceDiscount: Math.max(selectedItem?.price - finalPrice, 0),
       categoryId: selectedItem?.categoryId,
@@ -622,6 +682,7 @@ function Homecafe() {
       isWeightMenu: selectedItem?.isWeightMenu,
       unitWeightMenu: selectedItem?.unitWeightMenu,
       storeId: storeDetail?._id,
+      menuImage: selectedItem?.images[0],
     };
 
     setSelectedMenus((prevMenu) => {
@@ -663,7 +724,6 @@ function Homecafe() {
             const freeItemId = freeItem?._id?._id || freeItem?._id;
             const freeItemName = freeItem?._id?.name || "Unknown";
 
-            // เช็กว่า freeItem นี้แถมให้สินค้านี้จริงๆ
             if (freeItem?.mainMenuId?._id !== selectedItem._id) return;
 
             const existingFreeItemIndex = updatedMenu.findIndex(
@@ -681,7 +741,10 @@ function Homecafe() {
                 id: freeItemId,
                 name: freeItemName,
                 price: 0,
-                quantity: 1,
+                quantity:
+                  promotion && promotion.getQuantity !== null
+                    ? promotion.getQuantity
+                    : 1,
                 categoryId: selectedItem?.categoryId,
                 printer: selectedItem?.categoryId?.printer,
                 shiftId: shiftCurrent[0]?._id,
@@ -690,6 +753,7 @@ function Homecafe() {
                 isFree: true,
                 mainMenuId: selectedItem._id,
                 storeId: storeDetail?._id,
+                menuImage: freeItem?.images,
               });
             }
           });
@@ -1149,7 +1213,7 @@ function Homecafe() {
       .map((_, i) => billForCherCancel80.current[i] || null);
   }
 
-  //console.log("billForCherCancel80", billForCherCancel80);
+  console.log("billForCherCancel80", billForCherCancel80);
 
   const onPrintForCherLaBel = async () => {
     let _dataBill = {
@@ -1363,7 +1427,7 @@ function Homecafe() {
         !promotion.discountType ||
         promotion.discountValue == null
       ) {
-        console.error("Invalid promotion data", promotion);
+        // console.error("Invalid promotion data", promotion);
         return;
       }
 
@@ -1386,7 +1450,6 @@ function Homecafe() {
         discountAmount = promotion.discountValue;
       }
 
-      // ✅ คำนวณส่วนลดให้ราคาไม่ต่ำกว่า 0
       finalPrice = Math.max(finalPrice - discountAmount, 0);
     });
 
@@ -1535,7 +1598,7 @@ function Homecafe() {
                                             {storeDetail?.firstCurrency}
                                           </span>
                                           <span className="flex flex-col text-center font-bold text-red-500 text-[12px] ">
-                                            <span>ສ່ວນຫຼຸດ</span>
+                                            <span>{t("discount")}</span>
                                             <span>
                                               {moneyCurrency(
                                                 promotion?.discountValue
@@ -1551,7 +1614,6 @@ function Homecafe() {
                                     </div>
                                   ) : null}
 
-                                  {/* เมนูแถม */}
                                   {filteredFreeItems.length > 0 && (
                                     <>
                                       <span className="text-color-app font-medium text-base">
@@ -1559,7 +1621,11 @@ function Homecafe() {
                                         {storeDetail?.firstCurrency}
                                       </span>
                                       <span className="flex flex-col font-bold text-red-500 text-[14px]">
-                                        {`ແຖມ ${filteredFreeItems.length} ລາຍການ`}
+                                        {`${t("buy")} ${
+                                          promotion?.buyQuantity
+                                        } ${t("get")} ${
+                                          promotion?.getQuantity
+                                        } ${t("item")}`}
                                       </span>
                                     </>
                                   )}
@@ -1567,10 +1633,17 @@ function Homecafe() {
                               );
                             })
                         ) : (
-                          <span className="text-color-app font-medium text-base">
-                            {moneyCurrency(data?.price)}{" "}
-                            {storeDetail?.firstCurrency}
-                          </span>
+                          <div>
+                            <span className="text-color-app font-medium text-base">
+                              {moneyCurrency(data?.price)}{" "}
+                              {storeDetail?.firstCurrency}
+                            </span>
+                            {data?.isWeightMenu && (
+                              <p className="text-color-app font-bold text-sm text-start mt-1">
+                                {t("sell_is")} {data?.unitWeightMenu}
+                              </p>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>

@@ -568,8 +568,8 @@ export default function DashboardFinance({
             const basePrice = item?.price || 0;
             const optionPrice = item?.totalOptionPrice || 0;
             const quantity = item?.quantity || 0;
-            const isWeightMenu = basePrice + optionPrice;
-            const totalPriceFromItem = item?.totalPrice;
+            const isWeightMenu = item?.isWeightMenu;
+            const totalPriceFromItem = optionPrice + basePrice;
             const isWeightMenuQuantity =
               item?.unitWeightMenu === "g"
                 ? convertUnitgramAndKilogram(item?.quantity)

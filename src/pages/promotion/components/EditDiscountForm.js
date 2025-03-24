@@ -13,6 +13,8 @@ import { moneyCurrency } from "../../../helpers";
 import { useStoreStore } from "../../../zustand/storeStore";
 import { useMenuStore } from "../../../zustand/menuStore";
 import { errorAdd } from "../../../helpers/sweetalert";
+import Swal from "sweetalert2";
+import { COLOR_APP, COLOR_APP_CANCEL } from "../../../constants";
 import {
   UpdateDisCountPromotion,
   GetOnePromotion,
@@ -67,7 +69,7 @@ const EditDiscountForm = () => {
     };
     fetchData();
     getcategory();
-    if (promotionId) getOnePromotion(promotionId);
+    if (promotionId) getOnePromotion();
   }, [promotionId]);
 
   useEffect(() => {
@@ -141,9 +143,9 @@ const EditDiscountForm = () => {
     }
   };
 
-  const getOnePromotion = async (id) => {
+  const getOnePromotion = async () => {
     setIsLoading(true);
-    const response = await GetOnePromotion(id);
+    const response = await GetOnePromotion(promotionId);
     if (response?.status === 200) {
       const data = response?.data;
 
@@ -267,11 +269,55 @@ const EditDiscountForm = () => {
         navigate("/promotion");
       })
       .catch((err) => {
-        console.log("errors", err?.response?.data?.isExits);
         if (err?.response?.data?.isExits) {
-          errorAdd("ລາຍການນີ້ຖຶກເພີ່ມໄປແລ້ວ");
+          // Validate menuId structure
+          if (!Array.isArray(err?.response?.data?.data?.menuId)) {
+            console.error("Invalid response data structure");
+            return;
+          }
+
+          // Identify duplicate menus
+          const duplicateMenus = formData.selectedMenus
+            .map((mId) => {
+              const foundMenu = err?.response?.data?.data?.menuId.find(
+                (m) => m._id === mId
+              );
+              return foundMenu
+                ? { name: foundMenu.name, id: foundMenu._id }
+                : null;
+            })
+            .filter((menu) => menu !== null);
+
+          // Handle case where no duplicates are found
+          if (duplicateMenus.length === 0) {
+            errorAdd("ບໍ່ພົບລາຍການທີ່ຊ້ຳກັນ");
+            return;
+          }
+
+          // Extract names and IDs
+          const duplicateMenuNames = duplicateMenus
+            .map((menu) => menu.name)
+            .join(", ");
+          const duplicateMenuIds = duplicateMenus.map((menu) => menu.id);
+
+          // Display warning message
+          Swal.fire({
+            title: "ເກີດຂໍ້ຜິດພາດ",
+            text: `ລາຍການ ${duplicateMenuNames} ນີ້ຖຶກເພີ່ມໄປແລ້ວ, ກະລຸນາເພີ່ມລາຍການໃໝ່`,
+            icon: "warning",
+            showCancelButton: false,
+            confirmButtonColor: COLOR_APP,
+            cancelButtonColor: COLOR_APP_CANCEL,
+            confirmButtonText: "ເພີ່ມໃໝ່",
+            cancelButtonText: "ຍົກເລິກ",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // duplicateMenuIds.forEach((id) => handleRemoveMenu(id));
+              getOnePromotion();
+            }
+          });
         } else {
-          errorAdd("ແກ້ໄຂບໍ່ສຳເລັດ");
+          errorAdd("ເພີ່ມບໍ່ສຳເລັດ");
         }
       });
 
@@ -294,7 +340,7 @@ const EditDiscountForm = () => {
       const response = await RemoveMenuFromDiscount(promotionId, data);
 
       if (response?.status === 200) {
-        getOnePromotion(promotionId);
+        getOnePromotion();
         const updatedMenus = formData.selectedMenus.filter(
           (id) => id !== menuId?._id
         );
@@ -326,20 +372,20 @@ const EditDiscountForm = () => {
       {isLoading && <Loading />}
       <Card className="bg-white rounded-xl h-full">
         <form onSubmit={handleSubmit} className="p-4">
-          <h2 className="text-lg font-bold">ໂປຣໂມຊັນສ່ວນຫຼຸດ</h2>
+          <h2 className="text-lg font-bold">{t("discount_promotion")}</h2>
           <div className="flex gap-2">
             <Card className="bg-white w-[500px] rounded-xl h-[425px] overflow-hidden p-4">
               <div className="w-full">
                 <div className="flex flex-col gap-2">
                   <label htmlFor="name" className="mt-2">
-                    ຊື່ໂປຣໂມຊັນ
+                    {t("promotion_name")}
                   </label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    placeholder="ຊື່ໂປຣໂມຊັນ"
+                    placeholder={t("promotion_name")}
                     className="w-full h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   />
                 </div>
@@ -348,7 +394,7 @@ const EditDiscountForm = () => {
               <div className="flex gap-4">
                 <div className="flex flex-col gap-2">
                   <label htmlFor="discountType" className="mt-2">
-                    ເລຶອກປະເພດສ່ວນຫຼຸດ
+                    {t("choose_type_promotion")}
                   </label>
                   <select
                     name="discountType"
@@ -357,15 +403,15 @@ const EditDiscountForm = () => {
                     className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   >
                     <option value="" disabled>
-                      ເລຶອກປະເພດສ່ວນຫຼຸດ
+                      {t("choose_type_promotion")}
                     </option>
-                    <option value="PERCENTAGE">ເປີເຊັນ (%)</option>
-                    <option value="FIXED_AMOUNT">ຈຳນວນເງິນ</option>
+                    <option value="PERCENTAGE">{t("percent")} (%)</option>
+                    <option value="FIXED_AMOUNT">{t("fixed_amount")}</option>
                   </select>
                 </div>
                 <div className="flex flex-col gap-2">
                   <label htmlFor="discountValue" className="mt-2">
-                    ລາຄາສ່ວນຫຼຸດ
+                    {t("discount_amount")}
                   </label>
                   <input
                     type="number"
@@ -376,24 +422,11 @@ const EditDiscountForm = () => {
                     className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   />
                 </div>
-                {/* <div className="flex flex-col gap-2">
-                  <label htmlFor="minPurchasePrice" className="mt-2">
-                    ລາຄາຊື້ຂັ້ນຕ່ຳ
-                  </label>
-                  <input
-                    type="number"
-                    min={0}
-                    name="minPurchasePrice"
-                    value={formData.minPurchasePrice}
-                    onChange={handleChange}
-                    className="w-[220px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
-                  />
-                </div> */}
               </div>
               <div className="flex gap-4">
                 <div className="flex flex-col gap-2">
                   <label htmlFor="validFrom" className="mt-2">
-                    ມື້ເລີ່ມຕົ້ນ
+                    {t("validFrom")}
                   </label>
                   <input
                     type="date"
@@ -405,7 +438,7 @@ const EditDiscountForm = () => {
                 </div>
                 <div className="flex flex-col gap-2">
                   <label htmlFor="validUntil" className="mt-2">
-                    ມື້ສິນສຸດ
+                    {t("validUntil")}
                   </label>
                   <input
                     type="date"
@@ -420,7 +453,7 @@ const EditDiscountForm = () => {
 
             <Card className="bg-white flex-1 p-4  rounded-xl">
               <h3 className="font-semibold text-[18px] mb-2 text-center">
-                ເມນູທີ່ເລຶອກທັງໝົດ
+                {t("all_selected_menus_offer_discounts")}
               </h3>
 
               <div className="mb-4 flex justify-between items-center">
@@ -441,7 +474,7 @@ const EditDiscountForm = () => {
                     onClick={openModal}
                     className="bg-orange-600 flex justify-center items-center h-[35px] text-white p-2 text-[14px] rounded-md hover:bg-orange-700"
                   >
-                    ເລຶອກເມນູ
+                    {t("choose_menu")}
                   </button>
                 </div>
               </div>
@@ -449,12 +482,12 @@ const EditDiscountForm = () => {
                 <table className="w-full mt-4">
                   <thead>
                     <tr>
-                      <th className="border-b p-2">ຊື່ເມນູ</th>
-                      <th className="border-b p-2">ຊື່ປະເພດ</th>
-                      <th className="border-b p-2">ຕົ້ນທຶນ</th>
-                      <th className="border-b p-2">ລາຄາປົກກະຕິ</th>
-                      <th className="border-b p-2">ລາຄາໂປຣໂມຊັນ</th>
-                      <th className="border-b p-2">ລົບ</th>
+                      <th className="border-b p-2">{t("menuname")}</th>
+                      <th className="border-b p-2">{t("name_type")}</th>
+                      <th className="border-b p-2">{t("cost")}</th>
+                      <th className="border-b p-2">{t("regular_price")}</th>
+                      <th className="border-b p-2">{t("price_promotion")}</th>
+                      <th className="border-b p-2">{t("delete")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -488,7 +521,7 @@ const EditDiscountForm = () => {
                               onClick={() => handleRemoveMenu(menu._id)}
                               className="bg-red-500 flex justify-center items-center text-white p-2 text-[14px] w-[50px] h-[30px] rounded-md hover:bg-red-600"
                             >
-                              ລົບ
+                              {t("delete")}
                             </button>
                           </td>
                         </tr>
@@ -499,7 +532,8 @@ const EditDiscountForm = () => {
               </div>
               <div className="flex justify-end pr-[80px]">
                 <span className="text-[18px] text-orange-500 font-bold mt-2 text-end">
-                  ລາຄາໂປຣໂມຊັນທັງໝົດ : {moneyCurrency(getTotalDiscountPrice())}{" "}
+                  {t("all_promotional_prices")} :{" "}
+                  {moneyCurrency(getTotalDiscountPrice())}{" "}
                   {storeDetail?.firstCurrency}
                 </span>
               </div>
@@ -509,15 +543,15 @@ const EditDiscountForm = () => {
             <button
               type="reset"
               onClick={() => navigate("/promotion")}
-              className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition duration-200 mt-4"
+              className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition duration-200 mt-4"
             >
-              ຍ້ອນກັບ
+              {t("back")}
             </button>
             <button
               type="submit"
               className="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition duration-200 mt-4"
             >
-              ບັນທຶກ
+              {t("save")}
             </button>
           </div>
         </form>
@@ -525,7 +559,7 @@ const EditDiscountForm = () => {
 
       <Modal show={modalOpen} size="lg" onHide={closeModal}>
         <Modal.Header closeButton>
-          <Modal.Title>{t("ເລຶອກເມນູທີ່ຕ້ອງການໃຫ້ສ່ວນຫຼຸດ")}</Modal.Title>
+          <Modal.Title>{t("select_menu_for_discount")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="flex justify-center items-center">
@@ -547,7 +581,7 @@ const EditDiscountForm = () => {
                   onChange={(e) => setFilterName(e.target.value)}
                   className="w-[350px] h-[40px] border flex-1 p-2 focus:outline-none focus-visible:outline-none rounded-md"
                   type="text"
-                  placeholder="ຄົ້ນຫາ....."
+                  placeholder={t("search")}
                 />
               </div>
               <div className="h-[450px] overflow-auto">
@@ -567,12 +601,12 @@ const EditDiscountForm = () => {
                               }
                             }}
                           />
-                          {t("ເລຶອກ")}
+                          {t("select")}
                         </label>
                       </th>
-                      <th className="border-b p-2">ຊື່ເມນູ</th>
-                      <th className="border-b p-2">ຊື່ປະເພດ</th>
-                      <th className="border-b p-2">ລາຄາ</th>
+                      <th className="border-b p-2">{t("username")}</th>
+                      <th className="border-b p-2">{t("name_type")}</th>
+                      <th className="border-b p-2">{t("price")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -617,7 +651,7 @@ const EditDiscountForm = () => {
             </div>
           </div>
         </Modal.Body>
-        {/* <Modal.Footer>
+        <Modal.Footer className="d-flex justify-content-center">
           <button
             type="button"
             onClick={closeModal}
@@ -627,12 +661,12 @@ const EditDiscountForm = () => {
           </button>
           <button
             type="submit"
-            onClick={handleSaveAllMenu}
+            onClick={closeModal}
             className="bg-color-app w-[150px] hover:bg-orange-400 text-[14px] p-2 rounded-md text-white"
           >
             {t("save")}
           </button>
-        </Modal.Footer> */}
+        </Modal.Footer>
       </Modal>
     </div>
   );
