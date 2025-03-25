@@ -114,6 +114,7 @@ export default function BillForCheckOut80({
     }
 
     setTotal(totalAmountAll);
+
     setTaxAmount((totalAmountAll * taxPercent) / 100);
 
     // ใช้ serviceCharge จาก prop แทน storeDetail?.serviceChargePer
