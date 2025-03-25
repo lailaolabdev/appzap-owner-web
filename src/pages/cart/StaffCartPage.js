@@ -64,7 +64,11 @@ function StaffCartPage() {
         categoryId: item?.categoryId,
         printer: item?.printer,
         totalOptionPrice: item?.totalOptionPrice,
+<<<<<<< HEAD
         shiftId: shiftId,
+=======
+        shiftId: shiftCurrent[0]._id,
+>>>>>>> 5a858527 (feat: add new status "PAID" with corresponding label and color; clean up console logs and improve code readability)
       });
     }
 
