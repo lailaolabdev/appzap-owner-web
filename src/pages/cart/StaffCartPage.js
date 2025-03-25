@@ -16,6 +16,7 @@ import { moneyCurrency } from "../../helpers";
 import { t } from "i18next";
 
 import { useMenuStore } from "../../zustand/menuStore";
+import { useShiftStore } from "../../zustand/ShiftStore";
 
 function StaffCartPage() {
   const navigate = useNavigate();
@@ -27,7 +28,8 @@ function StaffCartPage() {
   const [popup, setPopup] = useState();
 
   const { staffCart, setStaffCart, resetStaffCart } = useMenuStore();
-  console.log({staffCart})
+  const { shiftCurrent } = useShiftStore();
+
   // useEffect
   useEffect(() => {
     FetchCodeData();
@@ -48,7 +50,6 @@ function StaffCartPage() {
     setIsLoading(false);
   };
   const createOrderByStaff = async () => {
-    console.log("createOrderByStaff: /v3/staff/bill/create")
     setIsLoading(true);
     let orders = [];
     for (const item of staffCart) {
@@ -62,8 +63,10 @@ function StaffCartPage() {
         categoryId: item?.categoryId,
         printer: item?.printer,
         totalOptionPrice: item?.totalOptionPrice,
+        shiftId: shiftCurrent[0]._id,
       });
     }
+
     const dataBody = {
       orders: orders,
       billId: codeData?.billId,

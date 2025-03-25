@@ -241,7 +241,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
         : "cafe",
       icon: faStoreAlt,
       typeStore: storeDetail?.isRestuarant,
-      hidden: !storeDetail?.hasPOS,
+      hidden: !storeDetail?.hasPOS || profileRole === "APPZAP_STAFF",
       system: "tableManagement",
     },
     // {
