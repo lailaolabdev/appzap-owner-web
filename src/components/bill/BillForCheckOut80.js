@@ -49,7 +49,6 @@ export default function BillForCheckOut80({
 
   useEffect(() => {
     _calculateTotal();
-<<<<<<< HEAD
     if (serviceCharge > 0) {
       serviceChargeRef.current = serviceCharge;
     }
@@ -68,9 +67,6 @@ export default function BillForCheckOut80({
     totalBillBillForCheckOut80,
     orderPayBefore,
   ]);
-=======
-  }, [dataBill, taxPercent, storeDetail?.serviceChargePer]);
->>>>>>> 5a858527 (feat: add new status "PAID" with corresponding label and color; clean up console logs and improve code readability)
 
   useEffect(() => {
     getDataCurrency();
@@ -118,7 +114,10 @@ export default function BillForCheckOut80({
     }
 
     setTotal(totalAmountAll);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 61bed2de (feat: add new status "PAID" with corresponding label and color; clean up console logs and improve code readability)
     setTaxAmount((totalAmountAll * taxPercent) / 100);
 
     // ใช้ serviceCharge จาก prop แทน storeDetail?.serviceChargePer
