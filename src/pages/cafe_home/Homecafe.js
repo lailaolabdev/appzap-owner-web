@@ -523,6 +523,9 @@ function Homecafe() {
     //   updatedSelectedMenus.push(mainMenuData);
     // }
 
+    // updatedSelectedMenus.push(mainMenuData);
+    updatedSelectedMenus.push(mainMenuData);
+
     // Handle promotions for free items (BUY_X_GET_Y)
     // biome-ignore lint/complexity/noForEach: <explanation>
     activePromotions.forEach((promotion) => {
