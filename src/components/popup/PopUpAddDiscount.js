@@ -28,7 +28,7 @@ export default function PopUpAddDiscount({
   const [total, setTotal] = useState(0);
   const [discount, setDiscount] = useState(0);
   const { tableOrderItems } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const [selectedButton, setSelectedButton] = useState("%");
   const [categorysType, setCategorysType] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -129,8 +129,6 @@ export default function PopUpAddDiscount({
     const data = value.filter(
       (e) => e?.status === "SERVED" && e?.status !== "DOING"
     );
-
-    console.log({ data });
 
     const _sumTotal = _.sumBy(data, (o) => o?.price * o?.quantity);
     const _sumOptionPrice = data.reduce((sum, item) => {

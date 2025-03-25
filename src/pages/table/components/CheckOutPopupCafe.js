@@ -365,8 +365,8 @@ export default function CheckOutPopupCafe({
       discount:
         memberDataSearch?.discountPercentage > 0
           ? memberDataSearch?.discountPercentage
-          : dataBillEdit.discount > 0
-          ? dataBillEdit.discount
+          : dataBillEdit?.discount > 0
+          ? dataBillEdit?.discount
           : 0,
       discountType: "PERCENT",
       statusPoint: statusPoint,

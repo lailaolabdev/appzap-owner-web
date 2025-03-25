@@ -11,6 +11,8 @@ const StatusComponent = ({ status, style }) => {
         return `ກຳລັງຈະສັງ`;
       case "FEEDBACK":
         return `ສົ່ງຄືນ`;
+      case "PAID":
+        return `ຈ່າຍແລ້ວ`;
       default:
         return "ຍົກເລີກ";
     }
@@ -27,6 +29,8 @@ const StatusComponent = ({ status, style }) => {
         return `#B4E4FF`;
       case "FEEDBACK":
         return `#DF7857`;
+      case "PAID":
+        return `#00C851`;
       default:
         return "#DF2E38";
     }
