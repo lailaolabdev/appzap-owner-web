@@ -49,6 +49,7 @@ export default function BillForCheckOut80({
 
   useEffect(() => {
     _calculateTotal();
+
     if (serviceCharge > 0) {
       serviceChargeRef.current = serviceCharge;
     }
