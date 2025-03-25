@@ -49,6 +49,7 @@ export default function BillForCheckOut80({
 
   useEffect(() => {
     _calculateTotal();
+<<<<<<< HEAD
     if (serviceCharge > 0) {
       serviceChargeRef.current = serviceCharge;
     }
@@ -67,6 +68,9 @@ export default function BillForCheckOut80({
     totalBillBillForCheckOut80,
     orderPayBefore,
   ]);
+=======
+  }, [dataBill, taxPercent, storeDetail?.serviceChargePer]);
+>>>>>>> 5a858527 (feat: add new status "PAID" with corresponding label and color; clean up console logs and improve code readability)
 
   useEffect(() => {
     getDataCurrency();
