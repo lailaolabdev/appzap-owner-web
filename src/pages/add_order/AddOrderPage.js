@@ -26,7 +26,7 @@ export default function AddOrderPage() {
   const [selectMenu, setSelectMenu] = useState();
   const [searchMenu, setSearchMenu] = useState("");
 
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
 
   const {
     menus,
@@ -35,8 +35,8 @@ export default function AddOrderPage() {
     getMenuCategories,
     setMenus,
     setMenuCategories,
-    staffCart, 
-    setStaffCart
+    staffCart,
+    setStaffCart,
   } = useMenuStore();
 
   // Get Menus & Categories, and persist it in localstorage.

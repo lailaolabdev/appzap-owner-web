@@ -36,6 +36,7 @@ export default function StaffTableDetail() {
   } = useStore();
   // useEffect
 
+  console.log({ tableOrders });
   useEffect(() => {
     const select = tableOrders.filter((e) => selectOrders?.[e._id]);
     if (select.length == 0) {
@@ -188,6 +189,8 @@ const ListOrder = ({ tableOrders, selectOrders, setSelectOrders }) => {
       case "CART":
         return true;
       case "FEEDBACK":
+        return true;
+      case "PAID":
         return true;
       default:
         return true;

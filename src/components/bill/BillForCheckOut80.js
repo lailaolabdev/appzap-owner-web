@@ -43,13 +43,8 @@ export default function BillForCheckOut80({
       ? orderPayBefore
       : dataBill?.orderId;
 
-  console.log("BILLDATA", orderPayBefore);
-  // useEffect
   useEffect(() => {
     _calculateTotal();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    // console.log("🚀 ~ file: BillForCheckOut80.js:20 ~ dataBill:", dataBill);
-    // console.log("currencyData: ", currencyData);
   }, [dataBill, taxPercent, storeDetail?.serviceChargePer]);
 
   useEffect(() => {
@@ -57,7 +52,6 @@ export default function BillForCheckOut80({
     getDataCurrency();
   }, [totalBillBillForCheckOut80, taxPercent, storeDetail?.serviceChargePer]);
 
-  // function
   const _calculateTotal = () => {
     let _total = 0;
     // for (let _data of dataBill?.orderId || []) {
@@ -90,7 +84,6 @@ export default function BillForCheckOut80({
       const totalOptionPrice = _data?.totalOptionPrice || 0;
       const itemPrice = _data?.price + totalOptionPrice;
       _total += _data?.quantity * itemPrice;
-      console.log("_total", _total);
     }
 
     const totalAmountAll =
@@ -112,7 +105,7 @@ export default function BillForCheckOut80({
     } else {
       setTotalAfterDiscount(totalAmountAll);
     }
-    console.log("totalAmountAll", totalAmountAll);
+
     setTotal(totalAmountAll);
     setTaxAmount((totalAmountAll * taxPercent) / 100);
     const serviceChargeTotal = Math.floor(
@@ -141,14 +134,11 @@ export default function BillForCheckOut80({
     }
   };
 
-  // console.log("storeDetail ", storeDetail);
-
   const imageUrl = URL_PHOTO_AW3 + storeDetail?.image;
   const imageUrl2 = URL_PHOTO_AW3 + storeDetail?.printer?.logo;
 
   useEffect(() => {
     convertImageToBase64(imageUrl2).then((base64) => {
-      // console.log("base64:==>", { base64 });
       setBase64Image(base64);
     });
   }, [imageUrl2]);
