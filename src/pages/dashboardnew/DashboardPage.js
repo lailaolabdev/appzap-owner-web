@@ -86,6 +86,7 @@ export default function DashboardPage() {
   const [dataDiscountItems, setDataDiscountItems] = useState([]);
   const [openModalFree, setOpenModalFree] = useState(false);
   const [openModalDiscount, setOpenModalDiscount] = useState(false);
+  const [openModalExchange, setOpenModalExchange] = useState(false);
 
   const [shiftData, setShiftData] = useState([]);
   const [shiftId, setShiftId] = useState([]);
@@ -410,6 +411,11 @@ export default function DashboardPage() {
     setDataDiscountItems(data);
   };
 
+  const handleGetDataExchangePoint = (data) => {
+    setOpenModalExchange(true);
+    // setDataDiscountItems(data);
+  };
+
   const TotalPriceFreeItems = () => {
     return dataFreeItems?.reduce((currentValue, nextValue) => {
       return currentValue + nextValue.price;
@@ -421,6 +427,33 @@ export default function DashboardPage() {
       return currentValue + nextValue.priceDiscount;
     }, 0);
   };
+
+  const calculateTotals = () => {
+    // Check if exchangePointDetails exists and is an array before reducing
+    if (
+      !moneyReport?.exchangePointDetails ||
+      moneyReport?.exchangePointDetails.length === 0
+    ) {
+      return { totalExchangePoint: 0, totalPrice: 0 }; // Return default values if no data
+    }
+
+    return moneyReport.exchangePointDetails.reduce(
+      (totals, store) => {
+        // Sum up the exchangePoint
+        totals.totalExchangePoint += store.exchangePoint;
+
+        // Sum up the price for menuDetails (price * quantity)
+        store.menuDetails.forEach((menuItem) => {
+          totals.totalPrice += menuItem.price * menuItem.quantity;
+        });
+
+        return totals;
+      },
+      { totalExchangePoint: 0, totalPrice: 0 } // Initial values
+    );
+  };
+
+  const { totalExchangePoint, totalPrice } = calculateTotals();
 
   return (
     <div>
@@ -816,9 +849,22 @@ export default function DashboardPage() {
                       <tr key={idx}>
                         <td style={{ textAlign: "left" }}>{e?.method}</td>
                         <td>{moneyCurrency(e?.qty)}</td>
-                        <td style={{ textAlign: "right" }}>
+                        <td className="flex gap-2 items-center justify-end">
                           {moneyCurrency(e?.amount)}{" "}
                           {e?.unit || storeDetail?.firstCurrency}
+                          {e?.unit && (
+                            <div
+                              className=" text-orange-500 cursor-pointer"
+                              onKeyDown={() => {}}
+                              onClick={() =>
+                                handleGetDataExchangePoint(
+                                  promotionDiscountAndFreeReport?.discountedMenus
+                                )
+                              }
+                            >
+                              <BsArrowDownRightSquare />
+                            </div>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -1120,6 +1166,7 @@ export default function DashboardPage() {
           </div>
         </Modal.Body>
       </Modal>
+
       <Modal
         show={openModalDiscount}
         size="lg"
@@ -1166,6 +1213,63 @@ export default function DashboardPage() {
           <div className="flex justify-end mt-2">
             <p className="text-orange-500 text-[18px] pt-3 font-bold">
               ລວມຈຳນວນທີ່ຫຼຸດທັງໝົດ : {moneyCurrency(TotalPriceDicount())}{" "}
+              {storeDetail?.firstCurrency}
+            </p>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={openModalExchange}
+        size="lg"
+        onHide={() => setOpenModalExchange(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>{t("ລາຍລະອຽດການແລກພ໋ອຍ")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <table style={{ width: "100%" }}>
+            <tr className="border-b">
+              <th className="text-left">{t("no")}</th>
+              <th className="text-left">{t("point")}</th>
+              <th className="text-left">{t("name")}</th>
+              <th className="text-right">{t("quantity")}</th>
+              <th className="text-right">{t("price")}</th>
+            </tr>
+            {moneyReport?.exchangePointDetails?.length > 0 ? (
+              moneyReport?.exchangePointDetails?.map((m, index) => (
+                <tr key={m?._id} className="border-b">
+                  <td className="text-left">{index + 1}</td>
+                  <td className="text-left">{m?.exchangePoint}</td>
+                  <td className="text-left">
+                    {m?.menuDetails?.map((i) => i.name)}
+                  </td>
+                  <td className="text-right">
+                    {m?.menuDetails?.map((i) => i.quantity)}
+                  </td>
+                  <td className="text-right">
+                    {moneyCurrency(m?.menuDetails?.map((i) => i.price))}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6}>
+                  <div className="flex justify-center">
+                    <p className="text-[16px] font-bold text-gray-900">
+                      ບໍ່ມີລາຍການ
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </table>
+          <div className="flex justify-between mt-2">
+            <p className="text-orange-500 text-[18px] pt-3 font-bold">
+              ລວມຄະແນນ : {moneyCurrency(totalExchangePoint)}
+            </p>
+            <p className="text-orange-500 text-[18px] pt-3 font-bold">
+              ລວມຈຳນວນເງິນທັງໝົດ : {moneyCurrency(totalPrice)}{" "}
               {storeDetail?.firstCurrency}
             </p>
           </div>

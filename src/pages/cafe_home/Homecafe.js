@@ -16,6 +16,7 @@ import { Button, Modal, Form, Nav, Image } from "react-bootstrap";
 import { base64ToBlob } from "../../helpers";
 import { RiListOrdered2 } from "react-icons/ri";
 import { BsCartXFill } from "react-icons/bs";
+import { LuArrowRightLeft } from "react-icons/lu";
 
 /**
  * const
@@ -474,6 +475,10 @@ function Homecafe() {
 
     const finalPrice = calculateDiscount(menu);
 
+    // Check if exchangePointStoreId[0]?.status === "ACTIVE"
+    const isExchangeActive =
+      menu?.exchangePointStoreId?.[0]?.status === "ACTIVE";
+
     const mainMenuData = {
       id: menu._id,
       name: menu.name,
@@ -498,6 +503,13 @@ function Homecafe() {
       unitWeightMenu: menu?.unitWeightMenu,
       storeId: storeDetail?._id,
       menuImage: menu?.images[0],
+      exchangePointStoreId: isExchangeActive ? menu?.exchangePointStoreId : [],
+      pointExchange: isExchangeActive
+        ? menu?.exchangePointStoreId?.reduce(
+            (sum, promo) => sum + (promo.exchangePoint || 0),
+            0
+          )
+        : "",
     };
 
     // console.log("mainMenuData", mainMenuData);
@@ -511,9 +523,7 @@ function Homecafe() {
     //   updatedSelectedMenus.push(mainMenuData);
     // }
 
-    // updatedSelectedMenus.push(mainMenuData);
-    updatedSelectedMenus.push(mainMenuData);
-
+    // Handle promotions for free items (BUY_X_GET_Y)
     // biome-ignore lint/complexity/noForEach: <explanation>
     activePromotions.forEach((promotion) => {
       if (
@@ -524,8 +534,6 @@ function Homecafe() {
         promotion.freeItems.forEach((freeItem) => {
           const freeItemId = freeItem?._id?._id || freeItem?._id;
           const freeItemName = freeItem?._id?.name || "Unknown";
-
-          console.log("freeItem", freeItem);
 
           if (freeItem?.mainMenuId?._id !== menu._id) return;
 
@@ -557,6 +565,15 @@ function Homecafe() {
               mainMenuId: menu._id,
               storeId: storeDetail?._id,
               menuImage: freeItem?.images,
+              exchangePointStoreId: isExchangeActive
+                ? menu?.exchangePointStoreId
+                : [],
+              pointExchange: isExchangeActive
+                ? menu?.exchangePointStoreId?.reduce(
+                    (sum, promo) => sum + (promo.exchangePoint || 0),
+                    0
+                  )
+                : "",
             });
           }
         });
@@ -656,6 +673,10 @@ function Homecafe() {
 
     const finalPrice = calculateDiscount(selectedItem);
 
+    // Check if exchangePointStoreId[0]?.status === "ACTIVE"
+    const isExchangeActive =
+      selectedItem?.exchangePointStoreId?.[0]?.status === "ACTIVE";
+
     const mainMenuData = {
       id: selectedItem._id,
       name: selectedItem.name,
@@ -683,6 +704,15 @@ function Homecafe() {
       unitWeightMenu: selectedItem?.unitWeightMenu,
       storeId: storeDetail?._id,
       menuImage: selectedItem?.images[0],
+      exchangePointStoreId: isExchangeActive
+        ? selectedItem?.exchangePointStoreId
+        : [],
+      pointExchange: isExchangeActive
+        ? selectedItem?.exchangePointStoreId?.reduce(
+            (sum, promo) => sum + (promo.exchangePoint || 0),
+            0
+          )
+        : "",
     };
 
     setSelectedMenus((prevMenu) => {
@@ -754,6 +784,15 @@ function Homecafe() {
                 mainMenuId: selectedItem._id,
                 storeId: storeDetail?._id,
                 menuImage: freeItem?.images,
+                exchangePointStoreId: isExchangeActive
+                  ? selectedItem?.exchangePointStoreId
+                  : [],
+                pointExchange: isExchangeActive
+                  ? selectedItem?.exchangePointStoreId?.reduce(
+                      (sum, promo) => sum + (promo.exchangePoint || 0),
+                      0
+                    )
+                  : "",
               });
             }
           });
@@ -1204,7 +1243,7 @@ function Homecafe() {
 
   const billForCherCancel80 = useRef([]);
 
-  console.log("billForCherCancel80", billForCherCancel80);
+  // console.log("billForCherCancel80", billForCherCancel80);
 
   if (billForCherCancel80.current.length !== arrLength) {
     // ປັບຂະໜາດ array ໃຫ້ສອດຄ່ອງກັບຈຳນວນຂອງ item
@@ -1213,7 +1252,7 @@ function Homecafe() {
       .map((_, i) => billForCherCancel80.current[i] || null);
   }
 
-  console.log("billForCherCancel80", billForCherCancel80);
+  // console.log("billForCherCancel80", billForCherCancel80);
 
   const onPrintForCherLaBel = async () => {
     let _dataBill = {
@@ -1456,6 +1495,8 @@ function Homecafe() {
     return finalPrice;
   };
 
+  console.log("SelectedMenus", SelectedMenus);
+
   return (
     <div>
       <CafeContent
@@ -1643,6 +1684,17 @@ function Homecafe() {
                                 {t("sell_is")} {data?.unitWeightMenu}
                               </p>
                             )}
+                            {data?.exchangePointStoreId?.length > 0 &&
+                              data?.exchangePointStoreId[0]?.status ===
+                                "ACTIVE" && (
+                                <p className="text-color-app font-bold text-sm text-start mt-1">
+                                  {t("can_be_exchanged")}{" "}
+                                  {moneyCurrency(
+                                    data?.exchangePointStoreId[0]?.exchangePoint
+                                  )}{" "}
+                                  {t("point")}
+                                </p>
+                              )}
                           </div>
                         )}
                       </div>
@@ -1721,9 +1773,19 @@ function Homecafe() {
                                   <span className="font-medium text-sm">
                                     {item.name} {optionsString}
                                   </span>
-                                  <span className="text-sm text-color-app font-semibold">
+                                  <span className="text-sm text-color-app flex items-center font-semibold">
                                     {moneyCurrency(itemPrice)}{" "}
-                                    {storeDetail?.firstCurrency}
+                                    {storeDetail?.firstCurrency}{" "}
+                                    {item?.pointExchange && (
+                                      <>
+                                        <LuArrowRightLeft className="mx-2" />
+                                        {t("can_be_exchanged")}{" "}
+                                        {moneyCurrency(
+                                          item?.pointExchange * item?.quantity
+                                        )}{" "}
+                                        {t("point")}
+                                      </>
+                                    )}
                                   </span>
                                 </div>
                               </div>
@@ -1928,6 +1990,16 @@ function Homecafe() {
                             <span className="text-sm text-color-app font-semibold">
                               {moneyCurrency(itemPrice)}{" "}
                               {storeDetail?.firstCurrency}
+                              {item?.pointExchange && (
+                                <>
+                                  <LuArrowRightLeft className="mx-2" />
+                                  {t("can_be_exchanged")}{" "}
+                                  {moneyCurrency(
+                                    item?.pointExchange * item?.quantity
+                                  )}{" "}
+                                  {t("point")}
+                                </>
+                              )}
                             </span>
                           </div>
                         </div>
