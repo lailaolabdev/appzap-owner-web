@@ -387,7 +387,8 @@ export default function CheckOutPopupCafe({
       isCheckout: "true",
       status: "CHECKOUT",
       payAmount: cash,
-      billAmount: totalPoints > 0 ? totalPoints : DiscountMember(),
+      billAmount:
+        totalPoints < memberDataSearch?.point ? totalPoints : DiscountMember(),
       transferAmount: isDelivery ? 0 : transfer,
       deliveryAmount: isDelivery ? matchRoundNumber(transfer) : 0,
       deliveryName: platform,
@@ -508,7 +509,11 @@ export default function CheckOutPopupCafe({
     };
 
     try {
-      if (storeDetail?.isCRM && tab === "cash_transfer_point") {
+      if (
+        storeDetail?.isCRM &&
+        tab === "cash_transfer_point" &&
+        totalPoints < memberDataSearch?.point
+      ) {
         try {
           await RedeemPointUser();
         } catch {

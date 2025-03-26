@@ -70,7 +70,7 @@ export default function SettingMemberPointPage() {
   const [redemptionItems, setRedemptionItems] = useState([]);
   const [formDataMenu, setFormDataMenu] = useState({
     exchangePoint: 0,
-    status: "ACTIVE",
+    status: "active",
     selectedMenus: [],
   });
   const handleShow = async () => {
@@ -318,7 +318,7 @@ export default function SettingMemberPointPage() {
   const toggleItemEnabled = async (e, id) => {
     setLoading(true);
     const _type = e?.target?.checked;
-    const isType = _type ? "ACTIVE" : "INACTIVE";
+    const isType = _type ? "active" : "inactive";
 
     const data = {
       status: isType,
@@ -641,21 +641,21 @@ export default function SettingMemberPointPage() {
                                     <input
                                       type="checkbox"
                                       className="sr-only"
-                                      checked={item.status === "ACTIVE"}
+                                      checked={item.status === "active"}
                                       onChange={(e) =>
                                         toggleItemEnabled(e, item._id)
                                       }
                                     />
                                     <div
                                       className={`w-10 h-5 rounded-full transition-colors ${
-                                        item.status === "ACTIVE"
+                                        item.status === "active"
                                           ? "bg-orange-500"
                                           : "bg-gray-200"
                                       }`}
                                     >
                                       <div
                                         className={`absolute top-0.5 left-0.5 bg-white w-4 h-4 rounded-full transition-transform shadow-md ${
-                                          item.status === "ACTIVE"
+                                          item.status === "active"
                                             ? "transform translate-x-5"
                                             : ""
                                         }`}
