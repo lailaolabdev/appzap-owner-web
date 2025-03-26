@@ -950,8 +950,8 @@ export default function DashboardFinance({
           <div className="flex justify-between my-4">
             <div>
               {totalAfter && TotalBefore > 0 ? (
-                <div className="flex flex-row items-center text-green-500 gap-2">
-                  <FaCircleCheck className="text-green-500 text-5xl" />{" "}
+                <div className="flex flex-row items-center text-green-600 gap-2">
+                  <FaCircleCheck className="text-green-700 text-5xl" />{" "}
                   <div className="flex flex-col gap-1">
                     {/* <span>
                       ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
@@ -1003,7 +1003,7 @@ export default function DashboardFinance({
               ) : dataModal?.deliveryAmount ? (
                 dataModal?.deliveryAmount > 0 ? (
                   <span className="flex items-center text-green-500 gap-2">
-                    <FaCircleCheck className="text-green-500 text-5xl" />{" "}
+                    <FaCircleCheck className="text-green-700 text-5xl" />{" "}
                     ບິນຖຶກຕ້ອງ{" "}
                     {`${new Intl.NumberFormat("ja-JP", {
                       currency: "JPY",
@@ -1071,7 +1071,13 @@ export default function DashboardFinance({
           </Table>
           {!dataModal?.deliveryAmount ? (
             <div className="flex justify-end items-center mt-3">
-              <div className="w-[260px]">
+              <div
+                className={`${
+                  dataModal?.paymentMethod === "CASH_TRANSFER_POINT"
+                    ? "w-[350px]"
+                    : "w-[260px]"
+                }`}
+              >
                 <div className="flex justify-between ">
                   <div className="flex flex-col">
                     <span>{t("discount")} : </span>
@@ -1116,27 +1122,61 @@ export default function DashboardFinance({
                         : 0}{" "}
                       {t("point")}
                     </span>
+                    {dataModal?.paymentMethod === "CASH_TRANSFER_POINT" &&
+                    dataModal?.point > 0 ? (
+                      <span>
+                        (
+                        {new Intl.NumberFormat("ja-JP", {
+                          currency: "JPY",
+                        }).format(totalPriceAmount)}{" "}
+                        {storeDetail?.firstCurrency} {t("can_be_exchanged")}{" "}
+                        {moneyCurrency(
+                          dataModal?.discount > 0
+                            ? (dataModal?.discount ?? 0) + totalAfter
+                            : totalAfter
+                        )}{" "}
+                        {t("point")})
+                      </span>
+                    ) : (
+                      <span>
+                        {moneyCurrency(
+                          dataModal?.discount > 0
+                            ? (dataModal?.discount ?? 0) + TotalAmount
+                            : TotalAmount
+                        )}{" "}
+                        {storeDetail?.firstCurrency}
+                      </span>
+                    )}
 
-                    <span>
-                      {moneyCurrency(
-                        dataModal?.discount > 0
-                          ? (dataModal?.discount ?? 0) + TotalAmount
-                          : TotalAmount
-                      )}{" "}
-                      {storeDetail?.firstCurrency}
-                    </span>
                     <span>
                       {moneyCurrency(dataModal?.change)}{" "}
                       {storeDetail?.firstCurrency}{" "}
                     </span>
-                    <span>
-                      {moneyCurrency(
-                        dataModal?.discount > 0
-                          ? (dataModal?.discount ?? 0) + totalAfter
-                          : totalAfter
-                      )}{" "}
-                      {storeDetail?.firstCurrency}
-                    </span>
+                    {dataModal?.paymentMethod === "CASH_TRANSFER_POINT" &&
+                    dataModal?.point > 0 ? (
+                      <span>
+                        (
+                        {new Intl.NumberFormat("ja-JP", {
+                          currency: "JPY",
+                        }).format(totalPriceAmount)}{" "}
+                        {storeDetail?.firstCurrency} {t("can_be_exchanged")}{" "}
+                        {moneyCurrency(
+                          dataModal?.discount > 0
+                            ? (dataModal?.discount ?? 0) + totalAfter
+                            : totalAfter
+                        )}{" "}
+                        {t("point")})
+                      </span>
+                    ) : (
+                      <span>
+                        {moneyCurrency(
+                          dataModal?.discount > 0
+                            ? (dataModal?.discount ?? 0) + totalAfter
+                            : totalAfter
+                        )}{" "}
+                        {storeDetail?.firstCurrency}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
