@@ -603,7 +603,7 @@ function HomecafeEdit() {
 
     // Check if exchangePointStoreId[0]?.status === "ACTIVE"
     const isExchangeActive =
-      menu?.exchangePointStoreId?.[0]?.status === "ACTIVE";
+      menu?.exchangePointStoreId?.[0]?.status === "active";
 
     const mainMenuData = {
       id: menu._id,
@@ -799,7 +799,7 @@ function HomecafeEdit() {
 
     // Check if exchangePointStoreId[0]?.status === "ACTIVE"
     const isExchangeActive =
-      selectedItem?.exchangePointStoreId?.[0]?.status === "ACTIVE";
+      selectedItem?.exchangePointStoreId?.[0]?.status === "active";
 
     const mainMenuData = {
       id: selectedItem._id,
@@ -1834,7 +1834,7 @@ function HomecafeEdit() {
                             )}
                             {data?.exchangePointStoreId?.length > 0 &&
                               data?.exchangePointStoreId[0]?.status ===
-                                "ACTIVE" && (
+                                "active" && (
                                 <p className="text-color-app font-bold text-sm text-start mt-1">
                                   {t("can_be_exchanged")}{" "}
                                   {moneyCurrency(

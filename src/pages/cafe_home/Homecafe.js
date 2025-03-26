@@ -477,7 +477,7 @@ function Homecafe() {
 
     // Check if exchangePointStoreId[0]?.status === "ACTIVE"
     const isExchangeActive =
-      menu?.exchangePointStoreId?.[0]?.status === "ACTIVE";
+      menu?.exchangePointStoreId?.[0]?.status === "active";
 
     const mainMenuData = {
       id: menu._id,
@@ -514,14 +514,14 @@ function Homecafe() {
 
     // console.log("mainMenuData", mainMenuData);
 
-    // const existingMenuIndex = updatedSelectedMenus.findIndex(
-    //   (item) => item.id === menu._id
-    // );
-    // if (existingMenuIndex !== -1) {
-    //   updatedSelectedMenus[existingMenuIndex].quantity += 1;
-    // } else {
-    //   updatedSelectedMenus.push(mainMenuData);
-    // }
+    const existingMenuIndex = updatedSelectedMenus.findIndex(
+      (item) => item.id === menu._id
+    );
+    if (existingMenuIndex !== -1) {
+      updatedSelectedMenus[existingMenuIndex].quantity += 1;
+    } else {
+      updatedSelectedMenus.push(mainMenuData);
+    }
 
     // Handle promotions for free items (BUY_X_GET_Y)
     // biome-ignore lint/complexity/noForEach: <explanation>
@@ -675,7 +675,7 @@ function Homecafe() {
 
     // Check if exchangePointStoreId[0]?.status === "ACTIVE"
     const isExchangeActive =
-      selectedItem?.exchangePointStoreId?.[0]?.status === "ACTIVE";
+      selectedItem?.exchangePointStoreId?.[0]?.status === "active";
 
     const mainMenuData = {
       id: selectedItem._id,
@@ -1495,8 +1495,6 @@ function Homecafe() {
     return finalPrice;
   };
 
-  console.log("SelectedMenus", SelectedMenus);
-
   return (
     <div>
       <CafeContent
@@ -1686,7 +1684,7 @@ function Homecafe() {
                             )}
                             {data?.exchangePointStoreId?.length > 0 &&
                               data?.exchangePointStoreId[0]?.status ===
-                                "ACTIVE" && (
+                                "active" && (
                                 <p className="text-color-app font-bold text-sm text-start mt-1">
                                   {t("can_be_exchanged")}{" "}
                                   {moneyCurrency(
