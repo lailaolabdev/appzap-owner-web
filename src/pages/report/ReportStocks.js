@@ -443,9 +443,8 @@ export default function ReportStocks() {
         </div>
       </div>
       <div className="flex flex-row justify-between mt-4">
-        {hasManageStockEdit && (
-          <div>
-            {/* <StockExport stock={stocks} storeName={storeDetail?.name} />
+        <div>
+          {/* <StockExport stock={stocks} storeName={storeDetail?.name} />
             <button
               class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md mx-2"
               onClick={() => setPopup({ PopUpPreViewsPage: true })}
@@ -453,33 +452,31 @@ export default function ReportStocks() {
             >
               {t("Print")}
             </button> */}
-            <button
-              class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md mr-2"
-              onClick={() => setPopup({ PopupSelectStock: true })}
-            >
-              {t("create_stock_menu")}
-            </button>
+          <button
+            class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md mr-2"
+            onClick={() => setPopup({ PopupSelectStock: true })}
+          >
+            {t("create_stock_menu")}
+          </button>
 
-            <button
-              class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md"
-              onClick={() => navigate("/settingStore/stock/add")}
-            >
-              {t("create_stock")}
-            </button>
-          </div>
-        )}
-        {hasManageStockEdit && (
-          <div class="flex gap-2">
-            <StockExport stock={stocks} storeName={storeDetail?.name} />
-            <button
-              class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md"
-              onClick={() => setPopup({ PopUpPreViewsPage: true })}
-              disabled={!hasManageStockEdit}
-            >
-              {t("Print")}
-            </button>
-          </div>
-        )}
+          <button
+            class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md"
+            onClick={() => navigate("/settingStore/stock/add")}
+          >
+            {t("create_stock")}
+          </button>
+        </div>
+
+        <div class="flex gap-2">
+          <StockExport stock={stocks} storeName={storeDetail?.name} />
+          <button
+            class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md"
+            onClick={() => setPopup({ PopUpPreViewsPage: true })}
+            disabled={!hasManageStockEdit}
+          >
+            {t("Print")}
+          </button>
+        </div>
       </div>
       <div className="py-2">
         <Card
@@ -605,62 +602,60 @@ export default function ReportStocks() {
                         </td>
                         <td className="justify-end flex ">
                           <div className="flex gap-2 w-auto justify-end ">
-                            {hasManageStockEdit && (
-                              <>
-                                <ButtonPrimary
-                                  onClick={() => {
-                                    setSelect(item);
-                                    setPopup({ PopUpMinusStock: true });
+                            <>
+                              <ButtonPrimary
+                                onClick={() => {
+                                  setSelect(item);
+                                  setPopup({ PopUpMinusStock: true });
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faMinus}
+                                  style={{
+                                    color: "white",
                                   }}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faMinus}
-                                    style={{
-                                      color: "white",
-                                    }}
-                                  />
-                                </ButtonPrimary>{" "}
-                                <ButtonPrimary
-                                  onClick={() => {
-                                    setSelect(item);
-                                    setPopup({ PopUpAddStock: true });
+                                />
+                              </ButtonPrimary>{" "}
+                              <ButtonPrimary
+                                onClick={() => {
+                                  setSelect(item);
+                                  setPopup({ PopUpAddStock: true });
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faPlus}
+                                  style={{
+                                    color: "white",
                                   }}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faPlus}
-                                    style={{
-                                      color: "white",
-                                    }}
-                                  />
-                                </ButtonPrimary>{" "}
-                                <ButtonPrimary
-                                  onClick={() => {
-                                    setSelect(item);
-                                    setPopup({ PopUpConfirmDeletion: true });
+                                />
+                              </ButtonPrimary>{" "}
+                              <ButtonPrimary
+                                onClick={() => {
+                                  setSelect(item);
+                                  setPopup({ PopUpConfirmDeletion: true });
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faTrash}
+                                  style={{
+                                    color: "white",
                                   }}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faTrash}
-                                    style={{
-                                      color: "white",
-                                    }}
-                                  />
-                                </ButtonPrimary>{" "}
-                                <ButtonPrimary
-                                  onClick={() => {
-                                    setSelect(item);
-                                    setPopup({ PopUpEditStock: true });
+                                />
+                              </ButtonPrimary>{" "}
+                              <ButtonPrimary
+                                onClick={() => {
+                                  setSelect(item);
+                                  setPopup({ PopUpEditStock: true });
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faEdit}
+                                  style={{
+                                    color: "white",
                                   }}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faEdit}
-                                    style={{
-                                      color: "white",
-                                    }}
-                                  />
-                                </ButtonPrimary>{" "}
-                              </>
-                            )}
+                                />
+                              </ButtonPrimary>{" "}
+                            </>
                           </div>
                         </td>
                       </tr>
