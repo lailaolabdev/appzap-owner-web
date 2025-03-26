@@ -13,6 +13,7 @@ import { Modal, Form, Nav, Image } from "react-bootstrap";
 import { base64ToBlob } from "../../helpers";
 import { RiListOrdered2 } from "react-icons/ri";
 import { BsCartXFill } from "react-icons/bs";
+import { LuArrowRightLeft } from "react-icons/lu";
 
 /**
  * const
@@ -278,8 +279,6 @@ function HomecafeEdit() {
           JSON.stringify(item.options) === JSON.stringify(data.options)
       );
 
-      console.log("mainMenuIndex", mainMenuIndex);
-
       if (mainMenuIndex !== -1) {
         dataArray[mainMenuIndex].quantity = Math.max(
           0,
@@ -293,8 +292,7 @@ function HomecafeEdit() {
             promotion?.type === "BUY_X_GET_Y" && promotion?.status === "ACTIVE"
         ) || [];
 
-      console.log("activePromotions", activePromotions);
-
+      // biome-ignore lint/complexity/noForEach: <explanation>
       activePromotions.forEach((promotion) => {
         const buyQuantity = promotion?.buyQuantity || 1;
         const getQuantity = promotion?.getQuantity || 1;
@@ -303,9 +301,7 @@ function HomecafeEdit() {
           const freeMultiplier = Math.floor(
             (dataArray[mainMenuIndex]?.quantity || 0) / buyQuantity
           );
-
-          console.log("promotion", promotion);
-
+          // biome-ignore lint/complexity/noForEach: <explanation>
           promotion.freeItems.forEach((freeItem) => {
             const freeItemId =
               typeof freeItem._id === "object"
@@ -351,6 +347,7 @@ function HomecafeEdit() {
             promotion?.type === "BUY_X_GET_Y" && promotion?.status === "ACTIVE"
         ) || [];
 
+      // biome-ignore lint/complexity/noForEach: <explanation>
       activePromotions.forEach((promotion) => {
         const buyQuantity = promotion?.buyQuantity || 1;
         const getQuantity = promotion?.getQuantity || 1;
@@ -360,6 +357,7 @@ function HomecafeEdit() {
             (dataArray[mainMenuIndex]?.quantity || 0) / buyQuantity
           );
 
+          // biome-ignore lint/complexity/noForEach: <explanation>
           promotion.freeItems.forEach((freeItem) => {
             const freeItemId =
               typeof freeItem._id === "object"
@@ -512,8 +510,28 @@ function HomecafeEdit() {
     findby += `storeId=${storeDetail?._id}`;
     findby += `&billId=${billId}`;
     const data = await getBillCafe(findby);
+
+    const matchingMenus = menus?.filter((menu) =>
+      data?.orderId?.some((item) => item?.menuId === menu?._id)
+    );
+
+    console.log("matchingMenus", matchingMenus);
+
     setDataBillEdit(data);
-    setSelectedMenus(data?.orderId);
+
+    if (matchingMenus.length > 0) {
+      // If there are matching menus, use them
+      setSelectedMenus(matchingMenus);
+    } else {
+      // Otherwise, map over orderId as before
+      setSelectedMenus(
+        data?.orderId?.map((item) => ({
+          ...item,
+          pointExchange: item?.exchangePointStoreId?.[0]?.exchangePoint ?? 0,
+          exchangePointStoreId: item?.exchangePointStoreId ?? [],
+        })) ?? []
+      );
+    }
   };
 
   useEffect(() => {
@@ -583,6 +601,10 @@ function HomecafeEdit() {
 
     const finalPrice = calculateDiscount(menu);
 
+    // Check if exchangePointStoreId[0]?.status === "ACTIVE"
+    const isExchangeActive =
+      menu?.exchangePointStoreId?.[0]?.status === "ACTIVE";
+
     const mainMenuData = {
       id: menu._id,
       name: menu.name,
@@ -607,18 +629,25 @@ function HomecafeEdit() {
       unitWeightMenu: menu?.unitWeightMenu,
       menuImage: menu?.images[0],
       storeId: storeDetail?._id,
+      exchangePointStoreId: isExchangeActive ? menu?.exchangePointStoreId : [],
+      pointExchange: isExchangeActive
+        ? menu?.exchangePointStoreId?.reduce(
+            (sum, promo) => sum + (promo.exchangePoint || 0),
+            0
+          )
+        : "",
     };
 
-    // const existingMenuIndex = updatedSelectedMenus.findIndex(
-    //   (item) => item.id === menu._id
-    // );
-    // if (existingMenuIndex !== -1) {
-    //   updatedSelectedMenus[existingMenuIndex].quantity += 1;
-    // } else {
-    //   updatedSelectedMenus.push(mainMenuData);
-    // }
+    const existingMenuIndex = updatedSelectedMenus.findIndex(
+      (item) => item.id === menu._id
+    );
+    if (existingMenuIndex !== -1) {
+      updatedSelectedMenus[existingMenuIndex].quantity += 1;
+    } else {
+      updatedSelectedMenus.push(mainMenuData);
+    }
 
-    updatedSelectedMenus.push(mainMenuData);
+    // updatedSelectedMenus.push(mainMenuData);
 
     // biome-ignore lint/complexity/noForEach: <explanation>
 
@@ -662,6 +691,15 @@ function HomecafeEdit() {
               isFree: true,
               mainMenuId: menu._id,
               storeId: storeDetail?._id,
+              exchangePointStoreId: isExchangeActive
+                ? menu?.exchangePointStoreId
+                : [],
+              pointExchange: isExchangeActive
+                ? menu?.exchangePointStoreId?.reduce(
+                    (sum, promo) => sum + (promo.exchangePoint || 0),
+                    0
+                  )
+                : "",
             });
           }
         });
@@ -759,6 +797,10 @@ function HomecafeEdit() {
 
     const finalPrice = calculateDiscount(selectedItem);
 
+    // Check if exchangePointStoreId[0]?.status === "ACTIVE"
+    const isExchangeActive =
+      selectedItem?.exchangePointStoreId?.[0]?.status === "ACTIVE";
+
     const mainMenuData = {
       id: selectedItem._id,
       name: selectedItem.name,
@@ -783,6 +825,15 @@ function HomecafeEdit() {
       isWeightMenu: selectedItem?.isWeightMenu,
       unitWeightMenu: selectedItem?.unitWeightMenu,
       storeId: storeDetail?._id,
+      exchangePointStoreId: isExchangeActive
+        ? selectedItem?.exchangePointStoreId
+        : [],
+      pointExchange: isExchangeActive
+        ? selectedItem?.exchangePointStoreId?.reduce(
+            (sum, promo) => sum + (promo.exchangePoint || 0),
+            0
+          )
+        : "",
     };
 
     setSelectedMenus((prevMenu) => {
@@ -852,6 +903,15 @@ function HomecafeEdit() {
                 isFree: true,
                 mainMenuId: selectedItem._id,
                 storeId: storeDetail?._id,
+                exchangePointStoreId: isExchangeActive
+                  ? selectedItem?.exchangePointStoreId
+                  : [],
+                pointExchange: isExchangeActive
+                  ? selectedItem?.exchangePointStoreId?.reduce(
+                      (sum, promo) => sum + (promo.exchangePoint || 0),
+                      0
+                    )
+                  : "",
               });
             }
           });
@@ -1586,6 +1646,9 @@ function HomecafeEdit() {
     return category ? category.name : "";
   };
 
+  console.log("SelectedMenus", SelectedMenus);
+  console.log("SelectedMenus", SelectedMenus[0]?.storeId);
+
   return (
     <div>
       <CafeContent
@@ -1769,6 +1832,17 @@ function HomecafeEdit() {
                                 {t("sell_is")} {data?.unitWeightMenu}
                               </p>
                             )}
+                            {data?.exchangePointStoreId?.length > 0 &&
+                              data?.exchangePointStoreId[0]?.status ===
+                                "ACTIVE" && (
+                                <p className="text-color-app font-bold text-sm text-start mt-1">
+                                  {t("can_be_exchanged")}{" "}
+                                  {moneyCurrency(
+                                    data?.exchangePointStoreId[0]?.exchangePoint
+                                  )}{" "}
+                                  {t("point")}
+                                </p>
+                              )}
                           </div>
                         )}
                       </div>
@@ -1801,7 +1875,9 @@ function HomecafeEdit() {
                     ) : (
                       <div className="space-y-4">
                         {SelectedMenus?.filter(
-                          (item) => item.storeId === storeDetail?._id
+                          (item) =>
+                            item.storeId ||
+                            item.storeId?._id === storeDetail?._id
                         )?.map((item) => {
                           if (item?.status === "CANCELED") return;
 
@@ -1847,9 +1923,30 @@ function HomecafeEdit() {
                                   <span className="font-medium text-sm">
                                     {item.name} {optionsString}
                                   </span>
-                                  <span className="text-sm text-color-app font-semibold">
+                                  <span className="text-sm flex items-center text-color-app font-semibold">
                                     {moneyCurrency(itemPrice)}{" "}
                                     {storeDetail?.firstCurrency}
+                                    {item?.pointExchange && (
+                                      <>
+                                        <LuArrowRightLeft className="mx-2" />
+                                        {t("can_be_exchanged")}{" "}
+                                        {moneyCurrency(
+                                          item?.pointExchange * item?.quantity
+                                        )}{" "}
+                                        {t("point")}
+                                      </>
+                                    )}
+                                    {item?.exchangePointStoreId?.length > 0 && (
+                                      <>
+                                        <LuArrowRightLeft className="mx-2" />
+                                        {t("can_be_exchanged")}{" "}
+                                        {moneyCurrency(
+                                          item?.exchangePointStoreId[0]
+                                            ?.exchangePoint * item?.quantity
+                                        )}{" "}
+                                        {t("point")}
+                                      </>
+                                    )}
                                   </span>
                                 </div>
                               </div>
@@ -2005,7 +2102,8 @@ function HomecafeEdit() {
               >
                 <div className="space-y-4">
                   {SelectedMenus?.filter(
-                    (item) => item.storeId === storeDetail?._id
+                    (item) =>
+                      item.storeId || item.storeId?._id === storeDetail?._id
                   )?.map((item) => {
                     if (item?.status === "CANCELED") return;
 
@@ -2051,9 +2149,19 @@ function HomecafeEdit() {
                             <span className="font-medium text-sm">
                               {item.name} {optionsString}
                             </span>
-                            <span className="text-sm text-color-app font-semibold">
+                            <span className="text-sm flex items-center text-color-app font-semibold">
                               {moneyCurrency(itemPrice)}{" "}
                               {storeDetail?.firstCurrency}
+                              {item?.pointExchange && (
+                                <>
+                                  <LuArrowRightLeft className="mx-2" />
+                                  {t("can_be_exchanged")}{" "}
+                                  {moneyCurrency(
+                                    item?.pointExchange * item?.quantity
+                                  )}{" "}
+                                  {t("point")}
+                                </>
+                              )}
                             </span>
                           </div>
                         </div>

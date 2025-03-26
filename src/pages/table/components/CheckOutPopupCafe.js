@@ -33,11 +33,13 @@ import Loading from "../../../components/Loading";
 import { getMemberAllCount } from "../../../services/member.service";
 import { useStoreStore } from "../../../zustand/storeStore";
 import { useShiftStore } from "../../../zustand/ShiftStore";
-import { data } from "browserslist";
+import { cn } from "../../../utils/cn";
+import { fontMap } from "../../../utils/font-map";
 import { useMenuSelectStore } from "../../../zustand/menuSelectStore";
 import { useChangeMoney } from "../../../zustand/slideImageStore";
 import { convertUnitgramAndKilogram } from "../../../helpers/convertUnitgramAndKilogram";
 import { getAllDelivery } from "../../../services/delivery";
+import { subStringText } from "./../../../helpers/subStringText";
 
 export default function CheckOutPopupCafe({
   onPrintDrawer,
@@ -72,7 +74,7 @@ export default function CheckOutPopupCafe({
 
   // state
   const [selectInput, setSelectInput] = useState("inputCash");
-  const [selectDataOpption, setSelectDataOpption] = useState();
+  const [selectPoint, setSelectPoint] = useState();
   const [point, setPoint] = useState();
   const [cash, setCash] = useState();
   const [transfer, setTransfer] = useState();
@@ -98,7 +100,14 @@ export default function CheckOutPopupCafe({
   const [banks, setBanks] = useState([]);
   const [platformList, setPlatformList] = useState([]);
 
-  const { t } = useTranslation();
+  const {
+    t,
+    i18n: { language },
+  } = useTranslation();
+
+  // console.log("dataBill exchangePointStoreId", dataBill);
+
+  // console.log("dataBillEdit", dataBillEdit);
 
   useEffect(() => {
     setMemberData();
@@ -314,6 +323,46 @@ export default function CheckOutPopupCafe({
     return TotalDiscountFinal;
   };
 
+  const DataExchangePointStore = () => {
+    const pointsData =
+      // biome-ignore lint/complexity/useFlatMap: <explanation>
+      dataBill
+        ?.map((item) => {
+          // Check if exchangePointStoreId exists and is an array
+          const exchangePointStoreId = Array.isArray(item?.exchangePointStoreId)
+            ? item.exchangePointStoreId
+            : [];
+
+          // Return array of objects with point, Id, and quantity
+          return exchangePointStoreId.map((i) => ({
+            point: i?.exchangePoint,
+            Id: i?._id,
+            quantity: item?.quantity || 1, // Assuming a default quantity of 1 if not provided
+            menuName: item?.name,
+          }));
+        })
+        .flat(); // Flatten the array to get a single array of objects
+
+    // Calculate the sum of all points * quantity
+    const totalPoints =
+      pointsData?.length > 0 &&
+      pointsData?.reduce(
+        (sum, current) => sum + (current.point * current.quantity || 0),
+        0
+      );
+
+    return { pointsData, totalPoints };
+  };
+
+  const { pointsData, totalPoints } = DataExchangePointStore();
+
+  const handleSelectedPoint = (data) => {
+    setSelectPoint(data);
+    setPoint(data?.point || data);
+  };
+
+  const exchangePointStoreIds = pointsData?.map((i) => i?.Id);
+
   const _checkBill = async () => {
     setIsLoading(true);
     const moneyChange = calculateReturnAmount();
@@ -338,14 +387,12 @@ export default function CheckOutPopupCafe({
       isCheckout: "true",
       status: "CHECKOUT",
       payAmount: cash,
-      billAmount: DiscountMember(),
-
+      billAmount: totalPoints > 0 ? totalPoints : DiscountMember(),
       transferAmount: isDelivery ? 0 : transfer,
       deliveryAmount: isDelivery ? matchRoundNumber(transfer) : 0,
       deliveryName: platform,
       deliveryCode: deliveryCode,
       paymentMethod: isDelivery ? "DELIVERY" : forcus,
-
       billAmountBefore: totalBill,
       shiftId: shiftCurrent[0]?._id,
       taxAmount: null,
@@ -375,6 +422,7 @@ export default function CheckOutPopupCafe({
           profile.data.lastname ? profile.data.lastname : "--"
         }` ?? "-",
       staffCheckOutId: profile.data._id,
+      exchangePointStoreId: exchangePointStoreIds,
     };
 
     await axios
@@ -443,6 +491,7 @@ export default function CheckOutPopupCafe({
       money: totalBill,
       billId: dataBill?._id,
       statusTable: statusTable,
+      exchangePointStoreId: exchangePointStoreIds,
     };
     return await RedeemPoint(data);
   };
@@ -474,7 +523,8 @@ export default function CheckOutPopupCafe({
       await _checkBill();
     } catch (error) {
       console.error("Unexpected error in handleSubmit:", error);
-      showAlert("error", "An unexpected error occurred");
+      showAlert("error", "ບໍ່ສາມາດເຊັກບິນໄດ້", error);
+      setIsLoading(false);
     }
   };
 
@@ -598,10 +648,14 @@ export default function CheckOutPopupCafe({
           discountedTotal -= dataBill?.discount;
         }
       }
-      if (_sum >= discountedTotal) {
+      if (totalPoints < memberDataSearch?.point) {
         setCanCheckOut(true);
       } else {
-        setCanCheckOut(false);
+        if (_sum >= discountedTotal) {
+          setCanCheckOut(true);
+        } else {
+          setCanCheckOut(false);
+        }
       }
     } else if (forcus === "POINT") {
       if (point <= 0) {
@@ -657,14 +711,6 @@ export default function CheckOutPopupCafe({
     ? Number.parseFloat(DiscountMember() > 0 ? DiscountMember() : 0)
     : Number.parseFloat(DiscountMember() > 0 ? DiscountMember() : 0);
 
-  let _selectDataOption = (option) => {
-    setSelectDataOpption(option);
-    setDataBill((prev) => ({
-      ...prev,
-      dataCustomer: option,
-    }));
-    // localStorage.setItem("DATA_CUSTOMER", JSON.stringify(option));
-  };
   const onChangeCurrencyInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setCashCurrency(value);
@@ -1057,6 +1103,70 @@ export default function CheckOutPopupCafe({
                       )}
                     </div>
                   </div>
+
+                  {(!memberDataSearch?.point <= 0 ||
+                    memberDataSearch?.name ||
+                    memberDataSearch?.point ||
+                    !memberDataSearch?.point <= point) && (
+                    <div className="flex gap-2 items-center my-3">
+                      {pointsData?.length > 0 && (
+                        <div>{t("menu_change_point")} : </div>
+                      )}
+                      <div className="flex gap-1">
+                        {pointsData?.length > 1 && (
+                          <button
+                            type="button"
+                            disabled={memberDataSearch?.point < totalPoints}
+                            className={cn(
+                              "rounded-full  text-color-app flex-col px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
+                              memberDataSearch?.point < totalPoints
+                                ? "bg-gray-400 text-white"
+                                : "",
+                              fontMap[language]
+                            )}
+                            onClick={() => handleSelectedPoint(totalPoints)}
+                          >
+                            {t("all")} ({moneyCurrency(totalPoints)})
+                          </button>
+                        )}
+                        {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
+                        {pointsData &&
+                          pointsData?.map((data) => {
+                            return (
+                              <div
+                                key={data?._id}
+                                className="flex-col items-center"
+                              >
+                                <button
+                                  type="button"
+                                  key={`points${data?._id}`}
+                                  disabled={
+                                    memberDataSearch?.point < data?.point
+                                  }
+                                  className={cn(
+                                    "rounded-full flex-col px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
+                                    selectPoint?._id === data?._id
+                                      ? "text-color-app"
+                                      : "text-gray-700",
+                                    memberDataSearch?.point < data?.point
+                                      ? "bg-gray-400 text-white"
+                                      : "",
+                                    fontMap[language]
+                                  )}
+                                  onClick={() => handleSelectedPoint(data)}
+                                >
+                                  {subStringText(data?.menuName, 5)}(
+                                  {moneyCurrency(data?.point)}
+                                  )
+                                  <div className="ml-12" />
+                                </button>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </div>
+                  )}
+
                   <InputGroup style={{ marginTop: 10 }}>
                     <InputGroup.Text>{t("point")}</InputGroup.Text>
                     <Form.Control
@@ -1064,7 +1174,8 @@ export default function CheckOutPopupCafe({
                         memberDataSearch?.point <= 0 ||
                         !memberDataSearch?.name ||
                         !memberDataSearch?.point ||
-                        memberDataSearch?.point <= point
+                        memberDataSearch?.point <= point ||
+                        memberDataSearch?.point < totalPoints
                       }
                       type="text"
                       placeholder="0"
@@ -1364,25 +1475,6 @@ export default function CheckOutPopupCafe({
                 }
               }}
             />
-            {/* <KeyboardComponents
-              onClickEvent={(e) => {
-                setCash((prev) => {
-                  let _number = prev ? `${prev}` + e : e;
-                  return parseInt(_number);
-                });
-                console.log(parseInt(cash ? cash + e : e));
-              }}
-              onDelete={() =>
-                setCash((prev) => {
-                  let _prev = prev + "";
-                  let _number =
-                    _prev?.length > 0
-                      ? _prev.substring(0, _prev.length - 1)
-                      : "";
-                  return parseInt(_number);
-                })
-              }
-            /> */}
           </div>
         </Box>
       </Modal.Body>
@@ -1416,16 +1508,6 @@ export default function CheckOutPopupCafe({
               <BiSolidPrinter />
               {t("print_checkbill")}
             </Button>
-            {/* <Button
-              onClick={() => {
-                handleSubmit();
-                onPrintForCherLaBel();
-              }}
-              className="dmd:w-fit w-full"
-              disabled={!canCheckOut}
-            >
-              {t("calculate")}
-            </Button> */}
           </div>
         </div>
       </Modal.Footer>

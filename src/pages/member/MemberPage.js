@@ -1377,7 +1377,22 @@ export default function MemberPage() {
                         {e?.memberId?.phone}
                       </td>
                       <td style={{ textAlign: "center" }}>
-                        {moneyCurrency(e?.point)}
+                        {e?.exchangePointStoreId[0]?.exchangePoint > 0 ? (
+                          <>
+                            {moneyCurrency(
+                              e?.exchangePointStoreId[0]?.exchangePoint
+                            )}{" "}
+                            {t("can_be_exchanged")} :{" "}
+                            {e?.exchangePointStoreId[0]?.menuId[0]?.name}{" "}
+                            {t("price")} : (
+                            {moneyCurrency(
+                              e?.exchangePointStoreId[0]?.menuId[0]?.price
+                            )}
+                            )
+                          </>
+                        ) : (
+                          moneyCurrency(e?.point)
+                        )}
                       </td>
                       <td style={{ textAlign: "center" }}>
                         {moneyCurrency(e?.moneyTotal)}
