@@ -1028,12 +1028,12 @@ function HomecafeEdit() {
   };
 
   const onConfirmRemoveItem = (item) => {
-    // const updatedSelectedMenus = SelectedMenus.map((menu) =>
-    //   menu._id === item._id ? { ...menu, status: "CANCELED" } : menu
-    // );
-    // console.log("updatedSelectedMenus", updatedSelectedMenus);
+    const updatedSelectedMenus = SelectedMenus.map((menu) =>
+      menu._id === item._id ? { ...menu, status: "CANCELED" } : menu
+    );
+    console.log("updatedSelectedMenus", updatedSelectedMenus);
     // updateOrderCafeItemV7(data, storeDetail?._id);
-    // updateOrderCancel(updatedSelectedMenus);
+    updateOrderCancel(updatedSelectedMenus);
     setIsRemoveItem(true);
     setItemDeleting(item);
   };
