@@ -1166,25 +1166,29 @@ export default function DashboardFinance({
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            className="text-white font-bold"
-            disabled={dataModal?.status === "CANCELED"}
-            onClick={() => {
-              const body = {
-                storeId: dataModal?.storeId,
-                order: dataModal?.orderId?.map((item) => ({ _id: item?._id })),
-                code: dataModal?.code,
-                status: "CANCELED",
-                billAmount: dataModal?.payAmount,
-              };
-              confrimCancelBill(body).then(() => {
-                handleClose();
-                _fetchFinanceData();
-              });
-            }}
-          >
-            {t("bill_cancel")}
-          </Button>
+          {storeDetail?.isStatusCafe && (
+            <Button
+              className="text-white font-bold"
+              disabled={dataModal?.status === "CANCELED"}
+              onClick={() => {
+                const body = {
+                  storeId: dataModal?.storeId,
+                  order: dataModal?.orderId?.map((item) => ({
+                    _id: item?._id,
+                  })),
+                  code: dataModal?.code,
+                  status: "CANCELED",
+                  billAmount: dataModal?.payAmount,
+                };
+                confrimCancelBill(body).then(() => {
+                  handleClose();
+                  _fetchFinanceData();
+                });
+              }}
+            >
+              {t("bill_cancel")}
+            </Button>
+          )}
           {!storeDetail?.isStatusCafe && (
             <Button
               className="text-white font-bold"
