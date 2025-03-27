@@ -52,6 +52,7 @@ function StaffCartPage() {
   const createOrderByStaff = async () => {
     setIsLoading(true);
     let orders = [];
+    const shiftId = shiftCurrent?.[0]?._id || null;
     for (const item of staffCart) {
       orders.push({
         id: item?._id,
@@ -63,7 +64,7 @@ function StaffCartPage() {
         categoryId: item?.categoryId,
         printer: item?.printer,
         totalOptionPrice: item?.totalOptionPrice,
-        shiftId: shiftCurrent[0]._id,
+        shiftId: shiftId,
       });
     }
 
