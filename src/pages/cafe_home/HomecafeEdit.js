@@ -280,8 +280,9 @@ function HomecafeEdit() {
       );
 
       if (mainMenuIndex !== -1) {
+        // Change from Math.max(0, ...) to Math.max(1, ...)
         dataArray[mainMenuIndex].quantity = Math.max(
-          0,
+          1, // Changed from 0 to 1
           dataArray[mainMenuIndex].quantity + int
         );
       }
@@ -292,7 +293,7 @@ function HomecafeEdit() {
             promotion?.type === "BUY_X_GET_Y" && promotion?.status === "ACTIVE"
         ) || [];
 
-      // biome-ignore lint/complexity/noForEach: <explanation>
+      // Rest of your promotion handling code remains the same
       activePromotions.forEach((promotion) => {
         const buyQuantity = promotion?.buyQuantity || 1;
         const getQuantity = promotion?.getQuantity || 1;
@@ -301,16 +302,12 @@ function HomecafeEdit() {
           const freeMultiplier = Math.floor(
             (dataArray[mainMenuIndex]?.quantity || 0) / buyQuantity
           );
-          // biome-ignore lint/complexity/noForEach: <explanation>
           promotion.freeItems.forEach((freeItem) => {
             const freeItemId =
               typeof freeItem._id === "object"
                 ? freeItem._id._id
                 : freeItem._id;
             const freeItemCount = freeMultiplier * getQuantity;
-
-            console.log("freeItemId", freeItemId);
-            console.log("freeItemCount", freeItemCount);
 
             let freeItemInCart = dataArray.find(
               (item) =>
@@ -335,8 +332,9 @@ function HomecafeEdit() {
       );
 
       if (mainMenuIndex !== -1) {
+        // Change from Math.max(0, ...) to Math.max(1, ...)
         dataArray[mainMenuIndex].quantity = Math.max(
-          0,
+          1, // Changed from 0 to 1
           dataArray[mainMenuIndex].quantity + int
         );
       }
@@ -347,7 +345,6 @@ function HomecafeEdit() {
             promotion?.type === "BUY_X_GET_Y" && promotion?.status === "ACTIVE"
         ) || [];
 
-      // biome-ignore lint/complexity/noForEach: <explanation>
       activePromotions.forEach((promotion) => {
         const buyQuantity = promotion?.buyQuantity || 1;
         const getQuantity = promotion?.getQuantity || 1;
@@ -357,7 +354,6 @@ function HomecafeEdit() {
             (dataArray[mainMenuIndex]?.quantity || 0) / buyQuantity
           );
 
-          // biome-ignore lint/complexity/noForEach: <explanation>
           promotion.freeItems.forEach((freeItem) => {
             const freeItemId =
               typeof freeItem._id === "object"
@@ -388,8 +384,6 @@ function HomecafeEdit() {
         return true;
       });
     }
-
-    // dataArray = dataArray.filter((item) => !(item.quantity === 0));
 
     setSelectedMenu(dataArray);
     setSelectedMenus(dataArray);
@@ -511,28 +505,30 @@ function HomecafeEdit() {
     findby += `&billId=${billId}`;
     const data = await getBillCafe(findby);
 
-    const matchingMenus = menus?.filter((menu) =>
-      data?.orderId?.some((item) => item?.menuId === menu?._id)
+    const matchingMenus =
+      menus?.filter((menu) =>
+        data?.orderId?.some((item) => item?.menuId === menu?._id)
+      ) || [];
+
+    const checkedexchangePoint =
+      matchingMenus.filter((item) => item.exchangePointStoreId) || [];
+
+    setSelectedMenus(
+      data?.orderId?.map((item) => ({
+        ...item,
+        pointExchange: checkedexchangePoint[0]?.exchangePoint || null,
+        exchangePointStoreId:
+          checkedexchangePoint.length > 0 &&
+          item?.menuId === checkedexchangePoint[0]?._id
+            ? checkedexchangePoint[0].exchangePointStoreId
+            : null,
+      })) ?? []
     );
 
-    console.log("matchingMenus", matchingMenus);
-
     setDataBillEdit(data);
-
-    if (matchingMenus.length > 0) {
-      // If there are matching menus, use them
-      setSelectedMenus(matchingMenus);
-    } else {
-      // Otherwise, map over orderId as before
-      setSelectedMenus(
-        data?.orderId?.map((item) => ({
-          ...item,
-          pointExchange: item?.exchangePointStoreId?.[0]?.exchangePoint ?? 0,
-          exchangePointStoreId: item?.exchangePointStoreId ?? [],
-        })) ?? []
-      );
-    }
   };
+
+  console.log("data", SelectedMenus);
 
   useEffect(() => {
     if (selectedMenu && selectedMenu.length > 0) {
@@ -1031,7 +1027,6 @@ function HomecafeEdit() {
     const updatedSelectedMenus = SelectedMenus.map((menu) =>
       menu._id === item._id ? { ...menu, status: "CANCELED" } : menu
     );
-    console.log("updatedSelectedMenus", updatedSelectedMenus);
     // updateOrderCafeItemV7(data, storeDetail?._id);
     updateOrderCancel(updatedSelectedMenus);
     setIsRemoveItem(true);
@@ -1645,9 +1640,6 @@ function HomecafeEdit() {
     const category = menuCategories.find((cat) => cat._id === categoryId);
     return category ? category.name : "";
   };
-
-  console.log("SelectedMenus", SelectedMenus);
-  console.log("SelectedMenus", SelectedMenus[0]?.storeId);
 
   return (
     <div>
