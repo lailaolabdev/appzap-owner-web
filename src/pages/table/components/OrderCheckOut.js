@@ -123,9 +123,10 @@ const OrderCheckOut = ({
   };
 
   const _calculateTotal = () => {
-    const serviceChargeAmount = isServiceChargeEnabled
-      ? totalBillOrderCheckOut * (serviceCharge / 100)
-      : 0; // 10% if enabled
+    const serviceChargeAmount =
+      isServiceChargeEnabled || storeDetail?.isServiceChange
+        ? totalBillOrderCheckOut * (serviceCharge / 100)
+        : 0; // 10% if enabled
     const paidData = _.sumBy(orderPayBefore, (e) => {
       const mainPrice = (e?.price || 0) * (e?.quantity || 1);
 
@@ -227,7 +228,10 @@ const OrderCheckOut = ({
             <Form.Check
               style={{ margin: 2 }}
               type="switch"
-              checked={storeDetail?.isServiceCharge}
+              disabled={storeDetail?.isServiceChange}
+              checked={
+                storeDetail?.isServiceCharge || storeDetail?.isServiceChange
+              }
               id={"switch-audio"}
               onChange={(e) => getToggleServiceCharge(e)}
             />
@@ -273,7 +277,7 @@ const OrderCheckOut = ({
                   : storeDetail?.firstCurrency}
               </div>
             </div>
-            {storeDetail?.isServiceCharge && (
+            {(storeDetail?.isServiceCharge || storeDetail?.isServiceChange) && (
               <div className="w-full flex justify-end items-center">
                 <div className="text-end">{t("service_charge")}:</div>
                 <div className="w-60 text-end">{`${serviceCharge} %`}</div>

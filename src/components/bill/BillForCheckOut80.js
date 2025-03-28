@@ -38,6 +38,10 @@ export default function BillForCheckOut80({
     storeDetail?.isShowExchangeRate || false
   );
 
+  const serviceChargeRef = useRef(serviceCharge);
+  const moneyReciveRef = useRef(dataBill?.moneyReceived);
+  const moneyChangeRef = useRef(dataBill?.moneyChange);
+
   const orders =
     orderPayBefore && orderPayBefore.length > 0
       ? orderPayBefore
@@ -45,29 +49,32 @@ export default function BillForCheckOut80({
 
   useEffect(() => {
     _calculateTotal();
-  }, [dataBill, taxPercent, storeDetail?.serviceChargePer]);
+    if (serviceCharge > 0) {
+      serviceChargeRef.current = serviceCharge;
+    }
+    if (dataBill?.moneyReceived > 0) {
+      moneyReciveRef.current = dataBill?.moneyReceived;
+    }
+    if (dataBill?.moneyChange > 0) {
+      moneyChangeRef.current = dataBill?.moneyChange;
+    }
+  }, [
+    dataBill,
+    dataBill?.moneyReceived,
+    dataBill?.moneyChange,
+    taxPercent,
+    serviceCharge,
+    totalBillBillForCheckOut80,
+    orderPayBefore,
+  ]);
 
   useEffect(() => {
-    _calculateTotal();
     getDataCurrency();
-  }, [totalBillBillForCheckOut80, taxPercent, storeDetail?.serviceChargePer]);
+  }, []);
 
   const _calculateTotal = () => {
     let _total = 0;
-    // for (let _data of dataBill?.orderId || []) {
-    //   const totalOptionPrice = _data?.totalOptionPrice || 0;
-    //   const itemPrice = _data?.price + totalOptionPrice;
-    //   // _total += _data?.totalPrice || (_data?.quantity * itemPrice);
-    //   _total += _data?.quantity * itemPrice;
-    // }
 
-    // const _total = _.sumBy(
-    //   dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
-    //   (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
-    // );
-    // let _total = 0;
-
-    // Check for orderPayBefore; if available, use it; otherwise, use dataBill.orderId
     const orders =
       orderPayBefore && orderPayBefore.length > 0
         ? orderPayBefore
@@ -89,7 +96,7 @@ export default function BillForCheckOut80({
     const totalAmountAll =
       orderPayBefore && orderPayBefore.length > 0
         ? _total
-        : totalBillBillForCheckOut80;
+        : totalBillBillForCheckOut80 || _total;
 
     // Handle discount logic
     if (dataBill?.discount > 0) {
@@ -106,12 +113,15 @@ export default function BillForCheckOut80({
       setTotalAfterDiscount(totalAmountAll);
     }
 
-    setTotal(totalAmountAll);
     setTaxAmount((totalAmountAll * taxPercent) / 100);
+
+    // ใช้ serviceCharge จาก prop แทน storeDetail?.serviceChargePer
     const serviceChargeTotal = Math.floor(
-      (totalAmountAll * storeDetail?.serviceChargePer) / 100
+      (totalAmountAll * serviceChargeRef.current ||
+        storeDetail?.serviceChargePer) / 100
     );
     setServiceChargeAmount(serviceChargeTotal);
+    setTotal(totalAmountAll);
   };
 
   const getDataCurrency = async () => {
@@ -142,6 +152,8 @@ export default function BillForCheckOut80({
       setBase64Image(base64);
     });
   }, [imageUrl2]);
+
+  console.log("dataBill?.paymentMethod", dataBill?.paymentMethod);
 
   return (
     <Container>
@@ -342,7 +354,8 @@ export default function BillForCheckOut80({
       <Row>
         <Col xs={7}>
           <div style={{ textAlign: "right" }}>
-            {t("service_charge")} {storeDetail?.serviceChargePer}% :
+            {t("service_charge")}{" "}
+            {storeDetail?.serviceChargePer || serviceChargeRef.current}% :
           </div>
         </Col>
         <Col>
@@ -351,7 +364,9 @@ export default function BillForCheckOut80({
           </div>
         </Col>
       </Row>
-      <div style={{ fontSize: 14, marginTop: 20 }}>
+      <div style={{ height: 10 }} />
+      <hr style={{ border: "1px dashed #000", margin: 0 }} />
+      <div style={{ fontSize: 14 }}>
         <Row>
           <Col xs={7}>
             <div
@@ -388,7 +403,7 @@ export default function BillForCheckOut80({
         ))}
       </div>
 
-      <div style={{ height: 10 }} />
+      {/* <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
 
       {isShowExchangeRate && (
@@ -412,7 +427,7 @@ export default function BillForCheckOut80({
             </span>
           )}
         </div>
-      )}
+      )} */}
       <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
       <div
@@ -424,20 +439,24 @@ export default function BillForCheckOut80({
         }}
       >
         <div>
-          {dataBill?.paymentMethod === "CASH"
-            ? "ເງີນສົດ"
-            : dataBill?.paymentMethod === "TRANSFER"
-            ? "ເງີນໂອນ"
-            : dataBill?.paymentMethod === "TRANSFER_CASH"
-            ? "ເງີນສົດແລະໂອນ"
-            : ""}
-        </div>
-        <div>
-          {t("getMoney")} {dataBill?.moneyReceived || 0}
+          {t("getMoney")} {moneyCurrency(moneyReciveRef.current) || 0}{" "}
+          {storeDetail?.firstCurrency}{" "}
+          <span>
+            {dataBill?.paymentMethod === "CASH"
+              ? "(ເງີນສົດ)"
+              : dataBill?.paymentMethod === "TRANSFER"
+              ? "(ເງີນໂອນ)"
+              : dataBill?.paymentMethod === "TRANSFER_CASH"
+              ? "(ເງີນສົດແລະໂອນ)"
+              : dataBill?.paymentMethod === "CASH_TRANSFER_POINT"
+              ? "(ເງີນສົດ + ໂອນ + ພ໋ອຍ)"
+              : ""}
+          </span>
         </div>
         {","}
         <div>
-          {t("moneyWithdrawn")} {dataBill?.moneyChange || 0}
+          {t("moneyWithdrawn")} {moneyCurrency(moneyChangeRef.current) || 0}{" "}
+          {storeDetail?.firstCurrency}
         </div>
       </div>
 

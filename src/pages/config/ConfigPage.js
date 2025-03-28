@@ -19,6 +19,7 @@ import {
   getSettingCafe,
   updateSettingDelivery,
   updateSettingShift,
+  updateSettingServiceChange,
 } from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
 import PopUpEditServiceCharge from "../../components/popup/PopUpEditServiceCharge";
@@ -131,6 +132,13 @@ export default function ConfigPage() {
   const changeShift = async (e) => {
     const isType = e.target.checked;
     await updateSettingShift(profile?.data.storeId, { data: isType });
+  };
+
+  const changeSericeChange = async (e) => {
+    const isType = e.target.checked;
+    await updateSettingServiceChange(profile?.data.storeId, { data: isType });
+    // console.log("changeSericeChange", isType);
+    await fetchStoreDetail(storeDetail?._id);
   };
 
   const BankPayment = async (e) => {
@@ -723,7 +731,8 @@ export default function ConfigPage() {
               ))}
             </Card.Body>
           </Card>
-          {/* <Card border="primary" style={{ margin: 0 }}>
+
+          <Card border="primary" style={{ margin: 0 }}>
             <Card.Header
               style={{
                 backgroundColor: COLOR_APP,
@@ -732,13 +741,13 @@ export default function ConfigPage() {
                 fontWeight: "bold",
               }}
             >
-              {t("shift")}
+              {t("service_charge")}
             </Card.Header>
             <Card.Body>
               {[
                 {
-                  title: t("open_function_shift"),
-                  key: "shift",
+                  title: t("service_charge_open"),
+                  key: "service_charge",
                 },
               ].map((item) => (
                 <div
@@ -760,20 +769,22 @@ export default function ConfigPage() {
                       justifyContent: "center",
                     }}
                   >
-                    <Form.Label htmlFor={`switch-shift-${item?.key}`}>
-                      {storeDetail?.isShift ? `${t("oppen")}` : `${t("close")}`}
+                    <Form.Label htmlFor={`service_charge-${item?.key}`}>
+                      {storeDetail?.isServiceChange
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
                       type="switch"
-                      checked={storeDetail?.isShift}
-                      id={`switch-shift-${item?.key}`}
-                      onChange={changeShift}
+                      checked={storeDetail?.isServiceChange}
+                      id={`service_charge-${item?.key}`}
+                      onChange={changeSericeChange}
                     />
                   </div>
                 </div>
               ))}
             </Card.Body>
-          </Card> */}
+          </Card>
         </Box>
       </Box>
       {/* popup */}
