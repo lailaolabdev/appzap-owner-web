@@ -424,7 +424,7 @@ export default function TableList() {
     // setOrderPayBefore([]);
     getData(selectedTable?.code, true);
     setMenuItemDetailModal(true);
-    calculateTotalBill();
+    // calculateTotalBill();
   };
   const _goToAddOrder = (tableId, code) => {
     navigate(`/addOrder/tableid/${tableId}/code/${code}`);
@@ -1904,7 +1904,7 @@ export default function TableList() {
       });
   };
 
-  const calculateTotalBill = async () => {
+  const calculateTotalBill = () => {
     setPrintBillCalulate(true);
     let _total = 0;
     if (dataBill && dataBill?.orderId) {
@@ -1929,9 +1929,9 @@ export default function TableList() {
         setTotalAfterDiscount(_total - ddiscount);
       }
     } else {
-      await setTotalAfterDiscount(_total);
+      setTotalAfterDiscount(_total);
     }
-    await setTotal(_total);
+    setTotal(_total);
     setPrintBillCalulate(false);
   };
 
@@ -2032,6 +2032,9 @@ export default function TableList() {
     _checkBillOrdering();
     // onPrintBill();
   };
+
+  // console.log("serviceChargePercent main", serviceChargePercent);
+  // console.log("total main", total);
 
   return (
     <div className="bg-[#F9F9F9] h-[calc(100vh-66px)] overflow-hidden w-full">
@@ -2857,6 +2860,7 @@ export default function TableList() {
           totalBillBillForCheckOut80={total}
           taxPercent={taxPercent}
           profile={profile}
+          serviceCharge={serviceChargePercent}
         />
       </div>
       <div style={{ width: "80mm", padding: 10 }} ref={qrSmartOrder80Ref}>
@@ -2871,7 +2875,6 @@ export default function TableList() {
           selectedTable={selectedTable}
           dataBill={dataBill}
           taxPercent={taxPercent}
-          serviceCharge={serviceChargePercent}
         />
       </div>
       {isCheckedOrderItem
@@ -2963,6 +2966,7 @@ export default function TableList() {
       />
       <CheckOutPopup
         saveServiceChargeDetails={saveServiceChargeDetails}
+        serviceCharge={serviceChargePercent}
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}
         dataBill={dataBill}

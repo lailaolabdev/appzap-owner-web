@@ -722,6 +722,7 @@
   "edit_tax": "Edit Tax",
   "edit_service_charge": "Edit Service Charge",
   "service_charge": "Service Charge",
+  "service_charge_open": "Open Service Charge",
   "edit_data_fail": "Data update failed. Please double-check and try again!",
   "edit_fail": "Edit Failed",
   "delete_data_success": "Data Deleted Successfully",
