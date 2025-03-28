@@ -114,10 +114,7 @@ export default function BillForCheckOut80({
     }
 
     setTotal(totalAmountAll);
-<<<<<<< HEAD
 
-=======
->>>>>>> 61bed2de (feat: add new status "PAID" with corresponding label and color; clean up console logs and improve code readability)
     setTaxAmount((totalAmountAll * taxPercent) / 100);
 
     // ใช้ serviceCharge จาก prop แทน storeDetail?.serviceChargePer
