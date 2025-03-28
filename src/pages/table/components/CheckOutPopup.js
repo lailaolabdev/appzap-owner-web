@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { Modal, Form, Button, InputGroup, Spinner } from "react-bootstrap";
@@ -47,6 +47,7 @@ export default function CheckOutPopup({
   setDataBill,
   taxPercent = 0,
   saveServiceChargeDetails,
+  serviceCharge,
   billDataLoading,
 }) {
   const { t } = useTranslation();
@@ -94,6 +95,13 @@ export default function CheckOutPopup({
     useClaimDataStore();
   const { shiftCurrent } = useShiftStore();
 
+  const serviceChargeRef = useRef(serviceCharge);
+
+  useEffect(() => {
+    if (serviceCharge > 0) {
+      serviceChargeRef.current = serviceCharge;
+    }
+  }, [serviceCharge]);
   //select Bank
 
   useEffect(() => {
@@ -545,6 +553,9 @@ export default function CheckOutPopup({
       name: "LAK",
     });
   }, []);
+  useEffect(() => {
+    setDataBill((prev) => ({ ...prev, paymentMethod: "CASH" }));
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -727,20 +738,24 @@ export default function CheckOutPopup({
 
   const totalBillMoney =
     dataBill?.discountType === "LAK"
-      ? moneyCurrency(
-          Math.floor(
-            totalBill - dataBill?.discount > 0
-              ? totalBill - dataBill?.discount
-              : 0
-          )
+      ? Math.floor(
+          totalBill - dataBill?.discount > 0
+            ? totalBill - dataBill?.discount
+            : 0
         )
-      : moneyCurrency(
-          Math.floor(
-            totalBill - (totalBill * dataBill?.discount) / 100 > 0
-              ? totalBill - (totalBill * dataBill?.discount) / 100
-              : 0
-          )
+      : Math.floor(
+          totalBill - (totalBill * dataBill?.discount) / 100 > 0
+            ? totalBill - (totalBill * dataBill?.discount) / 100
+            : 0
         );
+  const serviceChangeTotal = () => {
+    return (
+      totalBillMoney +
+      (totalBillMoney * serviceChargeRef.current ||
+        storeDetail?.serviceChargePer) /
+        100
+    );
+  };
 
   useEffect(() => {
     if (selectedTable?.isDeliveryTable) {
@@ -951,7 +966,9 @@ export default function CheckOutPopup({
             >
               <span>{t("bill_total")}: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
-                {totalBillMoney} {storeDetail?.firstCurrency}
+                {moneyCurrency(serviceChangeTotal())}{" "}
+                {storeDetail?.firstCurrency}
+                {/* {totalBillMoney} {storeDetail?.firstCurrency} */}
               </span>
               <span
                 hidden={
