@@ -966,9 +966,11 @@ export default function CheckOutPopup({
             >
               <span>{t("bill_total")}: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
-                {moneyCurrency(serviceChangeTotal())}{" "}
-                {storeDetail?.firstCurrency}
-                {/* {totalBillMoney} {storeDetail?.firstCurrency} */}
+                {storeDetail?.isServiceCharge ||
+                storeDetail?.serviceChargePer > 0
+                  ? moneyCurrency(serviceChangeTotal())
+                  : moneyCurrency(totalBillMoney)}{" "}
+                {""} {storeDetail?.firstCurrency}
               </span>
               <span
                 hidden={
