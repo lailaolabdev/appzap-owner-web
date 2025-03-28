@@ -839,7 +839,7 @@ export default function TableList() {
       //   : callCheckOutPrintBillOnly(selectedTable?._id);
       // setSelectedTable();
       // setOrderPayBefore([]);
-      // getTableDataStore();
+      getTableDataStore();
       if (zoneId) {
         getTableDataStore({ zone: zoneId });
       } else {
@@ -2033,8 +2033,12 @@ export default function TableList() {
     // onPrintBill();
   };
 
-  // console.log("serviceChargePercent main", serviceChargePercent);
-  // console.log("total main", total);
+  const isCheckedOrderItemPaid = isCheckedOrderItem.filter(
+    (item) =>
+      item?.status === "SERVED" ||
+      item?.status === "DOING" ||
+      item?.status === "WAITING"
+  );
 
   return (
     <div className="bg-[#F9F9F9] h-[calc(100vh-66px)] overflow-hidden w-full">
@@ -2216,10 +2220,12 @@ export default function TableList() {
                           table?.isStaffConfirm
                             ? table?.editBill
                               ? "bg-[#CECE5A] text-gray-500"
+                              : table?.isOrderingPaid
+                              ? isCheckedOrderItemPaid?.length > 0
+                                ? "bg-color-app text-white"
+                                : "bg-[#00C851] text-white"
                               : table?.statusBill === "CALL_TO_CHECKOUT"
                               ? "bg-[#FFE17B] text-gray-500"
-                              : table?.isOrderingPaid
-                              ? "bg-[#00C851]  text-white"
                               : "bg-color-app text-white"
                             : "text-gray-500"
                         )}
