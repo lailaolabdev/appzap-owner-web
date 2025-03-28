@@ -294,10 +294,15 @@ export default function IncomeExpendExport() {
         }
       }
 
+      const headersAppzap = {
+        "Content-Type": "application/json",
+        authorization: header.authorization,
+      };
+
       await axios({
         method: "post",
         url: `${END_POINT_SEVER}/v7/report-daily/${findIncomeby}`,
-        headers: headers,
+        headers: headersAppzap,
       })
         .then((res) => {
           // console.log("IncomeGraphData", res?.data);
