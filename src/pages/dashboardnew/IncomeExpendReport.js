@@ -14,7 +14,7 @@ import {
 } from "../../constants/api";
 import { useStore } from "../../store";
 import PaginationComponent from "../../components/PaginationComponent";
-import { getHeadersAccount } from "../../services/auth";
+import { getHeaders, getHeadersAccount } from "../../services/auth";
 import { useLocation, useParams } from "react-router-dom";
 import { moneyCurrency } from "../../helpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -299,10 +299,12 @@ export default function IncomeExpendExport() {
         authorization: header.authorization,
       };
 
+      const _header = await getHeaders();
+
       await axios({
         method: "post",
         url: `${END_POINT_SEVER}/v7/report-daily/${findIncomeby}`,
-        headers: headersAppzap,
+        headers: _header,
       })
         .then((res) => {
           // console.log("IncomeGraphData", res?.data);
