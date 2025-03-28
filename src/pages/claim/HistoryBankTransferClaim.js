@@ -30,6 +30,7 @@ import UnclaimedTab from "./UnclaimedTab";
 import ClaimingTab from "./ClaimingTab";
 import ClaimedTab from "./ClaimedTab";
 import ConfirmPopUp from "./components/ConfirmPopUp";
+import CheckBillTab from "./CheckBillTab";
 
 // Constants for claim statuses
 const CLAIM_STATUSES = {
@@ -453,6 +454,15 @@ export default function HistoryBankTransferClaim() {
           icon={faTable}
           title="ລາຍການເຄລມເງິນ" // Ignore spellcheck: ລາຍການເຄລມເງິນ
         />
+        <TabButton
+          isSelected={selectedType === "bill-checkout"}
+          onClick={() => {
+            setSelectedType("bill-checkout");
+            setCurrentPage(1); // Reset page when changing tabs
+          }}
+          icon={faTable}
+          title="ປະຫວັດການຊຳລະ" // Ignore spellcheck: ລາຍການເຄລມເງິນ
+        />
       </div>
 
       {/* Loading indicator */}
@@ -494,6 +504,18 @@ export default function HistoryBankTransferClaim() {
       )}
       {selectedType === CLAIM_STATUSES.CLAIMED && (
         <ClaimedTab
+          amountData={amountData}
+          storeDetail={storeDetail}
+          claimedData={tabData[CLAIM_STATUSES.CLAIMED]}
+          totalPageCount={calculateTotalPages(CLAIM_STATUSES.CLAIMED)}
+          currentPage={currentPage}
+          onPageChange={setCurrentPage}
+          rowsPerPage={rowsPerPage}
+          t={t}
+        />
+      )}
+      {selectedType === "bill-checkout" && (
+        <CheckBillTab
           amountData={amountData}
           storeDetail={storeDetail}
           claimedData={tabData[CLAIM_STATUSES.CLAIMED]}

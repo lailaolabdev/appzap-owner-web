@@ -20,6 +20,7 @@ import { Badge } from "../components/ui/Badge";
 // sound
 import messageSound from "../sound/message.mp3";
 import { END_POINT_SERVER_JUSTCAN, getLocalData } from "../constants/api";
+import { moneyCurrency } from "./../helpers/index";
 
 export default function NavBar() {
   const navigate = useNavigate();
@@ -136,7 +137,8 @@ export default function NavBar() {
                 {t("price_amount")}{" "}
               </p>
               <p className="m-0  text-lg md:text-lg font-bold">
-                {TotalAmountClaim || 0} {storeDetail?.firstCurrency}
+                {moneyCurrency(TotalAmountClaim) || 0}{" "}
+                {storeDetail?.firstCurrency}
               </p>
             </div>
           </div>
