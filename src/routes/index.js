@@ -83,6 +83,7 @@ import ManageCounterList from "../pages/manageCounter/manageCounter";
 import StockCreate from "../pages/stock/StockCreate";
 import StockCreateCategory from "../pages/stock/StockCreateCategory";
 import ReportStocks from "../pages/report/ReportStocks";
+import SettingStock from "../pages/stock/SettingStock";
 import ShiftList from "../pages/shift/Shift";
 import ShiftOpenPages from "../pages/shift/ShiftOpenPages";
 import SecondScreen from "../pages/secondScreen/SecondScreen";
@@ -313,6 +314,10 @@ function Router() {
         {
           path: "/stock",
           element: <ReportStocks />,
+        },
+        {
+          path: "/stock/Editing",
+          element: <SettingStock />,
         },
         {
           path: "/stockCategory",

@@ -421,16 +421,24 @@ export default function ReportStocks() {
         <div className="text-xl font-semibold pt-2">
           {t("item_total")} {totalStock} {t("item_amount")}
         </div>
-        <div class="w-full max-w-sm min-w-[200px]">
-          <div class="relative flex items-center">
+        <div className="w-full max-w-sm min-w-[200px]">
+          <div className="relative flex items-center">
             <input
-              class="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-4 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
+              className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-4 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
               placeholder={t("search")}
+              value={filterName}
+              onChange={(e) => setFilterName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  getStocks();
+                }
+              }}
             />
 
             <button
-              class="rounded-md ml-2 bg-slate-800 py-2.5 px-3 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+              className="ml-2 rounded-md bg-slate-800 py-2 px-3 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
               type="button"
+              onClick={getStocks}
             >
               <FontAwesomeIcon
                 icon={faSearch}
@@ -472,9 +480,14 @@ export default function ReportStocks() {
           <button
             class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md"
             onClick={() => setPopup({ PopUpPreViewsPage: true })}
-            disabled={!hasManageStockEdit}
           >
             {t("Print")}
+          </button>
+          <button
+            class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md"
+            onClick={() => navigate("/stock/Editing")}
+          >
+            {t("setting")}
           </button>
         </div>
       </div>
