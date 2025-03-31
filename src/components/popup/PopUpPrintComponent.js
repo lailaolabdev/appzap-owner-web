@@ -359,11 +359,11 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
   const deliveryReports = delivery
     ? delivery?.revenueByPlatform?.map((e) => {
-        return {
-          name: e?._id,
-          amount: e?.totalRevenue,
-        };
-      })
+      return {
+        name: e?._id,
+        amount: e?.totalRevenue,
+      };
+    })
     : [];
 
   return (
@@ -395,15 +395,15 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           </div>
           {profile?.data?.role === "APPZAP_ADMIN"
             ? storeDetail?.isShift && (
-                <div className="flex items-center gap-2 whitespace-nowrap">
-                  <Select
-                    placeholder={t("chose_shift")}
-                    className="min-w-[170px] w-full border-orange-500"
-                    options={optionsData}
-                    onChange={handleSearchInput}
-                  />
-                </div>
-              )
+              <div className="flex items-center gap-2 whitespace-nowrap">
+                <Select
+                  placeholder={t("chose_shift")}
+                  className="min-w-[170px] w-full border-orange-500"
+                  options={optionsData}
+                  onChange={handleSearchInput}
+                />
+              </div>
+            )
             : ""}
         </div>
 
@@ -456,14 +456,14 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
               ...(Array.isArray(deliveryReports) && deliveryReports.length > 0
                 ? deliveryReports.map((e, idx) => ({
-                    name: (
-                      <div
-                        style={{ fontWeight: 700 }}
-                      >{`delivery (${e?.name})`}</div>
-                    ),
-                    value: Math.floor(e?.amount || 0),
-                    type: storeDetail?.firstCurrency,
-                  }))
+                  name: (
+                    <div
+                      style={{ fontWeight: 700 }}
+                    >{`delivery (${e?.name})`}</div>
+                  ),
+                  value: Math.floor(e?.amount || 0),
+                  type: storeDetail?.firstCurrency,
+                }))
                 : []),
               {
                 name: `${t("point")}:`,
@@ -573,6 +573,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                   <td style={{ textAlign: "center" }}>{t("discount")}</td>
                   <td style={{ textAlign: "right" }}>{t("total_bill")}</td>
                 </tr>
+
                 {bills?.map((e, i) => (
                   <tr key={e?._id}>
                     <td style={{ textAlign: "left" }}>{i + 1}</td>
@@ -582,7 +583,6 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                     <td style={{ textAlign: "center" }}>
                       {e?.orderId?.length || 0}
                     </td>
-
                     <td style={{ textAlign: "center" }}>
                       {e?.discount !== 0
                         ? moneyCurrency(e?.billAmount - e?.billAmountBefore)
@@ -593,6 +593,29 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                     </td>
                   </tr>
                 ))}
+
+                {/* Total Row */}
+                <tr style={{ fontWeight: "bold" }}>
+                  <td colSpan="2" style={{ textAlign: "right" }}>
+                    {t("total")}:
+                  </td>
+                  <td style={{ textAlign: "center" }}>
+                    {bills?.reduce((sum, bill) => sum + (bill?.orderId?.length || 0), 0)}
+                  </td>
+                  <td style={{ textAlign: "center" }}>
+                    {moneyCurrency(
+                      bills?.reduce((sum, bill) =>
+                        sum + (bill?.discount !== 0
+                          ? (bill?.billAmount - bill?.billAmountBefore)
+                          : 0), 0)
+                    )}
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    {moneyCurrency(
+                      bills?.reduce((sum, bill) => sum + (bill?.billAmount || 0), 0)
+                    )}
+                  </td>
+                </tr>
               </TableComponent>
             </div>
           </Container>
