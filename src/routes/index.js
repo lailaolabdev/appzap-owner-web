@@ -99,7 +99,6 @@ import EditBuyXGetYForm from "../pages/promotion/components/EditBuyXGetYForm";
 import HistoryBankTransferClaim from "../pages/claim/HistoryBankTransferClaim";
 import HomecafeEdit from "../pages/cafe_home/HomecafeEdit";
 import EditMenu from "../pages/menu/EditMenu";
-import ClearHistory from "../pages/clear_restaurant/ClearHistory";
 function Router() {
   return useRoutes([
     {
@@ -412,10 +411,6 @@ function Router() {
         {
           path: "/settingStore/edit-menu/:storeId",
           element: <EditMenu />,
-        },
-        {
-          path: "/settingStore/clear-restaurant",
-          element: <ClearHistory />,
         },
 
         OrderRoutes,
