@@ -230,9 +230,7 @@ const Promotion = () => {
     <div className="p-2 bg-gray-50 h-full w-full">
       <Card className="bg-white rounded-xl h-full overflow-hidden mt-2">
         <div className="flex flex-row justify-between items-center overflow-hidden bg-white px-4 py-3">
-          <CardTitle className="text-xl">
-            {t("list_of_promotion")} ({promotion?.length || 0}) {t("list")}
-          </CardTitle>
+          ລາຍຮັບທັງໝົດ
           <button
             type="button"
             onClick={handleOpenModal}

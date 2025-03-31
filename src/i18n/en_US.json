@@ -1342,5 +1342,10 @@
   "your_item_has_been_deleted": "Your item has been deleted.",
   "your_item_has_not_been_deleted": "Your item has_not been deleted.",
   "can_be_exchanged": "exchanged",
-  "menu_change_point": "Menu change with point"
+  "menu_change_point": "Menu change with point",
+  "counter_read_only": "Counter Read Only",
+  "manage_stock_setting": "Manage stock settings and requirements here",
+  "counter_access_only": "Counter Access Only",
+  "description_counter_only": "Enable this option to make the counter display information only for users.",
+  "description_counter_access": "The counter can be accessed for management."
 }
