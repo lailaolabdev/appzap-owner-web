@@ -1267,5 +1267,10 @@
   "menu_free": "ເມນູທີ່ແຖມ",
   "re_print_bill": "ພິມບິນຄືນສຳເລັດ",
   "bill_cancel": "ຍົກເລີກບິນ",
-  "cancel_success": "ຍົກເລີກສຳເລັດ"
+  "cancel_success": "ຍົກເລີກສຳເລັດ",
+  "history_clear_bill": "ປະຫວັດລົບບີນທັງໝົດ",
+  "history_clear_order": "ປະຫວັດລົບອໍເດີທັງໝົດ",
+  "history_clear_stock": "ປະຫວັດລົບສະຕ໋ອກທັງໝົດ",
+  "clear_usage":"ລ້າງປະຫວັດການໃຊ້ງານ",
+  "history_clear": "ປະຫວັດການລົບ"
 }

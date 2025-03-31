@@ -288,11 +288,11 @@ export default function SettingList() {
       hidden: !hasMangeSecondScreen && !appzapStaff.includes(profileRole),
     },
     {
-      id: "64bf476a-cbb6-43e1-abe1-29d4bdce7453",
+      id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
       title: t("clear_restaurant_data"),
       icon:<FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDatabase} /> ,
-      path: "/clear_restaurant",
-      hidden: !hasMangeSecondScreen && !appzapStaff.includes(profileRole),
+      path: "/settingStore/clear-restaurant",     
+      hidden: !hasClearHistory && !appzapStaff.includes(profileRole)
     },
     // {
     //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
@@ -302,12 +302,12 @@ export default function SettingList() {
     // },
   ];
 
-  const clickDeleteHistoryStore = async () => {
-    if (clickCount > 5) {
-      setShowDelete(true);
-    }
-    setClickCount((prev) => prev + 1);
-  };
+  // const clickDeleteHistoryStore = async () => {
+  //   if (clickCount > 5) {
+  //     setShowDelete(true);
+  //   }
+  //   setClickCount((prev) => prev + 1);
+  // };
   const deleteHistoryStore = async () => {
     try {
       const url = `${END_POINT_APP}/v4/reset-history-store`;
