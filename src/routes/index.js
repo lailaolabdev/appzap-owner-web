@@ -34,6 +34,7 @@ import StockHistory from "../pages/stock/HistoryList";
 import SettingList from "../pages/settingStore/SettingList";
 import MessagerList from "../pages/messager/MessagerList";
 import ReservationDashboard from "../pages/reservation_dashboard/ReservationDashboard";
+import ClearHistory from "../pages/clear_restaurant/ClearHistory";
 
 // add new
 import CreateMembers from "../pages/member/CreateMembers";
@@ -411,6 +412,10 @@ function Router() {
         {
           path: "/settingStore/edit-menu/:storeId",
           element: <EditMenu />,
+        },
+        {
+          path: "/settingStore/clear-restaurant",
+          element: <ClearHistory />,
         },
 
         OrderRoutes,
