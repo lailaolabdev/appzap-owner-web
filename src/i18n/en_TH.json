@@ -16,6 +16,8 @@
   "delete_bank": "ลบธนาคาร",
   "bank_Name": "ชื่อธนาคาร",
   "data_report_type": "1. ประเภทรายงานข้อมูล",
+  "Reason_for_cancellation": "เหตุผลที่ยกเลิก",
+  "Please_provide_a_reason_for_cancellation": "กรุณาใส่เหตุผลที่ยกเลิก",
   "can_edit": " สามารถแก้ไขได้",
   "not_can_edit": " ไม่สามารถแก้ไขได้",
   "bank_total": "ยอดรวมบิล",

@@ -50,6 +50,12 @@ export default function PopUpReportExportExcel({
   const [category, setCategory] = useState("");
 
   const findByData = () => {
+
+    if (!storeDetail?._id) {
+      console.error('Store ID is missing');
+      return '';
+    }
+
     let findBy = "?";
     if (profile?.data?.role === "APPZAP_ADMIN") {
       if (
@@ -100,9 +106,16 @@ export default function PopUpReportExportExcel({
     }
     return findBy;
   };
+
+
   const downloadExcel = async () => {
+
     setPopup({ ReportExport: false });
     try {
+      if (!storeDetail?._id) {
+        errorAdd('ไม่พบข้อมูลร้าน');
+        return;
+      }
       let findBy = "";
       if (profile?.data?.role === "APPZAP_ADMIN") {
         findBy += `&dateFrom=${storeDetail?.startDateReportExport}&`;
@@ -126,7 +139,6 @@ export default function PopUpReportExportExcel({
 
       if (storeDetail?.isStatusCafe) {
         const dataExcel = _res?.data?.bills;
-        console.log("dataExcel", dataExcel);
         const header = [
           t("no"),
           t("payment_type"),
@@ -366,9 +378,8 @@ export default function PopUpReportExportExcel({
   const Promotions = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-promotion/${
-        storeDetail?._id
-      }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-promotion/${storeDetail?._id
+        }${findByData()}`;
       const _res = await axios.get(url);
       if (storeDetail?.isStatusCafe) {
         const dataExcel = _res?.data?.promotion[0];
@@ -504,9 +515,8 @@ export default function PopUpReportExportExcel({
   const bankTotalAmount = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-bank${findByData()}&storeId=${
-        storeDetail?._id
-      }`;
+      const url = `${END_POINT_EXPORT}/export/report-bank${findByData()}&storeId=${storeDetail?._id
+        }`;
 
       const _res = await axios.get(url);
 
@@ -619,9 +629,8 @@ export default function PopUpReportExportExcel({
   const currencyExport = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-currency${findByData()}&storeId=${
-        storeDetail?._id
-      }`;
+      const url = `${END_POINT_EXPORT}/export/report-currency${findByData()}&storeId=${storeDetail?._id
+        }`;
       const _res = await axios.get(url);
 
       if (_res?.data?.exportUrl) {
@@ -649,9 +658,8 @@ export default function PopUpReportExportExcel({
   const Billdetail = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-bill/${
-        storeDetail?._id
-      }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-bill/${storeDetail?._id
+        }${findByData()}`;
       const _res = await axios.post(url);
 
       if (storeDetail?.isStatusCafe) {
@@ -816,7 +824,7 @@ export default function PopUpReportExportExcel({
           saveAs(
             fileBlob,
             `${storeDetail?.name} ${t("bill_detial")}` + ".xlsx" ||
-              "export.xlsx"
+            "export.xlsx"
           );
         }
       }
@@ -827,9 +835,8 @@ export default function PopUpReportExportExcel({
   const StaffInfo = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-user/${
-        storeDetail?._id
-      }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-user/${storeDetail?._id
+        }${findByData()}`;
       const _res = await axios.get(url);
 
       if (storeDetail?.isStatusCafe) {
@@ -954,11 +961,9 @@ export default function PopUpReportExportExcel({
   const DialySales = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-daily/${
-        storeDetail?._id
-      }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-daily/${storeDetail?._id
+        }${findByData()}`;
       const _res = await axios.get(url);
-
       if (storeDetail?.isStatusCafe) {
         const dataExcel = _res?.data?.daily || [];
 
@@ -1087,9 +1092,8 @@ export default function PopUpReportExportExcel({
   const MenuType = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-category/${
-        storeDetail?._id
-      }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-category/${storeDetail?._id
+        }${findByData()}`;
       const _res = await axios.get(url);
 
       if (storeDetail?.isStatusCafe) {
@@ -1192,8 +1196,6 @@ export default function PopUpReportExportExcel({
           responseType: "blob", // Important to get the response as a Blob
         });
 
-        // Create a Blob from the response data
-        // console.log("response", response.data);
         const fileBlob = new Blob([response.data], {
           type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         });
@@ -1211,9 +1213,8 @@ export default function PopUpReportExportExcel({
   const MenuInfo = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-menu-detail/${
-        storeDetail?._id
-      }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-menu-detail/${storeDetail?._id
+        }${findByData()}`;
       const _res = await axios.get(url);
 
       if (storeDetail?.isStatusCafe) {
@@ -1333,6 +1334,915 @@ export default function PopUpReportExportExcel({
     }
   };
 
+
+  const allExport = async () => {
+    setPopup({ ReportExport: false });
+    try {
+  
+      if (!storeDetail?._id) {
+        errorAdd('ไม่พบข้อมูลร้าน');
+        return;
+      }
+
+      let findBy = "";
+      if (profile?.data?.role === "APPZAP_ADMIN") {
+        findBy += `&dateFrom=${storeDetail?.startDateReportExport}&`;
+        findBy += `dateTo=${storeDetail?.endDateReportExport}&`;
+        findBy += `timeFrom=${storeDetail?.startTimeReportExport}&`;
+        findBy += `timeTo=${storeDetail?.endTimeReportExport}`;
+        if (shiftId) {
+          findBy += `&shiftId=${shiftId}`;
+        }
+      } else {
+        findBy += `&dateFrom=${storeDetail?.startDateReportExport}&`;
+        findBy += `dateTo=${storeDetail?.endDateReportExport}&`;
+        findBy += `timeFrom=${storeDetail?.startTimeReportExport}&`;
+        findBy += `timeTo=${storeDetail?.endTimeReportExport}`;
+        if (shiftData) {
+          findBy += `&shiftId=${shiftData?._id}`;
+        }
+      }
+
+      const billUrl = `${END_POINT_EXPORT}/export/bill?storeId=${storeDetail?._id}${findBy}`;
+      const billRes = await axios.get(billUrl);
+
+      const promotionUrl = `${END_POINT_EXPORT}/export/report-promotion/${storeDetail?._id}${findByData()}`;
+      const promotionRes = await axios.get(promotionUrl);
+
+      const billDetailUrl = `${END_POINT_EXPORT}/export/report-bill/${storeDetail?._id}${findByData()}`;
+      const billDetailRes = await axios.post(billDetailUrl);
+
+      const bankUrl = `${END_POINT_EXPORT}/export/report-bank${findByData()}&storeId=${storeDetail?._id}`;
+      const bankRes = await axios.get(bankUrl);
+
+      const staffInfoUrl = `${END_POINT_EXPORT}/export/report-user/${storeDetail?._id}${findByData()}`;
+      const staffInfoRes = await axios.get(staffInfoUrl);
+
+      const dailySalesUrl = `${END_POINT_EXPORT}/export/report-daily/${storeDetail?._id}${findByData()}`;
+      const dailySalesRes = await axios.get(dailySalesUrl);
+
+      const menuTypeUrl = `${END_POINT_EXPORT}/export/report-category/${storeDetail?._id}${findByData()}`;
+      const menuTypeRes = await axios.get(menuTypeUrl);
+
+      const menuInfoUrl = `${END_POINT_EXPORT}/export/report-menu-detail/${storeDetail?._id}${findByData()}`;
+      const menuInfoRes = await axios.get(menuInfoUrl);
+
+      const currencyUrl = `${END_POINT_EXPORT}/export/report-currency${findByData()}&storeId=${storeDetail?._id}`;
+      const currencyRes = await axios.get(currencyUrl);
+
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet("รายงานรวม");
+
+      // Exclel
+      const billHeaders = [
+        t("no"),
+        t("payment_type"),
+        t("bank_transfer_history"),
+        t("status"),
+        t("cash"),
+        t("e_money"),
+        t("delivery"),
+        t("point"),
+        t("discount"),
+        t("discount_type"),
+        t("change"),
+        t("last_paid"),
+        t("before_paid"),
+        t("oreder_no"),
+        t("order"),
+        t("order_status"),
+        t("type_name"),
+        t("date"),
+        t("staff")
+      ];
+
+      // Promotion
+      const promotionHeaders = [
+        t("no"),
+        t("discount_bill"),
+        t("all_discount"),
+        t("total_amount_menu_discount"),
+        t("total_money") + `(${t("menu_discount")})`,
+        t("total_money") + t("menu_free"),
+        t("total_money") + `(${t("menu_free")})`,
+        t("date")
+      ];
+     //Billdetail
+      const billDetailHeaders = [
+        t("no"),
+        t("bill_type"),
+        t("bill_count"),
+        t("total_bill_amount") + `(${t("currency")})`,
+      ];
+
+      // bank
+      const bankHeaders = [
+        t("no"),
+        t("bank_Name"),
+        t("amount")
+      ];
+
+      // (StaffInfo)
+      const staffInfoHeaders = [
+        t("no"),
+        t("user"),
+        t("order"),
+        t("order_cancel"),
+        t("order_paid"),
+        t("total_amount"),
+      ];
+
+      //  (DialySales)
+      const dailySalesHeaders = [
+        t("date"),
+        t("order"),
+        t("numberOfBill"),
+        t("delivery"),
+        t("point"),
+        t("discount"),
+        t("debt"),
+        t("total_amount"),
+      ];
+
+      // menutype
+      const menuTypeHeaders = [
+        t("category"),
+        t("order_success"),
+        t("cancel"),
+        t("order_paid"),
+        t("sale_price_amount"),
+      ];
+
+      // menudetail
+      const menuInfoHeaders = [
+        t("menu"),
+        t("order_success"),
+        t("cancel"),
+        t("order_paid"),
+        t("sale_price_amount"),
+      ];
+
+      // currency
+      const currencyHeaders = [
+        t("no"),
+        t("currency_type"),
+        t("amount")
+      ];
+
+      sheet.getRow(1).values = ["Excel:"];
+      sheet.getRow(2).values = billHeaders;
+
+      // จัดรูปแบบหัวกระดาษบิล
+      billHeaders.forEach((header, index) => {
+        const cell = sheet.getRow(2).getCell(index + 1);
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFFFA07A" }, // Light Salmon color
+          bgColor: COLOR_APP,
+        };
+        cell.font = {
+          name: "Noto Sans Lao",
+          size: 13,
+          bold: true,
+          color: { argb: "FF000000" },
+        };
+        cell.alignment = {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        };
+        // เพิ่มเส้นขอบที่เข้มขึ้น
+        cell.border = {
+          top: { style: "thin", color: COLOR_APP },
+          left: { style: "thin", color: COLOR_APP },
+          bottom: { style: "thin", color: COLOR_APP },
+          right: { style: "thin", color: COLOR_APP }
+        };
+      });
+
+      // เตรียมข้อมูลบิล
+      const billData = billRes?.data?.bills || [];
+      const promotionData = promotionRes?.data?.promotion[0];
+      const billDetailData = billDetailRes?.data?.bill || {};
+      const staffInfoData = staffInfoRes?.data?.user || [];
+      const dailySalesData = dailySalesRes?.data?.daily || [];
+      const menuTypeData = menuTypeRes?.data?.category || [];
+      const menuInfoData = menuInfoRes?.data?.menu || [];
+
+      // คำนวณผลรวม
+      const totalSummary = {
+        payAmount: 0,
+        transferAmount: 0,
+        deliveryAmount: 0,
+        point: 0,
+        discount: 0,
+        change: 0,
+        billAmount: 0,
+        billAmountBefore: 0,
+        orderCount: 0
+      };
+
+      // เพิ่มข้อมูลบิล
+      billData.forEach((billItem, index) => {
+        const formattedDate = moment(billItem?.createdAt).format("DD/MM/YYYY");
+        const orderDetails = billItem?.orderId
+          .map((order) => {
+            const categoryName = findCategoryName(
+              order?.categoryId,
+              menuCategories
+            );
+            return `(${categoryName})`;
+          })
+          .join(", ");
+
+        // อัพเดทผลรวม
+        totalSummary.payAmount += billItem?.payAmount || 0;
+        totalSummary.transferAmount += billItem?.transferAmount || 0;
+        totalSummary.deliveryAmount += billItem?.deliveryAmount || 0;
+        totalSummary.point += billItem?.point || 0;
+        totalSummary.discount += billItem?.discount || 0;
+        totalSummary.change += billItem?.change || 0;
+        totalSummary.billAmount += billItem?.billAmount || 0;
+        totalSummary.billAmountBefore += billItem?.billAmountBefore || 0;
+        totalSummary.orderCount += billItem?.orderId.length || 0;
+
+        const billRowData = [
+          index + 1,
+          billItem?.paymentMethod,
+          billItem.selectedBank,
+          billItem?.status,
+          billItem?.payAmount || 0,
+          billItem?.transferAmount || 0,
+          billItem?.deliveryAmount || 0,
+          billItem?.point || 0,
+          billItem?.discount || 0,
+          billItem?.discountType,
+          billItem?.change || 0,
+          billItem?.billAmount || 0,
+          billItem?.billAmountBefore || 0,
+          billItem?.orderId.length,
+          billItem?.orderId.map((order) => order?.name).join(", "),
+          billItem?.orderId.map((order) => order?.status).join(", "),
+          orderDetails,
+          formattedDate,
+          billItem?.fullnameStaffCheckOut
+        ];
+
+        const row = sheet.addRow(billRowData);
+        // เพิ่มเส้นขอบที่เข้มขึ้นสำหรับแต่ละเซลล์
+        row.eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin", color: COLOR_APP },
+            left: { style: "thin", color: COLOR_APP },
+            bottom: { style: "thin", color: COLOR_APP },
+            right: { style: "thin", color: COLOR_APP }
+          };
+        });
+      });
+
+      // กรณีไม่มีข้อมูลบิล
+      if (billData.length === 0) {
+        const emptyBillRowData = new Array(billHeaders.length).fill('');
+        emptyBillRowData[0] = "ບິນ";
+        sheet.addRow(emptyBillRowData);
+      }
+
+      // เพิ่มแถวสรุปผลรวม
+      const summaryRowData = [
+        t("total"), 
+        "-", 
+        "-", 
+        "-", 
+        totalSummary.payAmount, 
+        totalSummary.transferAmount, 
+        totalSummary.deliveryAmount, 
+        totalSummary.point, 
+        totalSummary.discount, 
+        "-",
+        totalSummary.change, 
+        totalSummary.billAmount,
+        totalSummary.billAmountBefore, 
+        totalSummary.orderCount, 
+        "-", 
+        "-", 
+        "-",
+        "-", 
+        "-" 
+      ];
+
+      // จัดรูปแบบแถวสรุป
+      const summaryRow = sheet.addRow(summaryRowData);
+      summaryRow.eachCell((cell) => {
+        cell.font = {
+          bold: true,
+          color: COLOR_APP 
+        };
+      });
+
+      sheet.addRow([]);
+      sheet.addRow([]);
+
+      sheet.getRow(sheet.rowCount + 1).values = ["Promotion:"];
+      sheet.getRow(sheet.rowCount + 1).values = promotionHeaders;
+
+      promotionHeaders.forEach((header, index) => {
+        const cell = sheet.getRow(sheet.rowCount).getCell(index + 1);
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFFFA07A" }, 
+        };
+        cell.font = {
+          name: "Noto Sans Lao",
+          size: 13,
+          bold: true,
+          color: { argb: "FF000000" },
+        };
+        cell.alignment = {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        };
+        cell.border = {
+          top: { style: "thin", color: COLOR_APP },
+          left: { style: "thin", color: COLOR_APP },
+          bottom: { style: "thin", color: COLOR_APP },
+          right: { style: "thin", color: COLOR_APP }
+        };
+      });
+
+      // เพิ่มข้อมูลโปรโมชัน
+      const promotionRowData = [
+        1, // no
+        promotionData?.count || 0,
+        promotionData.totalPromotionCount || 0,
+        promotionData?.totalDiscountedItemCount || 0,
+        promotionData?.totalDiscountValue || 0,
+        promotionData?.totalFreeItemCount || 0,
+        promotionData?.totalFreeMenuPrice || 0,
+        moment(promotionData?.createdAt).format("DD/MM/YYYY")
+      ];
+
+      const promotionRow = sheet.addRow(promotionRowData);
+      promotionRow.eachCell((cell) => {
+        cell.border = {
+          top: { style: "thin", color: { argb: "FF000000" } },
+          left: { style: "thin", color: { argb: "FF000000" } },
+          bottom: { style: "thin", color: { argb: "FF000000" } },
+          right: { style: "thin", color: { argb: "FF000000" } }
+        };
+      });
+
+      sheet.addRow([]);
+      sheet.addRow([]);
+
+      // (Billdetail)
+      sheet.getRow(sheet.rowCount + 1).values = ["ລາຍລະອຽດບິນ:"];
+      sheet.getRow(sheet.rowCount + 1).values = billDetailHeaders;
+
+      // จัดรูปแบบหัวกระดาษรายละเอียดบิล
+      billDetailHeaders.forEach((header, index) => {
+        const cell = sheet.getRow(sheet.rowCount).getCell(index + 1);
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFFFA07A" }, // Light Salmon color
+        };
+        cell.font = {
+          name: "Noto Sans Lao",
+          size: 13,
+          bold: true,
+          color: { argb: "FF000000" },
+        };
+        cell.alignment = {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        };
+        // เพิ่มเส้นขอบที่เข้มขึ้น
+        cell.border = {
+          top: { style: "thin", color: COLOR_APP },
+          left: { style: "thin", color: COLOR_APP },
+          bottom: { style: "thin", color: COLOR_APP },
+          right: { style: "thin", color: COLOR_APP }
+        };
+      });
+
+      // เตรียมข้อมูลสำหรับรายละเอียดบิล
+      const deliveryRevenue =
+        billDetailData?.delivery?.[0]?.revenueByPlatform?.find(
+          (p) => p._id === "Panda"
+        ) || {};
+
+      // ข้อมูลรายละเอียดบิล
+      const billDetailRows = [
+        {
+          no: 1,
+          bill_type: t("total_bill"),
+          bill_count: billDetailData?.successAmount?.numberOfBills || 0,
+          total_bill_amount: billDetailData?.successAmount?.totalBalance || 0,
+        },
+        {
+          no: 2,
+          bill_type: t("total_cash"),
+          bill_count: billDetailData?.successAmount?.cashCount || 0,
+          total_bill_amount: billDetailData?.successAmount?.payByCash || 0,
+        },
+        {
+          no: 3,
+          bill_type: t("total_tsf"),
+          bill_count: billDetailData?.successAmount?.transferCount || 0,
+          total_bill_amount: billDetailData?.successAmount?.transferPayment || 0,
+        },
+        {
+          no: 4,
+          bill_type: t("money_from_appzap"),
+          bill_count: 0,
+          total_bill_amount: 0,
+        },
+        {
+          no: 5,
+          bill_type: t("total_debt"),
+          bill_count: 0,
+          total_bill_amount: 0,
+        },
+        {
+          no: 6,
+          bill_type: t("delivery_panda"),
+          bill_count: deliveryRevenue?.totalOrders || 0,
+          total_bill_amount: deliveryRevenue?.totalRevenue || 0,
+        },
+        {
+          no: 7,
+          bill_type: t("point"),
+          bill_count: 0,
+          total_bill_amount: 0,
+        },
+        {
+          no: 8,
+          bill_type: t("service_charge"),
+          bill_count: 0,
+          total_bill_amount: 0,
+        },
+        {
+          no: 9,
+          bill_type: t("tax"),
+          bill_count: 0,
+          total_bill_amount: 0
+        },
+        {
+          no: 10,
+          bill_type: t("total_tax_service_charge"),
+          bill_count: 0,
+          total_bill_amount: 0,
+        },
+      ];
+
+      // เพิ่มข้อมูลรายละเอียดบิล
+      billDetailRows.forEach((row) => {
+        const rowData = [
+          row.no,
+          row.bill_type,
+          row.bill_count,
+          row.total_bill_amount
+        ];
+
+        const detailRow = sheet.addRow(rowData);
+        detailRow.eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin", color: COLOR_APP },
+            left: { style: "thin", color: COLOR_APP },
+            bottom: { style: "thin", color: COLOR_APP },
+            right: { style: "thin", color: COLOR_APP }
+          };
+
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 13,
+          };
+
+          cell.alignment = {
+            horizontal: cell.col === 1 ? "center" : "left",
+            vertical: "middle",
+            wrapText: true,
+          };
+        });
+      });
+
+      sheet.addRow([]);
+      sheet.addRow([]);
+
+      // เพิ่มข้อมูลธนาคาร
+      sheet.getRow(sheet.rowCount + 1).values = ["ສະຫຼຸບທະນາຄານ:"];
+      sheet.getRow(sheet.rowCount + 1).values = bankHeaders;
+
+      // จัดรูปแบบหัวข้อธนาคาร
+      bankHeaders.forEach((header, index) => {
+        const cell = sheet.getRow(sheet.rowCount).getCell(index + 1);
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFFFA07A" }, // Light Salmon color
+        };
+        cell.font = {
+          name: "Noto Sans Lao",
+          size: 13,
+          bold: true,
+          color: { argb: "FF000000" },
+        };
+        cell.alignment = {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        };
+        cell.border = {
+          top: { style: "thin", color: COLOR_APP },
+          left: { style: "thin", color: COLOR_APP },
+          bottom: { style: "thin", color: COLOR_APP },
+          right: { style: "thin", color: COLOR_APP }
+        };
+      });
+
+      // เพิ่มข้อมูลธนาคาร
+      const bankData = bankRes?.data?.bank || [];
+      bankData.forEach((bank, index) => {
+        const bankRowData = [
+          index + 1,
+          bank?.bankDetails?.bankName || t("unknown"),
+          bank?.bankTotalAmount || 0
+        ];
+
+        const row = sheet.addRow(bankRowData);
+        row.eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin", color: COLOR_APP },
+            left: { style: "thin", color: COLOR_APP },
+            bottom: { style: "thin", color: COLOR_APP },
+            right: { style: "thin", color: COLOR_APP }
+          };
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12
+          };
+        });
+      });
+
+      // กรณีไม่มีข้อมูลธนาคาร
+      if (bankData.length === 0) {
+        const emptyBankRowData = new Array(bankHeaders.length).fill('');
+        emptyBankRowData[0] = t("no_data");
+        sheet.addRow(emptyBankRowData);
+      }
+
+      sheet.addRow([]);
+      sheet.addRow([]);
+
+      // สร้างส่วนหัวข้อมูลพนักงาน (StaffInfo)
+      sheet.getRow(sheet.rowCount + 1).values = ["ຂໍ້ມູນພະນັກງານ:"];
+      sheet.getRow(sheet.rowCount + 1).values = staffInfoHeaders;
+
+      // จัดรูปแบบหัวกระดาษข้อมูลพนักงาน
+      staffInfoHeaders.forEach((header, index) => {
+        const cell = sheet.getRow(sheet.rowCount).getCell(index + 1);
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFFFA07A" }, // Light Salmon color
+        };
+        cell.font = {
+          name: "Noto Sans Lao",
+          size: 13,
+          bold: true,
+          color: { argb: "FF000000" },
+        };
+        cell.alignment = {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        };
+        // เพิ่มเส้นขอบที่เข้มขึ้น
+        cell.border = {
+          top: { style: "thin", color: COLOR_APP },
+          left: { style: "thin", color: COLOR_APP },
+          bottom: { style: "thin", color: COLOR_APP },
+          right: { style: "thin", color: COLOR_APP }
+        };
+      });
+
+      // เพิ่มข้อมูลพนักงาน
+      staffInfoData.forEach((staff, index) => {
+        const staffRowData = [
+          index + 1,
+          staff?.userId?.userId || t("unknown"),
+          (staff?.served || 0) + (staff?.canceled || 0),
+          staff?.canceled || 0,
+          0, // ไม่มีข้อมูล order_paid ใน API
+          staff?.totalSaleAmount || 0
+        ];
+
+        const staffRow = sheet.addRow(staffRowData);
+        staffRow.eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin", color: COLOR_APP },
+            left: { style: "thin", color: COLOR_APP },
+            bottom: { style: "thin", color: COLOR_APP },
+            right: { style: "thin", color: COLOR_APP }
+          };
+
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 13,
+          };
+
+          cell.alignment = {
+            horizontal: cell.col === 1 ? "center" : "left",
+            vertical: "middle",
+            wrapText: true,
+          };
+        });
+      });
+
+      // เว้นสองบรรทัด
+      sheet.addRow([]);
+      sheet.addRow([]);
+
+      // สร้างส่วนหัวยอดขายรายวัน (DialySales)
+      sheet.getRow(sheet.rowCount + 1).values = ["ລາຍງານຍອດຂາຍລາຍວັນ:"];
+      sheet.getRow(sheet.rowCount + 1).values = dailySalesHeaders;
+
+      // จัดรูปแบบหัวกระดาษยอดขายรายวัน
+      dailySalesHeaders.forEach((header, index) => {
+        const cell = sheet.getRow(sheet.rowCount).getCell(index + 1);
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFFFA07A" }, // Light Salmon color
+        };
+        cell.font = {
+          name: "Noto Sans Lao",
+          size: 13,
+          bold: true,
+          color: { argb: "FF000000" },
+        };
+        cell.alignment = {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        };
+        // เพิ่มเส้นขอบที่เข้มขึ้น
+        cell.border = {
+          top: { style: "thin", color: COLOR_APP },
+          left: { style: "thin", color: COLOR_APP },
+          bottom: { style: "thin", color: COLOR_APP },
+          right: { style: "thin", color: COLOR_APP }
+        };
+      });
+
+      // เพิ่มข้อมูลยอดขายรายวัน
+      dailySalesData.forEach((day, index) => {
+        const dailySalesRowData = [
+          day?.date || "-",
+          day?.order || 0,
+          day?.bill || 0,
+          0, // ไม่มีข้อมูล delivery ใน API
+          day?.billBefore || 0,
+          day?.discount || 0,
+          day?.remainingAmount || 0,
+          day?.billAmount || 0
+        ];
+
+        const dailySalesRow = sheet.addRow(dailySalesRowData);
+        dailySalesRow.eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin", color: COLOR_APP },
+            left: { style: "thin", color: COLOR_APP },
+            bottom: { style: "thin", color: COLOR_APP },
+            right: { style: "thin", color: COLOR_APP }
+          };
+
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 13,
+          };
+
+          cell.alignment = {
+            horizontal: cell.col === 1 ? "center" : "left",
+            vertical: "middle",
+            wrapText: true,
+          };
+        });
+      });
+
+      // เว้นสองบรรทัด
+      sheet.addRow([]);
+      sheet.addRow([]);
+
+      // สร้างส่วนหัวประเภทเมนู
+      sheet.getRow(sheet.rowCount + 1).values = ["ປະເພດເມນູ:"];
+      sheet.getRow(sheet.rowCount + 1).values = menuTypeHeaders;
+
+      // จัดรูปแบบหัวกระดาษประเภทเมนู
+      menuTypeHeaders.forEach((header, index) => {
+        const cell = sheet.getRow(sheet.rowCount).getCell(index + 1);
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFFFA07A" }, // Light Salmon color
+        };
+        cell.font = {
+          name: "Noto Sans Lao",
+          size: 13,
+          bold: true,
+          color: { argb: "FF000000" },
+        };
+        cell.alignment = {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        };
+        // เพิ่มเส้นขอบที่เข้มขึ้น
+        cell.border = {
+          top: { style: "thin", color: COLOR_APP },
+          left: { style: "thin", color: COLOR_APP },
+          bottom: { style: "thin", color: COLOR_APP },
+          right: { style: "thin", color: COLOR_APP }
+        };
+      });
+
+      // เพิ่มข้อมูลประเภทเมนู
+      menuTypeData.forEach((category, index) => {
+        const menuTypeRowData = [
+          category?.name || t("unknown"),
+          category?.served || 0,
+          category?.cenceled || 0,
+          category?.paid || 0,
+          category?.totalSaleAmount || 0
+        ];
+
+        const menuTypeRow = sheet.addRow(menuTypeRowData);
+        menuTypeRow.eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin", color: { argb: "FF000000" } },
+            left: { style: "thin", color: { argb: "FF000000" } },
+            bottom: { style: "thin", color: { argb: "FF000000" } },
+            right: { style: "thin", color: { argb: "FF000000" } }
+          };
+        });
+      });
+
+      sheet.addRow([]);
+      sheet.addRow([]);
+
+      // สร้างส่วนหัวรายละเอียดเมนู
+      sheet.getRow(sheet.rowCount + 1).values = ["ຂໍ້ມູນເມນູ:"];
+      sheet.getRow(sheet.rowCount + 1).values = menuInfoHeaders;
+
+      // จัดรูปแบบหัวกระดาษรายละเอียดเมนู
+      menuInfoHeaders.forEach((header, index) => {
+        const cell = sheet.getRow(sheet.rowCount).getCell(index + 1);
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFFFA07A" }, // Light Salmon color
+        };
+        cell.font = {
+          name: "Noto Sans Lao",
+          size: 13,
+          bold: true,
+          color: { argb: "FF000000" },
+        };
+        cell.alignment = {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        };
+        // เพิ่มเส้นขอบที่เข้มขึ้น
+        cell.border = {
+          top: { style: "thin", color: COLOR_APP },
+          left: { style: "thin", color: COLOR_APP },
+          bottom: { style: "thin", color: COLOR_APP },
+          right: { style: "thin", color: COLOR_APP }
+        };
+      });
+
+      // เพิ่มข้อมูลรายละเอียดเมนู
+      menuInfoData.forEach((menu, index) => {
+        const menuInfoRowData = [
+          menu?.name || t("unknown"),
+          menu?.served || 0,
+          menu?.cenceled || 0,
+          menu?.paid || 0,
+          menu?.totalSaleAmount || 0
+        ];
+
+        const menuInfoRow = sheet.addRow(menuInfoRowData);
+        menuInfoRow.eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin", color: { argb: "FF000000" } },
+            left: { style: "thin", color: { argb: "FF000000" } },
+            bottom: { style: "thin", color: { argb: "FF000000" } },
+            right: { style: "thin", color: { argb: "FF000000" } }
+          };
+        });
+      });
+
+      sheet.addRow([]);
+      sheet.addRow([]);
+
+      // เพิ่มข้อมูลสกุลเงิน (ถ้ามี)
+      if (currencyRes?.data?.currency && currencyRes?.data?.currency.length > 0) {
+        sheet.getRow(sheet.rowCount + 1).values = [t("all_curency") + ":"];
+        sheet.getRow(sheet.rowCount + 1).values = currencyHeaders;
+
+        // จัดรูปแบบหัวข้อสกุลเงิน
+        currencyHeaders.forEach((header, index) => {
+          const cell = sheet.getRow(sheet.rowCount).getCell(index + 1);
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFFFA07A" },
+          };
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 13,
+            bold: true,
+            color: { argb: "FF000000" },
+          };
+          cell.alignment = {
+            horizontal: "center",
+            vertical: "middle",
+            wrapText: true,
+          };
+          cell.border = {
+            top: { style: "thin", color: COLOR_APP },
+            left: { style: "thin", color: COLOR_APP },
+            bottom: { style: "thin", color: COLOR_APP },
+            right: { style: "thin", color: COLOR_APP }
+          };
+        });
+
+        // เพิ่มข้อมูลสกุลเงิน
+        const currencyData = currencyRes?.data?.currency || [];
+        currencyData.forEach((currency, index) => {
+          const currencyRowData = [
+            index + 1,
+            currency?.currencyName || t("unknown"),
+            currency?.totalAmount || 0
+          ];
+
+          const row = sheet.addRow(currencyRowData);
+          row.eachCell((cell) => {
+            cell.border = {
+              top: { style: "thin", color: COLOR_APP },
+              left: { style: "thin", color: COLOR_APP },
+              bottom: { style: "thin", color: COLOR_APP },
+              right: { style: "thin", color: COLOR_APP }
+            };
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 12
+            };
+          });
+        });
+      }
+
+
+      // ตั้งความกว้างคอลัมน์
+      const maxColumns = Math.max(
+        billHeaders.length,
+        promotionHeaders.length,
+        billDetailHeaders.length,
+        bankHeaders.length,
+        staffInfoHeaders.length,
+        dailySalesHeaders.length,
+        menuTypeHeaders.length,
+        menuInfoHeaders.length,
+        currencyHeaders.length,
+      );
+      sheet.columns = Array(maxColumns).fill().map(() => ({ width: 18 }));
+
+      // สร้างไฟล์ Excel
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      // ดาวน์โหลดไฟล์
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = downloadUrl;
+      anchor.download = `${storeDetail?.name} - All Export.xlsx`;
+      anchor.click();
+      window.URL.revokeObjectURL(downloadUrl);
+
+    } catch (err) {
+      console.error(":", err);
+      errorAdd(`${t("export_fail")}`);
+    }
+  };
+
+
   return (
     <Modal show={open} onHide={onClose} size="md">
       <Modal.Header
@@ -1356,13 +2266,26 @@ export default function PopUpReportExportExcel({
             flexWrap: "wrap",
           }}
         >
-          <Button
-            style={{ height: 100, padding: 20, width: 200 }}
-            // onClick={Promotions}
-            disabled
-          >
-            <span>{t("sales_info")}</span>
-          </Button>
+
+          {
+            storeDetail?.isStatusCafe ? (
+              <Button
+                style={{ height: 100, padding: 20, width: 200 }}
+                onClick={allExport}
+              >
+                <span>{t("All Export")}</span>
+              </Button>
+            ) : (
+              <Button
+                style={{ height: 100, padding: 20, width: 200 }}
+                // onClick={Promotions}
+                disabled
+              >
+                <span>{t("sales_info")}</span>
+              </Button>
+            )
+          }
+
           <Button
             style={{ height: 100, padding: 20, width: 200 }}
             onClick={downloadExcel}
