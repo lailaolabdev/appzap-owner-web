@@ -221,17 +221,15 @@ export default function Sidenav({ location, navigate, onToggle }) {
       hidden: !storeDetail?.hasPOS,
       system: "orderManagement",
     },
-    // {
-    //   title: t("stock_manage"),
-    //   key: "stock",
-    //   // icon: BsArchive,
-    //   icon: faBoxes,
-    //   typeStore: "",
-    //   hidden:
-    //     (!hasReportStock && appzapStaff.includes(profileRole)) ||
-    // !storeDetail?.hasPOS,
-    //   system: "stockManagement",
-    // },
+    {
+      title: t("stock_manage"),
+      key: "stock",
+      // icon: BsArchive,
+      icon: faBoxes,
+      typeStore: "",
+      hidden: !storeDetail?.isCounterView,
+      system: "stockManagement",
+    },
     {
       title: `${t("isCafe")}`,
       key: storeDetail?.isShift
