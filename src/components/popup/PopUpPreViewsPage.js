@@ -23,7 +23,7 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
   const { printerCounter, printers } = useStore();
 
   useEffect(() => {}, [open]);
-
+  console.log("datas", datas);
   //todo function
   const billPrint = async () => {
     try {

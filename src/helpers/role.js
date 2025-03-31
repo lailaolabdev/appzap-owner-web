@@ -145,7 +145,7 @@ const role = (role, user, storeDetail, shiftCurrent, path) => {
         // themeManagement: true,
         audioManagement: true,
         report: true,
-        // stockManagement: true,
+        stockManagement: true,
         farkManagement: true,
       };
     default:

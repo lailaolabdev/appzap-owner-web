@@ -70,6 +70,7 @@ export default function ReportStocks() {
   const [isLoadingTotal, setIsLoadingTotal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [stocks, setStocks] = useState(false);
+  const [stockAll, setStockAll] = useState([]);
   const [filterName, setFilterName] = useState("");
   const [totalStock, setTotalStock] = useState(0);
   const [totalStockValue, setTotalStockValue] = useState(0);
@@ -93,7 +94,6 @@ export default function ReportStocks() {
   const handleChangePage = useCallback((newPage) => {
     setPage(newPage);
   }, []);
-
   const rowsPerPageTotal = 10;
   const [pageTotal, setPageTotal] = useState(0);
   const pageAllTotal =
@@ -246,8 +246,7 @@ export default function ReportStocks() {
         findby += `stockCategoryId=${selectCategories}&`;
         const res = await getStocksAll(findby);
         if (res.status === 200) {
-          // console.log("res--->", res);
-          // setTotalStock(res?.data?.total);
+          setStockAll(res?.data?.stockAll);
           setStocks(res?.data?.stockData);
           setTotalStockValue(res?.data?.totalStockValue);
           setIsLoading(true);
@@ -421,16 +420,24 @@ export default function ReportStocks() {
         <div className="text-xl font-semibold pt-2">
           {t("item_total")} {totalStock} {t("item_amount")}
         </div>
-        <div class="w-full max-w-sm min-w-[200px]">
-          <div class="relative flex items-center">
+        <div className="w-full max-w-sm min-w-[200px]">
+          <div className="relative flex items-center">
             <input
-              class="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-4 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
+              className="w-full h-10 bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md pl-4 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
               placeholder={t("search")}
+              value={filterName}
+              onChange={(e) => setFilterName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  getStocks();
+                }
+              }}
             />
 
             <button
-              class="rounded-md ml-2 bg-slate-800 py-2.5 px-3 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+              className="ml-2 rounded-md bg-slate-800 py-2 px-3 border border-transparent text-center text-sm text-white transition-all shadow-sm hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
               type="button"
+              onClick={getStocks}
             >
               <FontAwesomeIcon
                 icon={faSearch}
@@ -472,10 +479,25 @@ export default function ReportStocks() {
           <button
             class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md"
             onClick={() => setPopup({ PopUpPreViewsPage: true })}
-            disabled={!hasManageStockEdit}
           >
             {t("Print")}
           </button>
+          <button
+            class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md"
+            onClick={() =>
+              setPopup({ PopUpPreViewsPage: true, isStatus: true })
+            }
+          >
+            {t("Print")} {t("all")}
+          </button>
+          {profile?.data?.role === "APPZAP_ADMIN" && (
+            <button
+              class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md"
+              onClick={() => navigate("/stock/Editing")}
+            >
+              {t("setting")}
+            </button>
+          )}
         </div>
       </div>
       <div className="py-2">
@@ -529,9 +551,12 @@ export default function ReportStocks() {
                       <th style={{ textAlign: "center" }}>
                         {t("total_amount")}
                       </th>
-                      <th style={{ textAlign: "right" }}>
-                        {t("manage_stock")}
-                      </th>
+                      {(storeDetail?.isCounterAccess ||
+                        profile?.data?.role === "APPZAP_ADMIN") && (
+                        <th style={{ textAlign: "right" }}>
+                          {t("manage_stock")}
+                        </th>
+                      )}
                     </tr>
                     {stocks?.map((item, index) => (
                       <tr key={index}>
@@ -600,64 +625,67 @@ export default function ReportStocks() {
                           {moneyCurrency(item?.stockLevel) ?? "-"}{" "}
                           {storeDetail?.firstCurrency}
                         </td>
-                        <td className="justify-end flex ">
-                          <div className="flex gap-2 w-auto justify-end ">
-                            <>
-                              <ButtonPrimary
-                                onClick={() => {
-                                  setSelect(item);
-                                  setPopup({ PopUpMinusStock: true });
-                                }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faMinus}
-                                  style={{
-                                    color: "white",
+                        {(storeDetail?.isCounterAccess ||
+                          profile?.data?.role === "APPZAP_ADMIN") && (
+                          <td className="justify-end flex ">
+                            <div className="flex gap-2 w-auto justify-end ">
+                              <>
+                                <ButtonPrimary
+                                  onClick={() => {
+                                    setSelect(item);
+                                    setPopup({ PopUpMinusStock: true });
                                   }}
-                                />
-                              </ButtonPrimary>{" "}
-                              <ButtonPrimary
-                                onClick={() => {
-                                  setSelect(item);
-                                  setPopup({ PopUpAddStock: true });
-                                }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faPlus}
-                                  style={{
-                                    color: "white",
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faMinus}
+                                    style={{
+                                      color: "white",
+                                    }}
+                                  />
+                                </ButtonPrimary>{" "}
+                                <ButtonPrimary
+                                  onClick={() => {
+                                    setSelect(item);
+                                    setPopup({ PopUpAddStock: true });
                                   }}
-                                />
-                              </ButtonPrimary>{" "}
-                              <ButtonPrimary
-                                onClick={() => {
-                                  setSelect(item);
-                                  setPopup({ PopUpConfirmDeletion: true });
-                                }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faTrash}
-                                  style={{
-                                    color: "white",
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faPlus}
+                                    style={{
+                                      color: "white",
+                                    }}
+                                  />
+                                </ButtonPrimary>{" "}
+                                <ButtonPrimary
+                                  onClick={() => {
+                                    setSelect(item);
+                                    setPopup({ PopUpConfirmDeletion: true });
                                   }}
-                                />
-                              </ButtonPrimary>{" "}
-                              <ButtonPrimary
-                                onClick={() => {
-                                  setSelect(item);
-                                  setPopup({ PopUpEditStock: true });
-                                }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faEdit}
-                                  style={{
-                                    color: "white",
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faTrash}
+                                    style={{
+                                      color: "white",
+                                    }}
+                                  />
+                                </ButtonPrimary>{" "}
+                                <ButtonPrimary
+                                  onClick={() => {
+                                    setSelect(item);
+                                    setPopup({ PopUpEditStock: true });
                                   }}
-                                />
-                              </ButtonPrimary>{" "}
-                            </>
-                          </div>
-                        </td>
+                                >
+                                  <FontAwesomeIcon
+                                    icon={faEdit}
+                                    style={{
+                                      color: "white",
+                                    }}
+                                  />
+                                </ButtonPrimary>{" "}
+                              </>
+                            </div>
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </table>
@@ -827,7 +855,7 @@ export default function ReportStocks() {
       <PopUpPreViewsPage
         onClose={() => setPopup()}
         open={popup?.PopUpPreViewsPage}
-        datas={prepaDatas}
+        datas={popup?.isStatus ? stockAll : prepaDatas}
         storeData={storeDetail}
       />
 

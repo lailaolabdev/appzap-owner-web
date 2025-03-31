@@ -1339,5 +1339,10 @@
   "your_item_has_been_deleted": "ລາຍການຖືກລົບສຳເລັດແລ້ວ.",
   "your_item_has_not_been_deleted": "ລາຍການລົບບໍ່ສຳເລັດແລ້ວ.",
   "can_be_exchanged": "ແລກ",
-  "menu_change_point": "ເມນູແລກດ້ວຍຄະແນນ"
+  "menu_change_point": "ເມນູແລກດ້ວຍຄະແນນ",
+  "counter_read_only": "ສະແດງຂໍ້ມູນເຄົາເຕີ້ເທົ່ານັ້ນ",
+  "mange_stock_setting": "ຈັດການການຕັ້ງຄ່າສະຕ໋ອກ ແລະ ຕາມຄວາມຕ້ອງການທີ່ນີ້",
+  "counter_access_only": "ສິດເຂົ້າເຖິງເຄົາເຕີ້ເທົ່ານັ້ນ",
+  "description_counter_only": "ເປີດໃຊ້ຕົວເລືອກນີ້ເພື່ອໃຫ້ເຄົາເຕີ້ສະແດງຂໍ້ມູນເທົ່ານັ້ນສໍາລັບຜູ້ໃຊ້.",
+  "description_counter_access": "ເຄົາເຕີ້ມີສິດເຂົ້າເຖິງເພື່ອຈັດການ."
 }
