@@ -600,25 +600,25 @@ export default function HistoryUse() {
               {/* <table className="table table-hover">
                 <thead className="thead-light">
                   <tr>
-                    <th style={{ textWrap: "nowrap" }} scope="col">
+                    <th className="text-nowarp" scope="col">
                       {t("no")}
                     </th>
-                    <th style={{ textWrap: "nowrap" }} scope="col">
+                    <th className="text-nowarp" scope="col">
                       {t("tableNumber")}
                     </th>
-                    <th style={{ textWrap: "nowrap" }} scope="col">
+                    <th className="text-nowarp" scope="col">
                       {t("tableCode")}
                     </th>
-                    <th style={{ textWrap: "nowrap" }} scope="col">
+                    <th className="text-nowarp" scope="col">
                       {t("amount")}
                     </th>
-                    <th style={{ textWrap: "nowrap" }} scope="col">
+                    <th className="text-nowarp" scope="col">
                       {t("detail")}
                     </th>
-                    <th style={{ textWrap: "nowrap" }} scope="col">
+                    <th className="text-nowarp" scope="col">
                       {t("status")}
                     </th>
-                    <th style={{ textWrap: "nowrap" }} scope="col">
+                    <th className="text-nowarp" scope="col">
                       {t("date_time")}
                     </th>
                   </tr>
@@ -628,28 +628,28 @@ export default function HistoryUse() {
                   {data?.map((item, index) => {
                     return (
                       <tr key={index}>
-                        <td style={{ textWrap: "nowrap" }}>
+                        <td className="text-nowarp">
                           {page * rowsPerPage + index + 1}
                         </td>
-                        <td style={{ textWrap: "nowrap" }}>
+                        <td className="text-nowarp">
                           {item?.tableName ?? "-"}
                         </td>
-                        <td style={{ textWrap: "nowrap" }}>
+                        <td className="text-nowarp">
                           {item?.code ?? "-"}
                         </td>
-                        <td style={{ textWrap: "nowrap" }}>
+                        <td className="text-nowarp">
                           {item?.totalAmount
                             ? `${item?.totalAmount.toLocaleString()} ${item?.currency ?? "LAK"
                             }`
                             : "-"}
                         </td>
-                        <td style={{ textWrap: "nowrap" }}>
+                        <td className="text-nowarp">
                           {t("checkout") ?? "-"}
                         </td>
-                        <td style={{ textWrap: "nowrap" }}>
+                        <td className="text-nowarp">
                           {t(item.status) ?? "-"}
                         </td>
-                        <td style={{ textWrap: "nowrap" }}>
+                        <td className="text-nowarp">
                           {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
                         </td>
                       </tr>
@@ -661,7 +661,7 @@ export default function HistoryUse() {
           ) : (
             <div>
               {!orderHistory && (
-                <div className=" flex justify-between items-center space-x-2 p-3">
+                <div className=" flex justify-between items-center space-x-2 my-4">
                   <Button
                     variant="outline-primary"
                     size="small"
@@ -690,7 +690,7 @@ export default function HistoryUse() {
                           handleFilterClick(value);
                         }
                       }}
-                      className="p-2 border rounded-md bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                      className="p-1.5 border rounded-md bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-400"
                     >
                       <option selected value="">
                         {t("all")}
@@ -717,21 +717,30 @@ export default function HistoryUse() {
               <table className="table table-hover">
                 <thead className="thead-light">
                   <tr>
-                    <th style={{ textWrap: "nowrap" }} scope="col">
+                    <th className="text-nowarp" scope="col">
                       {t("no")}
                     </th>
-                    <th style={{ textWrap: "nowrap" }} scope="col">
+                    <th className="text-nowarp" scope="col">
                       {filtterModele === "historyServiceChange"
                         ? t("surnameAndLastName")
                         : t("manager_name")}
                     </th>
+                    <th className="text-nowarp" scope="col">
+                      {t("table")}
+                    </th>
+                    <th className="text-nowarp" scope="col">
+                      {t("amount")}
+                    </th>
+                    <th className="text-nowarp" scope="col">
+                      {t("order")}
+                    </th>
                     {/* <th scope="col">ສະຖານະ</th> */}
-                    <th style={{ textWrap: "nowrap" }} scope="col">
+                    <th className="text-nowarp" scope="col">
                       {filtterModele === "historyServiceChange"
                         ? `${t("service_charge")} (${serviceChargePercent}%)`
                         : t("detail")}
                     </th>
-                    <th style={{ textWrap: "nowrap" }} scope="col">
+                    <th className="text-nowarp" scope="col">
                       {filtterModele === "historyServiceChange"
                         ? "ຍອດບິນ"
                         : t("cause")}
@@ -743,7 +752,7 @@ export default function HistoryUse() {
                       <th>{t("total_Amount_of_Money")}</th>
                     )}
 
-                    <th style={{ textWrap: "nowrap" }} scope="col">
+                    <th className="text-nowarp" scope="col">
                       {t("date_time")}
                     </th>
                   </tr>
@@ -753,14 +762,17 @@ export default function HistoryUse() {
                   {(statusOderHis ? filteredData : data)?.map((item, index) => {
                     return (
                       <tr key={index}>
-                        <td style={{ textWrap: "nowrap" }}>
+                        <td className="text-nowarp">
                           {page * rowsPerPage + index + 1}
                         </td>
-                        <td style={{ textWrap: "nowrap" }}>
+                        <td className="text-nowarp">
                           {filtterModele === "historyServiceChange"
                             ? `${item.firstName} ${item.lastName}`
                             : item?.user}
                         </td>
+                        <td className="text-nowrap">{item.table}</td>
+                        <td className="text-nowrap">{item.orderAmount}</td>
+                        <td className="text-nowrap">{item.orderItem}</td>
                         {/* <td
         style={{
           color: item?.event === "INFO" ? "green" : "red",
@@ -780,7 +792,7 @@ export default function HistoryUse() {
                             : `${item?.eventDetail}`}
                         </td>
 
-                        <td style={{ textWrap: "nowrap" }}>
+                        <td className="text-nowarp">
                           {filtterModele === "historyServiceChange"
                             ? ` ${formatNumber(item.total)} ກີບ`
                             : item?.reason === null ||
@@ -801,7 +813,7 @@ export default function HistoryUse() {
                           <td>{formatNumber(item.totalMustPay)} ກີບ</td>
                         )}
 
-                        <td style={{ textWrap: "nowrap" }}>
+                        <td className="text-nowarp">
                           {moment(item?.createdAt).format("DD/MM/YYYY HH:mm a")}
                         </td>
                       </tr>
