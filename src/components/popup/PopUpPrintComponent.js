@@ -18,6 +18,7 @@ import {
   getDeliveryReport,
   getMoneyReport,
   getDebtReport,
+  getCategoryReport,
 } from "../../services/report";
 
 import _ from "lodash";
@@ -48,6 +49,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const [delivery, setDelivery] = useState([]);
   const [moneyReport, setMoneyReport] = useState([]);
   const [debtReport, setDebtReport] = useState(null);
+  const [categoryReport, setCategoryReport] = useState([]);
   const [reportBill, setReportBill] = useState({
     totalAmount: 0,
     billCount: 0,
@@ -71,6 +73,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
     getDataBillReport(startDate);
     getMoneyReportData(startDate);
     getDebtReportData(startDate);
+    getCategoryReportData(startDate);
   }, [startDate, shiftId]);
 
   const fetchShift = async () => {
@@ -357,6 +360,13 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
     }
   };
 
+  const getCategoryReportData = async (startDate) => {
+    try {
+      const data = await getCategoryReport(storeDetail?._id, findByData());
+      setCategoryReport(data);
+    } catch (err) { }
+  };
+
   const deliveryReports = delivery
     ? delivery?.revenueByPlatform?.map((e) => {
       return {
@@ -365,6 +375,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       };
     })
     : [];
+
 
   return (
     <Modal show={open} onHide={onClose} size="md">
@@ -566,6 +577,34 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
             <hr style={{ borderBottom: "1px dotted #000" }} />
             <div>
               <TableComponent>
+                <tr>
+                  <td style={{ textAlign: "left" }}>#</td>
+                  <th style={{ textAlign: "center" }}>{t("menu_type")}</th>
+                  <th style={{ textAlign: "center" }}>{t("success_order")}</th>
+                  <th style={{ textAlign: "center" }}>{t("cancel")}</th>
+                  <th style={{ textAlign: "right" }}>{t("sale_price_amount")}</th>
+                </tr>
+                {categoryReport
+                  ?.sort((x, y) => {
+                    return y.served - x.served;
+                  })
+                  ?.map((e, i) => (
+                    <tr>
+                      <td style={{ textAlign: "left" }}>{i + 1}</td>
+                      <td style={{ textAlign: "center" }}>{e?.name}</td>
+                      <td style={{ textAlign: "center" }}>{e?.served}</td>
+                      <td style={{ textAlign: "center" }}>{e?.cenceled}</td>
+                      <td style={{ textAlign: "right" }}>
+                        {moneyCurrency(e?.totalSaleAmount)}
+                        {storeDetail?.firstCurrency}
+                      </td>
+                    </tr>
+                  ))}
+              </TableComponent>
+            </div>
+            <hr style={{ borderBottom: "1px dotted #000" }} />
+            <div>
+              <TableComponent>
                 <tr style={{ fontWeight: "bold" }}>
                   <td style={{ textAlign: "left" }}>#</td>
                   <td style={{ textAlign: "center" }}>{t("no")}</td>
@@ -614,9 +653,11 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                     {moneyCurrency(
                       bills?.reduce((sum, bill) => sum + (bill?.billAmount || 0), 0)
                     )}
+                    <span> {storeDetail?.firstCurrency}</span>
                   </td>
                 </tr>
               </TableComponent>
+
             </div>
           </Container>
         </div>

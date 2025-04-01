@@ -456,6 +456,7 @@ export default function DashboardPage() {
 
   const { totalExchangePoint, totalPrice } = calculateTotals();
 
+
   return (
     <div>
       {loading ? <Loading /> : ""}
