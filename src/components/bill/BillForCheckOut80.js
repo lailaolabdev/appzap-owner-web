@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { convertImageToBase64, moneyCurrency } from "../../helpers/index";
 import moment from "moment";
 import {
@@ -24,6 +24,8 @@ export default function BillForCheckOut80({
   serviceCharge = 0,
   totalBillBillForCheckOut80,
   profile,
+  paymentMethod,
+  enableServiceChange,
 }) {
   // state
   const [total, setTotal] = useState();
@@ -38,15 +40,22 @@ export default function BillForCheckOut80({
     storeDetail?.isShowExchangeRate || false
   );
 
+  // Replace the current useRef and console.log
   const serviceChargeRef = useRef(serviceCharge);
   const moneyReciveRef = useRef(dataBill?.moneyReceived);
   const moneyChangeRef = useRef(dataBill?.moneyChange);
+  const paymentMethodRef = useRef(dataBill?.paymentMethod);
+  const enableServiceChangeRef = useRef(enableServiceChange);
+  
+  // Remove this console log that runs on every render
+  // console.log("enableServiceChange", enableServiceChangeRef.current);
 
   const orders =
     orderPayBefore && orderPayBefore.length > 0
       ? orderPayBefore
       : dataBill?.orderId;
 
+  // First, let's modify the useEffect to properly track enableServiceChange
   useEffect(() => {
     _calculateTotal();
     if (serviceCharge > 0) {
@@ -58,15 +67,46 @@ export default function BillForCheckOut80({
     if (dataBill?.moneyChange > 0) {
       moneyChangeRef.current = dataBill?.moneyChange;
     }
+    // if (dataBill?.paymentMethod !== undefined) {
+    //   paymentMethodRef.current = dataBill?.paymentMethod;
+    // }
+    if (paymentMethod) {
+      paymentMethodRef.current = paymentMethod;
+    } else if (dataBill?.paymentMethod !== undefined) {
+      paymentMethodRef.current = dataBill?.paymentMethod;
+    }
+    // Always update enableServiceChangeRef with the latest value
+    enableServiceChangeRef.current = enableServiceChange;
   }, [
-    dataBill,
     dataBill?.moneyReceived,
     dataBill?.moneyChange,
+    dataBill?.paymentMethod,
+    paymentMethod,
     taxPercent,
     serviceCharge,
     totalBillBillForCheckOut80,
     orderPayBefore,
+    enableServiceChange,
   ]);
+
+  // Now let's fix the TotalServiceChange calculation
+  const TotalServiceChange = (() => {
+    // Debug log to track values during calculation
+
+    
+    // If store has service charge enabled by default
+    if (storeDetail?.isServiceChange === true) {
+      return serviceChargeRef.current || 0;
+    }
+    
+    // If service charge is explicitly enabled via prop (even if it was undefined before)
+    if (enableServiceChange === true || enableServiceChangeRef.current === true) {
+      return serviceChargeRef.current || 0;
+    }
+    
+    // Default case: no service charge
+    return 0;
+  })();
 
   useEffect(() => {
     getDataCurrency();
@@ -115,14 +155,19 @@ export default function BillForCheckOut80({
 
     setTaxAmount((totalAmountAll * taxPercent) / 100);
 
-    // ใช้ serviceCharge จาก prop แทน storeDetail?.serviceChargePer
+    // Service charge calculation using the improved TotalServiceChange
     const serviceChargeTotal = Math.floor(
-      (totalAmountAll * serviceChargeRef.current ||
-        storeDetail?.serviceChargePer) / 100
+      (totalAmountAll * TotalServiceChange) / 100
     );
     setServiceChargeAmount(serviceChargeTotal);
     setTotal(totalAmountAll);
   };
+
+  // Remove console logs for production
+  // console.log("serviceChargeRef.current", serviceChargeRef.current);
+  // console.log("storeDetail?.serviceChargePer 1", storeDetail?.serviceChargePer);
+  // console.log("serviceChargeAmount", serviceChargeAmount);
+  // console.log("TotalServiceChange", TotalServiceChange);
 
   const getDataCurrency = async () => {
     try {
@@ -153,7 +198,50 @@ export default function BillForCheckOut80({
     });
   }, [imageUrl2]);
 
-  console.log("dataBill?.paymentMethod", dataBill?.paymentMethod);
+  const paymentMethodText = useMemo(() => {
+    switch (paymentMethodRef.current) {
+      case "CASH":
+        return "(ເງີນສົດ)";
+      case "TRANSFER":
+        return "(ເງີນໂອນ)";
+      case "TRANSFER_CASH":
+        return "(ເງີນສົດແລະໂອນ)";
+      case "CASH_TRANSFER_POINT":
+        return "(ເງີນສົດ + ໂອນ + ພ໋ອຍ)";
+      default:
+        return "";
+    }
+  }, [paymentMethodRef.current]);
+
+  const paymentDisplay = useMemo(
+    () => (
+      <div
+        style={{
+          display: "flex",
+          gap: 2,
+          justifyContent: "center",
+          fontSize: 12,
+        }}
+      >
+        <div>
+          {t("getMoney")} {moneyCurrency(moneyReciveRef.current) || 0}{" "}
+          {storeDetail?.firstCurrency} <span>{paymentMethodText}</span>
+        </div>
+        {","}
+        <div>
+          {t("moneyWithdrawn")} {moneyCurrency(moneyChangeRef.current) || 0}{" "}
+          {storeDetail?.firstCurrency}
+        </div>
+      </div>
+    ),
+    [
+      dataBill?.moneyReceived,
+      dataBill?.moneyChange,
+      paymentMethodText,
+      storeDetail?.firstCurrency,
+      t,
+    ]
+  );
 
   return (
     <Container>
@@ -355,7 +443,7 @@ export default function BillForCheckOut80({
         <Col xs={7}>
           <div style={{ textAlign: "right" }}>
             {t("service_charge")}{" "}
-            {storeDetail?.serviceChargePer || serviceChargeRef.current}% :
+            {TotalServiceChange}% :
           </div>
         </Col>
         <Col>
@@ -402,73 +490,11 @@ export default function BillForCheckOut80({
           </Row>
         ))}
       </div>
-
-      {/* <div style={{ height: 10 }} />
-      <hr style={{ border: "1px dashed #000", margin: 0 }} />
-
-      {isShowExchangeRate && (
-        <div style={{ fontSize: 12, textAlign: "center" }}>
-          <span>{t("exchangeRate")}&nbsp;</span>
-          {currencyData?.map((item, index) => (
-            <span key={index}>
-              {item?.currencyCode}: {moneyCurrency(item?.sell)}
-              {index + 1 < currencyData?.length ? (
-                <span style={{ marginLeft: 10, marginRight: 10 }}>|</span>
-              ) : (
-                ""
-              )}
-            </span>
-          ))}
-          {","}
-          &nbsp;
-          {storeDetail?.isCRM && dataBill?.memberPhone && (
-            <span>
-              1 {t("point")} = 1 {storeDetail?.firstCurrency}
-            </span>
-          )}
-        </div>
-      )} */}
       <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
-      <div
-        style={{
-          display: "flex",
-          gap: 2,
-          justifyContent: "center",
-          fontSize: 12,
-        }}
-      >
-        <div>
-          {t("getMoney")} {moneyCurrency(moneyReciveRef.current) || 0}{" "}
-          {storeDetail?.firstCurrency}{" "}
-          <span>
-            {dataBill?.paymentMethod === "CASH"
-              ? "(ເງີນສົດ)"
-              : dataBill?.paymentMethod === "TRANSFER"
-              ? "(ເງີນໂອນ)"
-              : dataBill?.paymentMethod === "TRANSFER_CASH"
-              ? "(ເງີນສົດແລະໂອນ)"
-              : dataBill?.paymentMethod === "CASH_TRANSFER_POINT"
-              ? "(ເງີນສົດ + ໂອນ + ພ໋ອຍ)"
-              : ""}
-          </span>
-        </div>
-        {","}
-        <div>
-          {t("moneyWithdrawn")} {moneyCurrency(moneyChangeRef.current) || 0}{" "}
-          {storeDetail?.firstCurrency}
-        </div>
-      </div>
+    
+      {paymentDisplay}
 
-      {/* <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        {" "}
-        ໂອນເງີນສຳລະ{" "}
-      </div> */}
       <div
         style={{
           display: "flex",
