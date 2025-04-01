@@ -459,19 +459,25 @@ export default function ReportStocks() {
             >
               {t("Print")}
             </button> */}
-          <button
-            class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md mr-2"
-            onClick={() => setPopup({ PopupSelectStock: true })}
-          >
-            {t("create_stock_menu")}
-          </button>
+          {(storeDetail?.isCounterView === false ||
+            profile?.data?.role === "APPZAP_ADMIN") && (
+            <button
+              class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md mr-2"
+              onClick={() => setPopup({ PopupSelectStock: true })}
+            >
+              {t("create_stock_menu")}
+            </button>
+          )}
 
-          <button
-            class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md"
-            onClick={() => navigate("/settingStore/stock/add")}
-          >
-            {t("create_stock")}
-          </button>
+          {(storeDetail?.isCounterView === false ||
+            profile?.data?.role === "APPZAP_ADMIN") && (
+            <button
+              class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md"
+              onClick={() => navigate("/settingStore/stock/add")}
+            >
+              {t("create_stock")}
+            </button>
+          )}
         </div>
 
         <div class="flex gap-2">
