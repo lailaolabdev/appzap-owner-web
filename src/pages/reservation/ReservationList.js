@@ -134,12 +134,18 @@ export default function ReservationList() {
     let findBy = "";
     if (status) findBy += `&status=${status}`;
     if (search) findBy += `&search=${search}`;
-    // if (startDate) findBy += `&dateFrom=${startDate}`;
-    // if (endDate) findBy += `&dateTo=${endDate}`;
-    const data = await getReservations(findBy, storeId);
-    setReservationsData(data);
-    setBookingItems(data);
-    fetchBookingByStatus("WAITING");
+
+    try {
+      const data = await getReservations(findBy, storeId);
+      // Only set booking items if data exists
+      if (data) {
+        setReservationsData(data);
+        setBookingItems(data);
+      }
+      fetchBookingByStatus("WAITING");
+    } catch (error) {
+      console.error("Error fetching reservation data:", error);
+    }
     setIsLoading(false);
     return;
   };

@@ -73,7 +73,7 @@ export default function HistoryBankTransferClaim() {
   const [openSelectClaim, setOpenSelectClaim] = useState(false);
   const [openConfirmClaimAndClose, setOpenConfirmClaimAndClose] =
     useState(false);
-  const [rowsPerPage] = useState(20); // Using rowsPerPage directly, no need for setter
+  const [rowsPerPage] = useState(50); // Using rowsPerPage directly, no need for setter
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState({
     [CLAIM_STATUSES.UNCLAIMED]: 0,
@@ -192,6 +192,17 @@ export default function HistoryBankTransferClaim() {
         return [...prevSelected, ...paymentsToAdd];
       }
     });
+  };
+
+  const selectAllPayment = () => {
+    const isAllSelected =
+      selectedPayment.length === claimData[CLAIM_STATUSES.UNCLAIMED].length;
+
+    if (isAllSelected) {
+      setSelectedPayment([]);
+    } else {
+      setSelectedPayment(claimData[CLAIM_STATUSES.UNCLAIMED]);
+    }
   };
 
   const checkPaymentSelected = (payment) => {
@@ -474,6 +485,7 @@ export default function HistoryBankTransferClaim() {
           amountData={amountData}
           storeDetail={storeDetail}
           selectedPayment={selectedPayment}
+          selectAllPayment={selectAllPayment}
           unClaimedData={tabData[CLAIM_STATUSES.UNCLAIMED]}
           setSelectedPayment={setSelectedPayment}
           claimSelectedPayment={claimSelectedPayment}
