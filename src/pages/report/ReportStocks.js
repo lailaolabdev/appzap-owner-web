@@ -291,8 +291,6 @@ export default function ReportStocks() {
     }
   };
 
-  // log
-
   return (
     <div className="p-3">
       <NavList ActiveKey="/settingStore/reportStock" />
@@ -459,7 +457,7 @@ export default function ReportStocks() {
             >
               {t("Print")}
             </button> */}
-          {(storeDetail?.isCounterView === false ||
+          {(storeDetail?.isCounterAccess ||
             profile?.data?.role === "APPZAP_ADMIN") && (
             <button
               class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md mr-2"
@@ -469,7 +467,7 @@ export default function ReportStocks() {
             </button>
           )}
 
-          {(storeDetail?.isCounterView === false ||
+          {(storeDetail?.isCounterAccess ||
             profile?.data?.role === "APPZAP_ADMIN") && (
             <button
               class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md"
@@ -564,43 +562,44 @@ export default function ReportStocks() {
                         </th>
                       )}
                     </tr>
-                    {stocks?.map((item, index) => (
-                      <tr key={index}>
-                        {/* <td style={{ textAlign: "left" }}>
+                    {stocks.length > 0 &&
+                      stocks?.map((item, index) => (
+                        <tr key={index}>
+                          {/* <td style={{ textAlign: "left" }}>
                           <div className="pl-2">
                             {page * rowsPerPage + index + 1}
                           </div>
                         </td> */}
-                        <td>
-                          <div style={{ width: 30 }}>
-                            {isSelectAll ? (
-                              <Form.Check
-                                checked={true}
-                                label={page * rowsPerPage + index + 1}
-                                readOnly
-                              />
-                            ) : (
-                              <Form.Check
-                                type="checkbox"
-                                id={page * rowsPerPage + index + 1}
-                                onChange={() => onSelectSigleStoks(item)}
-                                label={page * rowsPerPage + index + 1}
-                              />
-                            )}
-                          </div>
-                        </td>
-                        <td style={{ textAlign: "left" }}>
-                          {formatDateNow(item?.createdAt)}
-                        </td>
-                        <td style={{ textAlign: "center" }}>{item?.name}</td>
-                        <td style={{ textAlign: "left" }}>
-                          {item?.stockCategoryId?.name ?? "-"}
-                        </td>
-                        <td style={{ textAlign: "left" }}>
-                          {moneyCurrency(item?.buyPrice) ?? 0}{" "}
-                          {storeDetail?.firstCurrency}
-                        </td>
-                        {/* <td style={{ textAlign: "center", minWidth: "10em" }}>
+                          <td>
+                            <div style={{ width: 30 }}>
+                              {isSelectAll ? (
+                                <Form.Check
+                                  checked={true}
+                                  label={page * rowsPerPage + index + 1}
+                                  readOnly
+                                />
+                              ) : (
+                                <Form.Check
+                                  type="checkbox"
+                                  id={page * rowsPerPage + index + 1}
+                                  onChange={() => onSelectSigleStoks(item)}
+                                  label={page * rowsPerPage + index + 1}
+                                />
+                              )}
+                            </div>
+                          </td>
+                          <td style={{ textAlign: "left" }}>
+                            {formatDateNow(item?.createdAt)}
+                          </td>
+                          <td style={{ textAlign: "center" }}>{item?.name}</td>
+                          <td style={{ textAlign: "left" }}>
+                            {item?.stockCategoryId?.name ?? "-"}
+                          </td>
+                          <td style={{ textAlign: "left" }}>
+                            {moneyCurrency(item?.buyPrice) ?? 0}{" "}
+                            {storeDetail?.firstCurrency}
+                          </td>
+                          {/* <td style={{ textAlign: "center", minWidth: "10em" }}>
                           <ProgressBar
                             maxCompleted={200}
                             width="100%"
@@ -617,83 +616,85 @@ export default function ReportStocks() {
                             )}`}
                           />
                         </td> */}
-                        <td style={{ textAlign: "left" }}>{item?.quantity}</td>
-                        <td style={{ textAlign: "left" }}>{item?.sale}</td>
-                        <td style={{ textAlign: "left" }}>{item?.import}</td>
-                        <td style={{ textAlign: "left" }}>
-                          {item?.wastes ?? "-"} %
-                        </td>
-                        <td style={{ textAlign: "left" }}>
-                          {item?.statusLevel}
-                        </td>
-                        <td style={{ textAlign: "left" }}>{item?.unit}</td>
-                        <td style={{ textAlign: "center" }}>
-                          {moneyCurrency(item?.stockLevel) ?? "-"}{" "}
-                          {storeDetail?.firstCurrency}
-                        </td>
-                        {(storeDetail?.isCounterAccess ||
-                          profile?.data?.role === "APPZAP_ADMIN") && (
-                          <td className="justify-end flex ">
-                            <div className="flex gap-2 w-auto justify-end ">
-                              <>
-                                <ButtonPrimary
-                                  onClick={() => {
-                                    setSelect(item);
-                                    setPopup({ PopUpMinusStock: true });
-                                  }}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faMinus}
-                                    style={{
-                                      color: "white",
-                                    }}
-                                  />
-                                </ButtonPrimary>{" "}
-                                <ButtonPrimary
-                                  onClick={() => {
-                                    setSelect(item);
-                                    setPopup({ PopUpAddStock: true });
-                                  }}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faPlus}
-                                    style={{
-                                      color: "white",
-                                    }}
-                                  />
-                                </ButtonPrimary>{" "}
-                                <ButtonPrimary
-                                  onClick={() => {
-                                    setSelect(item);
-                                    setPopup({ PopUpConfirmDeletion: true });
-                                  }}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faTrash}
-                                    style={{
-                                      color: "white",
-                                    }}
-                                  />
-                                </ButtonPrimary>{" "}
-                                <ButtonPrimary
-                                  onClick={() => {
-                                    setSelect(item);
-                                    setPopup({ PopUpEditStock: true });
-                                  }}
-                                >
-                                  <FontAwesomeIcon
-                                    icon={faEdit}
-                                    style={{
-                                      color: "white",
-                                    }}
-                                  />
-                                </ButtonPrimary>{" "}
-                              </>
-                            </div>
+                          <td style={{ textAlign: "left" }}>
+                            {item?.quantity}
                           </td>
-                        )}
-                      </tr>
-                    ))}
+                          <td style={{ textAlign: "left" }}>{item?.sale}</td>
+                          <td style={{ textAlign: "left" }}>{item?.import}</td>
+                          <td style={{ textAlign: "left" }}>
+                            {item?.wastes ?? "-"} %
+                          </td>
+                          <td style={{ textAlign: "left" }}>
+                            {item?.statusLevel}
+                          </td>
+                          <td style={{ textAlign: "left" }}>{item?.unit}</td>
+                          <td style={{ textAlign: "center" }}>
+                            {moneyCurrency(item?.stockLevel) ?? "-"}{" "}
+                            {storeDetail?.firstCurrency}
+                          </td>
+                          {(storeDetail?.isCounterAccess ||
+                            profile?.data?.role === "APPZAP_ADMIN") && (
+                            <td className="justify-end flex ">
+                              <div className="flex gap-2 w-auto justify-end ">
+                                <>
+                                  <ButtonPrimary
+                                    onClick={() => {
+                                      setSelect(item);
+                                      setPopup({ PopUpMinusStock: true });
+                                    }}
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faMinus}
+                                      style={{
+                                        color: "white",
+                                      }}
+                                    />
+                                  </ButtonPrimary>{" "}
+                                  <ButtonPrimary
+                                    onClick={() => {
+                                      setSelect(item);
+                                      setPopup({ PopUpAddStock: true });
+                                    }}
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faPlus}
+                                      style={{
+                                        color: "white",
+                                      }}
+                                    />
+                                  </ButtonPrimary>{" "}
+                                  <ButtonPrimary
+                                    onClick={() => {
+                                      setSelect(item);
+                                      setPopup({ PopUpConfirmDeletion: true });
+                                    }}
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faTrash}
+                                      style={{
+                                        color: "white",
+                                      }}
+                                    />
+                                  </ButtonPrimary>{" "}
+                                  <ButtonPrimary
+                                    onClick={() => {
+                                      setSelect(item);
+                                      setPopup({ PopUpEditStock: true });
+                                    }}
+                                  >
+                                    <FontAwesomeIcon
+                                      icon={faEdit}
+                                      style={{
+                                        color: "white",
+                                      }}
+                                    />
+                                  </ButtonPrimary>{" "}
+                                </>
+                              </div>
+                            </td>
+                          )}
+                        </tr>
+                      ))}
                   </table>
                 </Card.Body>
               ) : (
