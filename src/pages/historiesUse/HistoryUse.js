@@ -206,6 +206,7 @@ export default function HistoryUse() {
     }
   }, [data, statusOderHis]);
 
+
   return (
     <div
       style={{
@@ -795,13 +796,15 @@ export default function HistoryUse() {
                         <td className="text-nowarp">
                           {filtterModele === "historyServiceChange"
                             ? ` ${formatNumber(item.total)} ກີບ`
+                            : filtterModele === "deleted" || filtterModele === "checkBill"
+                            ? item?.commentCancelOrder || "-"
                             : item?.reason === null ||
                               item?.reason === "" ||
                               item?.reason === undefined ||
                               item?.reason === "undefined" ||
                               item?.reason === "null"
                             ? "-"
-                            : item?.reason}
+                            : item?.reason }
                         </td>
                         {filtterModele === "historyServiceChange" && (
                           <td>

@@ -32,6 +32,7 @@ import PopUpReportExportExcel from "../../components/popup/PopUpReportExportExce
 import Loading from "../../components/Loading";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import PopUpPrintPromotion from "../../components/popup/PopUpPrintPromotion";
 
 export default function DetailBrancPage() {
   const { t } = useTranslation();
@@ -698,6 +699,13 @@ export default function DetailBrancPage() {
       >
         <BillForReport80 />
       </PopUpPrintStaffHistoryComponent>
+
+      <PopUpPrintPromotion
+        open={popup?.printReportPromotion}
+        onClose={() => setPopup()}
+      >
+        <BillForReport80 />
+      </PopUpPrintPromotion>
 
       <PopUpPrintMenuHistoryComponent
         open={popup?.printReportMenuSale}

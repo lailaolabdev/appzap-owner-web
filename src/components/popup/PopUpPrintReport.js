@@ -46,6 +46,13 @@ export default function PopUpPrintReport({ open, onClose, setPopup }) {
           >
             <span>{t("staff_history")}</span>
           </Button>
+
+          <Button
+            style={{ height: 100, padding: 20 }}
+            onClick={() => setPopup({ printReportPromotion: true })}
+          >
+            <span>{t("Promotion")}</span>
+          </Button>
           {/* <Button style={{ height: 100, padding: 20 }} disabled>
             <span>{t("sales_history")}</span>
           </Button> */}

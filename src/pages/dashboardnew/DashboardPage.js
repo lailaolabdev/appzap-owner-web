@@ -55,6 +55,7 @@ import PopUpReportExportExcel from "../../components/popup/PopUpReportExportExce
 
 import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
+import PopUpPrintPromotion from "../../components/popup/PopUpPrintPromotion";
 
 export default function DashboardPage() {
   const { t } = useTranslation();
@@ -454,6 +455,7 @@ export default function DashboardPage() {
   };
 
   const { totalExchangePoint, totalPrice } = calculateTotals();
+
 
   return (
     <div>
@@ -1290,6 +1292,14 @@ export default function DashboardPage() {
       >
         <BillForReport80 />
       </PopUpPrintStaffHistoryComponent>
+
+      <PopUpPrintPromotion
+        open={popup?.printReportPromotion}
+        onClose={() => setPopup()}
+        selectedTableIds={selectedTableIds}
+      >
+        <BillForReport80 />
+      </PopUpPrintPromotion>
 
       <PopUpPrintMenuHistoryComponent
         open={popup?.printReportMenuSale}

@@ -1250,6 +1250,8 @@
   "money_from_appzap": "ເງິນໃນແອັບແຊບ",
   "total_money_claim": "ຈຳນວນຍອດເງິນລວມ",
   "deleted_items": "ລາຍການເມນູຖຶກລົບ",
+  "Reason_for_cancellation": "ເຫດຜົນທີຍົກເລີກ",
+  "Please_provide_a_reason_for_cancellation": "ກະລຸນາໃສ່ເຫດຜົນທີຍົກເລີກ",
   "item_total": "ລາຍການສະຕ໊ອກທັງໝົດ",
   "item_amount": "ລາຍການ",
   "payment_type": "ປະເພດຊຳລະເງິນ",
