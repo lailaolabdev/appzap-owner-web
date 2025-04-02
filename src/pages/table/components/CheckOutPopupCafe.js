@@ -345,11 +345,12 @@ export default function CheckOutPopupCafe({
 
     // Calculate the sum of all points * quantity
     const totalPoints =
-      pointsData?.length > 0 &&
-      pointsData?.reduce(
-        (sum, current) => sum + (current.point * current.quantity || 0),
-        0
-      );
+      (pointsData?.length > 0 &&
+        pointsData.reduce(
+          (sum, current) => sum + (current.point * current.quantity || 0),
+          0
+        )) ||
+      0;
 
     return { pointsData, totalPoints };
   };

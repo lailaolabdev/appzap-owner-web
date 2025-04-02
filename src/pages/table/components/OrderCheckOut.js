@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 import { Modal, Table, Button, Form, Row, Spinner } from "react-bootstrap";
 import { moneyCurrency } from "../../../helpers/index";
@@ -33,6 +33,7 @@ const OrderCheckOut = ({
   printBillLoading,
   billDataLoading,
   printBillCalulate,
+  setEnableServiceChange,
 }) => {
   const { t } = useTranslation();
   const {
@@ -47,7 +48,21 @@ const OrderCheckOut = ({
 
   const [total, setTotal] = useState(0); // Initialize total to 0
   const [isServiceChargeEnabled, setIsServiceChargeEnabled] = useState(false);
-  const [serviceAmount, setServiceAmount] = useState(0);
+
+  const serviceChargeRef = useRef(serviceCharge);
+
+  useEffect(() => {
+    if (serviceCharge > 0) {
+      serviceChargeRef.current = serviceCharge;
+    }
+  }, [serviceCharge]);
+  const TotalServiceChange = storeDetail?.isServiceChange
+    ? serviceChargeRef.current
+    : storeDetail?.serviceChargePer;
+
+  const serviceChargeAmount = () => {
+    return (total * TotalServiceChange) / 100;
+  };
 
   useEffect(() => {
     _calculateTotal();
@@ -58,13 +73,13 @@ const OrderCheckOut = ({
 
   const calculateDiscountedTotal = (
     total,
-    serviceAmount,
+    serviceChargeAmount,
     taxPercent,
     discount,
     discountType
   ) => {
     const totalWithServiceAndTax =
-      (total + serviceAmount) * (taxPercent * 0.01 + 1);
+      (total + serviceChargeAmount()) * (taxPercent * 0.01 + 1);
 
     if (discountType === "LAK" || discountType === "MONEY") {
       return totalWithServiceAndTax - discount > 0
@@ -80,7 +95,7 @@ const OrderCheckOut = ({
 
   const discountedTotal = calculateDiscountedTotal(
     total,
-    serviceAmount,
+    serviceChargeAmount,
     taxPercent,
     data?.discount,
     data?.discountType
@@ -137,7 +152,7 @@ const OrderCheckOut = ({
 
       return mainPrice + menuOptionPrice;
     });
-    setServiceAmount(serviceChargeAmount);
+
     orderPayBefore && orderPayBefore.length > 0
       ? setTotal(paidData)
       : setTotal(totalBillOrderCheckOut);
@@ -153,6 +168,7 @@ const OrderCheckOut = ({
 
   const getToggleServiceCharge = (e) => {
     setIsServiceChargeEnabled(e.target.checked);
+    setEnableServiceChange(e.target.checked);
     setStoreDetail({
       serviceChargePer: isServiceChargeEnabled ? 0 : serviceCharge,
       isServiceCharge: e.target.checked,
@@ -161,20 +177,24 @@ const OrderCheckOut = ({
   const calculateTotalWithDiscount = (
     total,
     taxPercent,
-    serviceAmount,
+    serviceChargeAmount,
     discount,
     discountType
   ) => {
     if (discountType === "LAK") {
       const discountedTotal = Math.floor(
-        total * (taxPercent * 0.01 + 1) + serviceAmount - discount
+        total * (taxPercent * 0.01 + 1) + serviceChargeAmount() - discount
       );
       return discountedTotal > 0 ? discountedTotal : 0;
     } else {
       const discountInPercent =
-        (total + serviceAmount) * (taxPercent * 0.01 + 1) * (discount / 100);
+        (total + serviceChargeAmount()) *
+        (taxPercent * 0.01 + 1) *
+        (discount / 100);
       const discountedTotal = Math.floor(
-        total * (taxPercent * 0.01 + 1) + serviceAmount - discountInPercent
+        total * (taxPercent * 0.01 + 1) +
+          serviceChargeAmount() -
+          discountInPercent
       );
       return discountedTotal > 0 ? discountedTotal : 0;
     }
@@ -183,12 +203,12 @@ const OrderCheckOut = ({
     const calculatedTotal = calculateTotalWithDiscount(
       total,
       taxPercent,
-      serviceAmount,
+      serviceChargeAmount,
       data?.discount,
       data?.discountType
     );
     setTotalMustPay(calculatedTotal);
-  }, [total, taxPercent, serviceAmount, data]);
+  }, [total, taxPercent, serviceChargeAmount, data]);
 
   setCreatedAt(tableData?.createdAt);
 
@@ -295,7 +315,9 @@ const OrderCheckOut = ({
               </div>
               <div className="w-60 text-end">
                 {moneyCurrency(
-                  Math.floor(total * (taxPercent * 0.01 + 1) + serviceAmount)
+                  Math.floor(
+                    total * (taxPercent * 0.01 + 1) + serviceChargeAmount()
+                  )
                 )}{" "}
                 {storeDetail?.firstCurrency}
               </div>
@@ -331,10 +353,10 @@ const OrderCheckOut = ({
                         ? moneyCurrency(
                             Math.floor(
                               total * (taxPercent * 0.01 + 1) +
-                                serviceAmount -
+                                serviceChargeAmount() -
                                 data?.discount >
                                 0
-                                ? (total + serviceAmount) *
+                                ? (total + serviceChargeAmount()) *
                                     (taxPercent * 0.01 + 1) -
                                     data?.discount
                                 : 0
@@ -343,15 +365,15 @@ const OrderCheckOut = ({
                         : moneyCurrency(
                             Math.floor(
                               total * (taxPercent * 0.01 + 1) +
-                                serviceAmount -
-                                ((total + serviceAmount) *
+                                serviceChargeAmount() -
+                                ((total + serviceChargeAmount()) *
                                   (taxPercent * 0.01 + 1) *
                                   data?.discount) /
                                   100 >
                                 0
                                 ? total * (taxPercent * 0.01 + 1) +
-                                    serviceAmount -
-                                    ((total + serviceAmount) *
+                                    serviceChargeAmount() -
+                                    ((total + serviceChargeAmount()) *
                                       (taxPercent * 0.01 + 1) *
                                       data?.discount) /
                                       100

@@ -87,7 +87,6 @@ export default function Categorylist() {
     }
   }, [profile?.data?.permissionRoleId?.permissions, profile]);
 
-
   useEffect(() => {
     const getData = async () => {
       getCategory();
@@ -101,15 +100,13 @@ export default function Categorylist() {
       <div>
         <div className="col-sm-12 text-right">
           {
-            hasManageStockEdit && (
-              <Button
-                className="col-sm-2"
-                style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-                onClick={() => navigate("/settingStore/stock/addCategory")}
-              >
-                {t("add_stock_type")}
-              </Button>
-            )
+            <Button
+              className="col-sm-2"
+              style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+              onClick={() => navigate("/settingStore/stock/addCategory")}
+            >
+              {t("add_stock_type")}
+            </Button>
           }
         </div>
         <div style={{ height: 20 }}></div>
@@ -155,32 +152,29 @@ export default function Categorylist() {
                         <td>{item.name}</td>
                         <td>{item.note}</td>
                         <td style={{ textAlign: "right" }}>
-                          {
-                            hasManageStockEdit && (
-                              <div>
-                                <Button
-                                  variant="outline-primary"
-                                  onClick={() => {
-                                    setSelect(item);
-                                    setPopEditCategory(true);
-                                  }}
-                                >
-                                  <FontAwesomeIcon icon={faEdit} />
-                                </Button>
-                                <span> </span>
-                                <Button
-                                  variant="outline-danger"
-                                  onClick={() => {
-                                    setSelect(item);
-                                    setPopConfirmDeletion(true);
-                                  }}
-                                >
-                                  <FontAwesomeIcon icon={faTrashAlt} />
-                                </Button>
-                              </div>
-
-                            )
-                          }
+                          {hasManageStockEdit && (
+                            <div>
+                              <Button
+                                variant="outline-primary"
+                                onClick={() => {
+                                  setSelect(item);
+                                  setPopEditCategory(true);
+                                }}
+                              >
+                                <FontAwesomeIcon icon={faEdit} />
+                              </Button>
+                              <span> </span>
+                              <Button
+                                variant="outline-danger"
+                                onClick={() => {
+                                  setSelect(item);
+                                  setPopConfirmDeletion(true);
+                                }}
+                              >
+                                <FontAwesomeIcon icon={faTrashAlt} />
+                              </Button>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     ))

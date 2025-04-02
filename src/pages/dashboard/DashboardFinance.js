@@ -42,6 +42,7 @@ import BillForCheckOut80 from "../../components/bill/BillForCheckOut80";
 import BillForCheckOutCafe80 from "../../components/bill/BillForCheckOutCafe80";
 import { convertUnitgramAndKilogram } from "../../helpers/convertUnitgramAndKilogram";
 import { Button } from "../../components/ui/Button";
+import PopUpCommentCancelOrder from "../../components/popup/PopUpCommentCancelOrder";
 
 const limitData = 50;
 
@@ -77,6 +78,8 @@ export default function DashboardFinance({
   const [totalPagination, setTotalPagination] = useState();
   const [getDataDashboardFinance, setGetDataDashboardFinance] = useState([]);
   const [totalTranferAndPayLast, setTotalTranferAndPayLast] = useState(0);
+  const [commentCancelOrder, setCommentCancelOrder] = useState("");
+  const [showCancelPopup, setShowCancelPopup] = useState(false);
 
   const handleClose = () => setShow(false);
   const {
@@ -637,6 +640,29 @@ export default function DashboardFinance({
   useEffect(() => {
     setTotalTranferAndPayLast(dataModal?.totalTranferAndPayLast);
   }, [dataModal]);
+
+  const handleCancleCommentClose = () => {
+    setShowCancelPopup(false);
+  };
+
+  const handleSaveComment = (comment) => {
+    setCommentCancelOrder(comment);
+
+    // Process the cancellation with the comment
+    const body = {
+      storeId: dataModal?.storeId,
+      order: dataModal?.orderId?.map((item) => ({ _id: item?._id })),
+      code: dataModal?.code,
+      status: "CANCELED",
+      billAmount: dataModal?.payAmount,
+      commentCancelOrder: comment,
+    };
+
+    confrimCancelBill(body).then(() => {
+      handleClose();
+      _fetchFinanceData();
+    });
+  };
 
   return (
     <div style={{ padding: 0 }}>
@@ -1206,29 +1232,17 @@ export default function DashboardFinance({
           )}
         </Modal.Body>
         <Modal.Footer>
-          {storeDetail?.isStatusCafe && (
-            <Button
-              className="text-white font-bold"
-              disabled={dataModal?.status === "CANCELED"}
-              onClick={() => {
-                const body = {
-                  storeId: dataModal?.storeId,
-                  order: dataModal?.orderId?.map((item) => ({
-                    _id: item?._id,
-                  })),
-                  code: dataModal?.code,
-                  status: "CANCELED",
-                  billAmount: dataModal?.payAmount,
-                };
-                confrimCancelBill(body).then(() => {
-                  handleClose();
-                  _fetchFinanceData();
-                });
-              }}
-            >
-              {t("bill_cancel")}
-            </Button>
-          )}
+          <Button
+            className="text-white font-bold"
+            disabled={dataModal?.status === "CANCELED"}
+            onClick={() => {
+              setShowCancelPopup(true);
+              handleClose();
+            }}
+          >
+            {t("bill_cancel")}
+          </Button>
+
           {!storeDetail?.isStatusCafe && (
             <Button
               className="text-white font-bold"
@@ -1293,6 +1307,11 @@ export default function DashboardFinance({
           />
         </div>
       )}
+      <PopUpCommentCancelOrder
+        open={showCancelPopup}
+        onClose={handleCancleCommentClose}
+        onSaveComment={handleSaveComment}
+      />
     </div>
   );
 }

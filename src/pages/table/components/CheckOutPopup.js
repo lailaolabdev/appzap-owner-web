@@ -49,6 +49,7 @@ export default function CheckOutPopup({
   saveServiceChargeDetails,
   serviceCharge,
   billDataLoading,
+  setPaymentMethod,
 }) {
   const { t } = useTranslation();
   // ref
@@ -102,6 +103,7 @@ export default function CheckOutPopup({
       serviceChargeRef.current = serviceCharge;
     }
   }, [serviceCharge]);
+
   //select Bank
 
   useEffect(() => {
@@ -202,7 +204,12 @@ export default function CheckOutPopup({
     orderPayBefore && orderPayBefore.length > 0 ? paid : totalBillCheckOutPopup;
 
   const taxAmount = (totalAmount * taxPercent) / 100;
-  const serviceAmount = (totalAmount * storeDetail?.serviceChargePer) / 100;
+
+  const serviceChangTotal = storeDetail?.isServiceChange
+    ? serviceChargeRef.current
+    : storeDetail?.serviceChargePer;
+
+  const serviceAmount = (totalAmount * serviceChangTotal) / 100;
   const totalBill = totalAmount + taxAmount + serviceAmount;
 
   useEffect(() => {
@@ -267,6 +274,7 @@ export default function CheckOutPopup({
 
   useEffect(() => {
     setDataBill((prev) => ({ ...prev, paymentMethod: forcus }));
+    setPaymentMethod(forcus);
   }, [forcus]);
 
   const getDataCurrency = async () => {
@@ -369,7 +377,7 @@ export default function CheckOutPopup({
           name: "LAK",
         });
         setSelectInput("inputCash");
-        setForcus("CASH");
+        // setForcus("CASH");
         setRateCurrency(1);
         setHasCRM(false);
         setTextSearchMember("");
@@ -388,7 +396,7 @@ export default function CheckOutPopup({
 
         setStoreDetail({
           serviceChargePer: 0,
-          isServiceCharge: false,
+          // isServiceChange: false,
           zoneCheckBill: true,
           point: 0,
         });
@@ -431,66 +439,6 @@ export default function CheckOutPopup({
     };
     return await PointUser(data);
   };
-
-  // const handleSubmit = async () => {
-  //   const showAlert = (icon, title, text, timer = 1800) => {
-  //     Swal.fire({
-  //       icon,
-  //       title,
-  //       text,
-  //       showConfirmButton: false,
-  //       timer,
-  //     });
-  //   };
-
-  //   try {
-  //     saveServiceChargeDetails();
-
-  //     if (storeDetail?.isCRM && tab === "cash_transfer_point") {
-  //       try {
-  //         await RedeemPointUser()
-  //           .then((res) => {
-  //             console.log(res);
-  //           })
-  //           .catch((err) => {
-  //             if (err?.response?.data.isExpire) {
-  //               showAlert(
-  //                 "error",
-  //                 "ເກີດຂໍ້ຜິດພາດ",
-  //                 "ຂໍອະໄພຄະແນນຂອງທ່ານໝົດອາຍຸການໃຊ້ງານແລ້ວ"
-  //               );
-  //             }
-  //           });
-  //         return;
-  //       } catch {
-  //         showAlert(
-  //           "error",
-  //           "ເກີດຂໍ້ຜິດພາດ",
-  //           "ການຊຳລະດ້ວຍພ໋ອຍບໍ່ສຳເລັດ ກະລຸນາເລຶອກສະມາຊິກດ້ວຍ"
-  //         );
-  //         return; // Stop further execution if RedeemPointUser fails
-  //       }
-  //     }
-
-  //     try {
-  //       await _checkBill(selectCurrency?.id, selectCurrency?.name);
-  //     } catch {
-  //       showAlert("error", "ການເຊັກບິນບໍ່ສຳເລັດ"); // Add your localized error message
-  //       return; // Stop further execution if _checkBill fails
-  //     }
-
-  //     if (storeDetail?.isCRM && hasCRM) {
-  //       try {
-  //         await PointUsers();
-  //       } catch {
-  //         showAlert("error", "ບໍ່ສາມາດຮັບ point ຈາກການຊຳລະຄັ້ງນີ້");
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Unexpected error in handleSubmit:", error);
-  //     showAlert("error", "An unexpected error occurred");
-  //   }
-  // };
 
   // useEffect
 
@@ -770,7 +718,7 @@ export default function CheckOutPopup({
       setDelivery();
       setTab("cash");
       setSelectInput("inputCash");
-      setForcus("CASH");
+      // setForcus("CASH");
     }
   }, [selectedTable?.isDeliveryTable]);
 

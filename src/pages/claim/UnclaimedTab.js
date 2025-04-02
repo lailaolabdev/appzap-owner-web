@@ -17,6 +17,7 @@ const UnclaimedTab = ({
   rowsPerPage,
   checkPaymentSelected,
   selectPayment,
+  selectAllPayment,
   setOpenSelectClaim,
   setOpenConfirmClaimAndClose,
   totalPageCount,
@@ -35,44 +36,11 @@ const UnclaimedTab = ({
     }`;
   };
 
-  // Function to handle "select all" checkbox
-  const handleSelectAll = () => {
-    // Get only unclaimed items that can be selected
-    const unclaimedItems = unClaimedData.filter(
-      (item) => item.claimStatus === "UNCLAIMED"
-    );
-
-    // If all unclaimed items are already selected, deselect all
-    const allSelected = unclaimedItems.every((item) =>
-      checkPaymentSelected(item)
-    );
-
-    // Select or deselect all unclaimed items
-    if (allSelected) {
-      // Deselect all items by removing them from selection
-      unclaimedItems.forEach((item) => {
-        if (checkPaymentSelected(item)) {
-          selectPayment(item);
-        }
-      });
-    } else {
-      // Select all items by adding them to selection
-      unclaimedItems.forEach((item) => {
-        if (!checkPaymentSelected(item)) {
-          selectPayment(item);
-        }
-      });
-    }
-  };
-
-  // Check if all unclaimed items are selected
+  // Check if all items are selected
   const areAllSelected = () => {
-    const unclaimedItems = unClaimedData.filter(
-      (item) => item.claimStatus === "UNCLAIMED"
-    );
     return (
-      unclaimedItems.length > 0 &&
-      unclaimedItems.every((item) => checkPaymentSelected(item))
+      unClaimedData.length > 0 &&
+      unClaimedData.every((item) => checkPaymentSelected(item))
     );
   };
 
@@ -146,7 +114,7 @@ const UnclaimedTab = ({
                 <Form.Check
                   type="checkbox"
                   checked={areAllSelected()}
-                  onChange={handleSelectAll}
+                  onChange={selectAllPayment}
                 />
               </th>
               <th className="whitespace-nowrap" scope="col">

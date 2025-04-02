@@ -150,6 +150,8 @@ export default function TableList() {
   const [showBtnCombine, setShowBtnCombine] = useState(false);
   const [selectTable, setSelectTable] = useState(false);
   const [order, setOrder] = useState([]);
+  const [paymentMethod, setPaymentMethod] = useState([]);
+  const [enableServiceChange, setEnableServiceChange] = useState(false);
 
   const handleCloseQuantity = () => setQuantity(false);
 
@@ -157,7 +159,6 @@ export default function TableList() {
   const [totalMustPay, setTotalMustPay] = useState(0); // สร้างตัวแปรเก็บค่ายอดรวมพร้อมภาษี
   const [createdAt, setCreatedAt] = useState();
   const { shiftCurrent } = useShiftStore();
-
   // provider
   const {
     orderItemForPrintBill,
@@ -1909,7 +1910,10 @@ export default function TableList() {
     let _total = 0;
     if (dataBill && dataBill?.orderId) {
       for (let i = 0; i < dataBill?.orderId?.length; i++) {
-        if (dataBill?.orderId[i]?.status === "SERVED") {
+        if (
+          dataBill?.orderId[i]?.status === "SERVED" ||
+          dataBill?.orderId[i]?.status === "PAID"
+        ) {
           _total +=
             dataBill?.orderId[i]?.quantity *
             (dataBill?.orderId[i]?.price +
@@ -2867,6 +2871,8 @@ export default function TableList() {
           taxPercent={taxPercent}
           profile={profile}
           serviceCharge={serviceChargePercent}
+          paymentMethod={paymentMethod}
+          enableServiceChange={enableServiceChange}
         />
       </div>
       <div style={{ width: "80mm", padding: 10 }} ref={qrSmartOrder80Ref}>
@@ -2979,6 +2985,7 @@ export default function TableList() {
         totalBillCheckOutPopup={total} // new props
         tableData={selectedTable}
         open={popup?.CheckOutType}
+        setPaymentMethod={setPaymentMethod}
         onClose={() => {
           setPopup();
           // setDataBill((prev) => ({
@@ -3023,6 +3030,7 @@ export default function TableList() {
         }}
         printBillLoading={printBillLoading}
         billDataLoading={billDataLoading}
+        setEnableServiceChange={setEnableServiceChange}
       />
 
       <PopUpPin

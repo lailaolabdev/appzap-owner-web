@@ -18,6 +18,7 @@ import {
   getDeliveryReport,
   getMoneyReport,
   getDebtReport,
+  getCategoryReport,
 } from "../../services/report";
 
 import _ from "lodash";
@@ -48,6 +49,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const [delivery, setDelivery] = useState([]);
   const [moneyReport, setMoneyReport] = useState([]);
   const [debtReport, setDebtReport] = useState(null);
+  const [categoryReport, setCategoryReport] = useState([]);
   const [reportBill, setReportBill] = useState({
     totalAmount: 0,
     billCount: 0,
@@ -71,6 +73,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
     getDataBillReport(startDate);
     getMoneyReportData(startDate);
     getDebtReportData(startDate);
+    getCategoryReportData(startDate);
   }, [startDate, shiftId]);
 
   const fetchShift = async () => {
@@ -357,14 +360,22 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
     }
   };
 
+  const getCategoryReportData = async (startDate) => {
+    try {
+      const data = await getCategoryReport(storeDetail?._id, findByData());
+      setCategoryReport(data);
+    } catch (err) { }
+  };
+
   const deliveryReports = delivery
     ? delivery?.revenueByPlatform?.map((e) => {
-        return {
-          name: e?._id,
-          amount: e?.totalRevenue,
-        };
-      })
+      return {
+        name: e?._id,
+        amount: e?.totalRevenue,
+      };
+    })
     : [];
+
 
   return (
     <Modal show={open} onHide={onClose} size="md">
@@ -395,15 +406,15 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           </div>
           {profile?.data?.role === "APPZAP_ADMIN"
             ? storeDetail?.isShift && (
-                <div className="flex items-center gap-2 whitespace-nowrap">
-                  <Select
-                    placeholder={t("chose_shift")}
-                    className="min-w-[170px] w-full border-orange-500"
-                    options={optionsData}
-                    onChange={handleSearchInput}
-                  />
-                </div>
-              )
+              <div className="flex items-center gap-2 whitespace-nowrap">
+                <Select
+                  placeholder={t("chose_shift")}
+                  className="min-w-[170px] w-full border-orange-500"
+                  options={optionsData}
+                  onChange={handleSearchInput}
+                />
+              </div>
+            )
             : ""}
         </div>
 
@@ -456,14 +467,14 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
               ...(Array.isArray(deliveryReports) && deliveryReports.length > 0
                 ? deliveryReports.map((e, idx) => ({
-                    name: (
-                      <div
-                        style={{ fontWeight: 700 }}
-                      >{`delivery (${e?.name})`}</div>
-                    ),
-                    value: Math.floor(e?.amount || 0),
-                    type: storeDetail?.firstCurrency,
-                  }))
+                  name: (
+                    <div
+                      style={{ fontWeight: 700 }}
+                    >{`delivery (${e?.name})`}</div>
+                  ),
+                  value: Math.floor(e?.amount || 0),
+                  type: storeDetail?.firstCurrency,
+                }))
                 : []),
               {
                 name: `${t("point")}:`,
@@ -566,6 +577,34 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
             <hr style={{ borderBottom: "1px dotted #000" }} />
             <div>
               <TableComponent>
+                <tr>
+                  <td style={{ textAlign: "left" }}>#</td>
+                  <th style={{ textAlign: "center" }}>{t("menu_type")}</th>
+                  <th style={{ textAlign: "center" }}>{t("success_order")}</th>
+                  <th style={{ textAlign: "center" }}>{t("cancel")}</th>
+                  <th style={{ textAlign: "right" }}>{t("sale_price_amount")}</th>
+                </tr>
+                {categoryReport
+                  ?.sort((x, y) => {
+                    return y.served - x.served;
+                  })
+                  ?.map((e, i) => (
+                    <tr>
+                      <td style={{ textAlign: "left" }}>{i + 1}</td>
+                      <td style={{ textAlign: "center" }}>{e?.name}</td>
+                      <td style={{ textAlign: "center" }}>{e?.served}</td>
+                      <td style={{ textAlign: "center" }}>{e?.cenceled}</td>
+                      <td style={{ textAlign: "right" }}>
+                        {moneyCurrency(e?.totalSaleAmount)}
+                        {storeDetail?.firstCurrency}
+                      </td>
+                    </tr>
+                  ))}
+              </TableComponent>
+            </div>
+            <hr style={{ borderBottom: "1px dotted #000" }} />
+            <div>
+              <TableComponent>
                 <tr style={{ fontWeight: "bold" }}>
                   <td style={{ textAlign: "left" }}>#</td>
                   <td style={{ textAlign: "center" }}>{t("no")}</td>
@@ -573,6 +612,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                   <td style={{ textAlign: "center" }}>{t("discount")}</td>
                   <td style={{ textAlign: "right" }}>{t("total_bill")}</td>
                 </tr>
+
                 {bills?.map((e, i) => (
                   <tr key={e?._id}>
                     <td style={{ textAlign: "left" }}>{i + 1}</td>
@@ -582,7 +622,6 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                     <td style={{ textAlign: "center" }}>
                       {e?.orderId?.length || 0}
                     </td>
-
                     <td style={{ textAlign: "center" }}>
                       {e?.discount !== 0
                         ? moneyCurrency(e?.billAmount - e?.billAmountBefore)
@@ -593,7 +632,32 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                     </td>
                   </tr>
                 ))}
+
+                {/* Total Row */}
+                <tr style={{ fontWeight: "bold" }}>
+                  <td colSpan="2" style={{ textAlign: "right" }}>
+                    {t("total")}:
+                  </td>
+                  <td style={{ textAlign: "center" }}>
+                    {bills?.reduce((sum, bill) => sum + (bill?.orderId?.length || 0), 0)}
+                  </td>
+                  <td style={{ textAlign: "center" }}>
+                    {moneyCurrency(
+                      bills?.reduce((sum, bill) =>
+                        sum + (bill?.discount !== 0
+                          ? (bill?.billAmount - bill?.billAmountBefore)
+                          : 0), 0)
+                    )}
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    {moneyCurrency(
+                      bills?.reduce((sum, bill) => sum + (bill?.billAmount || 0), 0)
+                    )}
+                    <span> {storeDetail?.firstCurrency}</span>
+                  </td>
+                </tr>
               </TableComponent>
+
             </div>
           </Container>
         </div>
