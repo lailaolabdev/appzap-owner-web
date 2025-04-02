@@ -1910,7 +1910,10 @@ export default function TableList() {
     let _total = 0;
     if (dataBill && dataBill?.orderId) {
       for (let i = 0; i < dataBill?.orderId?.length; i++) {
-        if (dataBill?.orderId[i]?.status === "SERVED") {
+        if (
+          dataBill?.orderId[i]?.status === "SERVED" ||
+          dataBill?.orderId[i]?.status === "PAID"
+        ) {
           _total +=
             dataBill?.orderId[i]?.quantity *
             (dataBill?.orderId[i]?.price +
