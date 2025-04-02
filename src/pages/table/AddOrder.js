@@ -271,8 +271,6 @@ function AddOrder() {
       e?.categoryId?._id === selectedCategory
   );
 
-  console.log("afterSearch", afterSearch);
-
   const arrLength = selectedMenu?.length;
   const billForCher80 = useRef([]);
   const billForCher58 = useRef([]);
