@@ -1232,16 +1232,18 @@ export default function DashboardFinance({
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            className="text-white font-bold"
-            disabled={dataModal?.status === "CANCELED"}
-            onClick={() => {
-              setShowCancelPopup(true);
-              handleClose();
-            }}
-          >
-            {t("bill_cancel")}
-          </Button>
+          {storeDetail?.isStatusCafe && (
+            <Button
+              className="text-white font-bold"
+              disabled={dataModal?.status === "CANCELED"}
+              onClick={() => {
+                setShowCancelPopup(true);
+                handleClose();
+              }}
+            >
+              {t("bill_cancel")}
+            </Button>
+          )}
 
           {!storeDetail?.isStatusCafe && (
             <Button
