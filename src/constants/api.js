@@ -6,13 +6,13 @@ const now_domain = window.location.hostname;
 // const dev = "https://api.appzap.la:445"; // dev endpoint report & other
 // const dev1 = "https://api.appzap.la:444"; // dev endpoint table & menu
 // const dev2 = "https://api.appzap.la"; // dev endpoint bill & order
-//const dev = "https://api.appzap.la:17072"; // dev endpoint report & other [7079 - 7080]
-//const dev1 = "https://api.appzap.la:17071"; // dev endpoint table & menu [7076 - 7078]
-//const dev2 = "https://api.appzap.la:17070"; // dev endpoint bill & order [7070 - 7075]
+const dev = "https://api.appzap.la:17072"; // dev endpoint report & other [7079 - 7080]
+const dev1 = "https://api.appzap.la:17071"; // dev endpoint table & menu [7076 - 7078]
+const dev2 = "https://api.appzap.la:17070"; // dev endpoint bill & order [7070 - 7075]
 // const dev = "https://api.appzap.la"; //local
-const dev = "http://localhost:7070"; //locals
-const dev1 = "http://localhost:7070"; //locals
-const dev2 = "http://localhost:7070"; //locals
+// const dev = "http://localhost:7070"; //locals
+// const dev1 = "http://localhost:7070"; //locals
+// const dev2 = "http://localhost:7070"; //locals
 const production = "https://api.appzap.la:445"; // Production report & other [7079 - 7080]
 const production1 = "https://api.appzap.la:444"; // Production table & menu [7076 - 7078]
 const production2 = "https://api.appzap.la"; // Production bill & order [7070 - 7075]
@@ -45,8 +45,8 @@ export const END_POINT_SERVER_JUSTCAN = "https://app-api.appzap.la/app";
 
 // ------------EXPORT END POINT--------------
 const production_export = "https://api.appzap.la";
-//const dev_export = "https://api.appzap.la:17070";
-const dev_export = "http://localhost:7070";
+const dev_export = "https://api.appzap.la:17070";
+// const dev_export = "http://localhost:7070";
 //export const END_POINT_EXPORT = isProduction ? production_export : dev_export;
 export const END_POINT_EXPORT = isProduction ? production_export : dev_export;
 
