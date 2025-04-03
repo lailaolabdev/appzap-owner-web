@@ -447,8 +447,7 @@ export default function BillForCheckOut80({
       <Row>
         <Col xs={7}>
           <div style={{ textAlign: "right" }}>
-            {t("service_charge")}{" "}
-            {storeDetail?.serviceChargePer || serviceChargeRef.current}% :
+            {t("service_charge")} {TotalServiceChange}% :
           </div>
         </Col>
         <Col>
@@ -495,12 +494,35 @@ export default function BillForCheckOut80({
           </Row>
         ))}
       </div>
-
-      {/* <div style={{ height: 10 }} />
+      {isShowExchangeRate && (
+        <>
+          <div style={{ height: 10 }} />
+          <hr style={{ border: "1px dashed #000", margin: 0 }} />
+          <div style={{ fontSize: 12, textAlign: "center" }}>
+            <span>{t("exchangeRate")}&nbsp;</span>
+            {currencyData?.map((item, index) => (
+              <span key={index}>
+                {item?.currencyCode}: {moneyCurrency(item?.sell)}
+                {index + 1 < currencyData?.length ? (
+                  <span style={{ marginLeft: 10, marginRight: 10 }}>|</span>
+                ) : (
+                  ""
+                )}
+              </span>
+            ))}
+            {","}
+            &nbsp;
+            {storeDetail?.isCRM && dataBill?.memberPhone && (
+              <span>
+                1 {t("point")} = 1 {storeDetail?.firstCurrency}
+              </span>
+            )}
+          </div>
+        </>
+      )}
+      <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
-    
       {paymentDisplay}
-
       {isShowExchangeRate && (
         <div style={{ fontSize: 12, textAlign: "center" }}>
           <span>{t("exchangeRate")}&nbsp;</span>
@@ -522,7 +544,8 @@ export default function BillForCheckOut80({
             </span>
           )}
         </div>
-      )} */}
+      )}{" "}
+      */}
       <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
       <div
@@ -554,7 +577,6 @@ export default function BillForCheckOut80({
           {storeDetail?.firstCurrency}
         </div>
       </div>
-
       {/* <div
         style={{
           display: "flex",
@@ -580,7 +602,6 @@ export default function BillForCheckOut80({
           />
         </Img>
       </div>
-
       {storeDetail?.textForBill?.trim().length > 0 && (
         <div>
           <div className="text-center text-[12px] font-thin">

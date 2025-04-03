@@ -702,7 +702,6 @@ function AddOrder() {
       menuOptions: selectedItem.menuOptions,
       shiftId: shiftCurrent[0]?._id,
       options: filteredOptions,
-      shiftId: shiftCurrent[0]?._id,
       discount: activePromotions.reduce(
         (sum, promo) => sum + (promo.discountValue || 0),
         0

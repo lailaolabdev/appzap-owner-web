@@ -389,7 +389,9 @@ export default function CheckOutPopupCafe({
       status: "CHECKOUT",
       payAmount: cash,
       billAmount:
-        totalPoints < memberDataSearch?.point ? totalPoints : DiscountMember(),
+        totalPoints < memberDataSearch?.point && !hasCRM
+          ? totalPoints
+          : DiscountMember(),
       transferAmount: isDelivery ? 0 : transfer,
       deliveryAmount: isDelivery ? matchRoundNumber(transfer) : 0,
       deliveryName: platform,

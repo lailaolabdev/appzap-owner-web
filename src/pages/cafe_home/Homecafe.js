@@ -485,6 +485,8 @@ function Homecafe() {
       quantity:
         activePromotions.length > 0 && activePromotions[0].buyQuantity !== null
           ? activePromotions[0].buyQuantity
+          : menu?.isWeightMenu
+          ? 0
           : 1,
       price: finalPrice,
       priceDiscount: Math.max(menu?.price - finalPrice, 0),
@@ -558,6 +560,8 @@ function Homecafe() {
               quantity:
                 promotion && promotion?.getQuantity !== null
                   ? promotion?.getQuantity
+                  : menu?.isWeightMenu
+                  ? 0
                   : 1,
               categoryId: menu?.categoryId,
               printer: menu?.categoryId?.printer,
@@ -686,6 +690,8 @@ function Homecafe() {
       quantity:
         activePromotions?.length > 0 && activePromotions[0].buyQuantity !== null
           ? activePromotions[0].buyQuantity
+          : selectedItem?.isWeightMenu
+          ? 0
           : 1,
       price: finalPrice,
       priceDiscount: Math.max(selectedItem?.price - finalPrice, 0),
@@ -777,6 +783,8 @@ function Homecafe() {
                 quantity:
                   promotion && promotion.getQuantity !== null
                     ? promotion.getQuantity
+                    : selectedItem?.isWeightMenu
+                    ? 0
                     : 1,
                 categoryId: selectedItem?.categoryId,
                 printer: selectedItem?.categoryId?.printer,

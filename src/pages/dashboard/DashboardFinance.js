@@ -288,23 +288,23 @@ export default function DashboardFinance({
       findby += `startDate=${startDate}&`;
       findby += `endDate=${endDate}&`;
       findby += `startTime=${startTime}&`;
-      findby += `endTime=${endTime}&`;
+      findby += `endTime=${endTime}`;
       findby += `&skip=${(pagination - 1) * limitData}`;
       findby += `&limit=${limitData}`;
 
       if (shiftId) {
-        findby += `shiftId=${shiftId}&`;
+        findby += `&shiftId=${shiftId}`;
       }
     } else {
       findby += `storeId=${params?.storeId}&`;
       findby += `startDate=${startDate}&`;
       findby += `endDate=${endDate}&`;
       findby += `startTime=${startTime}&`;
-      findby += `endTime=${endTime}&`;
+      findby += `endTime=${endTime}`;
       findby += `&skip=${(pagination - 1) * limitData}`;
       findby += `&limit=${limitData}`;
       if (shiftCurrent[0]) {
-        findby += `shiftId=${shiftCurrent[0]?._id}&`;
+        findby += `&shiftId=${shiftCurrent[0]?._id}`;
       }
     }
 

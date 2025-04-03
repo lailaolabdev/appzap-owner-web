@@ -271,6 +271,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         storeDetail._id,
         findByData()
       );
+
       const bankReport = await getBankReport(storeDetail._id, findByData());
       const currencyReport = await getCurrencyReport(
         storeDetail._id,
@@ -375,7 +376,6 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       };
     })
     : [];
-
 
   return (
     <Modal show={open} onHide={onClose} size="md">
@@ -600,6 +600,24 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                       </td>
                     </tr>
                   ))}
+
+                {/* Summary row */}
+                <tr className="font-bold pt-2">
+                  <td style={{ textAlign: "left" }}></td>
+                  <td style={{ textAlign: "center" }}>{t("total")}</td>
+                  <td style={{ textAlign: "center" }}>
+                    {categoryReport?.reduce((sum, item) => sum + (item?.served || 0), 0)}
+                  </td>
+                  <td style={{ textAlign: "center" }}>
+                    {categoryReport?.reduce((sum, item) => sum + (item?.cenceled || 0), 0)}
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    {moneyCurrency(
+                      categoryReport?.reduce((sum, item) => sum + (item?.totalSaleAmount || 0), 0)
+                    )}
+                    {storeDetail?.firstCurrency}
+                  </td>
+                </tr>
               </TableComponent>
             </div>
             <hr style={{ borderBottom: "1px dotted #000" }} />
