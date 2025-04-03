@@ -44,7 +44,7 @@ const PopUpCommentCancelOrder = ({ open, onClose, onSaveComment }) => {
                 show={open}
                 onHide={onClose}
                 backdrop="static"
-                size="lg"
+                size="md"
                 keyboard={false}
             >
                 <Modal.Header closeButton>
@@ -105,7 +105,7 @@ const PopUpCommentCancelOrder = ({ open, onClose, onSaveComment }) => {
                                     ))}
                                     
                                     {/* Custom comment input */}
-                                    <div className="border-bottom py-2">
+                                    <div className=" pt-2">
                                         <Form.Label>
                                             {t("ອື່ນໆ")}:
                                         </Form.Label>
