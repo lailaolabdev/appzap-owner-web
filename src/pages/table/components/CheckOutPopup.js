@@ -824,7 +824,6 @@ export default function CheckOutPopup({
     }
   }, [open, delivery, totalBillMoney]);
 
-
   useEffect(() => {
     if (dataBill?.ExpireDateForPoint) {
       setDatePointExpirt(
