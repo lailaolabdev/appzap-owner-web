@@ -39,9 +39,7 @@ const CheckBillTab = ({ storeDetail, currentPage, t }) => {
 
       apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${
         page * rowsPerPage
-      }/limit/${rowsPerPage}?storeId=${
-        storeDetail?._id
-      }&modele=${"checkBill"}${findBy}`;
+      }/limit/${rowsPerPage}?storeId=${storeDetail?._id}&modele=${"checkBill"}`;
 
       const res = await axios.get(apiUrl, { headers });
       setDataBillHistory(res.data?.data);
@@ -58,8 +56,6 @@ const CheckBillTab = ({ storeDetail, currentPage, t }) => {
       currency || storeDetail?.firstCurrency === "LAK" ? "ກີບ" : "LAK"
     }`;
   };
-
-  console.log("dataBillHistory", dataBillHistory);
 
   return (
     <div>

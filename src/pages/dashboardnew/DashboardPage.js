@@ -241,7 +241,7 @@ export default function DashboardPage() {
           endTime || "23:59:59"
         )}`;
       }
-      const data = await getDebtReport(findBy);
+      const data = await getDebtReport(findByData());
       setDebtReport(data?.data);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -455,7 +455,6 @@ export default function DashboardPage() {
   };
 
   const { totalExchangePoint, totalPrice } = calculateTotals();
-
 
   return (
     <div>

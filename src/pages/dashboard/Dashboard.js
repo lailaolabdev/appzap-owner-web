@@ -136,8 +136,8 @@ export default function Dashboard() {
 
   // function
   const getReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getReports(storeDetail?._id, findBy);
+    // const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getReports(storeDetail?._id, findByData());
     setReportData(data);
   };
   const getSalesInformationReportData = async () => {
@@ -193,8 +193,8 @@ export default function Dashboard() {
   };
 
   const getTotalBillActiveReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
-    const data = await getTotalBillActiveReport(storeDetail?._id, findBy);
+    // const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const data = await getTotalBillActiveReport(storeDetail?._id, findByData());
 
     setTotalBillActiveReport(data);
   };

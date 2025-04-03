@@ -46,7 +46,7 @@ export default function BillForCheckOut80({
   const moneyChangeRef = useRef(dataBill?.moneyChange);
   const paymentMethodRef = useRef(dataBill?.paymentMethod);
   const enableServiceChangeRef = useRef(enableServiceChange);
-  
+
   // Remove this console log that runs on every render
   // console.log("enableServiceChange", enableServiceChangeRef.current);
 
@@ -93,17 +93,19 @@ export default function BillForCheckOut80({
   const TotalServiceChange = (() => {
     // Debug log to track values during calculation
 
-    
     // If store has service charge enabled by default
     if (storeDetail?.isServiceChange === true) {
       return serviceChargeRef.current || 0;
     }
-    
+
     // If service charge is explicitly enabled via prop (even if it was undefined before)
-    if (enableServiceChange === true || enableServiceChangeRef.current === true) {
+    if (
+      enableServiceChange === true ||
+      enableServiceChangeRef.current === true
+    ) {
       return serviceChargeRef.current || 0;
     }
-    
+
     // Default case: no service charge
     return 0;
   })();
@@ -442,8 +444,7 @@ export default function BillForCheckOut80({
       <Row>
         <Col xs={7}>
           <div style={{ textAlign: "right" }}>
-            {t("service_charge")}{" "}
-            {TotalServiceChange}% :
+            {t("service_charge")} {TotalServiceChange}% :
           </div>
         </Col>
         <Col>
@@ -490,9 +491,37 @@ export default function BillForCheckOut80({
           </Row>
         ))}
       </div>
+
+      {isShowExchangeRate && (
+        <>
+          <div style={{ height: 10 }} />
+          <hr style={{ border: "1px dashed #000", margin: 0 }} />
+          <div style={{ fontSize: 12, textAlign: "center" }}>
+            <span>{t("exchangeRate")}&nbsp;</span>
+            {currencyData?.map((item, index) => (
+              <span key={index}>
+                {item?.currencyCode}: {moneyCurrency(item?.sell)}
+                {index + 1 < currencyData?.length ? (
+                  <span style={{ marginLeft: 10, marginRight: 10 }}>|</span>
+                ) : (
+                  ""
+                )}
+              </span>
+            ))}
+            {","}
+            &nbsp;
+            {storeDetail?.isCRM && dataBill?.memberPhone && (
+              <span>
+                1 {t("point")} = 1 {storeDetail?.firstCurrency}
+              </span>
+            )}
+          </div>
+        </>
+      )}
+
       <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
-    
+
       {paymentDisplay}
 
       <div
