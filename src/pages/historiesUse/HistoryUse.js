@@ -206,7 +206,6 @@ export default function HistoryUse() {
     }
   }, [data, statusOderHis]);
 
-
   return (
     <div
       style={{
@@ -726,26 +725,36 @@ export default function HistoryUse() {
                         ? t("surnameAndLastName")
                         : t("manager_name")}
                     </th>
-                    <th className="text-nowarp" scope="col">
-                      {t("table")}
-                    </th>
+                    {filtterModele === "checkBill" ? (
+                      ""
+                    ) : (
+                      <th className="text-nowarp" scope="col">
+                        {t("table")}
+                      </th>
+                    )}
                     <th className="text-nowarp" scope="col">
                       {t("amount")}
                     </th>
-                    <th className="text-nowarp" scope="col">
-                      {t("order")}
-                    </th>
+                    {filtterModele === "checkBill" ? (
+                      ""
+                    ) : (
+                      <th className="text-nowarp" scope="col">
+                        {t("order")}
+                      </th>
+                    )}
                     {/* <th scope="col">ສະຖານະ</th> */}
                     <th className="text-nowarp" scope="col">
                       {filtterModele === "historyServiceChange"
                         ? `${t("service_charge")} (${serviceChargePercent}%)`
                         : t("detail")}
                     </th>
+
                     <th className="text-nowarp" scope="col">
                       {filtterModele === "historyServiceChange"
                         ? "ຍອດບິນ"
                         : t("cause")}
                     </th>
+
                     {filtterModele === "historyServiceChange" && (
                       <th>vat ({taxPercent}%)</th>
                     )}
@@ -771,9 +780,23 @@ export default function HistoryUse() {
                             ? `${item.firstName} ${item.lastName}`
                             : item?.user}
                         </td>
-                        <td className="text-nowrap">{item.table}</td>
-                        <td className="text-nowrap">{item.orderAmount}</td>
-                        <td className="text-nowrap">{item.orderItem}</td>
+                        {filtterModele === "checkBill" ? (
+                          <td className="text-nowrap">
+                            {item.billAmount ? item.billAmount : 0}
+                          </td>
+                        ) : (
+                          <td className="text-nowrap">{item.table}</td>
+                        )}
+                        {filtterModele === "checkBill" ? (
+                          ""
+                        ) : (
+                          <td className="text-nowrap">{item.orderAmount}</td>
+                        )}
+                        {filtterModele === "checkBill" ? (
+                          ""
+                        ) : (
+                          <td className="text-nowrap">{item.orderItem}</td>
+                        )}
                         {/* <td
         style={{
           color: item?.event === "INFO" ? "green" : "red",
@@ -796,7 +819,8 @@ export default function HistoryUse() {
                         <td className="text-nowarp">
                           {filtterModele === "historyServiceChange"
                             ? ` ${formatNumber(item.total)} ກີບ`
-                            : filtterModele === "deleted" || filtterModele === "checkBill"
+                            : filtterModele === "deleted" ||
+                              filtterModele === "checkBill"
                             ? item?.commentCancelOrder || "-"
                             : item?.reason === null ||
                               item?.reason === "" ||
@@ -804,7 +828,7 @@ export default function HistoryUse() {
                               item?.reason === "undefined" ||
                               item?.reason === "null"
                             ? "-"
-                            : item?.reason }
+                            : item?.reason}
                         </td>
                         {filtterModele === "historyServiceChange" && (
                           <td>
