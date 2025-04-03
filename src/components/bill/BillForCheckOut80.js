@@ -545,7 +545,6 @@ export default function BillForCheckOut80({
           )}
         </div>
       )}{" "}
-      */}
       <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
       <div
