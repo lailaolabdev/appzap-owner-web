@@ -160,7 +160,7 @@ export default function DashboardPage() {
       findBy += `endDate=${endDate}&`;
       findBy += `startTime=${startTime}&`;
       findBy += `endTime=${endTime}&`;
-      if (shiftCurrent[0]) {
+      if (shiftCurrent?.[0]) {
         findBy += `shiftId=${shiftCurrent[0]?._id}&`;
       }
     }

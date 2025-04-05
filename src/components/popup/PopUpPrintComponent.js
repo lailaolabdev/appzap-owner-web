@@ -230,7 +230,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       findBy += `endDate=${endDate}&`;
       findBy += `startTime=${startTime}&`;
       findBy += `endTime=${endTime}&`;
-      if (shiftCurrent) {
+      if (shiftCurrent?.[0]) {
         findBy += `shiftId=${shiftCurrent[0]?._id}&`;
       }
     }
@@ -365,16 +365,16 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
     try {
       const data = await getCategoryReport(storeDetail?._id, findByData());
       setCategoryReport(data);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   const deliveryReports = delivery
     ? delivery?.revenueByPlatform?.map((e) => {
-      return {
-        name: e?._id,
-        amount: e?.totalRevenue,
-      };
-    })
+        return {
+          name: e?._id,
+          amount: e?.totalRevenue,
+        };
+      })
     : [];
 
   return (
@@ -406,15 +406,15 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           </div>
           {profile?.data?.role === "APPZAP_ADMIN"
             ? storeDetail?.isShift && (
-              <div className="flex items-center gap-2 whitespace-nowrap">
-                <Select
-                  placeholder={t("chose_shift")}
-                  className="min-w-[170px] w-full border-orange-500"
-                  options={optionsData}
-                  onChange={handleSearchInput}
-                />
-              </div>
-            )
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Select
+                    placeholder={t("chose_shift")}
+                    className="min-w-[170px] w-full border-orange-500"
+                    options={optionsData}
+                    onChange={handleSearchInput}
+                  />
+                </div>
+              )
             : ""}
         </div>
 
@@ -467,14 +467,14 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
               ...(Array.isArray(deliveryReports) && deliveryReports.length > 0
                 ? deliveryReports.map((e, idx) => ({
-                  name: (
-                    <div
-                      style={{ fontWeight: 700 }}
-                    >{`delivery (${e?.name})`}</div>
-                  ),
-                  value: Math.floor(e?.amount || 0),
-                  type: storeDetail?.firstCurrency,
-                }))
+                    name: (
+                      <div
+                        style={{ fontWeight: 700 }}
+                      >{`delivery (${e?.name})`}</div>
+                    ),
+                    value: Math.floor(e?.amount || 0),
+                    type: storeDetail?.firstCurrency,
+                  }))
                 : []),
               {
                 name: `${t("point")}:`,
@@ -582,7 +582,9 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                   <th style={{ textAlign: "center" }}>{t("menu_type")}</th>
                   <th style={{ textAlign: "center" }}>{t("success_order")}</th>
                   <th style={{ textAlign: "center" }}>{t("cancel")}</th>
-                  <th style={{ textAlign: "right" }}>{t("sale_price_amount")}</th>
+                  <th style={{ textAlign: "right" }}>
+                    {t("sale_price_amount")}
+                  </th>
                 </tr>
                 {categoryReport
                   ?.sort((x, y) => {
@@ -606,14 +608,23 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                   <td style={{ textAlign: "left" }}></td>
                   <td style={{ textAlign: "center" }}>{t("total")}</td>
                   <td style={{ textAlign: "center" }}>
-                    {categoryReport?.reduce((sum, item) => sum + (item?.served || 0), 0)}
+                    {categoryReport?.reduce(
+                      (sum, item) => sum + (item?.served || 0),
+                      0
+                    )}
                   </td>
                   <td style={{ textAlign: "center" }}>
-                    {categoryReport?.reduce((sum, item) => sum + (item?.cenceled || 0), 0)}
+                    {categoryReport?.reduce(
+                      (sum, item) => sum + (item?.cenceled || 0),
+                      0
+                    )}
                   </td>
                   <td style={{ textAlign: "right" }}>
                     {moneyCurrency(
-                      categoryReport?.reduce((sum, item) => sum + (item?.totalSaleAmount || 0), 0)
+                      categoryReport?.reduce(
+                        (sum, item) => sum + (item?.totalSaleAmount || 0),
+                        0
+                      )
                     )}
                     {storeDetail?.firstCurrency}
                   </td>
@@ -657,25 +668,34 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                     {t("total")}:
                   </td>
                   <td style={{ textAlign: "center" }}>
-                    {bills?.reduce((sum, bill) => sum + (bill?.orderId?.length || 0), 0)}
+                    {bills?.reduce(
+                      (sum, bill) => sum + (bill?.orderId?.length || 0),
+                      0
+                    )}
                   </td>
                   <td style={{ textAlign: "center" }}>
                     {moneyCurrency(
-                      bills?.reduce((sum, bill) =>
-                        sum + (bill?.discount !== 0
-                          ? (bill?.billAmount - bill?.billAmountBefore)
-                          : 0), 0)
+                      bills?.reduce(
+                        (sum, bill) =>
+                          sum +
+                          (bill?.discount !== 0
+                            ? bill?.billAmount - bill?.billAmountBefore
+                            : 0),
+                        0
+                      )
                     )}
                   </td>
                   <td style={{ textAlign: "right" }}>
                     {moneyCurrency(
-                      bills?.reduce((sum, bill) => sum + (bill?.billAmount || 0), 0)
+                      bills?.reduce(
+                        (sum, bill) => sum + (bill?.billAmount || 0),
+                        0
+                      )
                     )}
                     <span> {storeDetail?.firstCurrency}</span>
                   </td>
                 </tr>
               </TableComponent>
-
             </div>
           </Container>
         </div>
