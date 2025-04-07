@@ -2046,14 +2046,20 @@ export default function TableList() {
 
   return (
     <div className="bg-[#F9F9F9] h-[calc(100vh-66px)] overflow-hidden w-full">
-      {/* popup */}
       <PopUpQRToken
         tableName={selectedTable?.tableName}
         open={popup?.qrToken}
         qr={qrToken}
         storeId={selectedTable?.storeId}
         onClose={() => setPopup()}
+        onGenerateQR={() => {
+          openTableAndReturnCodeShortLink().then((e) => {
+            setCodeShortLink(e);
+            setPopup();
+          });
+        }}
       />
+
       <div className="flex overflow-hidden h-full">
         <div className="flex-1 h-full flex flex-col">
           <div
