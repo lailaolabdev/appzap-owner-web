@@ -25,7 +25,7 @@ import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
 import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
 import Loading from "../../components/Loading";
 import { billCancelCafe, getCountBills } from "../../services/bill";
-
+import matchRoundNumber from "../../helpers/matchRound";
 import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
 
@@ -477,7 +477,7 @@ export default function DashboardFinance({
       finalPrice = Math.max(finalPrice - discountAmount, 0);
     });
 
-    return finalPrice;
+    return matchRoundNumber(finalPrice);
   };
 
   let TotalAmount = 0;
@@ -582,7 +582,7 @@ export default function DashboardFinance({
               (isWeightMenu ? isWeightMenuQuantity : quantity);
 
             return new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-              calculatedPrice
+              matchRoundNumber(calculatedPrice)
             );
           } catch {
             return "0";
@@ -989,7 +989,7 @@ export default function DashboardFinance({
                       ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
                       {new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
-                      }).format(totalPriceAmount)}{" "}
+                      }).format(matchRoundNumber(totalPriceAmount))}{" "}
                       {storeDetail?.firstCurrency}
                     </span>
                     <span>
