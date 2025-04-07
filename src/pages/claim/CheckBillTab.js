@@ -10,6 +10,7 @@ import { Card, CardHeader } from "../../components/ui/Card";
 import { Button } from "react-bootstrap";
 import { BsFillCalendarWeekFill } from "react-icons/bs";
 import PopUpSetStartAndEndDateDebt from "../../components/popup/PopUpSetStartAndEndDateDebt";
+import { moneyCurrency } from "../../helpers";
 
 const CheckBillTab = ({ storeDetail, currentPage, t }) => {
   const rowsPerPage = 100;
@@ -39,7 +40,9 @@ const CheckBillTab = ({ storeDetail, currentPage, t }) => {
 
       apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${
         page * rowsPerPage
-      }/limit/${rowsPerPage}?storeId=${storeDetail?._id}&modele=${"checkBill"}`;
+      }/limit/${rowsPerPage}?storeId=${
+        storeDetail?._id
+      }&modele=${"checkBill"}${findBy}`;
 
       const res = await axios.get(apiUrl, { headers });
       setDataBillHistory(res.data?.data);
@@ -110,7 +113,10 @@ const CheckBillTab = ({ storeDetail, currentPage, t }) => {
                     <td>{page * rowsPerPage + index + 1}</td>
                     <td>{item?.user ? item?.user : "-"}</td>
                     <td>{item?.eventDetail ? item?.eventDetail : "-"}</td>
-                    <td>{item?.billAmount ? item?.billAmount : 0}</td>
+                    <td>
+                      {moneyCurrency(item?.billAmount)}{" "}
+                      {storeDetail?.firstCurrency}
+                    </td>
                     <td>{item?.reason ? item?.reason : "-"}</td>
                     <td>
                       {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}

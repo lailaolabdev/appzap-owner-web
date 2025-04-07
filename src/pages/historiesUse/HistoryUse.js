@@ -5,7 +5,7 @@ import moment from "moment";
 import { getHeaders } from "../../services/auth";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import AnimationLoading from "../../constants/loading";
-import { orderStatus } from "./../../helpers";
+import { moneyCurrency, orderStatus } from "./../../helpers";
 import { COLOR_APP } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -782,7 +782,8 @@ export default function HistoryUse() {
                         </td>
                         {filtterModele === "checkBill" ? (
                           <td className="text-nowrap">
-                            {item.billAmount ? item.billAmount : 0}
+                            {moneyCurrency(item?.billAmount)}{" "}
+                            {storeDetail?.firstCurrency}
                           </td>
                         ) : (
                           <td className="text-nowrap">{item.table}</td>
