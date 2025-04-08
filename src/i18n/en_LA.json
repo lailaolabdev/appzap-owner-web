@@ -1346,5 +1346,7 @@
   "mange_stock_setting": "ຈັດການການຕັ້ງຄ່າສະຕ໋ອກ ແລະ ຕາມຄວາມຕ້ອງການທີ່ນີ້",
   "counter_access_only": "ສິດເຂົ້າເຖິງເຄົາເຕີ້ເທົ່ານັ້ນ",
   "description_counter_only": "ເປີດໃຊ້ຕົວເລືອກນີ້ເພື່ອໃຫ້ເຄົາເຕີ້ສະແດງຂໍ້ມູນເທົ່ານັ້ນສໍາລັບຜູ້ໃຊ້.",
-  "description_counter_access": "ເຄົາເຕີ້ມີສິດເຂົ້າເຖິງເພື່ອຈັດການ."
+  "description_counter_access": "ເຄົາເຕີ້ມີສິດເຂົ້າເຖິງເພື່ອຈັດການ.",
+  "change_qr_code" : "ປ່ຽນ QR Code ທ້າຍບິນ",
+  "upload_qr_code" : "ອັບໂຫຼດ QR Code"
 }

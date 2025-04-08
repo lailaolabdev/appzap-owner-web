@@ -122,14 +122,13 @@ export default function PrinterCounter() {
   return (
     <div>
       <div
-        style={{
-          textDecoration: "underline",
-          textAlign: "center",
-          color: "blue",
-        }}
-        onClick={() => navigate(-1)}
-      >
-        {t("previous")}
+        className="mb-4 pl-2 pt-3 flex justify-start">
+        <button
+          className="bg-color-app hover:bg-orange-500 text-white font-medium py-2 px-4 rounded transition duration-300 ease-in-out"
+          onClick={() => navigate(-1)}
+        >
+          {t("back")}
+        </button>
       </div>
       <Form.Group style={{ padding: "0 5px" }}>
         <Form.Label>

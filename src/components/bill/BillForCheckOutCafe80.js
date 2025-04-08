@@ -125,7 +125,7 @@ export default function BillForCheckOutCafe80({
   };
 
   return (
-    <div className="p-1 bg-white rounded-lg shadow-md w-[285px] ml-[-12px]">
+    <div className="p-1 bg-white rounded-lg shadow-md w-[285px] mr-[-12px]">
       <div className="flex flex-col mb-2 items-center ">
         <span className="">{t("queue no")}</span>
         <span className="text-[18px] font-bold">{data || 0}</span>
@@ -790,11 +790,19 @@ export default function BillForCheckOutCafe80({
           )}
         </div>
       )}
+      {
+        storeDetail?.printer?.qr &&
+        <>
+            <div style={{ height: 10 }} />
+            <hr className="border-b border-dashed border-gray-600" />
+        </>
+      }
       <div
         style={{
           display: "flex",
           justifyContent: "center",
           padding: 10,
+          paddingLeft : 25
         }}
         hidden={storeDetail?.printer?.qr ? false : true}
       >

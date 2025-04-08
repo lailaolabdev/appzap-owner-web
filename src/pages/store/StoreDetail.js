@@ -10,6 +10,7 @@ import { END_POINT } from "../../constants";
 import { COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
 import "./index.css";
 import PopUpStoreEdit from "../../components/popup/PopUpStoreEdit";
+import PopUpStoreEditQR from "../../components/popup/PopUpStoreEditQR";
 import { useShiftStore } from "../../zustand/ShiftStore";
 import Loading from "../../components/Loading";
 import { updateStore } from "../../services/store";
@@ -33,6 +34,7 @@ export default function StoreDetail() {
   const [numBerMenus, setnumBerMenus] = useState(0);
   const [getTokken, setgetTokken] = useState();
   const [popEditStroe, setPopEditStroe] = useState(false);
+  const [popEditQR, setPopEditQR] = useState(false);
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
 
   const { profile } = useStore();
@@ -47,15 +49,8 @@ export default function StoreDetail() {
       }
     };
     fetchData();
-    // GetOpenShift(startDate);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // const GetOpenShift = async (startDate) => {
-  //   const endDate = startDate; // Same date range for a single day
-  //   const findBy = `startDate=${startDate}&endDate=${endDate}&status=OPEN`;
-  //   await getShift(findBy);
-  // };
 
   const permissionRole = profile?.data?.permissionRoleId;
   const profileRole = profile?.data?.role;
@@ -129,165 +124,138 @@ export default function StoreDetail() {
     );
   }
   return (
-    <div
-      style={{
-        maxHeight: "100vh",
-        overflowX: "hidden",
-        overflowY: "auto",
-      }}
-    >
-      <div className="row" style={{ padding: 40 }}>
-        <div className="col-sm-10" style={{ fontWeight: "bold", fontSize: 18 }}>
+    <div className="max-h-screen h-screen overflow-x-hidden overflow-y-auto bg-gray-50">
+      {/* Header with title and action buttons */}
+      <div className="flex flex-col md:flex-row justify-between items-center p-4">
+        <h1 className="text-2xl font-bold text-gray-800 mb-3 md:mb-0">
           {t("detail")}
-        </div>
-        <div className="col-sm-2">
-          {(hasConfigureStoreDetail && profileRole === appzapStaff) ||
-          profileRole === appzapAdmin ? (
-            <Button
-              variant="outline-warnings"
-              className="col-sm-8"
-              style={{ color: "#606060", border: `solid 1px ${COLOR_APP}` }}
-              onClick={() => setPopEditStroe(true)}
-            >
-              <FontAwesomeIcon icon={faEdit} style={{ marginRight: 10 }} />
-              {t("edit")}
-            </Button>
-          ) : (
-            ""
-          )}
+        </h1>
+        <div className="flex gap-2">
+          <button
+            className="px-4 py-2 bg-color-app hover:bg-orange-400 text-white border border-gray-300 rounded-md shadow-sm transition-all flex items-center"
+            onClick={() => setPopEditStroe(true)}
+          >
+            <FontAwesomeIcon icon={faEdit} className="mr-2" />
+            {t("edit")}
+          </button>
+          <button
+            className="px-4 py-2 bg-color-app hover:bg-orange-400 text-white border border-gray-300 rounded-md shadow-sm transition-all flex items-center"
+            onClick={() => setPopEditQR(true)}
+          >
+            <FontAwesomeIcon icon={faEdit} className="mr-2" />
+            {t("QR Code")}
+          </button>
         </div>
       </div>
-      <div className="row" style={{ padding: 40 }}>
-        <div className="col-sm-5 text-center">
-          {dataStore?.image ? (
-            <center>
-              <Image
-                src={URL_PHOTO_AW3 + dataStore?.image}
-                alt=""
-                width="150"
-                height="150"
-                style={{
-                  height: 200,
-                  width: 200,
-                  borderRadius: "50%",
-                }}
-              />
-            </center>
-          ) : (
-            <center>
-              <Image
-                src={profileImage}
-                alt=""
-                width="150"
-                height="150"
-                style={{
-                  height: 200,
-                  width: 200,
-                  borderRadius: "50%",
-                }}
-              />
-            </center>
-          )}
-          <div style={{ fontWeight: "bold", fontSize: 20, padding: 10 }}>
-            {" "}
-            {dataStore?.name ? dataStore?.name : "-"}
+
+      {/* Main content */}
+      <div className="flex flex-col md:flex-row gap-6 p-2">
+        {/* Left column - Store profile */}
+        <div className="w-full md:w-1/3 bg-white rounded-lg shadow-md p-6 flex flex-col items-center">
+          <div className="relative w-40 h-40 rounded-full overflow-hidden mb-4 border-4 border-gray-200">
+            <Image
+              src={dataStore?.image ? URL_PHOTO_AW3 + dataStore?.image : profileImage}
+              alt={dataStore?.name || "Store profile"}
+              className="object-cover w-full h-full"
+            />
           </div>
-          <div style={{ display: "flex", justifyContent: "center" }}>
+          
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            {dataStore?.name || "-"}
+          </h2>
+          
+          <div className="flex items-center gap-2 mb-4">
             <StarRatings
               rating={dataStore?.reviewStar || 0}
               starRatedColor="orange"
               starHoverColor="orange"
-              // changeRating={3.48}
               numberOfStars={5}
               name="rating"
               starDimension="20px"
               starSpacing="4px"
             />
-            <div>({dataStore?.reviewStarCount || 0})</div>
+            <span className="text-gray-600">({dataStore?.reviewStarCount || 0})</span>
           </div>
-          <div style={{ padding: 5 }}>{t("open_service")}</div>
-          <div style={{ padding: 5 }}>{dataStore?.note}</div>
-          <label className="switch">
-            <input
-              type="checkbox"
-              defaultChecked={dataSwitch}
-              onClick={() => _updateIsOpenStore(dataStore)}
-            />
-            <span className="slider round"></span>
-          </label>
+          
+          <p className="text-gray-600 mb-2">{t("open_service")}</p>
+          <p className="text-gray-700 mb-4 text-center">{dataStore?.note}</p>
+          
+          {/* <div className="flex items-center">
+            <label className="switch">
+              <input
+                type="checkbox"
+                defaultChecked={dataSwitch}
+                onClick={() => _updateIsOpenStore(dataStore)}
+              />
+              <span className="slider round"></span>
+            </label>
+            <span className="ml-2 text-sm text-gray-600">
+              {dataSwitch ? t("Currently Open") : t("Currently Closed")}
+            </span>
+          </div> */}
         </div>
-        <div className="col-sm-7">
-          <div
-            style={{
-              padding: 8,
-              backgroundColor: COLOR_APP,
-              fontWeight: "bold",
-              color: "#FFFFFF",
-            }}
-          >
-            {t("restaurantOwnerInformation")}
-          </div>
-          <div style={{ height: 10 }}></div>
-          <div className="row">
-            <div className="col-5">{t("surnameAndLastName")}</div>
-            <div className="col-5">
-              {dataStore?.adminName ? dataStore?.adminName : "-"}
+
+        {/* Right column - Store details */}
+        <div className="w-full md:w-2/3 bg-white rounded-lg shadow-md overflow-hidden">
+          {/* Owner Information Section */}
+          <div className="border-b">
+            <div className="bg-gradient-to-r from-color-app to-color-app text-white font-bold py-3 px-4">
+              {t("restaurantOwnerInformation")}
+            </div>
+            <div className="p-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col">
+                  <span className="text-gray-500 text-sm">{t("surnameAndLastName")}</span>
+                  <span className="font-medium">{dataStore?.adminName || "-"}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-gray-500 text-sm">{t("location")}</span>
+                  <span className="font-medium">{dataStore?.detail || "-"}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-gray-500 text-sm">WhatsApp</span>
+                  <span className="font-medium">{dataStore?.whatsapp || "-"}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-gray-500 text-sm">{t("phoneNumber")}</span>
+                  <span className="font-medium">{dataStore?.phone || "-"}</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div style={{ height: 10 }}></div>
-          <div className="row">
-            <div className="col-5">{t("location")}</div>
-            <div className="col-5">
-              {dataStore?.detail ? dataStore?.detail : "-"}
+
+          {/* General Information Section */}
+          <div>
+            <div className="bg-gradient-to-r from-color-app to-color-app text-white font-bold py-3 px-4">
+              {t("generalInfo")}
             </div>
-          </div>
-          <div style={{ height: 10 }}></div>
-          <div className="row">
-            <div className="col-5">WhatsApp</div>
-            <div className="col-5">
-              {dataStore?.whatsapp ? dataStore?.whatsapp : "-"}
-            </div>
-          </div>
-          <div style={{ height: 10 }}></div>
-          <div className="row">
-            <div className="col-5">{t("phoneNumber")}</div>
-            <div className="col-5">
-              {dataStore?.phone ? dataStore?.phone : "-"}
-            </div>
-          </div>
-          <div style={{ height: 10 }}></div>
-          <div
-            style={{
-              padding: 8,
-              backgroundColor: COLOR_APP,
-              fontWeight: "bold",
-              color: "#FFFFFF",
-            }}
-          >
-            {t("generalInfo")}
-          </div>
-          <div style={{ height: 10 }}></div>
-          <div className="row">
-            <div className="col-5">{t("totalTable")}</div>
-            <div className="col-5">
-              {" "}
-              {numBerTable} {t("table")}
-            </div>
-          </div>
-          <div style={{ height: 10 }}></div>
-          <div className="row">
-            <div className="col-5">{t("allMenu")}</div>
-            <div className="col-5">
-              {numBerMenus ? numBerMenus : "-"} {t("menu")}
+            <div className="p-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col">
+                  <span className="text-gray-500 text-sm">{t("totalTable")}</span>
+                  <span className="font-medium">{numBerTable} {t("table")}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-gray-500 text-sm">{t("allMenu")}</span>
+                  <span className="font-medium">{numBerMenus || "-"} {t("menu")}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      {/* >>>>>>>>>>>>>>>>>>>>>>>>>>> PopUp <<<<<<<<<<<<<<<<<<<<<<<<<< */}
+
+      {/* Popups */}
       <PopUpStoreEdit
         open={popEditStroe}
         data={dataStore}
         onClose={() => setPopEditStroe(false)}
+        onSubmit={handleUpdateStore}
+      />
+      <PopUpStoreEditQR
+        open={popEditQR}
+        data={dataStore}
+        onClose={() => setPopEditQR(false)}
         onSubmit={handleUpdateStore}
       />
     </div>
