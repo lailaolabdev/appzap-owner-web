@@ -62,6 +62,12 @@ export default function CheckOutPopupCafe({
   setIsDelivery,
   isDelivery,
   dataBillEdit,
+  setTotalPointPrice,
+  totalPointPrice,
+  setPoint,
+  point,
+  paymentMethod,
+  setPaymentMethod,
 }) {
   // ref
   const inputCashRef = useRef(null);
@@ -75,7 +81,6 @@ export default function CheckOutPopupCafe({
   // state
   const [selectInput, setSelectInput] = useState("inputCash");
   const [selectPoint, setSelectPoint] = useState();
-  const [point, setPoint] = useState();
   const [cash, setCash] = useState();
   const [transfer, setTransfer] = useState();
   const [tab, setTab] = useState("cash");
@@ -99,6 +104,7 @@ export default function CheckOutPopupCafe({
   const [selectedBank, setSelectedBank] = useState("");
   const [banks, setBanks] = useState([]);
   const [platformList, setPlatformList] = useState([]);
+  const [showTotalPointPrice, setShowTotalPointPrice] = useState(false);
 
   const {
     t,
@@ -232,6 +238,10 @@ export default function CheckOutPopupCafe({
   };
 
   useEffect(() => {
+    setPaymentMethod(isDelivery ? "DELIVERY" : forcus)
+  },[forcus, isDelivery])
+
+  useEffect(() => {
     if (!open) return;
     if (selectCurrency?.name !== "LAK") {
       const _currencyData = currencyList.find(
@@ -333,12 +343,15 @@ export default function CheckOutPopupCafe({
             ? item.exchangePointStoreId
             : [];
 
+
+
           // Return array of objects with point, Id, and quantity
           return exchangePointStoreId.map((i) => ({
             point: i?.exchangePoint,
             Id: i?._id,
             quantity: item?.quantity || 1, // Assuming a default quantity of 1 if not provided
             menuName: item?.name,
+            price: item?.price,
           }));
         })
         .flat(); // Flatten the array to get a single array of objects
@@ -349,13 +362,16 @@ export default function CheckOutPopupCafe({
         pointsData.reduce(
           (sum, current) => sum + (current.point * current.quantity || 0),
           0
-        )) ||
-      0;
+        )) || 0;
 
-    return { pointsData, totalPoints };
+    const totalPointsPrice =
+      pointsData?.length > 0 ? pointsData.reduce((sum, current) => sum + (current.price * current.quantity || 0), 0) : 0;
+
+
+    return { pointsData, totalPoints, totalPointsPrice };
   };
 
-  const { pointsData, totalPoints } = DataExchangePointStore();
+  const { pointsData, totalPoints, totalPointsPrice } = DataExchangePointStore();
 
   const handleSelectedPoint = (data) => {
     setSelectPoint(data);
@@ -389,9 +405,7 @@ export default function CheckOutPopupCafe({
       status: "CHECKOUT",
       payAmount: cash,
       billAmount:
-        totalPoints < memberDataSearch?.point && !hasCRM
-          ? totalPoints
-          : DiscountMember(),
+        (totalPoints < memberDataSearch?.point) && !hasCRM ? (DiscountMember() - totalPointPrice) : DiscountMember(),
       transferAmount: isDelivery ? 0 : transfer,
       deliveryAmount: isDelivery ? matchRoundNumber(transfer) : 0,
       deliveryName: platform,
@@ -449,6 +463,7 @@ export default function CheckOutPopupCafe({
           setSelectCurrency("LAK");
           setRateCurrency(1);
           setTransfer();
+          setShowTotalPointPrice(false)
           setSelectInput("inputCash");
           setHasCRM(false);
           setPlatform("");
@@ -824,6 +839,10 @@ export default function CheckOutPopupCafe({
     return totalAmount <= 0 ? 0 : totalAmount;
   };
 
+  const totalCashAndTransfer =
+    (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
+
+
   return (
     <Modal
       show={open}
@@ -836,6 +855,7 @@ export default function CheckOutPopupCafe({
         setDeliveryCode("");
         setIsDelivery(false);
         setDelivery();
+        setShowTotalPointPrice(false)
       }}
       keyboard={false}
       size="lg"
@@ -855,7 +875,7 @@ export default function CheckOutPopupCafe({
               //   marginBottom: 10,
               //   fontSize: 22,
               // }}
-              className="mb-[10px] text-[22px] flex gap-3 items-center"
+              className="mb-[10px] text-[22px] flex gap-3 items-center "
             >
               <span>{t("bill_total")}: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
@@ -866,6 +886,8 @@ export default function CheckOutPopupCafe({
                     )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
+
+
               <span
                 hidden={
                   selectCurrency?.name === "LAK" && storeDetail?.firstCurrency
@@ -898,7 +920,24 @@ export default function CheckOutPopupCafe({
                 {" "}
                 (ອັດຕາແລກປ່ຽນ: {convertNumber(rateCurrency)})
               </span>
+
+             {showTotalPointPrice && (
+                <div className="flex items-center text-[18px] gap-3">
+                  <span>( {point} {t("point")} = {totalPointPrice} {storeDetail?.firstCurrency})</span>
+                  <span className="ml-1">{t("ເງິນທີຈະຈ່າຍ")}: </span>
+                  <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
+                    {dataBill
+                      ? moneyCurrency(DiscountMember() ? DiscountMember() - totalPointPrice : 0)
+                      : moneyCurrency(
+                        DiscountMember() > 0 ? DiscountMember() : 0
+                      )}{" "}
+                    {storeDetail?.firstCurrency}
+                  </span>
+                </div>
+              )}
+
             </div>
+            
             <div
               style={{
                 display: "flex",
@@ -963,7 +1002,7 @@ export default function CheckOutPopupCafe({
                       value={
                         tab === "cash_transfer"
                           ? convertNumber(transfer)
-                          : convertNumber(transfer || 0)
+                          : convertNumber(transfer)
                       }
                       onClick={() => {
                         setSelectInput("inputTransfer");
@@ -1137,6 +1176,7 @@ export default function CheckOutPopupCafe({
                             {t("all")} ({moneyCurrency(totalPoints)})
                           </button>
                         )}
+<<<<<<< HEAD
                         {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
                         {pointsData &&
                           pointsData?.map((data) => {
@@ -1171,6 +1211,70 @@ export default function CheckOutPopupCafe({
                               </div>
                             );
                           })}
+=======
+                        <div className="flex gap-1">
+                          {pointsData?.length > 1 && (
+                            <button
+                              type="button"
+                              disabled={memberDataSearch?.point < totalPoints}
+                              className={cn(
+                                "rounded-full  text-color-app flex-col px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
+                                memberDataSearch?.point < totalPoints
+                                  ? "bg-gray-400 text-white"
+                                  : "",
+                                fontMap[language]
+                              )}
+                              onClick={() => {
+                                handleSelectedPoint(totalPoints)
+                                setShowTotalPointPrice(true)
+                                setTotalPointPrice(totalPointsPrice)
+                              }
+                              }
+                            >
+                              {t("all")} ({moneyCurrency(totalPoints)})
+                            </button>
+                          )}
+                          {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
+                          {pointsData &&
+                            pointsData?.map((data) => {
+                              return (
+                                <div
+                                  key={data?._id}
+                                  className="flex-col items-center"
+                                >
+                                  <button
+                                    type="button"
+                                    key={`points${data?._id}`}
+                                    disabled={
+                                      memberDataSearch?.point < data?.point
+                                    }
+                                    className={cn(
+                                      "rounded-full flex-col px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
+                                      selectPoint?._id === data?._id
+                                        ? "text-color-app"
+                                        : "text-gray-700",
+                                      memberDataSearch?.point < data?.point
+                                        ? "bg-gray-400 text-white"
+                                        : "",
+                                      fontMap[language]
+                                    )}
+                                    onClick={() => {
+                                      handleSelectedPoint(data)
+                                      setShowTotalPointPrice(true)
+                                      setTotalPointPrice(data?.price * data?.quantity)
+                                    }
+                                    }
+                                  >
+                                    {subStringText(data?.menuName, 5)}(
+                                    {moneyCurrency(data?.point)}
+                                    )
+                                    <div className="ml-12" />
+                                  </button>
+                                </div>
+                              );
+                            })}
+                        </div>
+>>>>>>> bc7fd46b (upddate aichar)
                       </div>
                     </div>
                   )}
@@ -1510,7 +1614,8 @@ export default function CheckOutPopupCafe({
               disabled={
                 !canCheckOut ||
                 (isDelivery && platform.length <= 0) ||
-                (isDelivery && transfer < totalBill)
+                (isDelivery && transfer < totalBill) ||
+                (storeDetail?.isStatusCafe && (totalCashAndTransfer < ( DiscountMember() - totalPointPrice ) ) )
               }
             >
               <BiSolidPrinter />

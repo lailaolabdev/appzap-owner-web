@@ -26,6 +26,9 @@ export default function BillForCheckOutCafe80({
   profile,
   dataModal,
   dataBillEdit,
+  totalPointPrice,
+  point,
+  paymentMethod
 }) {
   // state
   const [total, setTotal] = useState();
@@ -118,8 +121,8 @@ export default function BillForCheckOutCafe80({
         memberData?.moneyReceived < storeDetail?.pointStore
           ? 0
           : Math.floor(
-              (memberData?.moneyReceived / storeDetail?.pointStore) * 10
-            );
+            (memberData?.moneyReceived / storeDetail?.pointStore) * 10
+          );
     }
     return total;
   };
@@ -209,11 +212,11 @@ export default function BillForCheckOutCafe80({
                 <span style={{ fontWeight: "bold" }}>
                   {memberData?.memberPhone
                     ? `${memberData?.memberPhone} (${t(
-                        "point"
-                      )} : ${moneyCurrency(
-                        Number(memberData?.Point || 0) -
-                          Number(storeDetail?.point || 0)
-                      )})`
+                      "point"
+                    )} : ${moneyCurrency(
+                      Number(memberData?.Point || 0) -
+                      Number(storeDetail?.point || 0)
+                    )})`
                     : ""}
                 </span>
               </div>
@@ -240,10 +243,10 @@ export default function BillForCheckOutCafe80({
                 <span style={{ fontWeight: "bold" }}>
                   {dataModal?.memberId?.phone
                     ? `${dataModal?.memberId?.phone} (${t(
-                        "point"
-                      )} : ${moneyCurrency(
-                        Number(dataModal?.memberId?.point || 0)
-                      )})`
+                      "point"
+                    )} : ${moneyCurrency(
+                      Number(dataModal?.memberId?.point || 0)
+                    )})`
                     : ""}
                 </span>
               </div>
@@ -610,7 +613,7 @@ export default function BillForCheckOutCafe80({
               >
                 {moneyCurrency(
                   (dataBillEdit?.billAmountBefore * dataBillEdit?.discount) /
-                    100
+                  100
                 )}{" "}
                 {storeDetail?.firstCurrency}
               </div>
@@ -641,7 +644,7 @@ export default function BillForCheckOutCafe80({
           )}
         </div>
       ) : (
-        <div className="mb-2">
+        <div className={`mb-2` }>
           {memberData?.Discount > 0 && (
             <>
               <div className="w-full flex justify-between text-[14px] font-thin">
@@ -658,7 +661,7 @@ export default function BillForCheckOutCafe80({
 
                 <div
                   style={{
-                    width: "60%",
+                    width: (point > 0 ? "90%" : "60%"),
                     display: "flex",
                     justifyContent: "end",
                     alignItems: "center",
@@ -681,7 +684,7 @@ export default function BillForCheckOutCafe80({
 
                 <div
                   style={{
-                    width: "60%",
+                    width: (point > 0 ? "90%" : "60%"),
                     display: "flex",
                     justifyContent: "end",
                     alignItems: "center",
@@ -706,7 +709,7 @@ export default function BillForCheckOutCafe80({
 
             <div
               style={{
-                width: "60%",
+                width: (point > 0 ? "90%" : "60%"),
                 display: "flex",
                 justifyContent: "end",
                 alignItems: "center",
@@ -730,7 +733,7 @@ export default function BillForCheckOutCafe80({
 
             <div
               style={{
-                width: "60%",
+                width: (point > 0 ? "90%" : "60%"),
                 display: "flex",
                 justifyContent: "end",
                 alignItems: "center",
@@ -740,6 +743,36 @@ export default function BillForCheckOutCafe80({
               {storeDetail?.firstCurrency}
             </div>
           </div>
+          {(storeDetail?.isStatusCafe && paymentMethod === "CASH_TRANSFER_POINT") &&
+            (<>
+              <div className="w-full flex justify-between text-[12px] font-thin">
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "end",
+                  alignItems: "center",
+                }}
+              >
+                {t("ຍອດລວມແລກພ໋ອຍ")} :{" "}
+              </div>
+
+              <div
+                style={{
+                  width: (point > 0 ? "90%" : "60%"),
+                  display: "flex",
+                  justifyContent: "end",
+                  alignItems: "center",
+                }}
+              >
+                <span>{moneyCurrency(point)}{" "}
+                </span><span>{t("point")}</span> =
+                <span>{moneyCurrency(totalPointPrice)}{" "}
+                {storeDetail?.firstCurrency}</span>
+                
+              </div>
+            </div>
+            </>)}
           {memberData?.Discount > 0 ? (
             <div className="w-full flex justify-between text-[16px] font-bold">
               <div
@@ -754,7 +787,7 @@ export default function BillForCheckOutCafe80({
               </div>
               <div
                 style={{
-                  width: "60%",
+                  width: (point > 0 ? "90%" : "60%"),
                   display: "flex",
                   justifyContent: "end",
                   alignItems: "center",
@@ -778,13 +811,13 @@ export default function BillForCheckOutCafe80({
               </div>
               <div
                 style={{
-                  width: "60%",
+                  width: (point > 0 ? "90%" : "60%"),
                   display: "flex",
                   justifyContent: "end",
                   alignItems: "center",
                 }}
               >
-                {moneyCurrency(total)} {storeDetail?.firstCurrency}
+                {moneyCurrency(paymentMethod === "CASH_TRANSFER_POINT" ? total - totalPointPrice : total)} {storeDetail?.firstCurrency}
               </div>
             </div>
           )}
