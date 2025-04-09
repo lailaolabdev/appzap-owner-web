@@ -52,15 +52,14 @@ export default function PrinterMenuType() {
 
   return (
     <>
-      <div
-        style={{
-          textDecoration: "underline",
-          textAlign: "center",
-          color: "blue",
-        }}
-        onClick={() => navigate(-1)}
-      >
-        {t("back")}
+        <div
+        className="mb-4 pl-2 pt-3 flex justify-start">
+        <button
+          className="bg-color-app hover:bg-orange-500 text-white font-medium py-2 px-4 rounded transition duration-300 ease-in-out"
+          onClick={() => navigate(-1)}
+        >
+          {t("back")}
+        </button>
       </div>
       {isMenuCategoryLoading ? <Loading /> : ""}
       <div style={{ padding: 10 }}>
