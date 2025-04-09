@@ -286,9 +286,9 @@ export default function CheckOutPopupCafe({
       }
     }
 
-    setTotal(_total);
-    setTotalBill(_total);
-    const roundedNumber = _total;
+    // setTotal(_total);
+    const roundedNumber = matchRoundNumber(_total);
+    setTotalBill(roundedNumber);
     setTotal(roundedNumber);
   };
   // function
