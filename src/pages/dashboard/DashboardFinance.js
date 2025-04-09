@@ -665,7 +665,7 @@ export default function DashboardFinance({
     });
   };
 
- console.log("dataModal?.point - dataModal?.taxAmount:",dataModal?.point - dataModal?.taxAmount)
+
 
   return (
     <div style={{ padding: 0 }}>

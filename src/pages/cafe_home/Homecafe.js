@@ -1531,11 +1531,6 @@ function Homecafe() {
   }
 
   const totalExchangePoints = calculateTotalExchangePoints(SelectedMenus);
-  console.log("Total Exchange Points:", totalExchangePoints);
-
-
-  console.log("SelectedMenus: ", SelectedMenus);
-  console.log("point: ", point);
 
 
   return (

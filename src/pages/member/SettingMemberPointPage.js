@@ -422,8 +422,6 @@ export default function SettingMemberPointPage() {
     });
   }, []);
 
-  console.log("menuData", menuData);
-  console.log("Categorys", Categorys);
 
 
   return (
