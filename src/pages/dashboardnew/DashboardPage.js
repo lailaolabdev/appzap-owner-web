@@ -57,6 +57,8 @@ import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
 import PopUpPrintPromotion from "../../components/popup/PopUpPrintPromotion";
 
+import matchRoundNumber from "../../helpers/matchRound";
+
 export default function DashboardPage() {
   const { t } = useTranslation();
   // state
@@ -160,7 +162,7 @@ export default function DashboardPage() {
       findBy += `endDate=${endDate}&`;
       findBy += `startTime=${startTime}&`;
       findBy += `endTime=${endTime}&`;
-      if (shiftCurrent[0]) {
+      if (shiftCurrent?.[0]) {
         findBy += `shiftId=${shiftCurrent[0]?._id}&`;
       }
     }
@@ -937,7 +939,7 @@ export default function DashboardPage() {
                       <td style={{ textAlign: "center" }}>{e?.canceled}</td>
                       <td style={{ textAlign: "center" }}>{e?.paid}</td>
                       <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(e?.totalSaleAmount)}
+                        {moneyCurrency(matchRoundNumber(e?.totalSaleAmount))}
                         {storeDetail?.firstCurrency}
                       </td>
                     </tr>
@@ -1036,7 +1038,7 @@ export default function DashboardPage() {
                       </td>
                       <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
                       <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(e?.totalSaleAmount)}
+                        {moneyCurrency(matchRoundNumber(e?.totalSaleAmount))}
                         {storeDetail?.firstCurrency}
                       </td>
                     </tr>
@@ -1077,7 +1079,7 @@ export default function DashboardPage() {
                       </td>
                       <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
                       <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(e?.totalSaleAmount)}
+                        {moneyCurrency(matchRoundNumber(e?.totalSaleAmount))}
                         {storeDetail?.firstCurrency}
                       </td>
                     </tr>

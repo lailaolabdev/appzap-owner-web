@@ -435,8 +435,8 @@ function Homecafe() {
       }
     }
 
-    // const roundedNumber = matchRoundNumber(_total);
-    setTotal(_total);
+    const roundedNumber = matchRoundNumber(_total);
+    setTotal(roundedNumber);
   };
   // Helper function to sort options by ID
   const sortOptionsById = (options) => {
