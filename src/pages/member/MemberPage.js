@@ -703,7 +703,7 @@ export default function MemberPage() {
                   fontWeight: 400,
                 }}
               >
-                {moneyCurrency(allPoints?.pointAmmount)}
+                {moneyCurrency(allPoints?.totalPoint)}
               </div>
             </Card.Body>
           </Card>
