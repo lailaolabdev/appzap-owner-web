@@ -113,7 +113,7 @@ export default function SettingList() {
       subTitle: t("stok_manage_desc"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faBoxes} />,
       path: `/settingStore/stock/limit/40/page/1/${params?.id}`,
-      hidden: storeDetail?.isStatusCafe,
+      // hidden: storeDetail?.isStatusCafe,
     },
     {
       id: "0f90941b-c594-4365-a279-a995868ede2a",

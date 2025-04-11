@@ -656,6 +656,7 @@ export default function DashboardFinance({
       status: "CANCELED",
       billAmount: dataModal?.payAmount,
       commentCancelOrder: comment,
+      billCafe: dataModal?._id,
     };
 
     confrimCancelBill(body).then(() => {
