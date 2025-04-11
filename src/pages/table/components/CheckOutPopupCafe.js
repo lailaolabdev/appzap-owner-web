@@ -144,7 +144,7 @@ export default function CheckOutPopupCafe({
       const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
       setMembersData(_data?.data);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   const totalBillDefualt = _.sumBy(
@@ -181,17 +181,17 @@ export default function CheckOutPopupCafe({
             ? totalBill
             : 0
           : totalBill > 0
-            ? totalBill
-            : 0) <=
-        0
+          ? totalBill
+          : 0) <=
+      0
         ? 0
         : (Number.parseFloat(cash) || 0) +
-        (Number.parseFloat(transfer) || 0) -
-        (dataBill
-          ? totalBill > 0
-            ? totalBill
-            : 0
-          : totalBill > 0
+          (Number.parseFloat(transfer) || 0) -
+          (dataBill
+            ? totalBill > 0
+              ? totalBill
+              : 0
+            : totalBill > 0
             ? totalBill
             : 0);
 
@@ -209,19 +209,19 @@ export default function CheckOutPopupCafe({
             ? totalBill
             : 0
           : totalBill > 0
-            ? totalBill
-            : 0) <=
+          ? totalBill
+          : 0) <=
         0
         ? 0
         : (Number.parseFloat(cash) || 0) +
-        (Number.parseFloat(transfer) || 0) -
-        (dataBill
-          ? totalBill > 0
-            ? totalBill
-            : 0
-          : totalBill > 0
-            ? totalBill
-            : 0)
+            (Number.parseFloat(transfer) || 0) -
+            (dataBill
+              ? totalBill > 0
+                ? totalBill
+                : 0
+              : totalBill > 0
+              ? totalBill
+              : 0)
     );
   }, [cash, transfer, selectCurrency?.name]);
 
@@ -349,8 +349,8 @@ export default function CheckOutPopupCafe({
         pointsData.reduce(
           (sum, current) => sum + (current.point * current.quantity || 0),
           0
-        )) || 0;
-
+        )) ||
+      0;
 
     return { pointsData, totalPoints };
   };
@@ -363,7 +363,7 @@ export default function CheckOutPopupCafe({
   };
 
   const exchangePointStoreIds = pointsData?.map((i) => i?.Id);
-  
+
   const _checkBill = async () => {
     setIsLoading(true);
     const moneyChange = calculateReturnAmount();
@@ -389,7 +389,9 @@ export default function CheckOutPopupCafe({
       status: "CHECKOUT",
       payAmount: cash,
       billAmount:
-       ( totalPoints < memberDataSearch?.point) && !hasCRM ? totalPoints : DiscountMember(),
+        totalPoints < memberDataSearch?.point && !hasCRM
+          ? totalPoints
+          : DiscountMember(),
       transferAmount: isDelivery ? 0 : transfer,
       deliveryAmount: isDelivery ? matchRoundNumber(transfer) : 0,
       deliveryName: platform,
@@ -415,12 +417,13 @@ export default function CheckOutPopupCafe({
         memberDataSearch?.discountPercentage > 0
           ? memberDataSearch?.discountPercentage
           : dataBillEdit?.discount > 0
-            ? dataBillEdit?.discount
-            : 0,
+          ? dataBillEdit?.discount
+          : 0,
       discountType: "PERCENT",
       statusPoint: statusPoint,
       fullnameStaffCheckOut:
-        `${profile.data.firstname ? profile.data.firstname : "--"} ${profile.data.lastname ? profile.data.lastname : "--"
+        `${profile.data.firstname ? profile.data.firstname : "--"} ${
+          profile.data.lastname ? profile.data.lastname : "--"
         }` ?? "-",
       staffCheckOutId: profile.data._id,
       exchangePointStoreId: exchangePointStoreIds,
@@ -481,8 +484,8 @@ export default function CheckOutPopupCafe({
       storeDetail?.tableEdit === undefined
         ? false
         : !storeDetail?.tableEdit
-          ? false
-          : true;
+        ? false
+        : true;
 
     const data = {
       memberId: memberDataSearch?._id,
@@ -709,8 +712,8 @@ export default function CheckOutPopupCafe({
         ? DiscountMember()
         : 0
       : DiscountMember() > 0
-        ? DiscountMember()
-        : 0;
+      ? DiscountMember()
+      : 0;
 
   let totalBillMoney = dataBill
     ? Number.parseFloat(DiscountMember() > 0 ? DiscountMember() : 0)
@@ -859,8 +862,8 @@ export default function CheckOutPopupCafe({
                 {dataBill
                   ? moneyCurrency(DiscountMember() ? DiscountMember() : 0)
                   : moneyCurrency(
-                    DiscountMember() > 0 ? DiscountMember() : 0
-                  )}{" "}
+                      DiscountMember() > 0 ? DiscountMember() : 0
+                    )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
               <span
@@ -883,8 +886,8 @@ export default function CheckOutPopupCafe({
                       ? DiscountMember()
                       : 0
                     : DiscountMember() > 0
-                      ? DiscountMember()
-                      : 0) / rateCurrency
+                    ? DiscountMember()
+                    : 0) / rateCurrency
                 )}{" "}
                 {selectCurrency?.name}
               </span>
@@ -1085,17 +1088,17 @@ export default function CheckOutPopupCafe({
                           {point
                             ? convertNumber(memberDataSearch?.point - point)
                             : convertNumber(memberDataSearch?.point)
-                              ? convertNumber(memberDataSearch?.point)
-                              : "0"}
+                            ? convertNumber(memberDataSearch?.point)
+                            : "0"}
                         </InputGroup.Text>
                       </div>
                       {memberDataSearch &&
-                        memberDataSearch.discountPercentage !== undefined ? (
+                      memberDataSearch.discountPercentage !== undefined ? (
                         <div className="box-name">
                           <InputGroup.Text>
                             {t("discount")}:{" "}
                             {memberDataSearch?.discountPercentage != null &&
-                              memberDataSearch?.discountPercentage > 0
+                            memberDataSearch?.discountPercentage > 0
                               ? memberDataSearch.discountPercentage ===
                                 undefined
                                 ? 0
@@ -1113,64 +1116,64 @@ export default function CheckOutPopupCafe({
                     memberDataSearch?.name ||
                     memberDataSearch?.point ||
                     !memberDataSearch?.point <= point) && (
-                      <div className="flex gap-2 items-center my-3">
-                        {pointsData?.length > 0 && (
-                          <div>{t("menu_change_point")} : </div>
+                    <div className="flex gap-2 items-center my-3">
+                      {pointsData?.length > 0 && (
+                        <div>{t("menu_change_point")} : </div>
+                      )}
+                      <div className="flex gap-1">
+                        {pointsData?.length > 1 && (
+                          <button
+                            type="button"
+                            disabled={memberDataSearch?.point < totalPoints}
+                            className={cn(
+                              "rounded-full  text-color-app flex-col px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
+                              memberDataSearch?.point < totalPoints
+                                ? "bg-gray-400 text-white"
+                                : "",
+                              fontMap[language]
+                            )}
+                            onClick={() => handleSelectedPoint(totalPoints)}
+                          >
+                            {t("all")} ({moneyCurrency(totalPoints)})
+                          </button>
                         )}
-                        <div className="flex gap-1">
-                          {pointsData?.length > 1 && (
-                            <button
-                              type="button"
-                              disabled={memberDataSearch?.point < totalPoints}
-                              className={cn(
-                                "rounded-full  text-color-app flex-col px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
-                                memberDataSearch?.point < totalPoints
-                                  ? "bg-gray-400 text-white"
-                                  : "",
-                                fontMap[language]
-                              )}
-                              onClick={() => handleSelectedPoint(totalPoints)}
-                            >
-                              {t("all")} ({moneyCurrency(totalPoints)})
-                            </button>
-                          )}
-                          {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
-                          {pointsData &&
-                            pointsData?.map((data) => {
-                              return (
-                                <div
-                                  key={data?._id}
-                                  className="flex-col items-center"
+                        {/* biome-ignore lint/complexity/useOptionalChain: <explanation> */}
+                        {pointsData &&
+                          pointsData?.map((data) => {
+                            return (
+                              <div
+                                key={data?._id}
+                                className="flex-col items-center"
+                              >
+                                <button
+                                  type="button"
+                                  key={`points${data?._id}`}
+                                  disabled={
+                                    memberDataSearch?.point < data?.point
+                                  }
+                                  className={cn(
+                                    "rounded-full flex-col px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
+                                    selectPoint?._id === data?._id
+                                      ? "text-color-app"
+                                      : "text-gray-700",
+                                    memberDataSearch?.point < data?.point
+                                      ? "bg-gray-400 text-white"
+                                      : "",
+                                    fontMap[language]
+                                  )}
+                                  onClick={() => handleSelectedPoint(data)}
                                 >
-                                  <button
-                                    type="button"
-                                    key={`points${data?._id}`}
-                                    disabled={
-                                      memberDataSearch?.point < data?.point
-                                    }
-                                    className={cn(
-                                      "rounded-full flex-col px-3 py-2 shadow-button w-auto min-w-0 flex-shrink-0 font-semibold text-sm whitespace-nowrap float-none",
-                                      selectPoint?._id === data?._id
-                                        ? "text-color-app"
-                                        : "text-gray-700",
-                                      memberDataSearch?.point < data?.point
-                                        ? "bg-gray-400 text-white"
-                                        : "",
-                                      fontMap[language]
-                                    )}
-                                    onClick={() => handleSelectedPoint(data)}
-                                  >
-                                    {subStringText(data?.menuName, 5)}(
-                                    {moneyCurrency(data?.point)}
-                                    )
-                                    <div className="ml-12" />
-                                  </button>
-                                </div>
-                              );
-                            })}
-                        </div>
+                                  {subStringText(data?.menuName, 5)}(
+                                  {moneyCurrency(data?.point)}
+                                  )
+                                  <div className="ml-12" />
+                                </button>
+                              </div>
+                            );
+                          })}
                       </div>
-                    )}
+                    </div>
+                  )}
 
                   <InputGroup style={{ marginTop: 10 }}>
                     <InputGroup.Text>{t("point")}</InputGroup.Text>
@@ -1239,17 +1242,17 @@ export default function CheckOutPopupCafe({
                         {point
                           ? convertNumber(memberDataSearch?.point - point)
                           : convertNumber(memberDataSearch?.point)
-                            ? convertNumber(memberDataSearch?.point)
-                            : "0"}
+                          ? convertNumber(memberDataSearch?.point)
+                          : "0"}
                       </InputGroup.Text>
                     </div>
                     {memberDataSearch &&
-                      memberDataSearch.discountPercentage !== undefined ? (
+                    memberDataSearch.discountPercentage !== undefined ? (
                       <div className="box-name">
                         <InputGroup.Text>
                           {t("discount")}:{" "}
                           {memberDataSearch?.discountPercentage != null &&
-                            memberDataSearch?.discountPercentage > 0
+                          memberDataSearch?.discountPercentage > 0
                             ? memberDataSearch.discountPercentage === undefined
                               ? 0
                               : `${memberDataSearch.discountPercentage ?? 0}%`
@@ -1411,23 +1414,23 @@ export default function CheckOutPopupCafe({
               {(tab === "transfer" ||
                 tab === "cash_transfer" ||
                 tab === "cash_transfer_point") && (
-                  <Form.Control
-                    as="select"
-                    style={{ width: 140 }}
-                    value={selectedBank?.id || ""}
-                    onChange={handleChange}
-                  >
-                    <option value="" disabled>
-                      ເລືອກທະນາຄານ
-                    </option>
-                    {Array.isArray(banks) &&
-                      banks.map((bank) => (
-                        <option key={bank._id} value={bank._id}>
-                          {bank.bankName}
-                        </option>
-                      ))}
-                  </Form.Control>
-                )}
+                <Form.Control
+                  as="select"
+                  style={{ width: 140 }}
+                  value={selectedBank?.id || ""}
+                  onChange={handleChange}
+                >
+                  <option value="" disabled>
+                    ເລືອກທະນາຄານ
+                  </option>
+                  {Array.isArray(banks) &&
+                    banks.map((bank) => (
+                      <option key={bank._id} value={bank._id}>
+                        {bank.bankName}
+                      </option>
+                    ))}
+                </Form.Control>
+              )}
             </div>
             <NumberKeyboard
               onClickMember={() => {

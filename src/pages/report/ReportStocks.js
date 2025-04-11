@@ -460,7 +460,7 @@ export default function ReportStocks() {
           {(storeDetail?.isCounterAccess ||
             profile?.data?.role === "APPZAP_ADMIN") && (
             <button
-              class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md mr-2"
+              class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md "
               onClick={() => setPopup({ PopupSelectStock: true })}
             >
               {t("create_stock_menu")}
@@ -470,12 +470,18 @@ export default function ReportStocks() {
           {(storeDetail?.isCounterAccess ||
             profile?.data?.role === "APPZAP_ADMIN") && (
             <button
-              class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md"
+              class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md mx-2"
               onClick={() => navigate("/settingStore/stock/add")}
             >
               {t("create_stock")}
             </button>
           )}
+          <button
+            class="bg-color-app hover:bg-orange-400 text-white font-md py-2 px-3 rounded-md"
+            onClick={() => setPopup({ PopUpChooseCategoryTypeComponent: true })}
+          >
+            {t("chose_type")}
+          </button>
         </div>
 
         <div class="flex gap-2">
