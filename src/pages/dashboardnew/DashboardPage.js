@@ -352,6 +352,13 @@ export default function DashboardPage() {
       };
     }
   );
+  const delivery = moneyReport?.delivery[0];
+
+  const totalRevenues = delivery && delivery?.totalRevenue && delivery?.totalRevenue[0]
+  ? delivery?.totalRevenue[0]?.totalRevenue || 0 
+  : 0;
+
+
   const optionsData = [
     {
       value: {
@@ -929,17 +936,27 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "center" }}>{t("order")}</th>
                   <th style={{ textAlign: "center" }}>{t("order_cancel")}</th>
                   <th style={{ textAlign: "center" }}>{t("order_paid")}</th>
+                  <th style={{ textAlign: "center" }}>{t("Delivery")}</th>
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
                 {userReport?.length > 0 &&
                   userReport?.map((e) => (
                     <tr>
                       <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
-                      <td style={{ textAlign: "center" }}>{e?.served}</td>
-                      <td style={{ textAlign: "center" }}>{e?.canceled}</td>
-                      <td style={{ textAlign: "center" }}>{e?.paid}</td>
+                      <td style={{ textAlign: "center" }}>{e?.served || 0}</td>
+                      <td style={{ textAlign: "center" }}>{e?.canceled || 0}</td>
+                      <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
+                      <td style={{ textAlign: "center" }}>{moneyCurrency(e?.totalSaleDeliveryAmount)}</td>
                       <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(matchRoundNumber(e?.totalSaleAmount))}
+                        {moneyCurrency(
+                          (
+                            e?.totalSaleAmount +
+                              moneyReport?.serviceAmount +
+                              moneyReport?.taxAmount -
+                              promotionDiscountAndFreeReport?.totalDiscountValue -
+                              e?.totalSaleDeliveryAmount
+                          )
+                        )}
                         {storeDetail?.firstCurrency}
                       </td>
                     </tr>
@@ -997,7 +1014,7 @@ export default function DashboardPage() {
                       {storeDetail?.firstCurrency}
                     </td> */}
                     <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.billAmount)}
+                      {moneyCurrency(e?.billAmount + moneyReport?.taxAmount)}
                       {storeDetail?.firstCurrency}
                     </td>
                   </tr>

@@ -377,8 +377,8 @@ export default function Dashboard() {
                 {t("total_will_get")}
                 {" : "}
                 {convertNumber(
-                  totalBillActiveReport?.total +
-                    salesInformationReport?.totalSales
+                  totalBillActiveReport?.total || 0 +
+                    salesInformationReport?.totalSales || 0
                 )}
               </div>
               <div className={fontMap[language]}>
@@ -426,17 +426,17 @@ export default function Dashboard() {
               <div className={fontMap[language]}>
                 {t("payBycash")}
                 {" : "}
-                {convertNumber(moneyReport?.successAmount?.payByCash)}
+                {convertNumber(moneyReport?.successAmount?.payByCash || 0)}
               </div>
               <div className={fontMap[language]}>
                 {t("transferPayment")}
                 {" : "}
-                {convertNumber(moneyReport?.successAmount?.transferPayment)}
+                {convertNumber(moneyReport?.successAmount?.transferPayment || 0)}
               </div>
               <div className={fontMap[language]}>
                 {t("money_from_appzap")}
                 {" : "}
-                {convertNumber(moneyReport?.successAmount?.moneyFromOrdering)}
+                {convertNumber(moneyReport?.successAmount?.moneyFromOrdering || 0)}
               </div>
 
               <div>
