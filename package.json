@@ -1,6 +1,6 @@
 {
   "name": "admin.selfordering",
-  "version": "7.1.17",
+  "version": "7.1.18",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.16.0",
