@@ -218,19 +218,6 @@ export default function MainLayout({ children }) {
           position: "relative",
         }}
       >
-        {!isLoading && storeDetail && (
-          <PopUpShowSales
-            open={popup?.PopUpShowSales}
-            onClose={() => {
-              setPopup({ PopUpShowSales: false });
-            }}
-            salesData={salesData}
-            selectId={selectId}
-            END_POINT_SEVER={END_POINT_SEVER}
-            handleaddStoreId={handleaddStoreId}
-            handleUpdateSalesClick={handleUpdateSalesClick}
-          />
-        )}
         <Outlet />
       </div>
     </Box>
