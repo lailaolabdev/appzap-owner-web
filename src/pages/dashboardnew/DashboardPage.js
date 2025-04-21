@@ -1058,7 +1058,9 @@ export default function DashboardPage() {
                       </td>
                       <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
                       <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(matchRoundNumber(e?.totalSaleAmount))}
+                        {storeDetail?.isStatusCafe
+                          ? moneyCurrency(matchRoundNumber(e?.totalSaleAmount))
+                          : moneyCurrency(e?.totalSaleAmount)}
                         {storeDetail?.firstCurrency}
                       </td>
                     </tr>
@@ -1099,7 +1101,9 @@ export default function DashboardPage() {
                       </td>
                       <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
                       <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(matchRoundNumber(e?.totalSaleAmount))}
+                        {storeDetail?.isStatusCafe
+                          ? moneyCurrency(matchRoundNumber(e?.totalSaleAmount))
+                          : moneyCurrency(e?.totalSaleAmount)}
                         {storeDetail?.firstCurrency}
                       </td>
                     </tr>
