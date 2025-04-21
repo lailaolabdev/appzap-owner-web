@@ -354,10 +354,10 @@ export default function DashboardPage() {
   );
   const delivery = moneyReport?.delivery[0];
 
-  const totalRevenues = delivery && delivery?.totalRevenue && delivery?.totalRevenue[0]
-  ? delivery?.totalRevenue[0]?.totalRevenue || 0 
-  : 0;
-
+  const totalRevenues =
+    delivery && delivery?.totalRevenue && delivery?.totalRevenue[0]
+      ? delivery?.totalRevenue[0]?.totalRevenue || 0
+      : 0;
 
   const optionsData = [
     {
@@ -944,18 +944,21 @@ export default function DashboardPage() {
                     <tr>
                       <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
                       <td style={{ textAlign: "center" }}>{e?.served || 0}</td>
-                      <td style={{ textAlign: "center" }}>{e?.canceled || 0}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {e?.canceled || 0}
+                      </td>
                       <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
-                      <td style={{ textAlign: "center" }}>{moneyCurrency(e?.totalSaleDeliveryAmount)}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {moneyCurrency(e?.totalSaleDeliveryAmount)}
+                      </td>
                       <td style={{ textAlign: "right" }}>
                         {moneyCurrency(
-                          (
-                            e?.totalSaleAmount +
-                              moneyReport?.serviceAmount +
-                              moneyReport?.taxAmount -
-                              promotionDiscountAndFreeReport?.totalDiscountValue -
-                              e?.totalSaleDeliveryAmount
-                          )
+                          (e?.totalSaleAmount || 0) +
+                            (moneyReport?.serviceAmount || 0) +
+                            (moneyReport?.taxAmount || 0) -
+                            (promotionDiscountAndFreeReport?.totalDiscountValue ||
+                              0) -
+                            (e?.totalSaleDeliveryAmount || 0)
                         )}
                         {storeDetail?.firstCurrency}
                       </td>
