@@ -376,7 +376,6 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
         };
       })
     : [];
-
   return (
     <Modal show={open} onHide={onClose} size="md">
       <Modal.Header
@@ -486,12 +485,12 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
               },
               {
                 name: `${t("service_charge")}:`,
-                value: reportBill.servicechange,
+                value: moneyReport?.serviceAmount,
                 type: storeDetail?.firstCurrency,
               },
               {
                 name: `${t("tax")}:`,
-                value: reportBill.tax,
+                value: moneyReport?.taxAmount,
                 type: storeDetail?.firstCurrency,
               },
               {

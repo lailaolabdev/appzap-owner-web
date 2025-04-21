@@ -325,6 +325,7 @@ export default function CheckOutPopup({
       transferAmount: transfer,
       deliveryAmount: delivery,
       point: point,
+      billAmount: totalBill,
       paymentMethod:
         tableData?.isOrderingPaid && !statusServedForOrdering
           ? "APPZAP_TRANSFER"
