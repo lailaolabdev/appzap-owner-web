@@ -1918,6 +1918,8 @@ function Homecafe() {
                         onClick={() => {
                           setSelectedMenus([]);
                           setSelectedMenu([]);
+                          setPoint();
+                          setTotalPointPrice();
                         }}
                       >
                         {t("cancel_order")}
@@ -2134,6 +2136,8 @@ function Homecafe() {
                             setSelectedMenus([]);
                             setSelectedMenu([]);
                             setCartModal(false);
+                            setPoint();
+                            setTotalPointPrice();
                           }}
                         >
                           {t("cancel_order")}

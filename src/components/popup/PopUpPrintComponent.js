@@ -444,8 +444,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 name: `${t("total_amount")}:`,
                 value:
                   (moneyReport?.successAmount?.payByCash || 0) +
-                  (moneyReport?.successAmount?.transferPayment || 0) +
-                  (moneyReport?.successAmount?.point || 0),
+                  (moneyReport?.successAmount?.transferPayment || 0),
                 type: storeDetail?.firstCurrency,
               },
               {
@@ -596,7 +595,11 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                       <td style={{ textAlign: "center" }}>{e?.served}</td>
                       <td style={{ textAlign: "center" }}>{e?.cenceled}</td>
                       <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(e?.totalSaleAmount)}
+                        {e?.totalPointAmount > 0
+                          ? moneyCurrency(
+                              e?.totalSaleAmount - e?.totalPointAmount
+                            )
+                          : moneyCurrency(e?.totalSaleAmount)}
                         {storeDetail?.firstCurrency}
                       </td>
                     </tr>
@@ -623,7 +626,11 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                       categoryReport?.reduce(
                         (sum, item) => sum + (item?.totalSaleAmount || 0),
                         0
-                      )
+                      ) -
+                        categoryReport?.reduce(
+                          (sum, item) => sum + (item?.totalPointAmount || 0),
+                          0
+                        )
                     )}
                     {storeDetail?.firstCurrency}
                   </td>

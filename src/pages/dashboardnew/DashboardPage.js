@@ -438,6 +438,31 @@ export default function DashboardPage() {
     }, 0);
   };
 
+  // const calculateTotals = () => {
+  //   // Check if exchangePointDetails exists and is an array before reducing
+  //   if (
+  //     !moneyReport?.exchangePointDetails ||
+  //     moneyReport?.exchangePointDetails.length === 0
+  //   ) {
+  //     return { totalExchangePoint: 0, totalPrice: 0 }; // Return default values if no data
+  //   }
+
+  //   return moneyReport.exchangePointDetails.reduce(
+  //     (totals, store) => {
+  //       // Sum up the exchangePoint
+  //       totals.totalExchangePoint += store.exchangePoint;
+
+  //       // Sum up the price for menuDetails (price * quantity)
+  //       store.menuDetails.forEach((menuItem) => {
+  //         totals.totalPrice += menuItem.price * menuItem.quantity;
+  //       });
+
+  //       return totals;
+  //     },
+  //     { totalExchangePoint: 0, totalPrice: 0 } // Initial values
+  //   );
+  // };
+
   const calculateTotals = () => {
     // Check if exchangePointDetails exists and is an array before reducing
     if (
@@ -449,13 +474,19 @@ export default function DashboardPage() {
 
     return moneyReport.exchangePointDetails.reduce(
       (totals, store) => {
-        // Sum up the exchangePoint
-        totals.totalExchangePoint += store.exchangePoint;
+        // Only sum up the exchangePoint if it's greater than 0
+        if (store.exchangePoint > 0) {
+          totals.totalExchangePoint += store.exchangePoint;
+        }
 
-        // Sum up the price for menuDetails (price * quantity)
-        store.menuDetails.forEach((menuItem) => {
-          totals.totalPrice += menuItem.price * menuItem.quantity;
-        });
+        // Sum up the price for menuDetails (price * quantity) only if price > 0
+        if (store.menuDetails && Array.isArray(store.menuDetails)) {
+          store.menuDetails.forEach((menuItem) => {
+            if (menuItem.price > 0 && menuItem.quantity > 0) {
+              totals.totalPrice += menuItem.price * menuItem.quantity;
+            }
+          });
+        }
 
         return totals;
       },
@@ -770,8 +801,8 @@ export default function DashboardPage() {
                       qty: moneyReport?.successAmount?.numberOfBills || 0,
                       amount:
                         (moneyReport?.successAmount?.payByCash || 0) +
-                        (moneyReport?.successAmount?.transferPayment || 0) +
-                        (moneyReport?.successAmount?.point || 0),
+                        (moneyReport?.successAmount?.transferPayment || 0),
+                      // (moneyReport?.successAmount?.point || 0),
                       // amount: moneyReport?.successAmount?.totalBalance || 0,
                     },
                     {
@@ -937,28 +968,22 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "center" }}>{t("order_cancel")}</th>
                   <th style={{ textAlign: "center" }}>{t("order_paid")}</th>
                   <th style={{ textAlign: "center" }}>{t("Delivery")}</th>
+                  <th style={{ textAlign: "center" }}>{t("point")}</th>
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
                 {userReport?.length > 0 &&
                   userReport?.map((e) => (
                     <tr>
                       <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
-                      <td style={{ textAlign: "center" }}>{e?.served || 0}</td>
+                      <td style={{ textAlign: "center" }}>{e?.served}</td>
+                      <td style={{ textAlign: "center" }}>{e?.canceled}</td>
+                      <td style={{ textAlign: "center" }}>{e?.paid}</td>
                       <td style={{ textAlign: "center" }}>
-                        {e?.canceled || 0}
-                      </td>
-                      <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
-                      <td style={{ textAlign: "center" }}>
-                        {moneyCurrency(e?.totalSaleDeliveryAmount)}
+                        {moneyCurrency(e?.totalExchangePointSum)}
                       </td>
                       <td style={{ textAlign: "right" }}>
                         {moneyCurrency(
-                          (e?.totalSaleAmount || 0) +
-                            (moneyReport?.serviceAmount || 0) +
-                            (moneyReport?.taxAmount || 0) -
-                            (promotionDiscountAndFreeReport?.totalDiscountValue ||
-                              0) -
-                            (e?.totalSaleDeliveryAmount || 0)
+                          e?.totalSaleAmount - e?.totalSaleExchangeAmount
                         )}
                         {storeDetail?.firstCurrency}
                       </td>
@@ -1058,7 +1083,12 @@ export default function DashboardPage() {
                       </td>
                       <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
                       <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(matchRoundNumber(e?.totalSaleAmount))}
+                        {e?.totalPointAmount > 0
+                          ? moneyCurrency(
+                              e?.totalSaleAmount - e?.totalPointAmount
+                            )
+                          : moneyCurrency(e?.totalSaleAmount)}
+
                         {storeDetail?.firstCurrency}
                       </td>
                     </tr>
@@ -1099,7 +1129,11 @@ export default function DashboardPage() {
                       </td>
                       <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
                       <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(matchRoundNumber(e?.totalSaleAmount))}
+                        {e?.totalPointAmount > 0
+                          ? moneyCurrency(
+                              e?.totalSaleAmount - e?.totalPointAmount
+                            )
+                          : moneyCurrency(e?.totalSaleAmount)}
                         {storeDetail?.firstCurrency}
                       </td>
                     </tr>
@@ -1260,21 +1294,25 @@ export default function DashboardPage() {
               <th className="text-right">{t("price")}</th>
             </tr>
             {moneyReport?.exchangePointDetails?.length > 0 ? (
-              moneyReport?.exchangePointDetails?.map((m, index) => (
-                <tr key={m?._id} className="border-b">
-                  <td className="text-left">{index + 1}</td>
-                  <td className="text-left">{m?.exchangePoint}</td>
-                  <td className="text-left">
-                    {m?.menuDetails?.map((i) => i.name)}
-                  </td>
-                  <td className="text-right">
-                    {m?.menuDetails?.map((i) => i.quantity)}
-                  </td>
-                  <td className="text-right">
-                    {moneyCurrency(m?.menuDetails?.map((i) => i.price))}
-                  </td>
-                </tr>
-              ))
+              moneyReport?.exchangePointDetails
+                ?.filter((item) => item?.exchangePoint > 0)
+                ?.map((m, index) => (
+                  <tr key={m?._id} className="border-b">
+                    <td className="text-left">{index + 1}</td>
+                    <td className="text-left">
+                      {moneyCurrency(m?.exchangePoint)}
+                    </td>
+                    <td className="text-left">
+                      {m?.menuDetails?.map((i) => i.name)}
+                    </td>
+                    <td className="text-right">
+                      {m?.menuDetails?.map((i) => i.quantity)}
+                    </td>
+                    <td className="text-right">
+                      {moneyCurrency(m?.menuDetails?.map((i) => i.price))}
+                    </td>
+                  </tr>
+                ))
             ) : (
               <tr>
                 <td colSpan={6}>
