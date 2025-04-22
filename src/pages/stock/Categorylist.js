@@ -152,29 +152,27 @@ export default function Categorylist() {
                         <td>{item.name}</td>
                         <td>{item.note}</td>
                         <td style={{ textAlign: "right" }}>
-                          {hasManageStockEdit && (
-                            <div>
-                              <Button
-                                variant="outline-primary"
-                                onClick={() => {
-                                  setSelect(item);
-                                  setPopEditCategory(true);
-                                }}
-                              >
-                                <FontAwesomeIcon icon={faEdit} />
-                              </Button>
-                              <span> </span>
-                              <Button
-                                variant="outline-danger"
-                                onClick={() => {
-                                  setSelect(item);
-                                  setPopConfirmDeletion(true);
-                                }}
-                              >
-                                <FontAwesomeIcon icon={faTrashAlt} />
-                              </Button>
-                            </div>
-                          )}
+                          <div>
+                            <Button
+                              variant="outline-primary"
+                              onClick={() => {
+                                setSelect(item);
+                                setPopEditCategory(true);
+                              }}
+                            >
+                              <FontAwesomeIcon icon={faEdit} />
+                            </Button>
+                            <span> </span>
+                            <Button
+                              variant="outline-danger"
+                              onClick={() => {
+                                setSelect(item);
+                                setPopConfirmDeletion(true);
+                              }}
+                            >
+                              <FontAwesomeIcon icon={faTrashAlt} />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     ))
