@@ -294,7 +294,9 @@ export default function PopUpPrintMenuHistoryComponent({
 
                   <td style={{ textAlign: "center" }}>{e?.canceled || 0}</td>
                   <td style={{ textAlign: "right" }}>
-                    {moneyCurrency(e?.totalSaleAmount)}
+                    {e?.totalPointAmount > 0
+                      ? moneyCurrency(e?.totalSaleAmount - e?.totalPointAmount)
+                      : moneyCurrency(e?.totalSaleAmount)}
                   </td>
                 </tr>
               ))}

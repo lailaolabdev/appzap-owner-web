@@ -278,26 +278,26 @@ export default function PopUpPrintStaffHistoryComponent({
                   <hr style={{ borderBottom: "1px dotted #000" }} />
                   {[
                     {
-                      name: `${t("staff_name")}:`,
+                      name: `${t("staff_name")}`,
                       value: e?.["userId"]?.["userId"],
                       type: "default",
                     },
-                    // {
-                    //   name: "ຈຳນວນອໍເດີທັງໝົດ:",
-                    //   value: e["ຈຳນວນອໍເດີທັງໝົດ"],
-                    // },
                     {
-                      name: `${t("order_success_amount")}`,
+                      name: `${t("order")}`,
                       value: e?.["served"],
                     },
-                    // {
-                    //   name: "ຈຳນວນອໍເດີຍົກເລີກ:",
-                    //   value: e["ຈຳນວນອໍເດີຍົກເລີກ"],
-                    //   type: storeDetail?.firstCurrency,
-                    // },
+                    {
+                      name: t("order_cancel"),
+                      value: e["canceled"],
+                    },
+                    {
+                      name: `${t("point")}`,
+                      value: e["totalExchangePointSum"],
+                    },
                     {
                       name: `${t("total_success_order")}`,
-                      value: e?.["totalSaleAmount"],
+                      value:
+                        e?.["totalSaleAmount"] - e?.["totalSaleExchangeAmount"],
                       type: storeDetail?.firstCurrency,
                     },
                   ].map((e) => (

@@ -24,6 +24,7 @@ import {
   getUserReport,
   getDeliveryReport,
   getPromotionReportDisCountAndFree,
+  getBillReport,
 } from "../../services/report";
 import { getAllShift } from "../../services/shift";
 import fileDownload from "js-file-download";
@@ -83,6 +84,7 @@ export default function DashboardPage() {
   const [loadingExportCsv, setLoadingExportCsv] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deliveryReport, setDeliveryReport] = useState([]);
+  const [billReport, setBillReport] = useState([]);
   const [debtReport, setDebtReport] = useState(null);
 
   const [dataFreeItems, setDataFreeItems] = useState([]);
@@ -127,6 +129,7 @@ export default function DashboardPage() {
     getBankBillName();
     getDeliveryReports();
     getPromotionDiscountAndFreeReportData();
+    getBillReportData();
   }, [endDate, startDate, endTime, startTime, selectedTableIds, shiftId]);
 
   // function
@@ -297,6 +300,14 @@ export default function DashboardPage() {
     setDeliveryReport(data);
     setLoading(false);
   };
+
+  const getBillReportData = async () => {
+    setLoading(true);
+    const data = await getBillReport(storeDetail?._id, findByData());
+    setBillReport(data);
+    setLoading(false);
+  };
+
   // console.log("BANK", bankList);
   const downloadCsv = async () => {
     try {
@@ -315,26 +326,55 @@ export default function DashboardPage() {
 
   const downloadExcel = async () => {
     try {
-      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
+      const findByData = () => {
+        let findBy = "";
+
+        if (profile?.data?.role === "APPZAP_ADMIN") {
+          findBy += `&dateFrom=${startDate}`;
+          findBy += `&dateTo=${endDate}`;
+          findBy += `&timeTo=${startTime}`;
+          findBy += `&timeFrom=${endTime}`;
+
+          if (shiftId) {
+            findBy += `&shiftId=${shiftId}`;
+          }
+        } else {
+          findBy += `&dateFrom=${startDate}`;
+          findBy += `&dateTo=${endDate}`;
+          findBy += `&timeTo=${startTime}`;
+          findBy += `&timeFrom=${endTime}`;
+          if (shiftCurrent[0]) {
+            findBy += `&shiftId=${shiftCurrent[0]?._id}`;
+          }
+        }
+
+        return findBy;
+      };
+      // const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
       setLoadingExportCsv(true);
       const url =
-        END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
+        END_POINT_EXPORT +
+        "/export/bill?storeId=" +
+        storeDetail?._id +
+        findByData();
       const _res = await Axios.get(url);
 
-      if (_res?.data?.exportUrl) {
-        const response = await Axios.get(_res?.data?.exportUrl, {
-          responseType: "blob", // Important to get the response as a Blob
-        });
+      console.log("downloadExcel", _res);
 
-        // Create a Blob from the response data
-        // console.log("response", response.data);
-        const fileBlob = new Blob([response.data], {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
+      // if (_res?.data?.exportUrl) {
+      //   const response = await Axios.get(_res?.data?.exportUrl, {
+      //     responseType: "blob", // Important to get the response as a Blob
+      //   });
 
-        // Use the file-saver library to save the file with a new name
-        saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
-      }
+      //   // Create a Blob from the response data
+      //   // console.log("response", response.data);
+      //   const fileBlob = new Blob([response.data], {
+      //     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      //   });
+
+      //   // Use the file-saver library to save the file with a new name
+      //   saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
+      // }
 
       setLoadingExportCsv(false);
     } catch (err) {
@@ -390,27 +430,11 @@ export default function DashboardPage() {
       getBankBillName();
       getDeliveryReports();
       getPromotionDiscountAndFreeReportData();
+      getBillReportData();
     } else {
       setShiftId(option?.value?.shiftID);
     }
   };
-  // const optionsData = shiftData?.map((item) => {
-  //   // console.log(item);
-  //   return {
-  //     value: {
-  //       startTime: item.startTime,
-  //       endTime: item.endTime,
-  //       id: item._id,
-  //     },
-  //     label: item.shiftName,
-  //   };
-  // });
-
-  // const handleSearchInput = (option) => {
-  //   setShiftId(option?.value?.id);
-  // };
-
-  // console.log("promotionDiscountAndFreeReport", promotionDiscountAndFreeReport);
 
   const handleGetDataFree = (data) => {
     setOpenModalFree(true);
@@ -1186,7 +1210,7 @@ export default function DashboardPage() {
         onHide={() => setOpenModalFree(false)}
       >
         <Modal.Header closeButton>
-          <Modal.Title>{t("ລາຍການເມນູແຖມ")}</Modal.Title>
+          <Modal.Title>{t("free_items")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <table style={{ width: "100%" }}>
@@ -1230,16 +1254,16 @@ export default function DashboardPage() {
         onHide={() => setOpenModalDiscount(false)}
       >
         <Modal.Header closeButton>
-          <Modal.Title>{t("ລາຍການເມນູສ່ວນຫຼຸດ")}</Modal.Title>
+          <Modal.Title>{t("discount_items")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <table style={{ width: "100%" }}>
             <tr className="border-b">
               <th className="text-left">{t("no")}</th>
               <th className="text-left">{t("name")}</th>
-              <th className="text-right">{t("ລາຄາປົກກະຕິ")}</th>
-              <th className="text-right">{t("ລາຄາສ່ວນຫຼຸດ")}</th>
-              <th className="text-right">{t("ຈຳນວນທີ່ຫຼຸດ")}</th>
+              <th className="text-right">{t("price_basic")}</th>
+              <th className="text-right">{t("discount_price")}</th>
+              <th className="text-right">{t("discount_amounts")}</th>
             </tr>
             {dataDiscountItems?.length > 0 ? (
               dataDiscountItems?.map((m, index) => (
@@ -1392,6 +1416,21 @@ export default function DashboardPage() {
         onClose={() => setPopup()}
         shiftId={shiftId}
         shiftData={shiftCurrent[0]}
+        reportData={reportData}
+        salesInfoData={salesInformationReport}
+        userData={userReport}
+        categoryData={categoryReport}
+        menuData={menuReport}
+        currencyData={currencyList}
+        dataFreeItems={dataFreeItems}
+        dataDiscountItems={dataDiscountItems}
+        moneyData={moneyReport}
+        promotionData={promotionReport}
+        promotionDiscountAndFreeReportData={promotionDiscountAndFreeReport}
+        bankData={bankList}
+        deliveryData={deliveryReports}
+        billData={billReport}
+        debtData={debtReport}
       />
 
       <PopUpSetStartAndEndDateFilterExport
