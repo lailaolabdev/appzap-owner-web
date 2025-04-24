@@ -665,6 +665,35 @@ export default function DashboardFinance({
     });
   };
 
+  const TotalPriceOfPoint = () => {
+    if (
+      !dataModal?.exchangePointStoreId ||
+      !Array.isArray(dataModal?.exchangePointStoreId)
+    ) {
+      return 0;
+    }
+
+    const total = dataModal.exchangePointStoreId.reduce((acc, item) => {
+      // Check if menuId exists and is an array
+      if (!item.menuId || !Array.isArray(item.menuId)) {
+        return acc;
+      }
+
+      // Calculate the total price of all menu items in this exchange point
+      const menuTotal = item.menuId.reduce((menuAcc, menuItem) => {
+        const price = menuItem.price || 0;
+        const quantity = menuItem.quantity || 1;
+        return menuAcc + price * quantity;
+      }, 0);
+
+      return acc + menuTotal;
+    }, 0);
+
+    return total;
+  };
+
+  const totalPriceOfPoint = TotalPriceOfPoint();
+
   return (
     <div style={{ padding: 0 }}>
       {isLoading && <Loading />}
@@ -768,6 +797,14 @@ export default function DashboardFinance({
               >
                 {t("staffCheckBill")}
               </th>
+              {storeDetail?.isStatusCafe && (
+                <th
+                // className="border border-gray-300 w-full  "
+                //style={{ textAlign: "right" }}
+                >
+                  {t("ຍອດລວມທັງໝົດ")}
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -824,45 +861,53 @@ export default function DashboardFinance({
                   </td>
                 </>
 
-                <td>
-                  {item?.orderId[0]?.platform
-                    ? 0
-                    : ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-                    ? new Intl.NumberFormat("ja-JP", {
-                        currency: "JPY",
-                      }).format(
-                        isNaN(_countAmount(item?.orderId))
-                          ? 0
-                          : _countAmount(item?.orderId)
-                      )
-                    : new Intl.NumberFormat("ja-JP", {
-                        currency: "JPY",
-                      }).format(
-                        item?.isDebtAndPay
-                          ? item?.payAmount + item?.transferAmount
-                          : item?.isDebtPayment
-                          ? item?.payAmount +
-                            item?.transferAmount -
-                            item?.totalTranferAndPayLast
-                          : isNaN(
-                              item?.billAmount +
-                                item?.taxAmount +
-                                item?.serviceChargeAmount -
-                                item?.point
-                            )
-                          ? item?.billAmount
-                          : item?.billAmount +
-                            item?.taxAmount +
-                            item?.serviceChargeAmount -
-                            item?.point
-                      )}{" "}
-                  {item?.isDebtPayment && (
-                    <span className=" text-blue-500">
-                      ( + {moneyCurrency(item?.totalTranferAndPayLast)}){" "}
-                    </span>
-                  )}
-                  {storeDetail?.firstCurrency}
-                </td>
+                {item?.paymentMethod === "CASH_TRANSFER_POINT" ? (
+                  <td>
+                    {moneyCurrency(item?.payAmount + item?.transferAmount)}{" "}
+                    {storeDetail?.firstCurrency}
+                  </td>
+                ) : (
+                  <td>
+                    {item?.orderId[0]?.platform
+                      ? 0
+                      : ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                      ? new Intl.NumberFormat("ja-JP", {
+                          currency: "JPY",
+                        }).format(
+                          isNaN(_countAmount(item?.orderId))
+                            ? 0
+                            : _countAmount(item?.orderId)
+                        )
+                      : new Intl.NumberFormat("ja-JP", {
+                          currency: "JPY",
+                        }).format(
+                          item?.isDebtAndPay
+                            ? item?.payAmount + item?.transferAmount
+                            : item?.isDebtPayment
+                            ? item?.payAmount +
+                              item?.transferAmount -
+                              item?.totalTranferAndPayLast
+                            : isNaN(
+                                item?.billAmount +
+                                  item?.taxAmount +
+                                  item?.serviceChargeAmount -
+                                  item?.point
+                              )
+                            ? item?.billAmount
+                            : item?.billAmount +
+                              item?.taxAmount +
+                              item?.serviceChargeAmount -
+                              item?.point
+                        )}{" "}
+                    {item?.isDebtPayment && (
+                      <span className=" text-blue-500">
+                        ( + {moneyCurrency(item?.totalTranferAndPayLast)}){" "}
+                      </span>
+                    )}
+                    {storeDetail?.firstCurrency}
+                  </td>
+                )}
+
                 <td>
                   <div
                     style={{
@@ -927,6 +972,22 @@ export default function DashboardFinance({
                 </td>
                 <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
                 <td>{item?.fullnameStaffCheckOut ?? "-"}</td>
+
+                {storeDetail?.isStatusCafe && (
+                  <>
+                    <td>
+                      {/* Calculate and display the total price sum */}
+                      {new Intl.NumberFormat("ja-JP", {
+                        currency: "JPY",
+                      }).format(
+                        item?.orderId?.reduce((sum, orderItem) => {
+                          return sum + (orderItem?.totalPrice || 0);
+                        }, 0)
+                      )}{" "}
+                      {storeDetail?.firstCurrency}
+                    </td>
+                  </>
+                )}
               </tr>
             ))}
           </tbody>
@@ -990,7 +1051,7 @@ export default function DashboardFinance({
                       ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
                       {new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
-                      }).format(matchRoundNumber(totalPriceAmount))}{" "}
+                      }).format(totalPriceAmount - totalPriceOfPoint)}{" "}
                       {storeDetail?.firstCurrency}
                     </span>
                     <span>
@@ -1101,7 +1162,7 @@ export default function DashboardFinance({
               <div
                 className={`${
                   dataModal?.paymentMethod === "CASH_TRANSFER_POINT"
-                    ? "w-[350px]"
+                    ? "w-[400px]"
                     : "w-[260px]"
                 }`}
               >
@@ -1112,7 +1173,12 @@ export default function DashboardFinance({
                     <span>{t("cash")} :</span>
                     <span>{t("transferAmount")} :</span>
                     <span>{t("point")}</span>
-                    <span>{t("totalPrice2")} :</span>
+                    {dataModal?.paymentMethod === "CASH_TRANSFER_POINT" ? (
+                      ""
+                    ) : (
+                      <span>{t("totalPrice2")} :</span>
+                    )}
+
                     <span>{t("change")} :</span>
                     <span>{t("total_Amount_of_Money")} :</span>
                   </div>
@@ -1143,27 +1209,54 @@ export default function DashboardFinance({
                       {storeDetail?.firstCurrency}
                     </span>
 
-                    <span>
-                      {dataModal?.point > 0
-                        ? moneyCurrency(dataModal?.point - dataModal?.taxAmount)
-                        : 0}{" "}
-                      {t("point")}
-                    </span>
+                    {dataModal?.paymentMethod === "CASH_TRANSFER_POINT" ? (
+                      ""
+                    ) : (
+                      <span>
+                        {dataModal?.point > 0
+                          ? moneyCurrency(
+                              dataModal?.point - dataModal?.taxAmount
+                            )
+                          : 0}{" "}
+                        {t("point")}
+                      </span>
+                    )}
+
                     {dataModal?.paymentMethod === "CASH_TRANSFER_POINT" &&
                     dataModal?.point > 0 ? (
-                      <span>
-                        (
-                        {new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(totalPriceAmount)}{" "}
-                        {storeDetail?.firstCurrency} {t("can_be_exchanged")}{" "}
-                        {moneyCurrency(
-                          dataModal?.discount > 0
-                            ? (dataModal?.discount ?? 0) + totalAfter
-                            : totalAfter
-                        )}{" "}
-                        {t("point")})
-                      </span>
+                      <>
+                        <span>
+                          (
+                          {new Intl.NumberFormat("ja-JP", {
+                            currency: "JPY",
+                          }).format(
+                            dataModal?.point - dataModal?.taxAmount
+                          )}{" "}
+                          {t("point")} {t("can_be_exchanged")}{" "}
+                          {moneyCurrency(
+                            dataModal.exchangePointStoreId.reduce(
+                              (sum, item) => {
+                                // แต่ละ item มี menuId เป็น array และเราต้องเข้าถึง price ของ menuId[0]
+                                const itemPrice =
+                                  item.menuId[0].price *
+                                  item.menuId[0].quantity;
+                                return sum + itemPrice;
+                              },
+                              0
+                            )
+                          )}{" "}
+                          {storeDetail?.firstCurrency})
+                        </span>
+                        {/* <span>
+                          (
+                          {new Intl.NumberFormat("ja-JP", {
+                            currency: "JPY",
+                          }).format((dataModal?.payAmount -
+                            dataModal?.taxAmount +
+                            dataModal?.change) + (dataModal?.transferAmount - dataModal?.taxAmount) + (dataModal?.point - dataModal?.taxAmount))}{" "}
+                          {storeDetail?.firstCurrency} )
+                        </span> */}
+                      </>
                     ) : (
                       <span>
                         {moneyCurrency(
@@ -1185,14 +1278,8 @@ export default function DashboardFinance({
                         (
                         {new Intl.NumberFormat("ja-JP", {
                           currency: "JPY",
-                        }).format(totalPriceAmount)}{" "}
-                        {storeDetail?.firstCurrency} {t("can_be_exchanged")}{" "}
-                        {moneyCurrency(
-                          dataModal?.discount > 0
-                            ? (dataModal?.discount ?? 0) + totalAfter
-                            : totalAfter
-                        )}{" "}
-                        {t("point")})
+                        }).format(totalPriceAmount - totalPriceOfPoint)}{" "}
+                        {storeDetail?.firstCurrency})
                       </span>
                     ) : (
                       <span>

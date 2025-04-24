@@ -12,6 +12,7 @@ import _ from "lodash";
 import { SettingsApplications } from "@material-ui/icons";
 
 import { useStoreStore } from "../../../zustand/storeStore";
+import { usePaymentStore } from "../../../zustand/paymentStore";
 
 const OrderCheckOut = ({
   data = { orderId: [] },
@@ -49,6 +50,7 @@ const OrderCheckOut = ({
   const [total, setTotal] = useState(0); // Initialize total to 0
   const [isServiceChargeEnabled, setIsServiceChargeEnabled] = useState(false);
 
+  const { setSelectedDataBill } = usePaymentStore();
   const serviceChargeRef = useRef(serviceCharge);
 
   useEffect(() => {
@@ -297,7 +299,13 @@ const OrderCheckOut = ({
                   : storeDetail?.firstCurrency}
               </div>
             </div>
-            {(storeDetail?.isServiceCharge || storeDetail?.isServiceChange) && (
+            {storeDetail?.isServiceChange && (
+              <div className="w-full flex justify-end items-center">
+                <div className="text-end">{t("service_charge")}:</div>
+                <div className="w-60 text-end">{`${serviceCharge} %`}</div>
+              </div>
+            )}
+            {(storeDetail?.serviceChargePer || isServiceChargeEnabled) && (
               <div className="w-full flex justify-end items-center">
                 <div className="text-end">{t("service_charge")}:</div>
                 <div className="w-60 text-end">{`${serviceCharge} %`}</div>
@@ -430,7 +438,13 @@ const OrderCheckOut = ({
                     height: 40,
                   }}
                   // disabled={billDataLoading}
-                  onClick={() => onSubmit()}
+                  onClick={() => {
+                    onSubmit();
+                    setSelectedDataBill((prev) => ({
+                      ...prev,
+                      paymentMethod: "CASH",
+                    }));
+                  }}
                 >
                   {billDataLoading && (
                     <Spinner

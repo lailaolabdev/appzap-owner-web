@@ -149,6 +149,15 @@ export default function Sidenav({ location, navigate, onToggle }) {
       role: profile?.data?.role,
     },
     {
+      title: t("stock_manage"),
+      key: "stock",
+      // icon: BsArchive,
+      icon: faBoxes,
+      typeStore: "",
+
+      system: "stockManagement",
+    },
+    {
       title: `${t("shift")}`,
       key: "shift",
       typeStore: "",

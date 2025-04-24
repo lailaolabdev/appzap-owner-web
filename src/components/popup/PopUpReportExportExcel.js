@@ -14,6 +14,7 @@ import { useStoreStore } from "../../zustand/storeStore";
 import { useMenuStore } from "../../zustand/menuStore";
 import { useStore } from "../../store";
 import Swal from "sweetalert2";
+import { moneyCurrency } from "../../helpers";
 import { COLOR_APP } from "../../constants";
 
 export default function PopUpReportExportExcel({
@@ -22,6 +23,19 @@ export default function PopUpReportExportExcel({
   setPopup,
   shiftId,
   shiftData,
+  reportData,
+  salesInfoData,
+  userData,
+  menuData,
+  categoryData,
+  moneyData,
+  promotionData,
+  promotionDiscountAndFreeReportData,
+  currencyData,
+  bankData,
+  deliveryData,
+  debtData,
+  billData,
 }) {
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const { menuCategories, getMenuCategories, setMenuCategories } =
@@ -50,10 +64,9 @@ export default function PopUpReportExportExcel({
   const [category, setCategory] = useState("");
 
   const findByData = () => {
-
     if (!storeDetail?._id) {
-      console.error('Store ID is missing');
-      return '';
+      console.error("Store ID is missing");
+      return "";
     }
 
     let findBy = "?";
@@ -107,13 +120,11 @@ export default function PopUpReportExportExcel({
     return findBy;
   };
 
-
   const downloadExcel = async () => {
-
     setPopup({ ReportExport: false });
     try {
       if (!storeDetail?._id) {
-        errorAdd('ไม่พบข้อมูลร้าน');
+        errorAdd("ไม่พบข้อมูลร้าน");
         return;
       }
       let findBy = "";
@@ -378,8 +389,9 @@ export default function PopUpReportExportExcel({
   const Promotions = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-promotion/${storeDetail?._id
-        }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-promotion/${
+        storeDetail?._id
+      }${findByData()}`;
       const _res = await axios.get(url);
       if (storeDetail?.isStatusCafe) {
         const dataExcel = _res?.data?.promotion[0];
@@ -515,8 +527,9 @@ export default function PopUpReportExportExcel({
   const bankTotalAmount = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-bank${findByData()}&storeId=${storeDetail?._id
-        }`;
+      const url = `${END_POINT_EXPORT}/export/report-bank${findByData()}&storeId=${
+        storeDetail?._id
+      }`;
 
       const _res = await axios.get(url);
 
@@ -629,8 +642,9 @@ export default function PopUpReportExportExcel({
   const currencyExport = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-currency${findByData()}&storeId=${storeDetail?._id
-        }`;
+      const url = `${END_POINT_EXPORT}/export/report-currency${findByData()}&storeId=${
+        storeDetail?._id
+      }`;
       const _res = await axios.get(url);
 
       if (_res?.data?.exportUrl) {
@@ -658,8 +672,9 @@ export default function PopUpReportExportExcel({
   const Billdetail = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-bill/${storeDetail?._id
-        }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-bill/${
+        storeDetail?._id
+      }${findByData()}`;
       const _res = await axios.post(url);
 
       if (storeDetail?.isStatusCafe) {
@@ -824,7 +839,7 @@ export default function PopUpReportExportExcel({
           saveAs(
             fileBlob,
             `${storeDetail?.name} ${t("bill_detial")}` + ".xlsx" ||
-            "export.xlsx"
+              "export.xlsx"
           );
         }
       }
@@ -835,8 +850,9 @@ export default function PopUpReportExportExcel({
   const StaffInfo = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-user/${storeDetail?._id
-        }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-user/${
+        storeDetail?._id
+      }${findByData()}`;
       const _res = await axios.get(url);
 
       if (storeDetail?.isStatusCafe) {
@@ -961,8 +977,9 @@ export default function PopUpReportExportExcel({
   const DialySales = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-daily/${storeDetail?._id
-        }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-daily/${
+        storeDetail?._id
+      }${findByData()}`;
       const _res = await axios.get(url);
       if (storeDetail?.isStatusCafe) {
         const dataExcel = _res?.data?.daily || [];
@@ -1092,8 +1109,9 @@ export default function PopUpReportExportExcel({
   const MenuType = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-category/${storeDetail?._id
-        }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-category/${
+        storeDetail?._id
+      }${findByData()}`;
       const _res = await axios.get(url);
 
       if (storeDetail?.isStatusCafe) {
@@ -1213,8 +1231,9 @@ export default function PopUpReportExportExcel({
   const MenuInfo = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-menu-detail/${storeDetail?._id
-        }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-menu-detail/${
+        storeDetail?._id
+      }${findByData()}`;
       const _res = await axios.get(url);
 
       if (storeDetail?.isStatusCafe) {
@@ -1334,13 +1353,1138 @@ export default function PopUpReportExportExcel({
     }
   };
 
+  const ex = async () => {
+    setPopup({ ReportExport: false });
+    try {
+      // Create a new workbook
+      const workbook = new ExcelJS.Workbook();
+
+      // Add worksheets for each report type
+      const reportSellSheet = workbook.addWorksheet(t("report_sell"));
+      const salesInfoSheet = workbook.addWorksheet(t("sales_info"));
+      const userSheet = workbook.addWorksheet(t("staf_info"));
+      const menuSheet = workbook.addWorksheet(t("menu_info"));
+      const categorySheet = workbook.addWorksheet(t("menu_type"));
+      const billDetailSheet = workbook.addWorksheet(t("bill_detial"));
+      const saleInfoEveryDaySheet = workbook.addWorksheet(
+        `${t("sales_info")} ${t("every_day")}`
+      );
+      const promotionSheet = workbook.addWorksheet(t("promotion"));
+      const currencySheet = workbook.addWorksheet(t("all_curency"));
+      const bankSheet = workbook.addWorksheet(t("bank_total"));
+      const deliverySheet = workbook.addWorksheet("Delivery Report");
+
+      // Helper function to create headers with styling
+      // const createHeaders = (sheet, headers) => {
+      //   // Add a title row before headers
+      //   const titleRow = sheet.addRow([sheet.name]);
+      //   titleRow.font = { bold: true, size: 16 };
+      //   titleRow.height = 30;
+
+      //   // Add empty row for spacing
+      //   sheet.addRow([]);
+
+      //   const headerRow = sheet.addRow(headers);
+      //   headerRow.eachCell((cell) => {
+      //     cell.fill = {
+      //       type: "pattern",
+      //       pattern: "solid",
+      //       fgColor: { argb: "FFCC8400" }, // Orange color
+      //     };
+      //     cell.font = {
+      //       bold: true,
+      //       color: { argb: "FFFFFF" }, // White text
+      //     };
+      //     cell.alignment = {
+      //       horizontal: "center",
+      //       vertical: "middle",
+      //     };
+      //     cell.border = {
+      //       top: { style: "thin" },
+      //       left: { style: "thin" },
+      //       bottom: { style: "thin" },
+      //       right: { style: "thin" },
+      //     };
+      //   });
+
+      //   // Return the row index where data should start
+      //   return headerRow.number + 1;
+      // };
+
+      // Helper function to create headers with styling
+      const createHeaders = (sheet, headers) => {
+        // Add a title row before headers
+        const titleRow = sheet.addRow([sheet.name]);
+        titleRow.font = { bold: true, size: 16, name: "Noto Sans Lao" };
+        titleRow.height = 30;
+
+        // Add empty row for spacing
+        sheet.addRow([]);
+
+        const headerRow = sheet.addRow(headers);
+        headerRow.eachCell((cell) => {
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFCC8400" }, // Orange color
+          };
+          cell.font = {
+            bold: true,
+            color: { argb: "FFFFFF" }, // White text
+            name: "Noto Sans Lao",
+            size: 14,
+          };
+          cell.alignment = {
+            horizontal: "center",
+            vertical: "middle",
+          };
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+        });
+
+        // Return the row index where data should start
+        return headerRow.number + 1;
+      };
+      // reportSell
+      const reportSellHeaders = [
+        t("no"),
+        t("payment_type"),
+        t("bank_transfer_history"),
+        t("status"),
+        t("cash"),
+        t("e_money"),
+        t("delivery"),
+        t("point"),
+        t("discount"),
+        t("discount_type"),
+        t("change"),
+        t("before_paid"),
+        t("last_paid"),
+        t("order_amount"),
+        t("order"),
+        t("order_status"),
+        t("type_name"),
+        t("date"),
+        t("staff"),
+      ];
+      const reportSellStartRow = createHeaders(
+        reportSellSheet,
+        reportSellHeaders
+      );
+
+      // if (billData) {
+      //   billData.forEach((item, index) => {
+      //     const formattedDate = moment(item?.createdAt).format("DD/MM/YYYY");
+      //     const orderDetails = item?.orderId
+      //       .map((order) => {
+      //         const categoryName = findCategoryName(
+      //           order?.categoryId,
+      //           menuCategories
+      //         );
+      //         return `(${categoryName})`;
+      //       })
+      //       .join(", ");
+      //     const row = reportSellSheet.addRow([
+      //       index + 1,
+      //       item?.paymentMethod || "",
+      //       item?.selectedBank || "",
+      //       item?.status || "",
+      //       moneyCurrency(item?.payAmount || 0),
+      //       moneyCurrency(item?.transferAmount || 0),
+      //       moneyCurrency(item?.deliveryAmount || 0),
+      //       moneyCurrency(item?.point || 0),
+      //       moneyCurrency(item?.discount || 0),
+      //       item?.discountType || "",
+      //       moneyCurrency(item?.change || 0),
+      //       moneyCurrency(item?.beforePaid || 0),
+      //       moneyCurrency(item?.billAmount || 0),
+      //       item?.orderId.length || "",
+      //       item?.orderId.map((order) => order?.name).join(", "),
+      //       item?.orderId.map((order) => order?.status).join(", "),
+      //       orderDetails,
+      //       formattedDate,
+      //       item?.fullnameStaffCheckOut || "",
+      //     ]);
+
+      //     // Style the data row
+      //     row.eachCell((cell) => {
+      //       cell.border = {
+      //         top: { style: "thin" },
+      //         left: { style: "thin" },
+      //         bottom: { style: "thin" },
+      //         right: { style: "thin" },
+      //       };
+      //       cell.font = {
+      //         name: "Noto Sans Lao",
+      //         size: 14,
+      //       };
+      //     });
+      //   });
+      // } else {
+      //   // Add empty row with message if no data
+      //   const noDataRow = reportSellSheet.addRow([t("no_data")]);
+      //   noDataRow.eachCell((cell) => {
+      //     cell.font = {
+      //       name: "Noto Sans Lao",
+      //       size: 12,
+      //     };
+      //   });
+      // }
+
+      // Sales Information Sheet
+
+      if (billData) {
+        let totalCash = 0;
+        let totalTransfer = 0;
+        let totalDelivery = 0;
+        let totalPoint = 0;
+        let totalDiscount = 0;
+        let totalChange = 0;
+        let totalBeforePaid = 0;
+        let totalBillAmount = 0;
+        let totalOrderCount = 0;
+
+        billData.forEach((item, index) => {
+          // Calculate totals
+          totalCash += item?.payAmount || 0;
+          totalTransfer += item?.transferAmount || 0;
+          totalDelivery += item?.deliveryAmount || 0;
+          totalPoint += item?.point || 0;
+          totalDiscount += item?.discount || 0;
+          totalChange += item?.change || 0;
+          totalBeforePaid += item?.beforePaid || 0;
+          totalBillAmount += item?.billAmount || 0;
+          totalOrderCount += item?.orderId.length || 0;
+
+          const formattedDate = moment(item?.createdAt).format("DD/MM/YYYY");
+          const orderDetails = item?.orderId
+            .map((order) => {
+              const categoryName = findCategoryName(
+                order?.categoryId,
+                menuCategories
+              );
+              return `(${categoryName})`;
+            })
+            .join(", ");
+          const row = reportSellSheet.addRow([
+            index + 1,
+            item?.paymentMethod || "",
+            item?.selectedBank || "",
+            item?.status || "",
+            moneyCurrency(item?.payAmount || 0),
+            moneyCurrency(item?.transferAmount || 0),
+            moneyCurrency(item?.deliveryAmount || 0),
+            moneyCurrency(item?.point || 0),
+            moneyCurrency(item?.discount || 0),
+            item?.discountType || "",
+            moneyCurrency(item?.change || 0),
+            moneyCurrency(item?.beforePaid || 0),
+            moneyCurrency(item?.billAmount || 0),
+            item?.orderId.length || "",
+            // Format order names with line breaks
+            item?.orderId
+              .map((order, idx) => `${idx + 1}. ${order?.name || ""}`)
+              .join("\n"),
+            // Format order statuses with line breaks
+            item?.orderId
+              .map((order, idx) => `${idx + 1}. ${order?.status || ""}`)
+              .join("\n"),
+            // Format order categories with line breaks
+            item?.orderId
+              .map((order, idx) => {
+                const categoryName = findCategoryName(
+                  order?.categoryId,
+                  menuCategories
+                );
+                return `${idx + 1}. ${categoryName || ""}`;
+              })
+              .join("\n"),
+            formattedDate,
+            item?.fullnameStaffCheckOut || "",
+          ]);
+
+          // Style the data row
+          row.eachCell((cell, colNumber) => {
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 14,
+            };
+
+            // Enable text wrapping for order details columns
+            if (colNumber === 15 || colNumber === 16 || colNumber === 17) {
+              cell.alignment = {
+                vertical: "top",
+                wrapText: true,
+              };
+              // Increase row height to accommodate multiple lines
+              row.height = Math.max(
+                row.height || 30,
+                20 * (item?.orderId.length || 1)
+              );
+            }
+          });
+        });
+
+        // Add empty row for spacing
+        reportSellSheet.addRow([]);
+
+        // Add total row
+        const totalRow = reportSellSheet.addRow([
+          "",
+          t("total"),
+          "",
+          "",
+          moneyCurrency(totalCash),
+          moneyCurrency(totalTransfer),
+          moneyCurrency(totalDelivery),
+          moneyCurrency(totalPoint),
+          moneyCurrency(totalDiscount),
+          "",
+          moneyCurrency(totalChange),
+          moneyCurrency(totalBeforePaid),
+          moneyCurrency(totalBillAmount),
+          totalOrderCount,
+          "",
+          "",
+          "",
+          "",
+          "",
+        ]);
+
+        // Style the total row
+        totalRow.eachCell((cell, colNumber) => {
+          if (colNumber === 2) {
+            // Style the "Total" text
+            cell.font = {
+              bold: true,
+              name: "Noto Sans Lao",
+              size: 14,
+            };
+          } else if (
+            colNumber === 5 ||
+            colNumber === 6 ||
+            colNumber === 7 ||
+            colNumber === 8 ||
+            colNumber === 9 ||
+            colNumber === 11 ||
+            colNumber === 12 ||
+            colNumber === 13 ||
+            colNumber === 14
+          ) {
+            // Style the total amount cells
+            cell.font = {
+              bold: true,
+              name: "Noto Sans Lao",
+              size: 14,
+            };
+            cell.fill = {
+              type: "pattern",
+              pattern: "solid",
+              fgColor: { argb: "FFEEEEEE" }, // Light gray background
+            };
+          }
+
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+        });
+      } else {
+        // Add empty row with message if no data
+        const noDataRow = reportSellSheet.addRow([t("no_data")]);
+        noDataRow.eachCell((cell) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+        });
+      }
+
+      const salesInfoHeaders = [
+        t("total_sale"),
+        t("business_amount"),
+        t("per_bsn"),
+      ];
+      const salesInfoStartRow = createHeaders(salesInfoSheet, salesInfoHeaders);
+
+      if (salesInfoData) {
+        const row = salesInfoSheet.addRow([
+          moneyCurrency(salesInfoData?.totalSales || 0),
+          salesInfoData?.noOfSalesTransactions || 0,
+          moneyCurrency(salesInfoData?.averageSales_Transaction || 0),
+        ]);
+
+        // Style the data row
+        row.eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 14,
+          };
+        });
+      } else {
+        // Add empty row with message if no data
+        const noDataRow = salesInfoSheet.addRow([t("no_data")]);
+        noDataRow.eachCell((cell) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+        });
+      }
+
+      // Staff Report Sheet
+      const userHeaders = [
+        t("no"),
+        t("user"),
+        t("order"),
+        t("order_cancel"),
+        t("order_paid"),
+        t("total_amount"),
+      ];
+      const userStartRow = createHeaders(userSheet, userHeaders);
+
+      if (userData && userData?.length > 0) {
+        userData.forEach((user, index) => {
+          const row = userSheet.addRow([
+            index + 1,
+            user?.userId?.userId || t("unknown"),
+            (user?.served || 0) + (user?.canceled || 0),
+            user?.canceled || 0,
+            user?.paid || 0,
+            user?.totalSaleExchangeAmount > 0
+              ? moneyCurrency(
+                  user?.totalSaleAmount - user?.totalSaleExchangeAmount
+                )
+              : moneyCurrency(user?.totalSaleAmount || 0),
+          ]);
+
+          // Style the data row
+          row.eachCell((cell) => {
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 14,
+            };
+          });
+        });
+      } else {
+        // Add empty row with message if no data
+        const noDataRow = userSheet.addRow([t("no_data")]);
+        noDataRow.eachCell((cell) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+        });
+      }
+      // Staff Report Sheet
+      const saleInfoHeaders = [
+        t("no"),
+        t("date"),
+        t("order"),
+        t("bill_amount"),
+        t("Delivery"),
+        t("point"),
+        t("discount"),
+        t("debt"),
+        t("total"),
+      ];
+      const saleInfoStartRow = createHeaders(
+        saleInfoEveryDaySheet,
+        saleInfoHeaders
+      );
+
+      if (reportData && reportData?.length > 0) {
+        reportData.forEach((data, index) => {
+          const row = saleInfoEveryDaySheet.addRow([
+            index + 1,
+            data?.date || t("unknown"),
+            data?.order || 0,
+            data?.bill || 0,
+            moneyCurrency(data?.deliveryAmount || 0),
+            moneyCurrency(data?.point || 0),
+            moneyCurrency(data?.discount || 0),
+            moneyCurrency(debtData?.totalRemainingAmount || 0),
+            moneyCurrency(data?.billAmount || 0),
+          ]);
+
+          // Style the data row
+          row.eachCell((cell) => {
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 14,
+            };
+          });
+        });
+      } else {
+        // Add empty row with message if no data
+        const noDataRow = saleInfoEveryDaySheet.addRow([t("no_data")]);
+        noDataRow.eachCell((cell) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+        });
+      }
+
+      // Menu Report Sheet
+      const menuHeaders = [
+        t("menu"),
+        t("order_success"),
+        t("cancel"),
+        t("order_paid"),
+        t("sale_price_amount"),
+      ];
+      const menuStartRow = createHeaders(menuSheet, menuHeaders);
+
+      if (menuData && menuData.length > 0) {
+        // Sort menu data by served count in descending order
+        const sortedMenuData = [...menuData].sort(
+          (a, b) => (b.served || 0) - (a.served || 0)
+        );
+
+        sortedMenuData.forEach((menu) => {
+          const row = menuSheet.addRow([
+            menu?.name || t("unknown"),
+            menu?.served || 0,
+            menu?.canceled || 0,
+            menu?.paid || 0,
+            menu?.totalPointAmount > 0
+              ? moneyCurrency(menu?.totalSaleAmount - menu?.totalPointAmount)
+              : moneyCurrency(menu?.totalSaleAmount || 0),
+          ]);
+
+          // Style the data row
+          row.eachCell((cell) => {
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 14,
+            };
+          });
+        });
+      } else {
+        // Add empty row with message if no data
+        const noDataRow = menuSheet.addRow([t("no_data")]);
+        noDataRow.eachCell((cell) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+        });
+      }
+
+      // Category Report Sheet
+      const categoryHeaders = [
+        t("category"),
+        t("order_success"),
+        t("cancel"),
+        t("order_paid"),
+        t("sale_price_amount"),
+      ];
+      const categoryStartRow = createHeaders(categorySheet, categoryHeaders);
+
+      if (categoryData && categoryData?.length > 0) {
+        categoryData.forEach((category) => {
+          const row = categorySheet.addRow([
+            category?.name || t("unknown"),
+            category?.served || 0,
+            category?.canceled || 0,
+            category?.paid || 0,
+            category?.totalPointAmount > 0
+              ? moneyCurrency(
+                  category?.totalSaleAmount - category?.totalPointAmount
+                )
+              : moneyCurrency(category?.totalSaleAmount || 0),
+          ]);
+
+          // Style the data row
+          row.eachCell((cell) => {
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 14,
+            };
+          });
+        });
+      } else {
+        // Add empty row with message if no data
+        const noDataRow = categorySheet.addRow([t("no_data")]);
+        noDataRow.eachCell((cell) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+        });
+      }
+
+      // Money Report Sheet
+      if (moneyData) {
+        // Bill Detail Report Sheet
+        const billDetailHeaders = [
+          t("bill_type"),
+          t("bill_amount"),
+          t("total_price"),
+          t("ccrc"),
+        ];
+
+        const billDetailStartRow = createHeaders(
+          billDetailSheet,
+          billDetailHeaders
+        );
+
+        // Add bill detail data
+        const billDetailRows = [
+          // Total row
+          {
+            method: t("total"),
+            qty: moneyData?.successAmount?.numberOfBills || 0,
+            amount:
+              (moneyData?.successAmount?.payByCash || 0) +
+              (moneyData?.successAmount?.transferPayment || 0),
+            currency: storeDetail?.firstCurrency,
+          },
+          // Cash row
+          {
+            method: t("total_cash"),
+            qty: moneyData?.successAmount?.cashCount || 0,
+            amount: moneyData?.successAmount?.payByCash || 0,
+            currency: storeDetail?.firstCurrency,
+          },
+          // Transfer row
+          {
+            method: t("total_tsf"),
+            qty: moneyData?.successAmount?.transferCount || 0,
+            amount: moneyData?.successAmount?.transferPayment || 0,
+            currency: storeDetail?.firstCurrency,
+          },
+          // Money from AppZap
+          {
+            method: t("money_from_appzap"),
+            qty: moneyData?.successAmount?.moneyFromOrderingCount || 0,
+            amount: moneyData?.successAmount?.moneyFromOrdering || 0,
+            currency: storeDetail?.firstCurrency,
+          },
+          // Debt row
+          {
+            method: t("total_debt"),
+            qty: debtData?.count || 0,
+            amount: debtData?.totalRemainingAmount || 0,
+            currency: storeDetail?.firstCurrency,
+          },
+          // Point row
+          {
+            method: t("point"),
+            qty: moneyData?.successAmount?.transferCashPointCount || 0,
+            amount: moneyData?.successAmount?.point || 0,
+            currency: t("point"),
+          },
+          // Service charge row
+          {
+            method: t("service_charge"),
+            qty: moneyData?.serviceChargeCount || 0,
+            amount: Math.floor(moneyData?.serviceAmount) || 0,
+            currency: storeDetail?.firstCurrency,
+          },
+          // Tax row
+          {
+            method: t("tax"),
+            qty: moneyData?.taxCount || 0,
+            amount: Math.floor(moneyData?.taxAmount) || 0,
+            currency: storeDetail?.firstCurrency,
+          },
+          // Total tax and service charge
+          {
+            method: t("total_tax_service_charge"),
+            qty:
+              (moneyData?.serviceChargeCount || 0) + (moneyData?.taxCount || 0),
+            amount:
+              (Math.floor(moneyData?.serviceAmount) || 0) +
+              (Math.floor(moneyData?.taxAmount) || 0),
+            currency: storeDetail?.firstCurrency,
+          },
+        ];
+
+        // Add delivery rows if available
+        if (
+          deliveryData &&
+          Array.isArray(deliveryData) &&
+          deliveryData.length > 0
+        ) {
+          deliveryData.forEach((platform) => {
+            if (platform) {
+              billDetailRows.push({
+                method: `delivery (${platform?.name || "Unknown"})`,
+                qty: platform?.qty || 0,
+                amount: Math.floor(platform?.amount || 0),
+                currency: storeDetail?.firstCurrency,
+              });
+            }
+          });
+        }
+
+        // Add all rows to the sheet
+        billDetailRows.forEach((row) => {
+          const excelRow = billDetailSheet.addRow([
+            row.method,
+            row.qty,
+            moneyCurrency(row.amount),
+            row.currency,
+          ]);
+
+          // Style the row
+          excelRow.eachCell((cell, colNumber) => {
+            // Make method column bold
+            if (colNumber === 1) {
+              cell.font = {
+                bold: true,
+                name: "Noto Sans Lao",
+                size: 12,
+              };
+            } else {
+              cell.font = {
+                name: "Noto Sans Lao",
+                size: 12,
+              };
+            }
+
+            // Right-align amount and qty columns
+            if (colNumber === 2 || colNumber === 3) {
+              cell.alignment = { horizontal: "right" };
+            }
+
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+          });
+        });
+      } else {
+        // Add empty row with message if no data
+        const noDataRow = billDetailSheet.addRow([t("no_data")]);
+        noDataRow.eachCell((cell) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+        });
+      }
+
+      // Currency Report Sheet
+      const currencyHeaders = [t("no"), t("code"), t("ccrc"), t("amount")];
+      const currencyStartRow = createHeaders(currencySheet, currencyHeaders);
+
+      if (currencyData?.data && currencyData.data.length > 0) {
+        currencyData.data.forEach((currency, index) => {
+          const row = currencySheet.addRow([
+            index + 1,
+            currency?.currency?.currencyCode || "",
+            currency?.currency?.currencyName || "",
+            Math.floor(moneyCurrency(currency?.currencyTotal || 0)),
+          ]);
+
+          // Style the data row
+          row.eachCell((cell) => {
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 12,
+            };
+          });
+        });
+      } else {
+        // Add empty row with message if no data
+        const noDataRow = currencySheet.addRow([t("no_data")]);
+        noDataRow.eachCell((cell) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+        });
+      }
+
+      // Bank Report Sheet
+      const bankHeaders = [t("no"), t("bank_Name"), t("amount")];
+      const bankStartRow = createHeaders(bankSheet, bankHeaders);
+
+      if (bankData?.data && bankData.data.length > 0) {
+        bankData.data.forEach((bank, index) => {
+          const row = bankSheet.addRow([
+            index + 1,
+            bank?.bankDetails?.bankName || "",
+            moneyCurrency(bank?.bankTotalAmount || 0),
+          ]);
+
+          // Style the data row
+          row.eachCell((cell) => {
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 12,
+            };
+          });
+        });
+      } else {
+        // Add empty row with message if no data
+        const noDataRow = bankSheet.addRow([t("no_data")]);
+        noDataRow.eachCell((cell) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+        });
+      }
+
+      // Promotion
+      const promotionHeaders = [
+        t("no"),
+        t("discount_bill"),
+        t("all_discount"),
+        t("total_amount_menu_discount"),
+        t("total_money") + `(${t("menu_discount")})`,
+        t("total_amount_menu_discount"),
+        t("total_money") + `(${t("menu_free")})`,
+        t("date"),
+      ];
+
+      const promotionStartRow = createHeaders(promotionSheet, promotionHeaders);
+
+      // Add promotion data if available
+      if (promotionData) {
+        const promotionRowData = [
+          1, // no
+          promotionData?.[0]?.count || 0,
+          moneyCurrency(promotionData?.[0]?.totalSaleAmount || 0),
+          promotionDiscountAndFreeReportData?.totalDiscountedItemCount || 0,
+          moneyCurrency(
+            promotionDiscountAndFreeReportData?.totalDiscountValue || 0
+          ),
+          promotionDiscountAndFreeReportData?.totalFreeItemCount || 0,
+          moneyCurrency(
+            promotionDiscountAndFreeReportData?.totalFreeMenuPrice || 0
+          ),
+          promotionData?.[0]?.createdAt
+            ? moment(promotionData.createdAt).format("DD/MM/YYYY")
+            : "-",
+        ];
+
+        const row = promotionSheet.addRow(promotionRowData);
+
+        // Style the data row
+        row.eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+        });
+
+        // Add spacing
+        promotionSheet.addRow([]);
+        promotionSheet.addRow([]);
+
+        // Add discounted menu details section
+        if (
+          promotionDiscountAndFreeReportData?.discountedMenus &&
+          promotionDiscountAndFreeReportData.discountedMenus.length > 0
+        ) {
+          // Add section title
+          const discountTitle = promotionSheet.addRow([t("discount_items")]);
+          discountTitle.font = { bold: true, size: 14, name: "Noto Sans Lao" };
+
+          // Add headers for discounted menus
+          const discountMenuHeaders = [
+            t("no"),
+            t("menu"),
+            t("price_basic"),
+            t("discount_price"),
+            t("discount_amounts"),
+          ];
+
+          const discountHeaderRow = promotionSheet.addRow(discountMenuHeaders);
+          discountHeaderRow.eachCell((cell) => {
+            cell.fill = {
+              type: "pattern",
+              pattern: "solid",
+              fgColor: { argb: "FFCC8400" }, // Orange color
+            };
+            cell.font = {
+              bold: true,
+              color: { argb: "FFFFFF" }, // White text
+              name: "Noto Sans Lao",
+              size: 12,
+            };
+            cell.alignment = {
+              horizontal: "center",
+              vertical: "middle",
+            };
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+          });
+
+          // Add discounted menu data
+          promotionDiscountAndFreeReportData.discountedMenus.forEach(
+            (menu, index) => {
+              const normalPrice = menu.price || 0;
+              const discountPrice = menu.priceDiscount || 0;
+              const amountDiscount = normalPrice - discountPrice;
+
+              const menuRow = promotionSheet.addRow([
+                index + 1,
+                menu.name || t("unknown"),
+                moneyCurrency(normalPrice),
+                moneyCurrency(discountPrice),
+                moneyCurrency(amountDiscount),
+              ]);
+
+              menuRow.eachCell((cell) => {
+                cell.border = {
+                  top: { style: "thin" },
+                  left: { style: "thin" },
+                  bottom: { style: "thin" },
+                  right: { style: "thin" },
+                };
+                cell.font = {
+                  name: "Noto Sans Lao",
+                  size: 12,
+                };
+              });
+            }
+          );
+        }
+
+        // Add spacing
+        promotionSheet.addRow([]);
+        promotionSheet.addRow([]);
+
+        // Add free menu details section
+        if (
+          promotionDiscountAndFreeReportData?.freeMenus &&
+          promotionDiscountAndFreeReportData.freeMenus.length > 0
+        ) {
+          // Add section title
+          const freeTitle = promotionSheet.addRow([t("free_items")]);
+          freeTitle.font = { bold: true, size: 14, name: "Noto Sans Lao" };
+
+          // Add headers for free menus
+          const freeMenuHeaders = [t("no"), t("menu"), t("price")];
+
+          const freeHeaderRow = promotionSheet.addRow(freeMenuHeaders);
+          freeHeaderRow.eachCell((cell) => {
+            cell.fill = {
+              type: "pattern",
+              pattern: "solid",
+              fgColor: { argb: "FFCC8400" }, // Orange color
+            };
+            cell.font = {
+              bold: true,
+              color: { argb: "FFFFFF" }, // White text
+              name: "Noto Sans Lao",
+              size: 12,
+            };
+            cell.alignment = {
+              horizontal: "center",
+              vertical: "middle",
+            };
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+          });
+
+          // Add free menu data
+          promotionDiscountAndFreeReportData.freeMenus.forEach(
+            (menu, index) => {
+              const menuRow = promotionSheet.addRow([
+                index + 1,
+                menu.name || t("unknown"),
+                moneyCurrency(menu.price || 0),
+              ]);
+
+              menuRow.eachCell((cell) => {
+                cell.border = {
+                  top: { style: "thin" },
+                  left: { style: "thin" },
+                  bottom: { style: "thin" },
+                  right: { style: "thin" },
+                };
+                cell.font = {
+                  name: "Noto Sans Lao",
+                  size: 12,
+                };
+              });
+            }
+          );
+        }
+      } else {
+        // Add empty row with message if no data
+        const noDataRow = promotionSheet.addRow([t("no_data")]);
+        noDataRow.eachCell((cell) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+        });
+      }
+
+      // Delivery Report Sheet
+      const deliveryHeaders = [t("name"), t("qty"), t("amount")];
+      const deliveryStartRow = createHeaders(deliverySheet, deliveryHeaders);
+
+      if (
+        deliveryData &&
+        Array.isArray(deliveryData) &&
+        deliveryData.length > 0
+      ) {
+        deliveryData?.forEach((platform) => {
+          if (platform) {
+            const row = deliverySheet.addRow([
+              platform?.name || "",
+              platform?.qty || 0,
+              platform?.amount || 0,
+            ]);
+
+            // Style the data row
+            row.eachCell((cell) => {
+              cell.border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+              };
+              cell.font = {
+                name: "Noto Sans Lao",
+                size: 12,
+              };
+            });
+          }
+        });
+      } else {
+        // Add empty row with message if no data
+        const noDataRow = deliverySheet.addRow([t("no_data")]);
+        noDataRow.eachCell((cell) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+        });
+      }
+
+      // Auto-size columns for better readability
+      workbook.eachSheet((sheet) => {
+        if (sheet && sheet.columns) {
+          sheet.columns.forEach((column) => {
+            if (column) {
+              let maxLength = 0;
+              column.eachCell({ includeEmpty: true }, (cell) => {
+                if (cell && cell.value !== undefined) {
+                  const columnLength = cell.value
+                    ? cell.value.toString().length
+                    : 10;
+                  if (columnLength > maxLength) {
+                    maxLength = columnLength;
+                  }
+                }
+              });
+              column.width = maxLength < 10 ? 10 : maxLength + 2;
+            }
+          });
+        }
+      });
+
+      // Generate and download the Excel file
+      try {
+        const buffer = await workbook.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        // Use file-saver to save the file
+        saveAs(
+          blob,
+          `${storeDetail?.name || "Store"}_Complete_Report_${moment().format(
+            "YYYY-MM-DD"
+          )}.xlsx`
+        );
+
+        console.log("Export completed successfully");
+      } catch (error) {
+        console.error("Error generating Excel file:", error);
+        errorAdd(`${t("error_generating_excel")}: ${error.message}`);
+      }
+    } catch (err) {
+      console.error("Error exporting to Excel:", err);
+      errorAdd(`${t("export_fail")}: ${err.message}`);
+    }
+  };
 
   const allExport = async () => {
     setPopup({ ReportExport: false });
     try {
-  
       if (!storeDetail?._id) {
-        errorAdd('ไม่พบข้อมูลร้าน');
+        errorAdd("ไม่พบข้อมูลร้าน");
         return;
       }
 
@@ -1366,28 +2510,44 @@ export default function PopUpReportExportExcel({
       const billUrl = `${END_POINT_EXPORT}/export/bill?storeId=${storeDetail?._id}${findBy}`;
       const billRes = await axios.get(billUrl);
 
-      const promotionUrl = `${END_POINT_EXPORT}/export/report-promotion/${storeDetail?._id}${findByData()}`;
+      const promotionUrl = `${END_POINT_EXPORT}/export/report-promotion/${
+        storeDetail?._id
+      }${findByData()}`;
       const promotionRes = await axios.get(promotionUrl);
 
-      const billDetailUrl = `${END_POINT_EXPORT}/export/report-bill/${storeDetail?._id}${findByData()}`;
+      const billDetailUrl = `${END_POINT_EXPORT}/export/report-bill/${
+        storeDetail?._id
+      }${findByData()}`;
       const billDetailRes = await axios.post(billDetailUrl);
 
-      const bankUrl = `${END_POINT_EXPORT}/export/report-bank${findByData()}&storeId=${storeDetail?._id}`;
+      const bankUrl = `${END_POINT_EXPORT}/export/report-bank${findByData()}&storeId=${
+        storeDetail?._id
+      }`;
       const bankRes = await axios.get(bankUrl);
 
-      const staffInfoUrl = `${END_POINT_EXPORT}/export/report-user/${storeDetail?._id}${findByData()}`;
+      const staffInfoUrl = `${END_POINT_EXPORT}/export/report-user/${
+        storeDetail?._id
+      }${findByData()}`;
       const staffInfoRes = await axios.get(staffInfoUrl);
 
-      const dailySalesUrl = `${END_POINT_EXPORT}/export/report-daily/${storeDetail?._id}${findByData()}`;
+      const dailySalesUrl = `${END_POINT_EXPORT}/export/report-daily/${
+        storeDetail?._id
+      }${findByData()}`;
       const dailySalesRes = await axios.get(dailySalesUrl);
 
-      const menuTypeUrl = `${END_POINT_EXPORT}/export/report-category/${storeDetail?._id}${findByData()}`;
+      const menuTypeUrl = `${END_POINT_EXPORT}/export/report-category/${
+        storeDetail?._id
+      }${findByData()}`;
       const menuTypeRes = await axios.get(menuTypeUrl);
 
-      const menuInfoUrl = `${END_POINT_EXPORT}/export/report-menu-detail/${storeDetail?._id}${findByData()}`;
+      const menuInfoUrl = `${END_POINT_EXPORT}/export/report-menu-detail/${
+        storeDetail?._id
+      }${findByData()}`;
       const menuInfoRes = await axios.get(menuInfoUrl);
 
-      const currencyUrl = `${END_POINT_EXPORT}/export/report-currency${findByData()}&storeId=${storeDetail?._id}`;
+      const currencyUrl = `${END_POINT_EXPORT}/export/report-currency${findByData()}&storeId=${
+        storeDetail?._id
+      }`;
       const currencyRes = await axios.get(currencyUrl);
 
       const workbook = new ExcelJS.Workbook();
@@ -1413,7 +2573,7 @@ export default function PopUpReportExportExcel({
         t("order_status"),
         t("type_name"),
         t("date"),
-        t("staff")
+        t("staff"),
       ];
 
       // Promotion
@@ -1425,9 +2585,9 @@ export default function PopUpReportExportExcel({
         t("total_money") + `(${t("menu_discount")})`,
         t("total_money") + t("menu_free"),
         t("total_money") + `(${t("menu_free")})`,
-        t("date")
+        t("date"),
       ];
-     //Billdetail
+      //Billdetail
       const billDetailHeaders = [
         t("no"),
         t("bill_type"),
@@ -1436,11 +2596,7 @@ export default function PopUpReportExportExcel({
       ];
 
       // bank
-      const bankHeaders = [
-        t("no"),
-        t("bank_Name"),
-        t("amount")
-      ];
+      const bankHeaders = [t("no"), t("bank_Name"), t("amount")];
 
       // (StaffInfo)
       const staffInfoHeaders = [
@@ -1483,11 +2639,7 @@ export default function PopUpReportExportExcel({
       ];
 
       // currency
-      const currencyHeaders = [
-        t("no"),
-        t("currency_type"),
-        t("amount")
-      ];
+      const currencyHeaders = [t("no"), t("currency_type"), t("amount")];
 
       sheet.getRow(1).values = ["Excel:"];
       sheet.getRow(2).values = billHeaders;
@@ -1517,7 +2669,7 @@ export default function PopUpReportExportExcel({
           top: { style: "thin", color: COLOR_APP },
           left: { style: "thin", color: COLOR_APP },
           bottom: { style: "thin", color: COLOR_APP },
-          right: { style: "thin", color: COLOR_APP }
+          right: { style: "thin", color: COLOR_APP },
         };
       });
 
@@ -1540,7 +2692,7 @@ export default function PopUpReportExportExcel({
         change: 0,
         billAmount: 0,
         billAmountBefore: 0,
-        orderCount: 0
+        orderCount: 0,
       };
 
       // เพิ่มข้อมูลบิล
@@ -1586,7 +2738,7 @@ export default function PopUpReportExportExcel({
           billItem?.orderId.map((order) => order?.status).join(", "),
           orderDetails,
           formattedDate,
-          billItem?.fullnameStaffCheckOut
+          billItem?.fullnameStaffCheckOut,
         ];
 
         const row = sheet.addRow(billRowData);
@@ -1596,39 +2748,39 @@ export default function PopUpReportExportExcel({
             top: { style: "thin", color: COLOR_APP },
             left: { style: "thin", color: COLOR_APP },
             bottom: { style: "thin", color: COLOR_APP },
-            right: { style: "thin", color: COLOR_APP }
+            right: { style: "thin", color: COLOR_APP },
           };
         });
       });
 
       // กรณีไม่มีข้อมูลบิล
       if (billData.length === 0) {
-        const emptyBillRowData = new Array(billHeaders.length).fill('');
+        const emptyBillRowData = new Array(billHeaders.length).fill("");
         emptyBillRowData[0] = "ບິນ";
         sheet.addRow(emptyBillRowData);
       }
 
       // เพิ่มแถวสรุปผลรวม
       const summaryRowData = [
-        t("total"), 
-        "-", 
-        "-", 
-        "-", 
-        totalSummary.payAmount, 
-        totalSummary.transferAmount, 
-        totalSummary.deliveryAmount, 
-        totalSummary.point, 
-        totalSummary.discount, 
+        t("total"),
         "-",
-        totalSummary.change, 
+        "-",
+        "-",
+        totalSummary.payAmount,
+        totalSummary.transferAmount,
+        totalSummary.deliveryAmount,
+        totalSummary.point,
+        totalSummary.discount,
+        "-",
+        totalSummary.change,
         totalSummary.billAmount,
-        totalSummary.billAmountBefore, 
-        totalSummary.orderCount, 
-        "-", 
-        "-", 
+        totalSummary.billAmountBefore,
+        totalSummary.orderCount,
         "-",
-        "-", 
-        "-" 
+        "-",
+        "-",
+        "-",
+        "-",
       ];
 
       // จัดรูปแบบแถวสรุป
@@ -1636,7 +2788,7 @@ export default function PopUpReportExportExcel({
       summaryRow.eachCell((cell) => {
         cell.font = {
           bold: true,
-          color: COLOR_APP 
+          color: COLOR_APP,
         };
       });
 
@@ -1651,7 +2803,7 @@ export default function PopUpReportExportExcel({
         cell.fill = {
           type: "pattern",
           pattern: "solid",
-          fgColor: { argb: "FFFFA07A" }, 
+          fgColor: { argb: "FFFFA07A" },
         };
         cell.font = {
           name: "Noto Sans Lao",
@@ -1668,7 +2820,7 @@ export default function PopUpReportExportExcel({
           top: { style: "thin", color: COLOR_APP },
           left: { style: "thin", color: COLOR_APP },
           bottom: { style: "thin", color: COLOR_APP },
-          right: { style: "thin", color: COLOR_APP }
+          right: { style: "thin", color: COLOR_APP },
         };
       });
 
@@ -1681,7 +2833,7 @@ export default function PopUpReportExportExcel({
         promotionData?.totalDiscountValue || 0,
         promotionData?.totalFreeItemCount || 0,
         promotionData?.totalFreeMenuPrice || 0,
-        moment(promotionData?.createdAt).format("DD/MM/YYYY")
+        moment(promotionData?.createdAt).format("DD/MM/YYYY"),
       ];
 
       const promotionRow = sheet.addRow(promotionRowData);
@@ -1690,7 +2842,7 @@ export default function PopUpReportExportExcel({
           top: { style: "thin", color: { argb: "FF000000" } },
           left: { style: "thin", color: { argb: "FF000000" } },
           bottom: { style: "thin", color: { argb: "FF000000" } },
-          right: { style: "thin", color: { argb: "FF000000" } }
+          right: { style: "thin", color: { argb: "FF000000" } },
         };
       });
 
@@ -1725,7 +2877,7 @@ export default function PopUpReportExportExcel({
           top: { style: "thin", color: COLOR_APP },
           left: { style: "thin", color: COLOR_APP },
           bottom: { style: "thin", color: COLOR_APP },
-          right: { style: "thin", color: COLOR_APP }
+          right: { style: "thin", color: COLOR_APP },
         };
       });
 
@@ -1753,7 +2905,8 @@ export default function PopUpReportExportExcel({
           no: 3,
           bill_type: t("total_tsf"),
           bill_count: billDetailData?.successAmount?.transferCount || 0,
-          total_bill_amount: billDetailData?.successAmount?.transferPayment || 0,
+          total_bill_amount:
+            billDetailData?.successAmount?.transferPayment || 0,
         },
         {
           no: 4,
@@ -1789,7 +2942,7 @@ export default function PopUpReportExportExcel({
           no: 9,
           bill_type: t("tax"),
           bill_count: 0,
-          total_bill_amount: 0
+          total_bill_amount: 0,
         },
         {
           no: 10,
@@ -1805,7 +2958,7 @@ export default function PopUpReportExportExcel({
           row.no,
           row.bill_type,
           row.bill_count,
-          row.total_bill_amount
+          row.total_bill_amount,
         ];
 
         const detailRow = sheet.addRow(rowData);
@@ -1814,7 +2967,7 @@ export default function PopUpReportExportExcel({
             top: { style: "thin", color: COLOR_APP },
             left: { style: "thin", color: COLOR_APP },
             bottom: { style: "thin", color: COLOR_APP },
-            right: { style: "thin", color: COLOR_APP }
+            right: { style: "thin", color: COLOR_APP },
           };
 
           cell.font = {
@@ -1860,7 +3013,7 @@ export default function PopUpReportExportExcel({
           top: { style: "thin", color: COLOR_APP },
           left: { style: "thin", color: COLOR_APP },
           bottom: { style: "thin", color: COLOR_APP },
-          right: { style: "thin", color: COLOR_APP }
+          right: { style: "thin", color: COLOR_APP },
         };
       });
 
@@ -1870,7 +3023,7 @@ export default function PopUpReportExportExcel({
         const bankRowData = [
           index + 1,
           bank?.bankDetails?.bankName || t("unknown"),
-          bank?.bankTotalAmount || 0
+          bank?.bankTotalAmount || 0,
         ];
 
         const row = sheet.addRow(bankRowData);
@@ -1879,18 +3032,18 @@ export default function PopUpReportExportExcel({
             top: { style: "thin", color: COLOR_APP },
             left: { style: "thin", color: COLOR_APP },
             bottom: { style: "thin", color: COLOR_APP },
-            right: { style: "thin", color: COLOR_APP }
+            right: { style: "thin", color: COLOR_APP },
           };
           cell.font = {
             name: "Noto Sans Lao",
-            size: 12
+            size: 12,
           };
         });
       });
 
       // กรณีไม่มีข้อมูลธนาคาร
       if (bankData.length === 0) {
-        const emptyBankRowData = new Array(bankHeaders.length).fill('');
+        const emptyBankRowData = new Array(bankHeaders.length).fill("");
         emptyBankRowData[0] = t("no_data");
         sheet.addRow(emptyBankRowData);
       }
@@ -1926,7 +3079,7 @@ export default function PopUpReportExportExcel({
           top: { style: "thin", color: COLOR_APP },
           left: { style: "thin", color: COLOR_APP },
           bottom: { style: "thin", color: COLOR_APP },
-          right: { style: "thin", color: COLOR_APP }
+          right: { style: "thin", color: COLOR_APP },
         };
       });
 
@@ -1938,7 +3091,7 @@ export default function PopUpReportExportExcel({
           (staff?.served || 0) + (staff?.canceled || 0),
           staff?.canceled || 0,
           0, // ไม่มีข้อมูล order_paid ใน API
-          staff?.totalSaleAmount || 0
+          staff?.totalSaleAmount || 0,
         ];
 
         const staffRow = sheet.addRow(staffRowData);
@@ -1947,7 +3100,7 @@ export default function PopUpReportExportExcel({
             top: { style: "thin", color: COLOR_APP },
             left: { style: "thin", color: COLOR_APP },
             bottom: { style: "thin", color: COLOR_APP },
-            right: { style: "thin", color: COLOR_APP }
+            right: { style: "thin", color: COLOR_APP },
           };
 
           cell.font = {
@@ -1995,7 +3148,7 @@ export default function PopUpReportExportExcel({
           top: { style: "thin", color: COLOR_APP },
           left: { style: "thin", color: COLOR_APP },
           bottom: { style: "thin", color: COLOR_APP },
-          right: { style: "thin", color: COLOR_APP }
+          right: { style: "thin", color: COLOR_APP },
         };
       });
 
@@ -2009,7 +3162,7 @@ export default function PopUpReportExportExcel({
           day?.billBefore || 0,
           day?.discount || 0,
           day?.remainingAmount || 0,
-          day?.billAmount || 0
+          day?.billAmount || 0,
         ];
 
         const dailySalesRow = sheet.addRow(dailySalesRowData);
@@ -2018,7 +3171,7 @@ export default function PopUpReportExportExcel({
             top: { style: "thin", color: COLOR_APP },
             left: { style: "thin", color: COLOR_APP },
             bottom: { style: "thin", color: COLOR_APP },
-            right: { style: "thin", color: COLOR_APP }
+            right: { style: "thin", color: COLOR_APP },
           };
 
           cell.font = {
@@ -2066,7 +3219,7 @@ export default function PopUpReportExportExcel({
           top: { style: "thin", color: COLOR_APP },
           left: { style: "thin", color: COLOR_APP },
           bottom: { style: "thin", color: COLOR_APP },
-          right: { style: "thin", color: COLOR_APP }
+          right: { style: "thin", color: COLOR_APP },
         };
       });
 
@@ -2077,7 +3230,7 @@ export default function PopUpReportExportExcel({
           category?.served || 0,
           category?.cenceled || 0,
           category?.paid || 0,
-          category?.totalSaleAmount || 0
+          category?.totalSaleAmount || 0,
         ];
 
         const menuTypeRow = sheet.addRow(menuTypeRowData);
@@ -2086,7 +3239,7 @@ export default function PopUpReportExportExcel({
             top: { style: "thin", color: { argb: "FF000000" } },
             left: { style: "thin", color: { argb: "FF000000" } },
             bottom: { style: "thin", color: { argb: "FF000000" } },
-            right: { style: "thin", color: { argb: "FF000000" } }
+            right: { style: "thin", color: { argb: "FF000000" } },
           };
         });
       });
@@ -2122,7 +3275,7 @@ export default function PopUpReportExportExcel({
           top: { style: "thin", color: COLOR_APP },
           left: { style: "thin", color: COLOR_APP },
           bottom: { style: "thin", color: COLOR_APP },
-          right: { style: "thin", color: COLOR_APP }
+          right: { style: "thin", color: COLOR_APP },
         };
       });
 
@@ -2133,7 +3286,7 @@ export default function PopUpReportExportExcel({
           menu?.served || 0,
           menu?.cenceled || 0,
           menu?.paid || 0,
-          menu?.totalSaleAmount || 0
+          menu?.totalSaleAmount || 0,
         ];
 
         const menuInfoRow = sheet.addRow(menuInfoRowData);
@@ -2142,7 +3295,7 @@ export default function PopUpReportExportExcel({
             top: { style: "thin", color: { argb: "FF000000" } },
             left: { style: "thin", color: { argb: "FF000000" } },
             bottom: { style: "thin", color: { argb: "FF000000" } },
-            right: { style: "thin", color: { argb: "FF000000" } }
+            right: { style: "thin", color: { argb: "FF000000" } },
           };
         });
       });
@@ -2151,7 +3304,10 @@ export default function PopUpReportExportExcel({
       sheet.addRow([]);
 
       // เพิ่มข้อมูลสกุลเงิน (ถ้ามี)
-      if (currencyRes?.data?.currency && currencyRes?.data?.currency.length > 0) {
+      if (
+        currencyRes?.data?.currency &&
+        currencyRes?.data?.currency.length > 0
+      ) {
         sheet.getRow(sheet.rowCount + 1).values = [t("all_curency") + ":"];
         sheet.getRow(sheet.rowCount + 1).values = currencyHeaders;
 
@@ -2178,7 +3334,7 @@ export default function PopUpReportExportExcel({
             top: { style: "thin", color: COLOR_APP },
             left: { style: "thin", color: COLOR_APP },
             bottom: { style: "thin", color: COLOR_APP },
-            right: { style: "thin", color: COLOR_APP }
+            right: { style: "thin", color: COLOR_APP },
           };
         });
 
@@ -2188,7 +3344,7 @@ export default function PopUpReportExportExcel({
           const currencyRowData = [
             index + 1,
             currency?.currencyName || t("unknown"),
-            currency?.totalAmount || 0
+            currency?.totalAmount || 0,
           ];
 
           const row = sheet.addRow(currencyRowData);
@@ -2197,16 +3353,15 @@ export default function PopUpReportExportExcel({
               top: { style: "thin", color: COLOR_APP },
               left: { style: "thin", color: COLOR_APP },
               bottom: { style: "thin", color: COLOR_APP },
-              right: { style: "thin", color: COLOR_APP }
+              right: { style: "thin", color: COLOR_APP },
             };
             cell.font = {
               name: "Noto Sans Lao",
-              size: 12
+              size: 12,
             };
           });
         });
       }
-
 
       // ตั้งความกว้างคอลัมน์
       const maxColumns = Math.max(
@@ -2218,9 +3373,11 @@ export default function PopUpReportExportExcel({
         dailySalesHeaders.length,
         menuTypeHeaders.length,
         menuInfoHeaders.length,
-        currencyHeaders.length,
+        currencyHeaders.length
       );
-      sheet.columns = Array(maxColumns).fill().map(() => ({ width: 18 }));
+      sheet.columns = Array(maxColumns)
+        .fill()
+        .map(() => ({ width: 18 }));
 
       // สร้างไฟล์ Excel
       const buffer = await workbook.xlsx.writeBuffer();
@@ -2235,13 +3392,11 @@ export default function PopUpReportExportExcel({
       anchor.download = `${storeDetail?.name} - All Export.xlsx`;
       anchor.click();
       window.URL.revokeObjectURL(downloadUrl);
-
     } catch (err) {
       console.error(":", err);
       errorAdd(`${t("export_fail")}`);
     }
   };
-
 
   return (
     <Modal show={open} onHide={onClose} size="md">
@@ -2266,25 +3421,22 @@ export default function PopUpReportExportExcel({
             flexWrap: "wrap",
           }}
         >
-
-          {
-            storeDetail?.isStatusCafe ? (
-              <Button
-                style={{ height: 100, padding: 20, width: 200 }}
-                onClick={allExport}
-              >
-                <span>{t("All Export")}</span>
-              </Button>
-            ) : (
-              <Button
-                style={{ height: 100, padding: 20, width: 200 }}
-                // onClick={Promotions}
-                disabled
-              >
-                <span>{t("sales_info")}</span>
-              </Button>
-            )
-          }
+          {storeDetail?.isStatusCafe ? (
+            <Button
+              style={{ height: 100, padding: 20, width: 200 }}
+              onClick={ex}
+            >
+              <span>{t("All Export")}</span>
+            </Button>
+          ) : (
+            <Button
+              style={{ height: 100, padding: 20, width: 200 }}
+              // onClick={Promotions}
+              disabled
+            >
+              <span>{t("sales_info")}</span>
+            </Button>
+          )}
 
           <Button
             style={{ height: 100, padding: 20, width: 200 }}
