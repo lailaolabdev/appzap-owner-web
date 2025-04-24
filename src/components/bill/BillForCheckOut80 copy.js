@@ -7,7 +7,6 @@ import {
   getLocalData,
   getLocalDataCustomer,
 } from "../../constants/api";
-import { usePaymentStore } from "../../zustand/paymentStore";
 import Axios from "axios";
 import QRCode from "react-qr-code";
 import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
@@ -41,14 +40,15 @@ export default function BillForCheckOut80({
     storeDetail?.isShowExchangeRate || false
   );
 
-  const { SelectedDataBill } = usePaymentStore();
-
   // Replace the current useRef and console.log
   const serviceChargeRef = useRef(serviceCharge);
   const moneyReciveRef = useRef(dataBill?.moneyReceived);
   const moneyChangeRef = useRef(dataBill?.moneyChange);
   const paymentMethodRef = useRef(dataBill?.paymentMethod);
   const enableServiceChangeRef = useRef(enableServiceChange);
+
+  // Remove this console log that runs on every render
+  // console.log("enableServiceChange", enableServiceChangeRef.current);
 
   const orders =
     orderPayBefore && orderPayBefore.length > 0
@@ -201,7 +201,7 @@ export default function BillForCheckOut80({
   }, [imageUrl2]);
 
   const paymentMethodText = useMemo(() => {
-    switch (SelectedDataBill?.paymentMethod) {
+    switch (paymentMethodRef.current) {
       case "CASH":
         return "(ເງີນສົດ)";
       case "TRANSFER":
@@ -210,12 +210,10 @@ export default function BillForCheckOut80({
         return "(ເງີນສົດແລະໂອນ)";
       case "CASH_TRANSFER_POINT":
         return "(ເງີນສົດ + ໂອນ + ພ໋ອຍ)";
-      case "OTHER":
-        return "";
       default:
         return "";
     }
-  }, [SelectedDataBill?.paymentMethod]);
+  }, [paymentMethodRef.current]);
 
   const paymentDisplay = useMemo(
     () => (
@@ -228,20 +226,19 @@ export default function BillForCheckOut80({
         }}
       >
         <div>
-          {t("getMoney")} {moneyCurrency(SelectedDataBill?.moneyReceived) || 0}{" "}
+          {t("getMoney")} {moneyCurrency(moneyReciveRef.current) || 0}{" "}
           {storeDetail?.firstCurrency} <span>{paymentMethodText}</span>
         </div>
         {","}
         <div>
-          {t("moneyWithdrawn")}{" "}
-          {moneyCurrency(SelectedDataBill?.moneyChange) || 0}{" "}
+          {t("moneyWithdrawn")} {moneyCurrency(moneyChangeRef.current) || 0}{" "}
           {storeDetail?.firstCurrency}
         </div>
       </div>
     ),
     [
-      SelectedDataBill?.moneyReceived,
-      SelectedDataBill?.moneyChange,
+      dataBill?.moneyReceived,
+      dataBill?.moneyChange,
       paymentMethodText,
       storeDetail?.firstCurrency,
       t,
