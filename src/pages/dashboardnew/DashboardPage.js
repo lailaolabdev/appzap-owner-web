@@ -1003,11 +1003,20 @@ export default function DashboardPage() {
                       <td style={{ textAlign: "center" }}>{e?.canceled}</td>
                       <td style={{ textAlign: "center" }}>{e?.paid}</td>
                       <td style={{ textAlign: "center" }}>
+                        {moneyCurrency(e?.totalSaleDeliveryAmount)}
+                      </td>
+                      <td style={{ textAlign: "center" }}>
                         {moneyCurrency(e?.totalExchangePointSum)}
                       </td>
+
                       <td style={{ textAlign: "right" }}>
                         {moneyCurrency(
-                          e?.totalSaleAmount - e?.totalSaleExchangeAmount
+                          (e?.totalSaleAmount || 0) +
+                            (moneyReport?.serviceAmount || 0) +
+                            (moneyReport?.taxAmount || 0) -
+                            (promotionDiscountAndFreeReport?.totalDiscountValue ||
+                              0) -
+                            (e?.totalSaleDeliveryAmount || 0)
                         )}
                         {storeDetail?.firstCurrency}
                       </td>
