@@ -24,6 +24,7 @@ import {
   getUserReport,
   getDeliveryReport,
   getPromotionReportDisCountAndFree,
+  getBillReport,
 } from "../../services/report";
 import { getAllShift } from "../../services/shift";
 import fileDownload from "js-file-download";
@@ -83,6 +84,7 @@ export default function DashboardPage() {
   const [loadingExportCsv, setLoadingExportCsv] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deliveryReport, setDeliveryReport] = useState([]);
+  const [billReport, setBillReport] = useState([]);
   const [debtReport, setDebtReport] = useState(null);
 
   const [dataFreeItems, setDataFreeItems] = useState([]);
@@ -127,6 +129,7 @@ export default function DashboardPage() {
     getBankBillName();
     getDeliveryReports();
     getPromotionDiscountAndFreeReportData();
+    getBillReportData();
   }, [endDate, startDate, endTime, startTime, selectedTableIds, shiftId]);
 
   // function
@@ -297,6 +300,14 @@ export default function DashboardPage() {
     setDeliveryReport(data);
     setLoading(false);
   };
+
+  const getBillReportData = async () => {
+    setLoading(true);
+    const data = await getBillReport(storeDetail?._id, findByData());
+    setBillReport(data);
+    setLoading(false);
+  };
+
   // console.log("BANK", bankList);
   const downloadCsv = async () => {
     try {
@@ -315,26 +326,55 @@ export default function DashboardPage() {
 
   const downloadExcel = async () => {
     try {
-      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
+      const findByData = () => {
+        let findBy = "";
+
+        if (profile?.data?.role === "APPZAP_ADMIN") {
+          findBy += `&dateFrom=${startDate}`;
+          findBy += `&dateTo=${endDate}`;
+          findBy += `&timeTo=${startTime}`;
+          findBy += `&timeFrom=${endTime}`;
+
+          if (shiftId) {
+            findBy += `&shiftId=${shiftId}`;
+          }
+        } else {
+          findBy += `&dateFrom=${startDate}`;
+          findBy += `&dateTo=${endDate}`;
+          findBy += `&timeTo=${startTime}`;
+          findBy += `&timeFrom=${endTime}`;
+          if (shiftCurrent[0]) {
+            findBy += `&shiftId=${shiftCurrent[0]?._id}`;
+          }
+        }
+
+        return findBy;
+      };
+      // const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
       setLoadingExportCsv(true);
       const url =
-        END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
+        END_POINT_EXPORT +
+        "/export/bill?storeId=" +
+        storeDetail?._id +
+        findByData();
       const _res = await Axios.get(url);
 
-      if (_res?.data?.exportUrl) {
-        const response = await Axios.get(_res?.data?.exportUrl, {
-          responseType: "blob", // Important to get the response as a Blob
-        });
+      console.log("downloadExcel", _res);
 
-        // Create a Blob from the response data
-        // console.log("response", response.data);
-        const fileBlob = new Blob([response.data], {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
+      // if (_res?.data?.exportUrl) {
+      //   const response = await Axios.get(_res?.data?.exportUrl, {
+      //     responseType: "blob", // Important to get the response as a Blob
+      //   });
 
-        // Use the file-saver library to save the file with a new name
-        saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
-      }
+      //   // Create a Blob from the response data
+      //   // console.log("response", response.data);
+      //   const fileBlob = new Blob([response.data], {
+      //     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      //   });
+
+      //   // Use the file-saver library to save the file with a new name
+      //   saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
+      // }
 
       setLoadingExportCsv(false);
     } catch (err) {
@@ -390,27 +430,11 @@ export default function DashboardPage() {
       getBankBillName();
       getDeliveryReports();
       getPromotionDiscountAndFreeReportData();
+      getBillReportData();
     } else {
       setShiftId(option?.value?.shiftID);
     }
   };
-  // const optionsData = shiftData?.map((item) => {
-  //   // console.log(item);
-  //   return {
-  //     value: {
-  //       startTime: item.startTime,
-  //       endTime: item.endTime,
-  //       id: item._id,
-  //     },
-  //     label: item.shiftName,
-  //   };
-  // });
-
-  // const handleSearchInput = (option) => {
-  //   setShiftId(option?.value?.id);
-  // };
-
-  // console.log("promotionDiscountAndFreeReport", promotionDiscountAndFreeReport);
 
   const handleGetDataFree = (data) => {
     setOpenModalFree(true);
@@ -438,6 +462,31 @@ export default function DashboardPage() {
     }, 0);
   };
 
+  // const calculateTotals = () => {
+  //   // Check if exchangePointDetails exists and is an array before reducing
+  //   if (
+  //     !moneyReport?.exchangePointDetails ||
+  //     moneyReport?.exchangePointDetails.length === 0
+  //   ) {
+  //     return { totalExchangePoint: 0, totalPrice: 0 }; // Return default values if no data
+  //   }
+
+  //   return moneyReport.exchangePointDetails.reduce(
+  //     (totals, store) => {
+  //       // Sum up the exchangePoint
+  //       totals.totalExchangePoint += store.exchangePoint;
+
+  //       // Sum up the price for menuDetails (price * quantity)
+  //       store.menuDetails.forEach((menuItem) => {
+  //         totals.totalPrice += menuItem.price * menuItem.quantity;
+  //       });
+
+  //       return totals;
+  //     },
+  //     { totalExchangePoint: 0, totalPrice: 0 } // Initial values
+  //   );
+  // };
+
   const calculateTotals = () => {
     // Check if exchangePointDetails exists and is an array before reducing
     if (
@@ -449,13 +498,19 @@ export default function DashboardPage() {
 
     return moneyReport.exchangePointDetails.reduce(
       (totals, store) => {
-        // Sum up the exchangePoint
-        totals.totalExchangePoint += store.exchangePoint;
+        // Only sum up the exchangePoint if it's greater than 0
+        if (store.exchangePoint > 0) {
+          totals.totalExchangePoint += store.exchangePoint;
+        }
 
-        // Sum up the price for menuDetails (price * quantity)
-        store.menuDetails.forEach((menuItem) => {
-          totals.totalPrice += menuItem.price * menuItem.quantity;
-        });
+        // Sum up the price for menuDetails (price * quantity) only if price > 0
+        if (store.menuDetails && Array.isArray(store.menuDetails)) {
+          store.menuDetails.forEach((menuItem) => {
+            if (menuItem.price > 0 && menuItem.quantity > 0) {
+              totals.totalPrice += menuItem.price * menuItem.quantity;
+            }
+          });
+        }
 
         return totals;
       },
@@ -770,8 +825,8 @@ export default function DashboardPage() {
                       qty: moneyReport?.successAmount?.numberOfBills || 0,
                       amount:
                         (moneyReport?.successAmount?.payByCash || 0) +
-                        (moneyReport?.successAmount?.transferPayment || 0) +
-                        (moneyReport?.successAmount?.point || 0),
+                        (moneyReport?.successAmount?.transferPayment || 0),
+                      // (moneyReport?.successAmount?.point || 0),
                       // amount: moneyReport?.successAmount?.totalBalance || 0,
                     },
                     {
@@ -937,28 +992,22 @@ export default function DashboardPage() {
                   <th style={{ textAlign: "center" }}>{t("order_cancel")}</th>
                   <th style={{ textAlign: "center" }}>{t("order_paid")}</th>
                   <th style={{ textAlign: "center" }}>{t("Delivery")}</th>
+                  <th style={{ textAlign: "center" }}>{t("point")}</th>
                   <th style={{ textAlign: "right" }}>{t("total")}</th>
                 </tr>
                 {userReport?.length > 0 &&
                   userReport?.map((e) => (
                     <tr>
                       <td style={{ textAlign: "left" }}>{e?.userId?.userId}</td>
-                      <td style={{ textAlign: "center" }}>{e?.served || 0}</td>
+                      <td style={{ textAlign: "center" }}>{e?.served}</td>
+                      <td style={{ textAlign: "center" }}>{e?.canceled}</td>
+                      <td style={{ textAlign: "center" }}>{e?.paid}</td>
                       <td style={{ textAlign: "center" }}>
-                        {e?.canceled || 0}
-                      </td>
-                      <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
-                      <td style={{ textAlign: "center" }}>
-                        {moneyCurrency(e?.totalSaleDeliveryAmount)}
+                        {moneyCurrency(e?.totalExchangePointSum)}
                       </td>
                       <td style={{ textAlign: "right" }}>
                         {moneyCurrency(
-                          (e?.totalSaleAmount || 0) +
-                            (moneyReport?.serviceAmount || 0) +
-                            (moneyReport?.taxAmount || 0) -
-                            (promotionDiscountAndFreeReport?.totalDiscountValue ||
-                              0) -
-                            (e?.totalSaleDeliveryAmount || 0)
+                          e?.totalSaleAmount - e?.totalSaleExchangeAmount
                         )}
                         {storeDetail?.firstCurrency}
                       </td>
@@ -1058,7 +1107,12 @@ export default function DashboardPage() {
                       </td>
                       <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
                       <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(matchRoundNumber(e?.totalSaleAmount))}
+                        {e?.totalPointAmount > 0
+                          ? moneyCurrency(
+                              e?.totalSaleAmount - e?.totalPointAmount
+                            )
+                          : moneyCurrency(e?.totalSaleAmount)}
+
                         {storeDetail?.firstCurrency}
                       </td>
                     </tr>
@@ -1099,7 +1153,11 @@ export default function DashboardPage() {
                       </td>
                       <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
                       <td style={{ textAlign: "right" }}>
-                        {moneyCurrency(matchRoundNumber(e?.totalSaleAmount))}
+                        {e?.totalPointAmount > 0
+                          ? moneyCurrency(
+                              e?.totalSaleAmount - e?.totalPointAmount
+                            )
+                          : moneyCurrency(e?.totalSaleAmount)}
                         {storeDetail?.firstCurrency}
                       </td>
                     </tr>
@@ -1152,7 +1210,7 @@ export default function DashboardPage() {
         onHide={() => setOpenModalFree(false)}
       >
         <Modal.Header closeButton>
-          <Modal.Title>{t("ລາຍການເມນູແຖມ")}</Modal.Title>
+          <Modal.Title>{t("free_items")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <table style={{ width: "100%" }}>
@@ -1196,16 +1254,16 @@ export default function DashboardPage() {
         onHide={() => setOpenModalDiscount(false)}
       >
         <Modal.Header closeButton>
-          <Modal.Title>{t("ລາຍການເມນູສ່ວນຫຼຸດ")}</Modal.Title>
+          <Modal.Title>{t("discount_items")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <table style={{ width: "100%" }}>
             <tr className="border-b">
               <th className="text-left">{t("no")}</th>
               <th className="text-left">{t("name")}</th>
-              <th className="text-right">{t("ລາຄາປົກກະຕິ")}</th>
-              <th className="text-right">{t("ລາຄາສ່ວນຫຼຸດ")}</th>
-              <th className="text-right">{t("ຈຳນວນທີ່ຫຼຸດ")}</th>
+              <th className="text-right">{t("price_basic")}</th>
+              <th className="text-right">{t("discount_price")}</th>
+              <th className="text-right">{t("discount_amounts")}</th>
             </tr>
             {dataDiscountItems?.length > 0 ? (
               dataDiscountItems?.map((m, index) => (
@@ -1260,21 +1318,25 @@ export default function DashboardPage() {
               <th className="text-right">{t("price")}</th>
             </tr>
             {moneyReport?.exchangePointDetails?.length > 0 ? (
-              moneyReport?.exchangePointDetails?.map((m, index) => (
-                <tr key={m?._id} className="border-b">
-                  <td className="text-left">{index + 1}</td>
-                  <td className="text-left">{m?.exchangePoint}</td>
-                  <td className="text-left">
-                    {m?.menuDetails?.map((i) => i.name)}
-                  </td>
-                  <td className="text-right">
-                    {m?.menuDetails?.map((i) => i.quantity)}
-                  </td>
-                  <td className="text-right">
-                    {moneyCurrency(m?.menuDetails?.map((i) => i.price))}
-                  </td>
-                </tr>
-              ))
+              moneyReport?.exchangePointDetails
+                ?.filter((item) => item?.exchangePoint > 0)
+                ?.map((m, index) => (
+                  <tr key={m?._id} className="border-b">
+                    <td className="text-left">{index + 1}</td>
+                    <td className="text-left">
+                      {moneyCurrency(m?.exchangePoint)}
+                    </td>
+                    <td className="text-left">
+                      {m?.menuDetails?.map((i) => i.name)}
+                    </td>
+                    <td className="text-right">
+                      {m?.menuDetails?.map((i) => i.quantity)}
+                    </td>
+                    <td className="text-right">
+                      {moneyCurrency(m?.menuDetails?.map((i) => i.price))}
+                    </td>
+                  </tr>
+                ))
             ) : (
               <tr>
                 <td colSpan={6}>
@@ -1354,6 +1416,21 @@ export default function DashboardPage() {
         onClose={() => setPopup()}
         shiftId={shiftId}
         shiftData={shiftCurrent[0]}
+        reportData={reportData}
+        salesInfoData={salesInformationReport}
+        userData={userReport}
+        categoryData={categoryReport}
+        menuData={menuReport}
+        currencyData={currencyList}
+        dataFreeItems={dataFreeItems}
+        dataDiscountItems={dataDiscountItems}
+        moneyData={moneyReport}
+        promotionData={promotionReport}
+        promotionDiscountAndFreeReportData={promotionDiscountAndFreeReport}
+        bankData={bankList}
+        deliveryData={deliveryReports}
+        billData={billReport}
+        debtData={debtReport}
       />
 
       <PopUpSetStartAndEndDateFilterExport

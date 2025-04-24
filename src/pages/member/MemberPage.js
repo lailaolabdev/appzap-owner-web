@@ -1376,22 +1376,31 @@ export default function MemberPage() {
                       <td style={{ textAlign: "center" }}>
                         {e?.memberId?.phone}
                       </td>
-                      <td style={{ textAlign: "center" }}>
-                        {e?.exchangePointStoreId[0]?.exchangePoint > 0 ? (
-                          <>
-                            {moneyCurrency(
-                              e?.exchangePointStoreId[0]?.exchangePoint
-                            )}{" "}
-                            {t("can_be_exchanged")} :{" "}
-                            {e?.exchangePointStoreId[0]?.menuId[0]?.name}{" "}
-                            {t("price")} : (
-                            {moneyCurrency(
-                              e?.exchangePointStoreId[0]?.menuId[0]?.price
-                            )}
-                            )
-                          </>
+                      <td style={{ textAlign: "left" }}>
+                        {e?.exchangePointStoreId && e.exchangePointStoreId.length > 0 ? (
+                          <div className="exchange-points-list">
+                            {e.exchangePointStoreId.map((exchangePoint, index) => (
+                              <div key={exchangePoint._id || index} className="exchange-point-item mb-2">
+                                {moneyCurrency(exchangePoint?.exchangePoint || 0)}{" "}
+                                {t("can_be_exchanged")} :{" "}
+                                {exchangePoint?.menuId && exchangePoint.menuId.length > 0 ? (
+                                  <div>
+                                    {exchangePoint.menuId.map((menu, menuIndex) => (
+                                      <div key={menu._id || menuIndex}>
+                                        {menu?.name || "N/A"}{" "}
+                                        {t("price")}: ({moneyCurrency(menu?.price || 0)})
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  "N/A"
+                                )}
+                                {index < e.exchangePointStoreId.length - 1 && <hr className="my-1" />}
+                              </div>
+                            ))}
+                          </div>
                         ) : (
-                          moneyCurrency(e?.point)
+                          moneyCurrency(e?.point || 0)
                         )}
                       </td>
                       <td style={{ textAlign: "center" }}>

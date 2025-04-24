@@ -422,6 +422,8 @@ export default function SettingMemberPointPage() {
     });
   }, []);
 
+
+
   return (
     <>
       <div style={{ padding: 20 }}>

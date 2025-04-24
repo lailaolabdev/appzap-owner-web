@@ -264,6 +264,7 @@ export default function Dashboard() {
   //   setShiftId(option?.value?.shiftID);
   // };
 
+
   return (
     <div
       style={{
@@ -418,8 +419,8 @@ export default function Dashboard() {
                 {" : "}
                 {convertNumber(
                   (moneyReport?.successAmount?.payByCash || 0) +
-                    (moneyReport?.successAmount?.transferPayment || 0) +
-                    (moneyReport?.successAmount?.point || 0)
+                    (moneyReport?.successAmount?.transferPayment || 0) 
+                    // +(moneyReport?.successAmount?.point || 0)
                 )}
                 {/* {convertNumber(moneyReport?.successAmount?.totalBalance)} */}
               </div>
