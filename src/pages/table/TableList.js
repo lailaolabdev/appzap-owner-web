@@ -95,6 +95,7 @@ import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
 import { useClaimDataStore } from "../../zustand/claimData";
 import { useOrderStore } from "../../zustand/orderStore";
+import { usePaymentStore } from "../../zustand/paymentStore";
 import theme from "../../theme";
 import PopUpConfirms from "../../components/popup/PopUpConfirms";
 import { set } from "lodash";
@@ -200,6 +201,7 @@ export default function TableList() {
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const { setStatusServedForOrdering } = useClaimDataStore();
   const { fetchOrdersByStatus, orderItems } = useOrderStore();
+  const { setSelectedDataBill, clearSelectedDataBill } = usePaymentStore();
 
   const reLoadData = () => {
     setReload(true);
@@ -846,6 +848,15 @@ export default function TableList() {
       } else {
         getTableDataStore();
       }
+
+      setSelectedDataBill((prev) => ({
+        ...prev,
+        moneyReceived: 0,
+        moneyChange: 0,
+        paymentMethod: "OTHER",
+        dataStaffConfirm:
+          `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-",
+      }));
     } catch (err) {
       console.log("err printer", err);
       setPrintBillLoading(false);
@@ -2530,7 +2541,13 @@ export default function TableList() {
 
                       <ButtonCustom
                         disabled={disableCheckoutButton}
-                        onClick={() => _onCheckOut()}
+                        onClick={() => {
+                          _onCheckOut();
+                          setSelectedDataBill((prev) => ({
+                            ...prev,
+                            paymentMethod: "OTHER",
+                          }));
+                        }}
                       >
                         {isWaitingCheckout && (
                           <Spinner animation="border" size="sm" />

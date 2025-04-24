@@ -12,6 +12,7 @@ import _ from "lodash";
 import { SettingsApplications } from "@material-ui/icons";
 
 import { useStoreStore } from "../../../zustand/storeStore";
+import { usePaymentStore } from "../../../zustand/paymentStore";
 
 const OrderCheckOut = ({
   data = { orderId: [] },
@@ -48,8 +49,7 @@ const OrderCheckOut = ({
 
   const [total, setTotal] = useState(0); // Initialize total to 0
   const [isServiceChargeEnabled, setIsServiceChargeEnabled] = useState(false);
-
-
+  const { setSelectedDataBill } = usePaymentStore();
   const serviceChargeRef = useRef(serviceCharge);
 
   useEffect(() => {
@@ -58,13 +58,12 @@ const OrderCheckOut = ({
     }
   }, [serviceCharge]);
   const TotalServiceChange = storeDetail?.isServiceChange
-  ? serviceChargeRef.current
-  : storeDetail?.serviceChargePer;
-  
-  const serviceChargeAmount = ()=>{
+    ? serviceChargeRef.current
+    : storeDetail?.serviceChargePer;
 
-   return (total * TotalServiceChange) / 100;
-  } 
+  const serviceChargeAmount = () => {
+    return (total * TotalServiceChange) / 100;
+  };
 
   useEffect(() => {
     _calculateTotal();
@@ -138,7 +137,7 @@ const OrderCheckOut = ({
       );
     });
   };
-  
+
   const _calculateTotal = () => {
     // 10% if enabled
     const paidData = _.sumBy(orderPayBefore, (e) => {
@@ -151,7 +150,6 @@ const OrderCheckOut = ({
 
       return mainPrice + menuOptionPrice;
     });
-    
 
     orderPayBefore && orderPayBefore.length > 0
       ? setTotal(paidData)
@@ -188,9 +186,13 @@ const OrderCheckOut = ({
       return discountedTotal > 0 ? discountedTotal : 0;
     } else {
       const discountInPercent =
-        (total + serviceChargeAmount()) * (taxPercent * 0.01 + 1) * (discount / 100);
+        (total + serviceChargeAmount()) *
+        (taxPercent * 0.01 + 1) *
+        (discount / 100);
       const discountedTotal = Math.floor(
-        total * (taxPercent * 0.01 + 1) + serviceChargeAmount() - discountInPercent
+        total * (taxPercent * 0.01 + 1) +
+          serviceChargeAmount() -
+          discountInPercent
       );
       return discountedTotal > 0 ? discountedTotal : 0;
     }
@@ -293,13 +295,13 @@ const OrderCheckOut = ({
                   : storeDetail?.firstCurrency}
               </div>
             </div>
-            {(storeDetail?.isServiceChange ) && (
+            {storeDetail?.isServiceChange && (
               <div className="w-full flex justify-end items-center">
                 <div className="text-end">{t("service_charge")}:</div>
                 <div className="w-60 text-end">{`${serviceCharge} %`}</div>
               </div>
             )}
-            {(storeDetail?.serviceChargePer || isServiceChargeEnabled ) && (
+            {(storeDetail?.serviceChargePer || isServiceChargeEnabled) && (
               <div className="w-full flex justify-end items-center">
                 <div className="text-end">{t("service_charge")}:</div>
                 <div className="w-60 text-end">{`${serviceCharge} %`}</div>
@@ -317,7 +319,9 @@ const OrderCheckOut = ({
               </div>
               <div className="w-60 text-end">
                 {moneyCurrency(
-                  Math.floor(total * (taxPercent * 0.01 + 1) + serviceChargeAmount())
+                  Math.floor(
+                    total * (taxPercent * 0.01 + 1) + serviceChargeAmount()
+                  )
                 )}{" "}
                 {storeDetail?.firstCurrency}
               </div>
@@ -430,7 +434,13 @@ const OrderCheckOut = ({
                     height: 40,
                   }}
                   // disabled={billDataLoading}
-                  onClick={() => onSubmit()}
+                  onClick={() => {
+                    onSubmit();
+                    setSelectedDataBill((prev) => ({
+                      ...prev,
+                      paymentMethod: "CASH",
+                    }));
+                  }}
                 >
                   {billDataLoading && (
                     <Spinner

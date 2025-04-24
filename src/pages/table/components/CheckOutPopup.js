@@ -34,6 +34,7 @@ import { RedeemPoint, PointUser } from "../../../services/point";
 import { useStoreStore } from "../../../zustand/storeStore";
 import { useShiftStore } from "../../../zustand/ShiftStore";
 import { useClaimDataStore } from "../../../zustand/claimData";
+import { usePaymentStore } from "../../../zustand/paymentStore";
 
 export default function CheckOutPopup({
   onPrintDrawer,
@@ -94,6 +95,11 @@ export default function CheckOutPopup({
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const { statusServedForOrdering, setStatusServedForOrdering } =
     useClaimDataStore();
+  const { setSelectedDataBill, SelectedDataBill, clearSelectedDataBill } =
+    usePaymentStore();
+
+  console.log("SelectedDataBill", SelectedDataBill);
+
   const { shiftCurrent } = useShiftStore();
 
   const serviceChargeRef = useRef(serviceCharge);
@@ -161,6 +167,15 @@ export default function CheckOutPopup({
       if (!_res.data) throw new Error("Empty!");
       setMemberData(_res.data);
       setDataBill((prev) => ({
+        ...prev,
+        memberId: _res.data?._id,
+        memberPhone: _res.data?.phone,
+        memberName: _res.data?.name,
+        Name: _res.data?.name,
+        Point: _res.data?.point,
+        ExpireDateForPoint: _res?.data?.pointDateExpirt,
+      }));
+      setSelectedDataBill((prev) => ({
         ...prev,
         memberId: _res.data?._id,
         memberPhone: _res.data?.phone,
@@ -243,6 +258,13 @@ export default function CheckOutPopup({
       moneyChange: moneyChange,
       dataStaffConfirm: staffConfirm,
     }));
+    setSelectedDataBill((prev) => ({
+      ...prev,
+      moneyReceived: moneyReceived,
+      moneyChange: moneyChange,
+      dataStaffConfirm:
+        `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-",
+    }));
   }, [cash, transfer, selectCurrency?.name]);
 
   useEffect(() => {
@@ -254,7 +276,7 @@ export default function CheckOutPopup({
       setRateCurrency(_currencyData?.sell || 1);
     } else {
       setCashCurrency();
-      setCash();
+      //setCash();
       setRateCurrency(1);
     }
   }, [
@@ -268,12 +290,13 @@ export default function CheckOutPopup({
     if (cashCurrency && rateCurrency !== 1) {
       setCash(amount);
     } else {
-      setCash();
+      //setCash();
     }
   }, [rateCurrency]);
 
   useEffect(() => {
     setDataBill((prev) => ({ ...prev, paymentMethod: forcus }));
+    setSelectedDataBill((prev) => ({ ...prev, paymentMethod: forcus }));
     setPaymentMethod(forcus);
   }, [forcus]);
 
@@ -382,8 +405,8 @@ export default function CheckOutPopup({
         setRateCurrency(1);
         setHasCRM(false);
         setTextSearchMember("");
-        setCash();
-        setTransfer();
+        //setCash();
+        //setTransfer();
         setOrderPayBefore([]);
         // callCheckOutPrintBillOnly(selectedTable?._id);
         localStorage.removeItem("STAFFCONFIRM_DATA");
@@ -464,6 +487,12 @@ export default function CheckOutPopup({
 
       try {
         await _checkBill(selectCurrency?.id, selectCurrency?.name);
+        setSelectedDataBill((prev) => ({
+          ...prev,
+          moneyReceived: 0,
+          moneyChange: 0,
+          paymentMethod: "OTHER",
+        }));
       } catch {
         Swal.fire({
           icon: "error",
@@ -697,14 +726,14 @@ export default function CheckOutPopup({
 
   useEffect(() => {
     if (selectedTable?.isDeliveryTable) {
-      setCash();
-      setTransfer();
+      //setCash();
+      //setTransfer();
       setTab("delivery");
       setSelectInput("inputDelivery");
       setForcus("DELIVERY");
     } else {
-      setCash();
-      setTransfer();
+      //setCash();
+      //setTransfer();
       setDelivery();
       setTab("cash");
       setSelectInput("inputCash");
@@ -725,7 +754,7 @@ export default function CheckOutPopup({
       setCashCurrency(value);
       if (selectCurrency?.name !== "LAK") {
         if (!value) {
-          setCash();
+          //setCash();
         } else {
           const amount = Number.parseFloat(value * rateCurrency);
           setCash(amount.toFixed(2));
@@ -877,6 +906,7 @@ export default function CheckOutPopup({
         onClose();
         setCanCheckOut(false);
         setDatePointExpirt("");
+        clearSelectedDataBill();
       }}
       keyboard={false}
       size="lg"
@@ -1342,8 +1372,8 @@ export default function CheckOutPopup({
                   disabled={hasCRM}
                   variant={tab === "point" ? "primary" : "outline-primary"}
                   onClick={() => {
-                    setCash();
-                    setTransfer();
+                    //setCash();
+                    //setTransfer();
                     setPoint();
                     setTab("point");
                     setSelectInput("inputPoint");
@@ -1362,12 +1392,12 @@ export default function CheckOutPopup({
                       fontSize: 15,
                     }}
                     onClick={() => {
-                      setCash();
                       setSelectCurrency({
                         id: "LAK",
                         name: "LAK",
                       });
                       setRateCurrency(1);
+                      setCash();
                       setTransfer();
                       setTab("cash_transfer");
                       setSelectInput("inputCash");
@@ -1510,8 +1540,8 @@ export default function CheckOutPopup({
                 saveServiceChargeDetails();
 
                 try {
-                  await handleSubmit(); // Run handleSubmit first
                   await onPrintBill(); // Only run if handleSubmit is successful
+                  await handleSubmit(); // Run handleSubmit first
                 } catch (error) {
                   Swal.fire({
                     icon: "error",
