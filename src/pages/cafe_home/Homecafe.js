@@ -46,7 +46,7 @@ import { moneyCurrency } from "../../helpers";
 import { getHeaders } from "../../services/auth";
 import Loading from "../../components/Loading";
 import { json, useNavigate, useParams } from "react-router-dom";
-import { getBillCafe, getBills } from "../../services/bill";
+import { getBillCafe, getBillCountCafe, getBills } from "../../services/bill";
 import { useStore } from "../../store";
 import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
 import {
@@ -334,6 +334,7 @@ function Homecafe() {
 
   useEffect(() => {
     billData();
+    billCountCafe();
     fetchPointsData();
     const getDataTax = async () => {
       const { DATA } = await getLocalData();
@@ -373,6 +374,22 @@ function Homecafe() {
       const res = await getBills(findby);
       const filteredBills = res?.filter((bill) => bill.isCafe === true) || [];
       setBill(filteredBills.length);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const billCountCafe = async () => {
+    try {
+      let findby = "?";
+      findby += `storeId=${storeDetail?._id}&`;
+      findby += `dateFrom=${startDate}&`;
+      findby += `dateTo=${endDate}&`;
+      findby += `timeFrom=${startTime}&`;
+      findby += `timeTo=${endTime}`;
+      const res = await getBillCountCafe(findby);
+      console.log("res", res);
+      setBill(res?.data?.billCountCafe);
     } catch (error) {
       console.log(error);
     }
