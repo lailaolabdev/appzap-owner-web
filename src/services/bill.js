@@ -13,6 +13,17 @@ export const getBills = async (findBy) => {
   }
 };
 
+export const getBillCountCafe = async (findBy) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v3/bills/count/cafe${findBy}`;
+    const res = await axios.get(url, { headers: _header });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const getBillsNolimit = async (findBy) => {
   try {
     const _header = await getHeaders();
