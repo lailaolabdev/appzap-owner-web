@@ -264,7 +264,6 @@ export default function Dashboard() {
   //   setShiftId(option?.value?.shiftID);
   // };
 
-
   return (
     <div
       style={{
@@ -378,7 +377,7 @@ export default function Dashboard() {
                 {t("total_will_get")}
                 {" : "}
                 {convertNumber(
-                  totalBillActiveReport?.total || 0 +
+                  (totalBillActiveReport?.total || 0) +
                     salesInformationReport?.totalSales || 0
                 )}
               </div>
@@ -419,8 +418,8 @@ export default function Dashboard() {
                 {" : "}
                 {convertNumber(
                   (moneyReport?.successAmount?.payByCash || 0) +
-                    (moneyReport?.successAmount?.transferPayment || 0) 
-                    // +(moneyReport?.successAmount?.point || 0)
+                    (moneyReport?.successAmount?.transferPayment || 0)
+                  // +(moneyReport?.successAmount?.point || 0)
                 )}
                 {/* {convertNumber(moneyReport?.successAmount?.totalBalance)} */}
               </div>
@@ -432,12 +431,16 @@ export default function Dashboard() {
               <div className={fontMap[language]}>
                 {t("transferPayment")}
                 {" : "}
-                {convertNumber(moneyReport?.successAmount?.transferPayment || 0)}
+                {convertNumber(
+                  moneyReport?.successAmount?.transferPayment || 0
+                )}
               </div>
               <div className={fontMap[language]}>
                 {t("money_from_appzap")}
                 {" : "}
-                {convertNumber(moneyReport?.successAmount?.moneyFromOrdering || 0)}
+                {convertNumber(
+                  moneyReport?.successAmount?.moneyFromOrdering || 0
+                )}
               </div>
 
               <div>
