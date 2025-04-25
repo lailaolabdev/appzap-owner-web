@@ -385,7 +385,7 @@ export default function CheckOutPopupCafe({
 
   const exchangePointStoreIds = pointsData?.map((i) => i?.Id);
 
-  const _checkBill = async () => {
+  const _checkBill = async (currencyId, currencyName) => {
     setIsLoading(true);
     const moneyChange = calculateReturnAmount();
     const Orders = dataBill?.map((itemOrder) => itemOrder);
@@ -449,6 +449,12 @@ export default function CheckOutPopupCafe({
       staffCheckOutId: profile.data._id,
       exchangePointStoreId: exchangePointStoreIds,
     };
+
+    if (currencyId !== "LAK") {
+      datas.currencyId = currencyId;
+      datas.currency = cashCurrency;
+      datas.currencyName = currencyName;
+    }
 
     await axios
       .post(
@@ -551,7 +557,7 @@ export default function CheckOutPopupCafe({
           return; // Stop further execution if RedeemPointUser fails
         }
       }
-      await _checkBill();
+      await _checkBill(selectCurrency?.id, selectCurrency?.name);
     } catch (error) {
       console.error("Unexpected error in handleSubmit:", error);
       showAlert("error", "ບໍ່ສາມາດເຊັກບິນໄດ້", error);
@@ -750,7 +756,7 @@ export default function CheckOutPopupCafe({
           setCash();
         } else {
           const amount = parseFloat(value * rateCurrency);
-          setCash(amount.toFixed(2));
+          setCash(amount.toFixed(0));
         }
       }
     });
@@ -850,7 +856,7 @@ export default function CheckOutPopupCafe({
   const totalCashAndTransfer =
     (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
 
-  console.log("totalPointPrice", totalPointPrice);
+  // console.log("totalPointPrice", totalPointPrice);
 
   return (
     <Modal
@@ -1616,6 +1622,19 @@ export default function CheckOutPopupCafe({
             >
               <BiSolidPrinter />
               {t("print_checkbill")}
+            </Button>
+            <Button
+              className="dmd:w-fit w-full"
+              onClick={handleSubmit}
+              disabled={
+                !canCheckOut ||
+                (isDelivery && platform.length <= 0) ||
+                (isDelivery && transfer < totalBill) ||
+                (storeDetail?.isStatusCafe &&
+                  totalCashAndTransfer < DiscountMember() - totalPointPrice)
+              }
+            >
+              {t("calculate")}
             </Button>
           </div>
         </div>

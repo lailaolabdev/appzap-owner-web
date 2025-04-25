@@ -460,7 +460,6 @@ function Homecafe() {
   };
 
   const addToCart = async (menu) => {
-
     const _menuOptions = _checkMenuOption(menu);
     let updatedSelectedMenus = [...SelectedMenus];
 
@@ -490,8 +489,8 @@ function Homecafe() {
         activePromotions.length > 0 && activePromotions[0].buyQuantity !== null
           ? activePromotions[0].buyQuantity
           : menu?.isWeightMenu
-            ? 0
-            : 1,
+          ? 0
+          : 1,
       price: finalPrice,
       priceDiscount: Math.max(menu?.price - finalPrice, 0),
       categoryId: menu?.categoryId,
@@ -512,9 +511,9 @@ function Homecafe() {
       exchangePointStoreId: isExchangeActive ? menu?.exchangePointStoreId : [],
       pointExchange: isExchangeActive
         ? menu?.exchangePointStoreId?.reduce(
-          (sum, promo) => sum + (promo.exchangePoint || 0),
-          0
-        )
+            (sum, promo) => sum + (promo.exchangePoint || 0),
+            0
+          )
         : "",
     };
 
@@ -562,8 +561,8 @@ function Homecafe() {
                 promotion && promotion?.getQuantity !== null
                   ? promotion?.getQuantity
                   : menu?.isWeightMenu
-                    ? 0
-                    : 1,
+                  ? 0
+                  : 1,
               categoryId: menu?.categoryId,
               printer: menu?.categoryId?.printer,
               shiftId: shiftCurrent[0]?._id,
@@ -578,9 +577,9 @@ function Homecafe() {
                 : [],
               pointExchange: isExchangeActive
                 ? menu?.exchangePointStoreId?.reduce(
-                  (sum, promo) => sum + (promo.exchangePoint || 0),
-                  0
-                )
+                    (sum, promo) => sum + (promo.exchangePoint || 0),
+                    0
+                  )
                 : "",
             });
           }
@@ -692,8 +691,8 @@ function Homecafe() {
         activePromotions?.length > 0 && activePromotions[0].buyQuantity !== null
           ? activePromotions[0].buyQuantity
           : selectedItem?.isWeightMenu
-            ? 0
-            : 1,
+          ? 0
+          : 1,
       price: finalPrice,
       priceDiscount: Math.max(selectedItem?.price - finalPrice, 0),
       categoryId: selectedItem?.categoryId,
@@ -719,9 +718,9 @@ function Homecafe() {
         : [],
       pointExchange: isExchangeActive
         ? selectedItem?.exchangePointStoreId?.reduce(
-          (sum, promo) => sum + (promo.exchangePoint || 0),
-          0
-        )
+            (sum, promo) => sum + (promo.exchangePoint || 0),
+            0
+          )
         : "",
     };
 
@@ -735,7 +734,7 @@ function Homecafe() {
         return (
           item.id === selectedItem._id &&
           JSON.stringify(sortedItemOptionsForComparison) ===
-          JSON.stringify(sortedFilteredOptionsForComparison)
+            JSON.stringify(sortedFilteredOptionsForComparison)
         );
       });
 
@@ -745,7 +744,7 @@ function Homecafe() {
         updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
         updatedMenu[existingMenuIndex].totalPrice =
           updatedMenu[existingMenuIndex].price *
-          updatedMenu[existingMenuIndex].quantity +
+            updatedMenu[existingMenuIndex].quantity +
           totalOptionPrice;
       } else {
         updatedMenu.push(mainMenuData);
@@ -785,8 +784,8 @@ function Homecafe() {
                   promotion && promotion.getQuantity !== null
                     ? promotion.getQuantity
                     : selectedItem?.isWeightMenu
-                      ? 0
-                      : 1,
+                    ? 0
+                    : 1,
                 categoryId: selectedItem?.categoryId,
                 printer: selectedItem?.categoryId?.printer,
                 shiftId: shiftCurrent[0]?._id,
@@ -801,9 +800,9 @@ function Homecafe() {
                   : [],
                 pointExchange: isExchangeActive
                   ? selectedItem?.exchangePointStoreId?.reduce(
-                    (sum, promo) => sum + (promo.exchangePoint || 0),
-                    0
-                  )
+                      (sum, promo) => sum + (promo.exchangePoint || 0),
+                      0
+                    )
                   : "",
               });
             }
@@ -1084,8 +1083,9 @@ function Homecafe() {
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
               : "";
-            const optionText = `- ${option?.name}${optionPriceText} x ${option?.quantity || 1
-              }`;
+            const optionText = `- ${option?.name}${optionPriceText} x ${
+              option?.quantity || 1
+            }`;
             yPosition = wrapText(
               context,
               optionText,
@@ -1508,30 +1508,32 @@ function Homecafe() {
 
   const calculateTotalExchangePoints = (menuItems) => {
     let totalPoints = 0;
-  
-  // Loop through each menu item
-  menuItems.forEach(menuItem => {
-    // Get the quantity (default to 1 if not specified)
-    const quantity = menuItem?.quantity || 1;
-    
-    // Check if the menu item has exchangePointStoreId array
-    if (menuItem?.exchangePointStoreId && Array.isArray(menuItem.exchangePointStoreId)) {
-      // Loop through each exchangePointStoreId entry
-      menuItem.exchangePointStoreId.forEach(pointStore => {
-        // Check if the pointStore has exchangePoint property
-        if (pointStore && pointStore?.exchangePoint) {
-          // Add the exchangePoint value multiplied by quantity to the total
-          totalPoints += pointStore?.exchangePoint * quantity;
-        }
-      });
-    }
-  });
-  
-  return totalPoints;
-  }
+
+    // Loop through each menu item
+    menuItems.forEach((menuItem) => {
+      // Get the quantity (default to 1 if not specified)
+      const quantity = menuItem?.quantity || 1;
+
+      // Check if the menu item has exchangePointStoreId array
+      if (
+        menuItem?.exchangePointStoreId &&
+        Array.isArray(menuItem.exchangePointStoreId)
+      ) {
+        // Loop through each exchangePointStoreId entry
+        menuItem.exchangePointStoreId.forEach((pointStore) => {
+          // Check if the pointStore has exchangePoint property
+          if (pointStore && pointStore?.exchangePoint) {
+            // Add the exchangePoint value multiplied by quantity to the total
+            totalPoints += pointStore?.exchangePoint * quantity;
+          }
+        });
+      }
+    });
+
+    return totalPoints;
+  };
 
   const totalExchangePoints = calculateTotalExchangePoints(SelectedMenus);
-
 
   return (
     <div>
@@ -1604,7 +1606,13 @@ function Homecafe() {
               <Loading />
             ) : afterSearch.length === 0 ? (
               <div className="w-full pt-36 flex justify-center items-center">
-                {AnimationLoading()}
+                {/* {AnimationLoading()} */}
+                <div className="flex flex-col items-center">
+                  <BsCartXFill className="text-[100px] text-gray-400 mb-4" />
+                  <p className="text-lg font-semibold text-gray-500">
+                    {t("no_data")}
+                  </p>
+                </div>
               </div>
             ) : (
               afterSearch?.map((data, index) => {
@@ -1633,9 +1641,9 @@ function Homecafe() {
                         <br />
 
                         {data?.promotionId?.length > 0 &&
-                          data.promotionId.some(
-                            (promotion) => promotion?.status === "ACTIVE"
-                          ) ? (
+                        data.promotionId.some(
+                          (promotion) => promotion?.status === "ACTIVE"
+                        ) ? (
                           data.promotionId
                             .filter(
                               (promotion) => promotion?.status === "ACTIVE"
@@ -1659,8 +1667,8 @@ function Homecafe() {
                                         {moneyCurrency(
                                           calculateDiscount(data) > 0
                                             ? matchRoundNumber(
-                                              calculateDiscount(data)
-                                            )
+                                                calculateDiscount(data)
+                                              )
                                             : 0
                                         )}{" "}
                                         {storeDetail?.firstCurrency}
@@ -1681,7 +1689,7 @@ function Homecafe() {
                                                 promotion?.discountValue
                                               )}{" "}
                                               {promotion?.discountType ===
-                                                "PERCENTAGE"
+                                              "PERCENTAGE"
                                                 ? "%"
                                                 : storeDetail?.firstCurrency}
                                             </span>
@@ -1698,9 +1706,11 @@ function Homecafe() {
                                         {storeDetail?.firstCurrency}
                                       </span>
                                       <span className="flex flex-col font-bold text-red-500 text-[14px]">
-                                        {`${t("buy")} ${promotion?.buyQuantity
-                                          } ${t("get")} ${promotion?.getQuantity
-                                          } ${t("item")}`}
+                                        {`${t("buy")} ${
+                                          promotion?.buyQuantity
+                                        } ${t("get")} ${
+                                          promotion?.getQuantity
+                                        } ${t("item")}`}
                                       </span>
                                     </>
                                   )}
@@ -1720,7 +1730,7 @@ function Homecafe() {
                             )}
                             {data?.exchangePointStoreId?.length > 0 &&
                               data?.exchangePointStoreId[0]?.status ===
-                              "active" && (
+                                "active" && (
                                 <p className="text-color-app font-bold text-sm text-start mt-1">
                                   {t("can_be_exchanged")}{" "}
                                   {moneyCurrency(
@@ -1767,15 +1777,15 @@ function Homecafe() {
 
                           const optionsString =
                             item.options &&
-                              item.options.length > 0 &&
-                              item?.status !== "CANCELED"
+                            item.options.length > 0 &&
+                            item?.status !== "CANCELED"
                               ? item.options
-                                .map((option) =>
-                                  option.quantity > 1
-                                    ? `[${option.quantity} x ${option.name}]`
-                                    : `[${option.name}]`
-                                )
-                                .join(" ")
+                                  .map((option) =>
+                                    option.quantity > 1
+                                      ? `[${option.quantity} x ${option.name}]`
+                                      : `[${option.name}]`
+                                  )
+                                  .join(" ")
                               : "";
                           const totalOptionPrice = item?.totalOptionPrice || 0;
                           const itemPrice = item?.price + totalOptionPrice;
@@ -1828,7 +1838,7 @@ function Homecafe() {
                                 <CircleMinus
                                   className="text-color-app cursor-pointer"
                                   onClick={() => handleSetQuantity(-1, item)}
-                                  onKeyDown={() => { }}
+                                  onKeyDown={() => {}}
                                 />
 
                                 {editingRowId === item?.id ? (
@@ -1845,17 +1855,18 @@ function Homecafe() {
                                   />
                                 ) : item?.isWeightMenu ? (
                                   <div
-                                    onKeyDown={() => { }}
+                                    onKeyDown={() => {}}
                                     onClick={() => setEditingRowId(item?.id)}
                                     className="flex justify-center items-center w-16 h-8 border-2 rounded cursor-pointer px-1 gap-2"
                                     aria-label={`Edit quantity: ${Number.parseFloat(
                                       item.quantity.toString()
                                     ).toFixed(3)}`}
                                   >
-                                    {`${item?.quantity}/${item?.unitWeightMenu !== undefined
+                                    {`${item?.quantity}/${
+                                      item?.unitWeightMenu !== undefined
                                         ? item?.unitWeightMenu
                                         : "-"
-                                      }`}
+                                    }`}
                                   </div>
                                 ) : (
                                   <div className="flex justify-center items-center w-10 h-8">
@@ -1865,14 +1876,14 @@ function Homecafe() {
 
                                 <CirclePlus
                                   className="text-color-app cursor-pointer"
-                                  onKeyDown={() => { }}
+                                  onKeyDown={() => {}}
                                   onClick={() => handleSetQuantity(1, item)}
                                 />
 
                                 <Trash2
                                   className="text-red-500 cursor-pointer"
                                   onClick={() => onConfirmRemoveItem(item)}
-                                  onKeyDown={() => { }}
+                                  onKeyDown={() => {}}
                                 />
                               </div>
                             </div>
@@ -1882,9 +1893,9 @@ function Homecafe() {
                     )}
                   </div>
                   {SelectedMenus.length > 0 &&
-                    SelectedMenus?.filter(
-                      (item) => item.storeId === storeDetail?._id
-                    ) ? (
+                  SelectedMenus?.filter(
+                    (item) => item.storeId === storeDetail?._id
+                  ) ? (
                     <>
                       <hr />
                       <div className="mb-3 flex ">
@@ -1894,17 +1905,14 @@ function Homecafe() {
                             {moneyCurrency(total)} {t("nameCurrency")}
                           </span>
                         </div>
-                        {
-                          totalExchangePoints > 0 && (
-                            <div className="flex ml-5 flex-row gap-4 font-bold">
-                              <span>{t("point")} :</span>
-                              <span>
-                                {moneyCurrency(totalExchangePoints)} {t("point")}
-                              </span>
-                            </div>
-                          )
-                        }
-
+                        {totalExchangePoints > 0 && (
+                          <div className="flex ml-5 flex-row gap-4 font-bold">
+                            <span>{t("point")} :</span>
+                            <span>
+                              {moneyCurrency(totalExchangePoints)} {t("point")}
+                            </span>
+                          </div>
+                        )}
                       </div>
                     </>
                   ) : (
@@ -1993,15 +2001,15 @@ function Homecafe() {
 
                     const optionsString =
                       item.options &&
-                        item.options.length > 0 &&
-                        item?.status !== "CANCELED"
+                      item.options.length > 0 &&
+                      item?.status !== "CANCELED"
                         ? item.options
-                          .map((option) =>
-                            option.quantity > 1
-                              ? `[${option.quantity} x ${option.name}]`
-                              : `[${option.name}]`
-                          )
-                          .join(" ")
+                            .map((option) =>
+                              option.quantity > 1
+                                ? `[${option.quantity} x ${option.name}]`
+                                : `[${option.name}]`
+                            )
+                            .join(" ")
                         : "";
                     const totalOptionPrice = item?.totalOptionPrice || 0;
                     const itemPrice = item?.price + totalOptionPrice;
@@ -2054,7 +2062,7 @@ function Homecafe() {
                           <CircleMinus
                             className="text-color-app cursor-pointer"
                             onClick={() => handleSetQuantity(-1, item)}
-                            onKeyDown={() => { }}
+                            onKeyDown={() => {}}
                           />
 
                           {editingRowId === item?.id ? (
@@ -2069,17 +2077,18 @@ function Homecafe() {
                             />
                           ) : item?.isWeightMenu ? (
                             <div
-                              onKeyDown={() => { }}
+                              onKeyDown={() => {}}
                               onClick={() => setEditingRowId(item?.id)}
                               className="flex justify-center items-center w-16 h-8 border-2 rounded cursor-pointer px-1 gap-2"
                               aria-label={`Edit quantity: ${Number.parseFloat(
                                 item.quantity.toString()
                               ).toFixed(3)}`}
                             >
-                              {`${item?.quantity}/${item?.unitWeightMenu !== undefined
+                              {`${item?.quantity}/${
+                                item?.unitWeightMenu !== undefined
                                   ? item?.unitWeightMenu
                                   : "-"
-                                }`}
+                              }`}
                             </div>
                           ) : (
                             <div className="flex justify-center items-center w-10 h-8">
@@ -2089,14 +2098,14 @@ function Homecafe() {
 
                           <CirclePlus
                             className="text-color-app cursor-pointer"
-                            onKeyDown={() => { }}
+                            onKeyDown={() => {}}
                             onClick={() => handleSetQuantity(1, item)}
                           />
 
                           <Trash2
                             className="text-red-500 cursor-pointer"
                             onClick={() => onConfirmRemoveItem(item)}
-                            onKeyDown={() => { }}
+                            onKeyDown={() => {}}
                           />
                         </div>
                       </div>
@@ -2197,11 +2206,11 @@ function Homecafe() {
                     (selectedOption) => selectedOption._id === option._id
                   )?.quantity >= 1
                     ? {
-                      backgroundColor: "#fd8b66",
-                      borderRadius: "5px",
-                      padding: 5,
-                      color: "white",
-                    }
+                        backgroundColor: "#fd8b66",
+                        borderRadius: "5px",
+                        padding: 5,
+                        color: "white",
+                      }
                     : {}
                 }
               >
@@ -2241,12 +2250,13 @@ function Homecafe() {
                     }
                   >
                     <CircleMinus
-                      className={`${selectedOptionsArray[selectedItem?._id]?.find(
-                        (selectedOption) => selectedOption._id === option._id
-                      )?.quantity >= 1
+                      className={`${
+                        selectedOptionsArray[selectedItem?._id]?.find(
+                          (selectedOption) => selectedOption._id === option._id
+                        )?.quantity >= 1
                           ? "text-white"
                           : "text-color-app"
-                        }`}
+                      }`}
                     />
                   </button>
                   <span className="mx-2">
@@ -2260,12 +2270,13 @@ function Homecafe() {
                     onClick={() => handleAddOption(selectedItem?._id, option)}
                   >
                     <CirclePlus
-                      className={`${selectedOptionsArray[selectedItem?._id]?.find(
-                        (selectedOption) => selectedOption._id === option._id
-                      )?.quantity >= 1
+                      className={`${
+                        selectedOptionsArray[selectedItem?._id]?.find(
+                          (selectedOption) => selectedOption._id === option._id
+                        )?.quantity >= 1
                           ? "text-white"
                           : "text-color-app"
-                        }`}
+                      }`}
                     />
                   </button>
                 </div>
@@ -2408,7 +2419,6 @@ function Homecafe() {
           totalPointPrice={totalPointPrice}
           point={point}
           paymentMethod={paymentMethod}
-
         />
       </div>
       {SelectedMenus?.map((val, i) => {
@@ -2420,7 +2430,7 @@ function Homecafe() {
           if (val?.isWeightMenu) {
             return val?.unitWeightMenu === "g"
               ? (price + totalOptionPrice) *
-              convertUnitgramAndKilogram(quantity)
+                  convertUnitgramAndKilogram(quantity)
               : (price + totalOptionPrice) * quantity;
           } else {
             return (price + totalOptionPrice) * quantity;
