@@ -1353,6 +1353,7 @@
   "change_qr_code": "Change QR Code End of bill",
   "choose_employee" : "Choose employee",
   "upload_qr_code": "Upload Qr Code",
+  "choose_employee" : "Choose employee",
   "bank_accounts": "Bank Accounts",
   "bank_account_added": "Bank Account Added",
   "total_transactions": "Total Transactions",
