@@ -1351,5 +1351,6 @@
   "upload_qr_code" : "ອັບໂຫຼດ QR Code",
   "free_items" : "ລາຍການເມນູແຖມ",
   "discount_items" : "ລາຍການເມນູສ່ວນຫຼຸດ",
-  "discount_amounts" : "ຈຳນວນທີ່ຫຼຸດ"
+  "discount_amounts" : "ຈຳນວນທີ່ຫຼຸດ",
+  "choose_employee" : "ເລືອກພະນັກງານ"
 }
