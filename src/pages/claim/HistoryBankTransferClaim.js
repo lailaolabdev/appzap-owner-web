@@ -121,19 +121,21 @@ export default function HistoryBankTransferClaim() {
 
       // Map claim types to API endpoints
       const endpoints = {
-        [CLAIM_STATUSES.UNCLAIMED]: `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${
+        [CLAIM_STATUSES.UNCLAIMED]: `${END_POINT_SERVER_JUSTCAN}/v6/checkouts?storeId=${
           DATA?.storeId
-        }&claimStatus=UNCLAIMED&paymentMethod=BANK_TRANSFER&status=PAID&skip=${
+        }&status=PAYMENT_COMPLETED&startPrice=1&endPrice=100000000&skip=${
           (page - 1) * rowsPerPage
         }&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
-        [CLAIM_STATUSES.CLAIMING]: `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${
+        [CLAIM_STATUSES.CLAIMING]: `${END_POINT_SERVER_JUSTCAN}/v6/checkout/claims?storeId=${
           DATA?.storeId
-        }&status=CLAIMING&skip=${
+        }&status=REQUESTING&skip=${
           (page - 1) * rowsPerPage
         }&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
-        [CLAIM_STATUSES.CLAIMED]: `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${
+        [CLAIM_STATUSES.CLAIMED]: `${END_POINT_SERVER_JUSTCAN}/v6/checkout/claims?storeId=${
           DATA?.storeId
-        }&status=CLAIMED&skip=${(page - 1) * rowsPerPage}&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
+        }&status=APPROVED&skip=${
+          (page - 1) * rowsPerPage
+        }&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
       };
 
       const apiUrl = endpoints[type];
@@ -146,6 +148,8 @@ export default function HistoryBankTransferClaim() {
         headers: TOKEN,
         signal: controller.signal,
       });
+
+      console.log("Response data:", response.data);
 
       clearTimeout(timeoutId);
 
@@ -214,7 +218,7 @@ export default function HistoryBankTransferClaim() {
 
     const billIds = selectedPayment
       .filter((x) => x.isPaidConfirm)
-      .map((x) => x._id);
+      .map((x) => x.paymentData);
 
     if (billIds.length === 0) {
       errorAdd(`ບໍ່ມີລາຍການທີ່ຢືນຢັນການປິດໂຕະແລ້ວ`); // Ignore spellcheck: ກະລຸນາເລືອກບິນທີ່ຕ້ອງການຊຳລະໄດ້
@@ -227,17 +231,21 @@ export default function HistoryBankTransferClaim() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      await axios.post(
-        `${END_POINT_SERVER_JUSTCAN}/v5/claim-payment/create`, // Ignore spellcheck: JUSTCAN
+      const response = await axios.post(
+        `${END_POINT_SERVER_JUSTCAN}/v6/checkout/claim/create`, // Ignore spellcheck: JUSTCAN
         {
-          storeId: DATA?.storeId,
-          billIds: billIds,
+          payments: billIds, // list of payment items
+          bankAccount: "150120001384100001", // shop bank account
+          bankAccountName: "MR SENGPHACHANH CHANTHAVONG", // shop bank account Name,
+          shopId: DATA?.storeId, // storeId
         },
         {
           headers: TOKEN,
           signal: controller.signal,
         }
       );
+
+      console.log("claim payment response:", response.data);
 
       clearTimeout(timeoutId);
 

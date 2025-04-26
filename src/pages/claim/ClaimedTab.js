@@ -47,9 +47,6 @@ const ClaimedTab = ({
                 {t("ລະຫັດເຄລມ")}
               </th>
               <th className="text-center" scope="col">
-                {t("ຈຳນວນບິນ")}
-              </th>
-              <th className="text-center" scope="col">
                 {t("ຈຳນວນເງິນ")}
               </th>
               <th className="text-center" scope="col">
@@ -65,15 +62,12 @@ const ClaimedTab = ({
               claimedData.map((item, index) => (
                 <tr key={index}>
                   <td className="text-start">{startIndex + index + 1}</td>
-                  <td className="text-center">{item?.code ?? "-"}</td>
-                  <td className="text-center">
-                    {item?.billIds?.length ?? "-"}
+                  <td className="text-center">{item?.billNo ?? "-"}</td>
+                  <td className="text-center text-green-500">
+                    {formatCurrency(item?.totalPrice, item?.currency)}
                   </td>
                   <td className="text-center text-green-500">
-                    {formatCurrency(item?.totalAmount, item?.currency)}
-                  </td>
-                  <td className="text-center text-green-500">
-                    {item.status === "CLAIMED" ? "ເຄລມແລ້ວ" : "-"}
+                    {item.status === "APPROVED" ? "ເຄລມແລ້ວ" : "-"}
                   </td>
                   <td className="text-center">
                     {item?.createdAt
