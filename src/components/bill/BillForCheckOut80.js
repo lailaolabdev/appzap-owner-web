@@ -8,6 +8,8 @@ import {
   getLocalDataCustomer,
 } from "../../constants/api";
 import { usePaymentStore } from "../../zustand/paymentStore";
+import { useUserStore } from "../../zustand/userStore";
+import { convertRole } from "../../helpers/convertRole";
 import Axios from "axios";
 import QRCode from "react-qr-code";
 import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
@@ -42,6 +44,7 @@ export default function BillForCheckOut80({
   );
 
   const { SelectedDataBill } = usePaymentStore();
+  const { selectUserEmployee } = useUserStore();
 
   // Replace the current useRef and console.log
   const serviceChargeRef = useRef(serviceCharge);
@@ -294,7 +297,13 @@ export default function BillForCheckOut80({
           <div>
             {t("staffCheckBill")}:{" "}
             <span style={{ fontWeight: "bold" }}>
-              {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
+              {selectUserEmployee
+                ? `${selectUserEmployee?.firstname ?? "-"} - ${convertRole(
+                    selectUserEmployee?.role
+                  )}`
+                : `${profile?.data?.firstname ?? "-"} - ${convertRole(
+                    profile?.data?.role
+                  )}`}
             </span>
           </div>
 
