@@ -4,7 +4,8 @@ import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import MoneySummaryCard from "./components/MoneySummaryCard";
 import EmptyState from "./components/EmptyState";
 import PaginationControls from "./components/PaginationControls";
-import { ButtonComponent } from "../../components";
+import { Button } from "../../components/ui/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 
 const UnclaimedTab = ({
@@ -47,109 +48,93 @@ const UnclaimedTab = ({
   return (
     <div>
       {/* Summary card showing total unclaimed amount */}
-      <MoneySummaryCard
+      {/* <MoneySummaryCard
         amount={amountData?.UNCLAIMED || 0}
         currency={storeDetail?.firstCurrency}
-      />
+      /> */}
 
       <div>
         <div className="flex justify-end flex-wrap gap-3 mb-3">
           <div className="flex gap-2">
-            {/* Conditionally render "Claim Selected" button if items are selected */}
-            <ButtonComponent
+            {/* Claim Selected button */}
+            <Button
               disabled={
                 !selectedPayment.length > 0 ||
                 selectedPayment.some((item) => !item.isPaidConfirm)
               }
-              title="ເຄລມລາຍການທີ່ເລືອກ"
-              icon={faPlusCircle}
-              className={`bg-orange-500 hover:bg-orange-600 ${
-                !selectedPayment.length > 0 ||
-                selectedPayment.some((item) => !item.isPaidConfirm)
-                  ? "!bg-orange-300 !cursor-default"
-                  : ""
-              }`}
-              handleClick={() => setOpenSelectClaim(true)}
-            />
+              className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white rounded-xl"
+              onClick={() => setOpenSelectClaim(true)}
+            >
+              <FontAwesomeIcon icon={faPlusCircle} />
+              <span>ເຄລມລາຍການທີ່ເລືອກ</span>
+            </Button>
 
-            {/* Conditionally render "Claim All" button if there are unclaimed items */}
-            {/* {unClaimedData?.length > 0 && (
-              <ButtonComponent
-                title="Claim All"
-                icon={faPlusCircle}
-                className="bg-orange-500 hover:bg-orange-600"
-                width={"150px"}
-                handleClick={() => setOpenConfirm(true)}
-              />
-            )} */}
-
-            {/* Add Claim and Close Table button */}
-            <ButtonComponent
+            {/* Claim and Close Table button */}
+            <Button
               disabled={
                 selectedPayment.length === 0 ||
                 selectedPayment.filter((item) => !item.isPaidConfirm).length ===
                   0
               }
-              title={t("confirm_close_table") ?? "Claim & Close Table"}
-              icon={faPlusCircle}
-              className={`bg-green-500 hover:bg-green-600 ${
-                selectedPayment.length === 0 ||
-                selectedPayment.filter((item) => !item.isPaidConfirm).length ===
-                  0
-                  ? "!bg-green-300 !cursor-default"
-                  : ""
-              }`}
-              handleClick={() => setOpenConfirmClaimAndClose(true)}
-            />
+              className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white rounded-xl"
+              onClick={() => setOpenConfirmClaimAndClose(true)}
+            >
+              <FontAwesomeIcon icon={faPlusCircle} />
+              <span>{t("confirm_close_table") ?? "Claim & Close Table"}</span>
+            </Button>
           </div>
         </div>
       </div>
 
       {/* Table for unclaimed payments */}
-      <div className="overflow-x-auto">
-        <table className="table">
-          <thead className="thead-light">
-            <tr>
-              <th className="whitespace-nowrap" scope="col">
+      <div className="overflow-x-auto mb-6">
+        <table className="w-full">
+          <thead className="bg-gray-50">
+            <tr className="text-sm font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                 <Form.Check
                   type="checkbox"
                   checked={areAllSelected()}
                   onChange={selectAllPayment}
                 />
               </th>
-              <th className="whitespace-nowrap" scope="col">
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                 {t("no")}
               </th>
-              <th className="whitespace-nowrap text-center" scope="col">
+              <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
                 {t("tableNumber")}
               </th>
-              <th className="whitespace-nowrap text-center" scope="col">
+              <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
                 {t("tableCode")}
               </th>
-              <th className="whitespace-nowrap text-center" scope="col">
+              <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
                 {t("amount")}
               </th>
-              <th className="whitespace-nowrap text-center" scope="col">
+              <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
                 {t("status")}
               </th>
-              <th className="whitespace-nowrap text-center" scope="col">
+              <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
                 {"ສະຖານະເຄລມ"}
               </th>
-              <th className="whitespace-nowrap text-center" scope="col">
+              <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
                 {t("date_time")}
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white divide-y divide-gray-200">
             {unClaimedData?.length > 0 ? (
               unClaimedData.map((item, index) => {
                 const isSelected = checkPaymentSelected(item);
                 return (
                   <tr
                     key={index}
-                    className={`${isSelected ? "!bg-orange-100" : ""}`}
+                    className={`${
+                      isSelected
+                        ? "bg-orange-50 hover:bg-orange-100"
+                        : "hover:bg-gray-50"
+                    } transition-colors duration-150`}
                   >
-                    <td className={`whitespace-nowrap`}>
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {item?.claimStatus === "UNCLAIMED" && (
                         <Form.Check
                           type="checkbox"
@@ -158,33 +143,27 @@ const UnclaimedTab = ({
                         />
                       )}
                     </td>
-                    <td className={`whitespace-nowrap`}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {startIndex + index + 1}
                     </td>
-                    <td className={`whitespace-nowrap text-center`}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
                       {item?.tableName ?? "-"}
                     </td>
-                    <td className={`whitespace-nowrap text-center`}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
                       {item?.code ?? "-"}
                     </td>
-                    <td
-                      className={`whitespace-nowrap text-center text-green-500`}
-                    >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-green-600">
                       {formatCurrency(item?.totalAmount, item?.currency)}
                     </td>
-                    <td
-                      className={`whitespace-nowrap text-green-500 text-center`}
-                    >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-green-600">
                       {item?.isPaidConfirm
                         ? "ຢືນຢັນແລ້ວ"
                         : t(item.status) ?? "-"}
                     </td>
-                    <td
-                      className={`whitespace-nowrap text-red-500 text-center`}
-                    >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-red-600">
                       {item.claimStatus === "UNCLAIMED" ? "ຍັງບໍ່ຂໍເຄລມ" : "-"}
                     </td>
-                    <td className={`whitespace-nowrap text-center`}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
                       {item?.createdAt
                         ? moment(item.createdAt).format("DD/MM/YYYY HH:mm a")
                         : "-"}
@@ -193,7 +172,13 @@ const UnclaimedTab = ({
                 );
               })
             ) : (
-              <EmptyState />
+              <tr>
+                <td colSpan="8" className="px-6 py-4 text-center">
+                  <div className="flex justify-center items-center">
+                    <EmptyState />
+                  </div>
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
