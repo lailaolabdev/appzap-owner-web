@@ -333,7 +333,7 @@ function Homecafe() {
   ]);
 
   useEffect(() => {
-    billData();
+    // billData();
     billCountCafe();
     fetchPointsData();
     const getDataTax = async () => {
@@ -363,22 +363,6 @@ function Homecafe() {
     }
   };
 
-  const billData = async () => {
-    try {
-      let findby = "?";
-      findby += `storeId=${storeDetail?._id}&`;
-      findby += `startDate=${startDate}&`;
-      findby += `endDate=${endDate}&`;
-      findby += `startTime=${startTime}&`;
-      findby += `endTime=${endTime}`;
-      const res = await getBills(findby);
-      const filteredBills = res?.filter((bill) => bill.isCafe === true) || [];
-      setBill(filteredBills.length);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const billCountCafe = async () => {
     try {
       let findby = "?";
@@ -388,7 +372,7 @@ function Homecafe() {
       findby += `timeFrom=${startTime}&`;
       findby += `timeTo=${endTime}`;
       const res = await getBillCountCafe(findby);
-      console.log("res", res);
+
       setBill(res?.data?.billCountCafe);
     } catch (error) {
       console.log(error);
@@ -2396,7 +2380,7 @@ function Homecafe() {
       <CheckOutPopupCafe
         bill={bill}
         onPrintForCher={onPrintForCher}
-        onQueue={billData}
+        onQueue={billCountCafe}
         onPrintBill={onPrintBill}
         onPrintForCherLaBel={onPrintForCherLaBel}
         onPrintDrawer={onPrintDrawer}
