@@ -1351,5 +1351,7 @@
   "description_counter_only": "Enable this option to make the counter display information only for users.",
   "description_counter_access": "The counter can be accessed for management.",
   "change_qr_code": "Change QR Code End of bill",
-  "upload_qr_code" : "Upload Qr Code"
+  "upload_qr_code" : "Upload Qr Code",
+  "enter_percentage_between_0_100": "Enter percentage between 0 and 100",
+  "enter_amount_less_than_total": "Enter amount less than total"
 }

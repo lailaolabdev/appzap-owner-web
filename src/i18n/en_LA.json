@@ -1280,7 +1280,7 @@
   "percent": "ເປີເຊັນ",
   "fixed_amount": "ຈຳນວນເງິນ",
   "discount_amount": "ຈຳນວນສ່ວນຫຼຸດ",
-  "dis_fixed_amount": "ສ່ວນຫຼຸດຈຳເປັນເງິນ",
+  "dis_fixed_amount": "ສ່ວນຫຼຸດເປັນເງິນ",
   "dis_discount_amount": "ສ່ວນຫຼຸດເປັນເປີເຊັນ",
   "validFrom": "ເລີ່ມຕົ້ນວັນທີ",
   "validUntil": "ສິ້ນສຸດວັນທີ",
@@ -1351,5 +1351,7 @@
   "upload_qr_code" : "ອັບໂຫຼດ QR Code",
   "free_items" : "ລາຍການເມນູແຖມ",
   "discount_items" : "ລາຍການເມນູສ່ວນຫຼຸດ",
-  "discount_amounts" : "ຈຳນວນທີ່ຫຼຸດ"
+  "discount_amounts" : "ຈຳນວນທີ່ຫຼຸດ",
+  "enter_percentage_between_0_100" : "ປ້ອນຈຳນວນເປັນເປີເຊັນ 0 - 100",
+  "enter_amount_less_than_total" : "ປ້ອນຈຳນວນທີ່ນ້ອຍກວ່າຍອດທັງໝົດ"
 }

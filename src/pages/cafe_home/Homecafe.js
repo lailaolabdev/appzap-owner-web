@@ -120,6 +120,11 @@ function Homecafe() {
   const [point, setPoint] = useState();
   const [paymentMethod, setPaymentMethod] = useState("");
 
+  const [showDiscountModal, setShowDiscountModal] = useState(false);
+  const [discountType, setDiscountType] = useState("PERCENTAGE"); // "PERCENTAGE" or "FIXED_AMOUNT"
+  const [discountValue, setDiscountValue] = useState(0);
+  const [discountedTotal, setDiscountedTotal] = useState(0);
+
   const [isMobile, setIsMobile] = useState(
     window.matchMedia("(max-width: 767px)").matches
   );
@@ -130,6 +135,26 @@ function Homecafe() {
   const { shiftCurrent } = useShiftStore();
   const { setSelectedMenus, SelectedMenus, clearSelectedMenus } =
     useMenuSelectStore();
+
+  const handleApplyDiscount = () => {
+    let newTotal = total;
+
+    if (discountType === "PERCENTAGE") {
+      if (discountValue > 0 && discountValue <= 100) {
+        newTotal = total - total * (discountValue / 100);
+      }
+    } else if (discountType === "FIXED_AMOUNT") {
+      if (discountValue > 0 && discountValue <= total) {
+        newTotal = total - discountValue;
+      }
+    }
+
+    setDiscountedTotal(newTotal);
+    setShowDiscountModal(false);
+
+    // You might want to save this discount to your order state
+    // or handle it according to your application's logic
+  };
 
   const sliderRef = useRef();
   useEffect(() => {
@@ -1905,6 +1930,7 @@ function Homecafe() {
                             {moneyCurrency(total)} {t("nameCurrency")}
                           </span>
                         </div>
+
                         {totalExchangePoints > 0 && (
                           <div className="flex ml-5 flex-row gap-4 font-bold">
                             <span>{t("point")} :</span>
@@ -1914,12 +1940,37 @@ function Homecafe() {
                           </div>
                         )}
                       </div>
+                      {discountValue > 0 && (
+                        <>
+                          <div className="flex mb-3 flex-row gap-4 font-bold">
+                            <span>{t("discount")} :</span>
+                            <span>
+                              {discountType === "PERCENTAGE"
+                                ? `${discountValue}%`
+                                : `${moneyCurrency(discountValue)} ${
+                                    storeDetail?.firstCurrency
+                                  }`}
+                            </span>
+                          </div>
+                          <div className="flex mb-3 flex-row gap-4 font-bold">
+                            <span>{t("last_paid")} :</span>
+                            <span>
+                              {moneyCurrency(
+                                discountType === "PERCENTAGE"
+                                  ? total - total * (discountValue / 100)
+                                  : total - discountValue
+                              )}{" "}
+                              {storeDetail?.firstCurrency}
+                            </span>
+                          </div>
+                        </>
+                      )}
                     </>
                   ) : (
                     ""
                   )}
                   {SelectedMenus?.length > 0 && (
-                    <div className="grid grid-cols-2 gap-2 place-content-center w-full">
+                    <div className="grid grid-cols-3 gap-2 place-content-center w-full">
                       <button
                         type="button"
                         className="w-full rounded-lg h-[40px] bg-red-500 hover:bg-red-400 text-white text-md font-bold"
@@ -1944,6 +1995,14 @@ function Homecafe() {
                         disabled={SelectedMenus.length === 0}
                       >
                         {t("order_checkout")}
+                      </button>
+                      <button
+                        type="button"
+                        className="w-full rounded-lg h-[40px] bg-color-app hover:bg-orange-300 text-md font-bold text-white"
+                        onClick={() => setShowDiscountModal(true)}
+                        disabled={SelectedMenus.length === 0}
+                      >
+                        {t("discount")}
                       </button>
                     </div>
                   )}
@@ -2319,6 +2378,125 @@ function Homecafe() {
         </Modal.Footer>
       </Modal>
 
+      {/* Add this modal component near your other modals */}
+      <Modal
+        show={showDiscountModal}
+        onHide={() => setShowDiscountModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>{t("discount")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>{t("discount_type")}</Form.Label>
+              <div className="d-flex gap-3">
+                <Form.Check
+                  type="radio"
+                  label={t("percent")}
+                  name="discountType"
+                  id="percentage"
+                  checked={discountType === "PERCENTAGE"}
+                  onChange={() => setDiscountType("PERCENTAGE")}
+                />
+                <Form.Check
+                  type="radio"
+                  label={t("fixed_amount")}
+                  name="discountType"
+                  id="fixedAmount"
+                  checked={discountType === "FIXED_AMOUNT"}
+                  onChange={() => setDiscountType("FIXED_AMOUNT")}
+                />
+              </div>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>
+                {discountType === "PERCENTAGE"
+                  ? t("dis_discount_amount")
+                  : t("discount_amount")}
+              </Form.Label>
+              <Form.Control
+                type="number"
+                min="0"
+                max={discountType === "PERCENTAGE" ? "100" : ""}
+                value={discountValue}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  // Only parse to float if the input is not empty
+                  if (inputValue === "") {
+                    setDiscountValue(0);
+                  } else {
+                    setDiscountValue(parseFloat(inputValue));
+                  }
+                }}
+              />
+              {discountType === "PERCENTAGE" && (
+                <Form.Text className="text-muted">
+                  {t("enter_percentage_between_0_100")}
+                </Form.Text>
+              )}
+              {discountType === "FIXED_AMOUNT" && (
+                <Form.Text className="text-muted">
+                  {t("enter_amount_less_than_total")}
+                </Form.Text>
+              )}
+            </Form.Group>
+
+            <div className="mt-4">
+              <div className="d-flex justify-content-between">
+                <strong>{t("price_basic")}:</strong>
+                <span>
+                  {moneyCurrency(total)} {storeDetail?.firstCurrency}
+                </span>
+              </div>
+              <div className="d-flex justify-content-between">
+                <strong>{t("discount")}:</strong>
+                <span>
+                  {discountType === "PERCENTAGE"
+                    ? `${discountValue}%`
+                    : `${moneyCurrency(discountValue)} ${
+                        storeDetail?.firstCurrency
+                      }`}
+                </span>
+              </div>
+              <div className="d-flex justify-content-between mt-2">
+                <strong>{t("discount_amounts")}:</strong>
+                <span className="text-color-app font-bold">
+                  {moneyCurrency(
+                    discountType === "PERCENTAGE"
+                      ? total - total * (discountValue / 100)
+                      : total - discountValue
+                  )}{" "}
+                  {storeDetail?.firstCurrency}
+                </span>
+              </div>
+            </div>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowDiscountModal(false)}
+          >
+            {t("cancel")}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleApplyDiscount}
+            disabled={
+              (discountType === "PERCENTAGE" &&
+                (discountValue <= 0 || discountValue > 100)) ||
+              (discountType === "FIXED_AMOUNT" &&
+                (discountValue <= 0 || discountValue > total))
+            }
+          >
+            {t("confirm")}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       {/* modal comment of items   */}
       <Modal centered show={isPopup} onHide={() => setIsPupup(false)}>
         <Modal.Header closeButton>
@@ -2403,6 +2581,8 @@ function Homecafe() {
         point={point}
         paymentMethod={paymentMethod}
         setPaymentMethod={setPaymentMethod}
+        discountValue={discountValue}
+        discountType={discountType}
       />
 
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
@@ -2419,6 +2599,8 @@ function Homecafe() {
           totalPointPrice={totalPointPrice}
           point={point}
           paymentMethod={paymentMethod}
+          discountValue={discountValue}
+          discountType={discountType}
         />
       </div>
       {SelectedMenus?.map((val, i) => {

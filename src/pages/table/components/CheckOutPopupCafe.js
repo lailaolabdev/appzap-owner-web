@@ -68,6 +68,8 @@ export default function CheckOutPopupCafe({
   point,
   paymentMethod,
   setPaymentMethod,
+  discountType,
+  discountValue,
 }) {
   // ref
   const inputCashRef = useRef(null);
@@ -319,8 +321,25 @@ export default function CheckOutPopupCafe({
     }
   };
 
+  // const DiscountMember = () => {
+  //   let TotalDiscountFinal = 0;
+  //   if (memberDataSearch?.discountPercentage > 0) {
+  //     TotalDiscountFinal =
+  //       totalBill - (totalBill * memberDataSearch?.discountPercentage) / 100;
+  //   } else if (dataBillEdit?.discount > 0) {
+  //     TotalDiscountFinal =
+  //       totalBill - (totalBill * dataBillEdit?.discount) / 100;
+  //   } else {
+  //     TotalDiscountFinal = totalBill;
+  //   }
+
+  //   return TotalDiscountFinal;
+  // };
+
   const DiscountMember = () => {
     let TotalDiscountFinal = 0;
+
+    // First apply member discount if available
     if (memberDataSearch?.discountPercentage > 0) {
       TotalDiscountFinal =
         totalBill - (totalBill * memberDataSearch?.discountPercentage) / 100;
@@ -329,6 +348,16 @@ export default function CheckOutPopupCafe({
         totalBill - (totalBill * dataBillEdit?.discount) / 100;
     } else {
       TotalDiscountFinal = totalBill;
+    }
+
+    // Then apply additional discount from discountType and discountValue props
+    if (discountType && discountValue > 0) {
+      if (discountType === "PERCENTAGE") {
+        TotalDiscountFinal =
+          TotalDiscountFinal - (TotalDiscountFinal * discountValue) / 100;
+      } else if (discountType === "FIXED_AMOUNT") {
+        TotalDiscountFinal = TotalDiscountFinal - discountValue;
+      }
     }
 
     return TotalDiscountFinal;
@@ -435,12 +464,14 @@ export default function CheckOutPopupCafe({
       memberPhone: memberDataSearch?.phone,
       memberDiscount: memberDataSearch?.discountPercentage,
       discount:
-        memberDataSearch?.discountPercentage > 0
+        discountValue > 0
+          ? discountValue
+          : memberDataSearch?.discountPercentage > 0
           ? memberDataSearch?.discountPercentage
           : dataBillEdit?.discount > 0
           ? dataBillEdit?.discount
           : 0,
-      discountType: "PERCENT",
+      discountType: discountType || "PERCENT",
       statusPoint: statusPoint,
       fullnameStaffCheckOut:
         `${profile.data.firstname ? profile.data.firstname : "--"} ${

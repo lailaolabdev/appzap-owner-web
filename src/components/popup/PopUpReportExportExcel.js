@@ -2121,7 +2121,7 @@ export default function PopUpReportExportExcel({
             index + 1,
             currency?.currency?.currencyCode || "",
             currency?.currency?.currencyName || "",
-            Math.floor(moneyCurrency(currency?.currencyTotal || 0)),
+            moneyCurrency(Math.floor(currency?.currencyTotal || 0)),
           ]);
 
           // Style the data row
