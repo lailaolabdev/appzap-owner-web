@@ -1347,10 +1347,14 @@
   "counter_access_only": "ສິດເຂົ້າເຖິງເຄົາເຕີ້ເທົ່ານັ້ນ",
   "description_counter_only": "ເປີດໃຊ້ຕົວເລືອກນີ້ເພື່ອໃຫ້ເຄົາເຕີ້ສະແດງຂໍ້ມູນເທົ່ານັ້ນສໍາລັບຜູ້ໃຊ້.",
   "description_counter_access": "ເຄົາເຕີ້ມີສິດເຂົ້າເຖິງເພື່ອຈັດການ.",
-  "change_qr_code" : "ປ່ຽນ QR Code ທ້າຍບິນ",
-  "upload_qr_code" : "ອັບໂຫຼດ QR Code",
-  "free_items" : "ລາຍການເມນູແຖມ",
-  "discount_items" : "ລາຍການເມນູສ່ວນຫຼຸດ",
-  "discount_amounts" : "ຈຳນວນທີ່ຫຼຸດ",
-  "choose_employee" : "ເລືອກພະນັກງານ"
+  "choose_employee" : "ເລືອກພະນັກງານ",
+  "change_qr_code": "ປ່ຽນ QR Code ທ້າຍບິນ",
+  "upload_qr_code": "ອັບໂຫຼດ QR Code",
+  "free_items": "ລາຍການເມນູແຖມ",
+  "discount_items": "ລາຍການເມນູສ່ວນຫຼຸດ",
+  "discount_amounts": "ຈຳນວນທີ່ຫຼຸດ",
+  "bank_accounts": "ບັນຊີທະນາຄານ",
+  "total_transactions": "ຈຳນວນການຊຳລະທັງໝົດ",
+  "bank_account_number": "ເລກບັນຊີທະນາຄານ",
+  "bank_account_name": "ຊື່ບັນຊີທະນາຄານ"
 }

@@ -9,12 +9,7 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // Icons
-import {
-  faListAlt,
-  faTable,
-  faCog,
-  faCoins,
-} from "@fortawesome/free-solid-svg-icons";
+import { faListAlt, faTable, faCoins } from "@fortawesome/free-solid-svg-icons";
 
 // Constants, services and helpers
 import { END_POINT_SERVER_JUSTCAN, getLocalData } from "../../constants/api"; // Ignore spellcheck: JUSTCAN
@@ -36,6 +31,16 @@ import ClaimingTab from "./ClaimingTab";
 import ClaimedTab from "./ClaimedTab";
 import ConfirmPopUp from "./components/ConfirmPopUp";
 import CheckBillTab from "./CheckBillTab";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "../../components/ui/Dialog";
+import { Input } from "../../components/ui/Input";
+import { Button as CustomButton } from "../../components/ui/Button";
+import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 
 // Constants for claim statuses
 const CLAIM_STATUSES = {
@@ -45,25 +50,16 @@ const CLAIM_STATUSES = {
 };
 
 const TabButton = ({ isSelected, onClick, icon, title }) => (
-  <Button
-    className={`menu-report-stocks transition-all duration-200 ${
-      isSelected ? "shadow-md" : "hover:shadow-sm"
-    }`}
-    style={{
-      background: isSelected ? COLOR_APP : "white",
-      color: isSelected ? "white" : COLOR_APP,
-      border: `1px solid ${COLOR_APP}`,
-      padding: "0.75rem 1.5rem",
-      borderRadius: "0.75rem",
-      fontWeight: 500,
-    }}
+  <CustomButton
+    variant={isSelected ? "primary" : "outline"}
+    className="px-5 py-2.5 rounded-lg border-2 border-[#FB6E3B]"
     onClick={onClick}
   >
     <span className="flex gap-2 items-center">
       <FontAwesomeIcon icon={icon} className="text-lg" />
       <span className="text-sm md:text-base">{title}</span>
     </span>
-  </Button>
+  </CustomButton>
 );
 
 export default function HistoryBankTransferClaim() {
@@ -106,11 +102,7 @@ export default function HistoryBankTransferClaim() {
   useEffect(() => {
     fetchData(selectedType, currentPage);
     getClaimAmountData();
-    // Load saved bank account info
-    const savedBankAccount = localStorage.getItem("bankAccountInfo");
-    if (savedBankAccount) {
-      setBankAccount(JSON.parse(savedBankAccount));
-    }
+    loadBankAccountInfo();
   }, [selectedType, currentPage]);
 
   const getClaimAmountData = async () => {
@@ -131,6 +123,32 @@ export default function HistoryBankTransferClaim() {
       console.log("Error fetching claim amount data:", err.message);
     }
   };
+
+  const loadBankAccountInfo = async () => {
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+
+      // Get bank accounts with correct filter parameters
+      const response = await axios.get(
+        `${END_POINT_SERVER_JUSTCAN}/v5/earning/accounts?referenceId=${DATA?.storeId}&referenceType=STORE`,
+        { headers: TOKEN }
+      );
+
+      const bankAccounts = response.data.data; // Access the data array from the response
+      if (bankAccounts?.length > 0) {
+        const defaultAccount =
+          bankAccounts.find((acc) => acc.isDefault) || bankAccounts[0];
+        setBankAccount({
+          accountNumber: defaultAccount.accountNumber || "",
+          accountName: defaultAccount.accountName || "",
+        });
+      }
+    } catch (error) {
+      console.error("Error loading bank account info:", error);
+    }
+  };
+
+  console.log("bankAccount", bankAccount);
 
   const fetchData = async (type, page, loading = true) => {
     try {
@@ -235,10 +253,79 @@ export default function HistoryBankTransferClaim() {
     return selectedPayment.some((x) => x._id === payment._id);
   };
 
-  const handleBankAccountSubmit = () => {
-    localStorage.setItem("bankAccountInfo", JSON.stringify(bankAccount));
-    setOpenBankAccountForm(false);
-    successAdd(t("bank_account_saved"));
+  const handleBankAccountSubmit = async () => {
+    try {
+      setIsLoading(true);
+      const { TOKEN, DATA } = await getLocalData();
+
+      // First check if earnings record exists
+      const earningsResponse = await axios.get(
+        `${END_POINT_SERVER_JUSTCAN}/v5/earnings?referenceId=${DATA?.storeId}&referenceType=STORE`,
+        { headers: TOKEN }
+      );
+
+      const earnings = earningsResponse.data[0];
+
+      if (!earnings) {
+        // Create new earnings record with bank account
+        await axios.post(
+          `${END_POINT_SERVER_JUSTCAN}/v5/earning/create`,
+          {
+            referenceId: DATA?.storeId,
+            referenceType: "STORE",
+            bankAccount: {
+              type: "ACCOUNT_NUMBER",
+              accountNumber: bankAccount.accountNumber,
+              accountName: bankAccount.accountName,
+              isDefault: true,
+            },
+          },
+          { headers: TOKEN }
+        );
+      } else if (!earnings.bankAccounts || earnings.bankAccounts.length === 0) {
+        // Add new bank account only if no accounts exist
+        await axios.post(
+          `${END_POINT_SERVER_JUSTCAN}/v5/earning/account/add`,
+          {
+            referenceId: DATA?.storeId,
+            referenceType: "STORE",
+            bankAccount: {
+              type: "ACCOUNT_NUMBER",
+              accountNumber: bankAccount.accountNumber,
+              accountName: bankAccount.accountName,
+              isDefault: true,
+            },
+          },
+          { headers: TOKEN }
+        );
+      } else {
+        // Update the default bank account
+        const defaultAccount =
+          earnings.bankAccounts.find((acc) => acc.isDefault) ||
+          earnings.bankAccounts[0];
+        await axios.post(
+          `${END_POINT_SERVER_JUSTCAN}/v5/earning/account/update`,
+          {
+            referenceId: DATA?.storeId,
+            referenceType: "STORE",
+            accountId: defaultAccount._id,
+            accountName: bankAccount.accountName,
+            accountNumber: bankAccount.accountNumber,
+            type: "ACCOUNT_NUMBER",
+            isDefault: true,
+          },
+          { headers: TOKEN }
+        );
+      }
+
+      setOpenBankAccountForm(false);
+      successAdd(t("bank_account_saved"));
+    } catch (error) {
+      console.error("Error saving bank account:", error);
+      errorAdd(t("error_saving_bank_account"));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const claimSelectedPayment = async () => {
@@ -293,37 +380,6 @@ export default function HistoryBankTransferClaim() {
     } catch (error) {
       errorAdd(`ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່`); // Ignore spellcheck: ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່
       console.error("Error claiming payment:", error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const claimAllPayment = async () => {
-    try {
-      setOpenConfirm(false);
-      setIsLoading(true);
-
-      const { TOKEN, DATA } = await getLocalData();
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-      await axios.post(
-        `${END_POINT_SERVER_JUSTCAN}/v5/claim-payment/create-all`, // Ignore spellcheck: JUSTCAN
-        { storeId: DATA?.storeId },
-        {
-          headers: TOKEN,
-          signal: controller.signal,
-        }
-      );
-
-      clearTimeout(timeoutId);
-
-      successAdd(`ສຳເລັດທັງໝົດແລ້ວ`); // Ignore spellcheck: ສຳເລັດທັງໝົດແລ້ວ
-      fetchData(CLAIM_STATUSES.UNCLAIMED, currentPage);
-    } catch (error) {
-      errorAdd(`ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່`); // Ignore spellcheck: ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່
-      console.error("Error claiming all payments:", error.message);
     } finally {
       setIsLoading(false);
     }
@@ -469,53 +525,34 @@ export default function HistoryBankTransferClaim() {
     [CLAIM_STATUSES.CLAIMED]: claimData[CLAIM_STATUSES.CLAIMED] || [],
   };
 
-  console.log("tabData:", selectedPayment);
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Navigation Bar */}
       <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center py-4 gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center py-3 gap-4">
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold text-gray-800">
                 {t("bank_transfer_claims")}
               </h1>
-              <div className="hidden md:block h-6 w-px bg-gray-200"></div>
-              <div className="flex gap-2">
-                <span className="text-sm text-gray-500">
-                  {t("total_claims")}:
-                </span>
-                <span className="text-sm font-medium text-color-app">
-                  {claimData[selectedType]?.length || 0}
-                </span>
-              </div>
             </div>
-            <Button
-              className="menu-report-stocks transition-all duration-200 hover:shadow-md"
-              style={{
-                background: COLOR_APP,
-                color: "white",
-                border: `1px solid ${COLOR_APP}`,
-                padding: "0.75rem 1.5rem",
-                borderRadius: "0.75rem",
-                fontWeight: 500,
-              }}
+            <CustomButton
+              variant="primary"
               onClick={() => setOpenBankAccountForm(true)}
             >
               <span className="flex gap-2 items-center">
-                <FontAwesomeIcon icon={faCog} className="text-lg" />
+                <FontAwesomeIcon icon={faCreditCard} className="text-xl" />
                 <span className="text-sm md:text-base">
-                  {t("bank_account_settings")}
+                  {t("bank_accounts")}
                 </span>
               </span>
-            </Button>
+            </CustomButton>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
@@ -527,7 +564,7 @@ export default function HistoryBankTransferClaim() {
                 />
               </div>
               <div>
-                <div className="text-sm text-gray-500">
+                <div className="text-base font-medium text-gray-500">
                   {t("total_money_claim")}
                 </div>
                 <div className="text-xl font-bold text-color-app">
@@ -546,7 +583,7 @@ export default function HistoryBankTransferClaim() {
                 />
               </div>
               <div>
-                <div className="text-sm text-gray-500">
+                <div className="text-base font-medium text-gray-500">
                   {t("total_transactions")}
                 </div>
                 <div className="text-xl font-bold text-gray-800">
@@ -614,13 +651,8 @@ export default function HistoryBankTransferClaim() {
               <div className="p-6 border-b border-gray-100">
                 <div className="flex flex-wrap gap-2 justify-end">
                   <Button
-                    className="menu-report-stocks"
-                    style={{
-                      background: COLOR_APP,
-                      color: "white",
-                      padding: "0.5rem 1rem",
-                      borderRadius: "0.75rem",
-                    }}
+                    variant="primary"
+                    className="px-5 py-2.5"
                     onClick={() => setOpenSelectClaim(true)}
                   >
                     <span className="flex gap-2 items-center">
@@ -629,13 +661,8 @@ export default function HistoryBankTransferClaim() {
                     </span>
                   </Button>
                   <Button
-                    className="menu-report-stocks"
-                    style={{
-                      background: COLOR_APP,
-                      color: "white",
-                      padding: "0.5rem 1rem",
-                      borderRadius: "0.75rem",
-                    }}
+                    variant="primary"
+                    className="px-5 py-2.5"
                     onClick={() => setOpenConfirm(true)}
                   >
                     <span className="flex gap-2 items-center">
@@ -711,19 +738,19 @@ export default function HistoryBankTransferClaim() {
         </div>
       </div>
 
-      {/* Bank Account Form Dialog */}
-      <ConfirmPopUp
-        open={openBankAccountForm}
-        header={t("bank_account_settings")}
-        content={
-          <div className="flex flex-col gap-6 p-4">
+      {/* Bank Account Settings Dialog */}
+      <Dialog open={openBankAccountForm} onOpenChange={setOpenBankAccountForm}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{t("bank_accounts")}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-6 py-4">
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-gray-700">
                 {t("bank_account_number")}
               </label>
-              <input
+              <Input
                 type="text"
-                className="border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 value={bankAccount.accountNumber}
                 onChange={(e) =>
                   setBankAccount((prev) => ({
@@ -738,9 +765,8 @@ export default function HistoryBankTransferClaim() {
               <label className="text-sm font-medium text-gray-700">
                 {t("bank_account_name")}
               </label>
-              <input
+              <Input
                 type="text"
-                className="border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                 value={bankAccount.accountName}
                 onChange={(e) =>
                   setBankAccount((prev) => ({
@@ -752,20 +778,24 @@ export default function HistoryBankTransferClaim() {
               />
             </div>
           </div>
-        }
-        onClose={() => setOpenBankAccountForm(false)}
-        onSubmit={handleBankAccountSubmit}
-      />
-
-      {/* Confirm dialogs */}
-      <PopUpConfirms
-        open={openConfirm}
-        text={"ເຄລມທັງໝົດ"}
-        textBefore={"ທ່ານຕ້ອງການ"}
-        textAfter={"ແທ້ບໍ?"}
-        onClose={() => setOpenConfirm(false)}
-        onSubmit={claimAllPayment}
-      />
+          <DialogFooter className="gap-3">
+            <CustomButton
+              variant="outline"
+              className="px-5 py-2.5 flex-1 font-medium"
+              onClick={() => setOpenBankAccountForm(false)}
+            >
+              {t("cancel")}
+            </CustomButton>
+            <CustomButton
+              variant="primary"
+              className="px-5 py-2.5 flex-1 font-medium"
+              onClick={handleBankAccountSubmit}
+            >
+              {t("save")}
+            </CustomButton>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <ConfirmPopUp
         open={openSelectClaim}

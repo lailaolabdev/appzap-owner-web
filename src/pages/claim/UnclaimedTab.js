@@ -4,7 +4,7 @@ import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import MoneySummaryCard from "./components/MoneySummaryCard";
 import EmptyState from "./components/EmptyState";
 import PaginationControls from "./components/PaginationControls";
-import { Button } from "../../components/ui/Button";
+import { Button as CustomButton } from "../../components/ui/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import moment from "moment";
 
@@ -57,31 +57,33 @@ const UnclaimedTab = ({
         <div className="flex justify-end flex-wrap gap-3 mb-3">
           <div className="flex gap-2">
             {/* Claim Selected button */}
-            <Button
+            <CustomButton
+              variant="primary"
               disabled={
                 !selectedPayment.length > 0 ||
                 selectedPayment.some((item) => !item.isPaidConfirm)
               }
-              className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white rounded-xl"
+              className="flex items-center gap-2"
               onClick={() => setOpenSelectClaim(true)}
             >
               <FontAwesomeIcon icon={faPlusCircle} />
               <span>ເຄລມລາຍການທີ່ເລືອກ</span>
-            </Button>
+            </CustomButton>
 
             {/* Claim and Close Table button */}
-            <Button
+            <CustomButton
+              variant="primary"
               disabled={
                 selectedPayment.length === 0 ||
                 selectedPayment.filter((item) => !item.isPaidConfirm).length ===
                   0
               }
-              className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white rounded-xl"
+              className="flex items-center gap-2 bg-green-500 hover:bg-green-600"
               onClick={() => setOpenConfirmClaimAndClose(true)}
             >
               <FontAwesomeIcon icon={faPlusCircle} />
               <span>{t("confirm_close_table") ?? "Claim & Close Table"}</span>
-            </Button>
+            </CustomButton>
           </div>
         </div>
       </div>
