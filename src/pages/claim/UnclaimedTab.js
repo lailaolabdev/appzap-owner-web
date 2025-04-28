@@ -1,10 +1,11 @@
 import React from "react";
 import { Form } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import EmptyState from "./components/EmptyState";
 import PaginationControls from "./components/PaginationControls";
+import { Button } from "../../components/ui/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button as CustomButton } from "../../components/ui/Button";
 import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { cn } from "../../utils/cn";
