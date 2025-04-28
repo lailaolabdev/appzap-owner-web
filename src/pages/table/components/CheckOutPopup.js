@@ -32,9 +32,11 @@ import {
 import { RedeemPoint, PointUser } from "../../../services/point";
 
 import { useStoreStore } from "../../../zustand/storeStore";
+import { useUserStore } from "../../../zustand/userStore";
 import { useShiftStore } from "../../../zustand/ShiftStore";
 import { useClaimDataStore } from "../../../zustand/claimData";
 import { usePaymentStore } from "../../../zustand/paymentStore";
+import { getUsersV5 } from "../../../services/user";
 
 export default function CheckOutPopup({
   onPrintDrawer,
@@ -82,6 +84,7 @@ export default function CheckOutPopup({
   const [banks, setBanks] = useState([]);
   const [selectedBank, setSelectedBank] = useState("");
   const [datePointExpirt, setDatePointExpirt] = useState("");
+  const [userEmployee, setUserEmployee] = useState([]);
 
   const {
     setSelectedTable,
@@ -93,12 +96,12 @@ export default function CheckOutPopup({
   } = useStore();
 
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
+  const { selectUserEmployee, setSelectUserEmployee, clearEmployee } =
+    useUserStore();
   const { statusServedForOrdering, setStatusServedForOrdering } =
     useClaimDataStore();
   const { setSelectedDataBill, SelectedDataBill, clearSelectedDataBill } =
     usePaymentStore();
-
-  console.log("SelectedDataBill", SelectedDataBill);
 
   const { shiftCurrent } = useShiftStore();
 
@@ -149,6 +152,25 @@ export default function CheckOutPopup({
       id: selectedCurrencie._id,
       name: selectedCurrencie.currencyName,
     });
+  };
+
+  const handleChangeUserEmployee = (e) => {
+    const selectedId = e.target.value;
+
+    if (!selectedId) {
+      setSelectUserEmployee(null);
+      return;
+    }
+
+    const selectedOption = userEmployee?.find(
+      (user) => user?._id === selectedId
+    );
+
+    if (selectedOption) {
+      setSelectUserEmployee(selectedOption);
+    } else {
+      setSelectUserEmployee(null);
+    }
   };
 
   // console.log({ dataBill });
@@ -316,6 +338,19 @@ export default function CheckOutPopup({
     }
   };
 
+  const getUserEmployee = async () => {
+    try {
+      const { TOKEN } = await getLocalData();
+      let findby = "?";
+      findby += `storeId=${storeDetail?._id}`;
+      const res = await getUsersV5(findby, TOKEN);
+      const staffUser = res.filter((item) => item?.role === "APPZAP_STAFF");
+      setUserEmployee(staffUser);
+    } catch (error) {
+      console.error("Error fetching user employee:", error);
+    }
+  };
+
   const _checkBill = async (currencyId, currencyName) => {
     const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
@@ -409,6 +444,7 @@ export default function CheckOutPopup({
         //setTransfer();
         setOrderPayBefore([]);
         // callCheckOutPrintBillOnly(selectedTable?._id);
+        clearEmployee();
         localStorage.removeItem("STAFFCONFIRM_DATA");
 
         Swal.fire({
@@ -525,6 +561,7 @@ export default function CheckOutPopup({
 
   useEffect(() => {
     getDataCurrency();
+    getUserEmployee();
     getMembersData();
     setSelectCurrency({
       id: "LAK",
@@ -1269,41 +1306,59 @@ export default function CheckOutPopup({
                 {storeDetail?.firstCurrency}
               </div>
 
-              <Form.Control
-                hidden={tab !== "cash"}
-                as="select"
-                style={{ width: 80 }}
-                value={selectCurrency?.id}
-                onChange={handleChangeCurrencie}
-              >
-                <option value="LAK">{storeDetail?.firstCurrency}</option>
-                {currencyList?.map((e) => (
-                  <option key={e?._id} value={e?._id}>
-                    {e?.currencyCode}
-                  </option>
-                ))}
-              </Form.Control>
+              <div className="flex flex-row gap-2">
+                <Form.Control
+                  hidden={tab !== "cash"}
+                  as="select"
+                  style={{ width: 80 }}
+                  value={selectCurrency?.id}
+                  onChange={handleChangeCurrencie}
+                >
+                  <option value="LAK">{storeDetail?.firstCurrency}</option>
+                  {currencyList?.map((e) => (
+                    <option key={e?._id} value={e?._id}>
+                      {e?.currencyCode}
+                    </option>
+                  ))}
+                </Form.Control>
 
-              {(tab === "transfer" ||
-                tab === "cash_transfer" ||
-                tab === "cash_transfer_point") && (
                 <Form.Control
                   as="select"
                   style={{ width: 140 }}
-                  value={selectedBank?.id || ""}
-                  onChange={handleChange}
+                  value={selectUserEmployee?._id || ""}
+                  onChange={handleChangeUserEmployee}
                 >
-                  <option value="" disabled>
-                    ເລືອກທະນາຄານ
-                  </option>
-                  {Array.isArray(banks) &&
-                    banks.map((bank) => (
-                      <option key={bank._id} value={bank._id}>
-                        {bank.bankName}
+                  <option value="">{t("choose_employee")}</option>
+                  {userEmployee
+                    ?.filter((user) => user?._id)
+                    .map((item) => (
+                      <option key={item._id} value={item._id}>
+                        {item.firstname}{" "}
                       </option>
                     ))}
                 </Form.Control>
-              )}
+
+                {(tab === "transfer" ||
+                  tab === "cash_transfer" ||
+                  tab === "cash_transfer_point") && (
+                  <Form.Control
+                    as="select"
+                    style={{ width: 140 }}
+                    value={selectedBank?.id || ""}
+                    onChange={handleChange}
+                  >
+                    <option value="" disabled>
+                      ເລືອກທະນາຄານ
+                    </option>
+                    {Array.isArray(banks) &&
+                      banks.map((bank) => (
+                        <option key={bank._id} value={bank._id}>
+                          {bank.bankName}
+                        </option>
+                      ))}
+                  </Form.Control>
+                )}
+              </div>
             </div>
             <div
               style={{

@@ -1,8 +1,9 @@
 import React from "react";
-import MoneySummaryCard from "./components/MoneySummaryCard";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faClock } from "@fortawesome/free-solid-svg-icons";
+import moment from "moment";
 import EmptyState from "./components/EmptyState";
 import PaginationControls from "./components/PaginationControls";
-import moment from "moment";
 
 const ClaimingTab = ({
   amountData,
@@ -27,63 +28,64 @@ const ClaimingTab = ({
 
   return (
     <div>
-      {/* Summary card showing total claiming amount */}
-      <MoneySummaryCard
-        amount={amountData?.CLAIMING || 0}
-        currency={storeDetail?.firstCurrency}
-      />
-
-      <div style={{ height: 10 }} />
-
-      {/* Table for claiming payments */}
-      <div className="overflow-x-auto">
-        <table className="table table-hover">
-          <thead className="thead-light">
-            <tr>
-              <th className="text-start" scope="col">
+      <div className="overflow-x-auto mb-6">
+        <table className="w-full">
+          <thead className="bg-gray-50">
+            <tr className="text-sm font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+              <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                 {t("no")}
               </th>
-              <th className="text-center" scope="col">
-                {t("ລະຫັດເຄລມ")}
+              <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
+                {t("tableCode")}
               </th>
-              <th className="text-center" scope="col">
-                {t("ຈຳນວນບິນ")}
+              <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
+                {t("amount")}
               </th>
-              <th className="text-center" scope="col">
-                {t("ຈຳນວນເງິນ")}
+              <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
+                {t("status")}
               </th>
-              <th className="text-center" scope="col">
-                {t("ສະຖານະເຄລມ")}
-              </th>
-              <th className="text-center" scope="col">
+              <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
                 {t("date_time")}
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="bg-white divide-y divide-gray-200">
             {claimingData?.length > 0 ? (
               claimingData.map((item, index) => (
-                <tr key={index}>
-                  <td className="text-start">{startIndex + index + 1}</td>
-                  <td className="text-center">{item?.code ?? "-"}</td>
-                  <td className="text-center">
-                    {item?.billIds?.length ?? "-"}
+                <tr
+                  key={index}
+                  className="hover:bg-gray-50 transition-colors duration-150"
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {startIndex + index + 1}
                   </td>
-                  <td className="text-center text-green-500">
-                    {formatCurrency(item?.totalAmount, item?.currency)}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
+                    {item?.billNo ?? "-"}
                   </td>
-                  <td className="text-center text-yellow-500">
-                    {item.status === "CLAIMING" ? "ກຳລັງເຄລມ" : "-"}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-green-600">
+                    {formatCurrency(item?.totalPrice, item?.currency)}
                   </td>
-                  <td className="text-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      <FontAwesomeIcon icon={faClock} className="mr-1" />
+                      {t("claiming")}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
                     {item?.createdAt
-                      ? moment(item.createdAt).format("DD/MM/YYYY HH:mm a")
+                      ? moment(item.updatedAt).format("DD/MM/YYYY HH:mm a")
                       : "-"}
                   </td>
                 </tr>
               ))
             ) : (
-              <EmptyState />
+              <tr>
+                <td colSpan="7" className="px-6 py-4 text-center">
+                  <div className="flex justify-center items-center">
+                    <EmptyState />
+                  </div>
+                </td>
+              </tr>
             )}
           </tbody>
         </table>

@@ -1,6 +1,6 @@
 {
   "name": "admin.selfordering",
-  "version": "7.1.21",
+  "version": "7.1.22",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.16.0",
@@ -20,6 +20,11 @@
     "@material-ui/icons": "4.11.2",
     "@mui/material": "^5.11.8",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
+    "@radix-ui/react-alert-dialog": "^1.1.11",
+    "@radix-ui/react-dialog": "^1.1.11",
+    "@radix-ui/react-label": "^2.1.4",
+    "@radix-ui/react-separator": "^1.1.4",
+    "@radix-ui/react-slot": "^1.2.0",
     "@ramonak/react-progress-bar": "^5.2.0",
     "@svgr/webpack": "^5.5.0",
     "@syncfusion/ej2-calendars": "20.1.47",
@@ -150,7 +155,7 @@
     "sweetalert": "^2.1.2",
     "sweetalert2": "10.16.6",
     "swiper": "^11.2.2",
-    "tailwind-merge": "^2.5.5",
+    "tailwind-merge": "^2.6.0",
     "terser-webpack-plugin": "^5.2.5",
     "use-sound": "2.0.2",
     "uuidv4": "^6.2.13",

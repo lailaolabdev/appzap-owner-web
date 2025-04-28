@@ -1,5 +1,5 @@
 import jwtDecode from "jwt-decode";
-import { END_POINT_APP ,USERS_UPDATE } from "../constants/api";
+import { END_POINT_APP, USERS_UPDATE } from "../constants/api";
 import axios from "axios";
 import { errorAdd, successAdd } from "../helpers/sweetalert";
 
@@ -38,7 +38,6 @@ export const updateUser = async (billFarkId, data, token) => {
   }
 };
 
-
 export const createUser = async (body, token) => {
   try {
     const url = `${END_POINT_APP}/v3/user/create`;
@@ -58,9 +57,9 @@ export const userUpdate = async (userId, data, token) => {
     const url = `${USERS_UPDATE}?id=${userId}`;
     const res = await axios.put(
       url,
-      data,  // ไม่ต้องครอบ data: data
+      data, // ไม่ต้องครอบ data: data
       {
-        headers: token
+        headers: token,
       }
     );
     return res.data;
@@ -112,7 +111,7 @@ export const getUsersV5 = async (findby, token) => {
     const res = await axios.get(url, {
       headers: token,
     });
-    return res.data;
+    return res?.data;
   } catch (error) {
     console.log(error);
     return { error: true };
