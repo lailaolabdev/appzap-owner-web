@@ -52,7 +52,7 @@ const CLAIM_STATUSES = {
 const TabButton = ({ isSelected, onClick, icon, title }) => (
   <CustomButton
     variant={isSelected ? "primary" : "outline"}
-    className="px-5 py-2.5 rounded-lg border-2 border-[#FB6E3B]"
+    className="rounded-lg border-2 border-[#FB6E3B]"
     onClick={onClick}
   >
     <span className="flex gap-2 items-center">
@@ -113,12 +113,12 @@ export default function HistoryBankTransferClaim() {
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       const response = await axios.get(
-        `${END_POINT_SERVER_JUSTCAN}/v5/checkout-total-amount?storeId=${DATA?.storeId}`, // Ignore spellcheck: JUSTCAN
+        `${END_POINT_SERVER_JUSTCAN}/v6/checkout/amount/unclaimed?storeId=${DATA?.storeId}`, // Ignore spellcheck: JUSTCAN
         { signal: controller.signal }
       );
 
       clearTimeout(timeoutId);
-      setTotalAmountClaim(response?.data?.totalAmount);
+      setTotalAmountClaim(response?.data?.unclaimedAmount);
     } catch (err) {
       console.log("Error fetching claim amount data:", err.message);
     }
@@ -340,25 +340,39 @@ export default function HistoryBankTransferClaim() {
       return;
     }
 
-    if (!bankAccount.accountNumber || !bankAccount.accountName) {
-      errorAdd(t("please_set_bank_account"));
-      setOpenBankAccountForm(true);
-      return;
-    }
-
     try {
-      setIsLoading(true);
+      // Check if bank account exists
       const { TOKEN, DATA } = await getLocalData();
+      const response = await axios.get(
+        `${END_POINT_SERVER_JUSTCAN}/v5/earning/accounts?referenceId=${DATA?.storeId}&referenceType=STORE`,
+        { headers: TOKEN }
+      );
 
+      const bankAccounts = response.data.data;
+      if (!bankAccounts || bankAccounts.length === 0) {
+        errorAdd(t("please_add_bank_account_first"));
+        setOpenBankAccountForm(true);
+        return;
+      }
+
+      const defaultAccount =
+        bankAccounts.find((acc) => acc.isDefault) || bankAccounts[0];
+      if (!defaultAccount.accountNumber || !defaultAccount.accountName) {
+        errorAdd(t("please_add_bank_account_first"));
+        setOpenBankAccountForm(true);
+        return;
+      }
+
+      setIsLoading(true);
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      const response = await axios.post(
+      const claimResponse = await axios.post(
         `${END_POINT_SERVER_JUSTCAN}/v6/checkout/claim/create`,
         {
           payments: billIds,
-          bankAccount: bankAccount.accountNumber,
-          bankAccountName: bankAccount.accountName,
+          bankAccount: defaultAccount.accountNumber,
+          bankAccountName: defaultAccount.accountName,
           shopId: DATA?.storeId,
         },
         {
@@ -367,7 +381,7 @@ export default function HistoryBankTransferClaim() {
         }
       );
 
-      console.log("claim payment response:", response.data);
+      console.log("claim payment response:", claimResponse.data);
 
       clearTimeout(timeoutId);
 
@@ -645,35 +659,6 @@ export default function HistoryBankTransferClaim() {
             </div>
           )}
 
-          {/* Action Buttons */}
-          {selectedType === CLAIM_STATUSES.UNCLAIMED &&
-            selectedPayment.length > 0 && (
-              <div className="p-6 border-b border-gray-100">
-                <div className="flex flex-wrap gap-2 justify-end">
-                  <Button
-                    variant="primary"
-                    className="px-5 py-2.5"
-                    onClick={() => setOpenSelectClaim(true)}
-                  >
-                    <span className="flex gap-2 items-center">
-                      <FontAwesomeIcon icon={faListAlt} />
-                      {t("claim_selected")}
-                    </span>
-                  </Button>
-                  <Button
-                    variant="primary"
-                    className="px-5 py-2.5"
-                    onClick={() => setOpenConfirm(true)}
-                  >
-                    <span className="flex gap-2 items-center">
-                      <FontAwesomeIcon icon={faListAlt} />
-                      {t("claim_all")}
-                    </span>
-                  </Button>
-                </div>
-              </div>
-            )}
-
           {/* Table Content */}
           <div className="p-6 pt-4 overflow-x-auto">
             {selectedType === CLAIM_STATUSES.UNCLAIMED && (
@@ -802,9 +787,6 @@ export default function HistoryBankTransferClaim() {
         header={"ເຄລມເງິນລາຍການທີ່ເລືອກ"}
         content={
           <div className="flex flex-col items-center text-lg">
-            <div className="text-gray-600 mb-1">
-              {t("total_amount_to_claim")}
-            </div>
             <div className="text-color-app text-2xl font-bold">
               {selectedPayment
                 .reduce((total, payment) => total + payment.totalAmount, 0)

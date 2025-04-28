@@ -1354,7 +1354,11 @@
   "discount_items": "ລາຍການເມນູສ່ວນຫຼຸດ",
   "discount_amounts": "ຈຳນວນທີ່ຫຼຸດ",
   "bank_accounts": "ບັນຊີທະນາຄານ",
+  "bank_account_added": "ເພີ່ມບັນຊີທະນາຄານແລ້ວ",
   "total_transactions": "ຈຳນວນການຊຳລະທັງໝົດ",
   "bank_account_number": "ເລກບັນຊີທະນາຄານ",
-  "bank_account_name": "ຊື່ບັນຊີທະນາຄານ"
+  "bank_account_name": "ຊື່ບັນຊີທະນາຄານ",
+  "enter_bank_account_number": "ປ້ອນເລກບັນຊີທະນາຄານ",
+  "enter_bank_account_name": "ປ້ອນຊື່ບັນຊີທະນາຄານ",
+  "please_add_bank_account_first": "ກະລຸນາເພີ່ມບັນຊີທະນາຄານກ່ອນ"
 }

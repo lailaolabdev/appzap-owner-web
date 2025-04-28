@@ -1241,7 +1241,11 @@
   "description_counter_access": "เคาน์เตอร์สามารถเข้าถึงได้เพื่อการจัดการ.",
   "choose_employee" : "เลือกพนักงาน",
   "bank_accounts": "บัญชีธนาคาร",
+  "bank_account_added": "บัญชีธนาคารถูกเพิ่มแล้ว",
   "total_transactions": "จำนวนการทำธุรกรรม",
   "bank_account_number": "หมายเลขบัญชีธนาคาร",
-  "bank_account_name": "ชื่อบัญชีธนาคาร"
+  "bank_account_name": "ชื่อบัญชีธนาคาร",
+  "enter_bank_account_number": "กรอกหมายเลขบัญชีธนาคาร...",
+  "enter_bank_account_name": "กรอกชื่อบัญชีธนาคาร...",
+  "please_add_bank_account_first": "กรุณาเพิ่มบัญชีธนาคารก่อน"
 }

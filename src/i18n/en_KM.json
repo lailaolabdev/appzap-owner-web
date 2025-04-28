@@ -1235,7 +1235,11 @@
   "description_counter_access": "តុគិតលុយអាចចូលដំណើរការសម្រាប់ការគ្រប់គ្រង។",
   "choose_employee" : "ជ្រើសរើសបុគ្គលិក",
   "bank_accounts": "គណនីធនាគារ",
+  "bank_account_added": "គណនីធនាគារដែលបានបន្ថែម",
   "total_transactions": "ចំនួនការងារសហការ",
   "bank_account_number": "លេខគណនីធនាគារ",
-  "bank_account_name": "ឈ្មោះគណនីធនាគារ"
+  "bank_account_name": "ឈ្មោះគណនីធនាគារ",
+  "enter_bank_account_number": "បញ្ចូលលេខគណនីធនាគារ",
+  "enter_bank_account_name": "បញ្ចូលឈ្មោះគណនីធនាគារ",
+  "please_add_bank_account_first": "សូមបន្ថែមគណនីធនាគារដំបូង"
 }

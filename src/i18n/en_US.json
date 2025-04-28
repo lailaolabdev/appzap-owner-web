@@ -1354,7 +1354,11 @@
   "choose_employee" : "Choose employee",
   "upload_qr_code": "Upload Qr Code",
   "bank_accounts": "Bank Accounts",
+  "bank_account_added": "Bank Account Added",
   "total_transactions": "Total Transactions",
   "bank_account_number": "Bank Account Number",
-  "bank_account_name": "Bank Account Name"
+  "bank_account_name": "Bank Account Name",
+  "enter_bank_account_number": "Enter Bank Account Number",
+  "enter_bank_account_name": "Enter Bank Account Name",
+  "please_add_bank_account_first": "Please add a bank account first"
 }
