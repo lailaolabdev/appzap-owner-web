@@ -44,6 +44,9 @@ export default function BillForCheckOut80({
   );
 
   const { SelectedDataBill } = usePaymentStore();
+
+  console.log("SelectedDataBill", SelectedDataBill);
+
   const { selectUserEmployee } = useUserStore();
 
   // Replace the current useRef and console.log
@@ -412,7 +415,13 @@ export default function BillForCheckOut80({
             </div>
           </Col>
           <Col>
-            <div style={{ textAlign: "right" }}>{moneyCurrency(total)}</div>
+            {SelectedDataBill?.pointRecived > 0 ? (
+              <div style={{ textAlign: "right" }}>
+                {moneyCurrency(total - SelectedDataBill?.pointRecived)}
+              </div>
+            ) : (
+              <div style={{ textAlign: "right" }}>{moneyCurrency(total)}</div>
+            )}
           </Col>
         </Row>
         <Row>
@@ -438,7 +447,7 @@ export default function BillForCheckOut80({
                 </Col>
                 <Col>
                   <div style={{ textAlign: "right" }}>
-                    {storeDetail?.point ? storeDetail?.point : 0}
+                    {storeDetail?.point ? moneyCurrency(storeDetail?.point) : 0}
                   </div>
                 </Col>
                 {/* <Col xs={7}>
