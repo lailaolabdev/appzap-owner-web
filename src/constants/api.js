@@ -41,8 +41,8 @@ const dev_bunsi = "http://localhost:7777";
 export const END_POINT_SERVER_BUNSI = isProduction
   ? production_bunsi
   : dev_bunsi;
-export const END_POINT_SERVER_JUSTCAN = "http://localhost:7070";
-// export const END_POINT_SERVER_JUSTCAN = "https://app-api.appzap.la/app";
+// export const END_POINT_SERVER_JUSTCAN = "http://localhost:7070";
+export const END_POINT_SERVER_JUSTCAN = "https://app-api.appzap.la/app";
 
 // ------------EXPORT END POINT--------------
 const production_export = "https://api.appzap.la";

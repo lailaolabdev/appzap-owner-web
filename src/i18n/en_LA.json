@@ -1355,10 +1355,15 @@
   "discount_amounts": "ຈຳນວນທີ່ຫຼຸດ",
   "bank_accounts": "ບັນຊີທະນາຄານ",
   "bank_account_added": "ເພີ່ມບັນຊີທະນາຄານແລ້ວ",
-  "total_transactions": "ຈຳນວນການຊຳລະທັງໝົດ",
+  "total_transactions": "ຈຳນວນລາຍການ",
   "bank_account_number": "ເລກບັນຊີທະນາຄານ",
   "bank_account_name": "ຊື່ບັນຊີທະນາຄານ",
   "enter_bank_account_number": "ປ້ອນເລກບັນຊີທະນາຄານ",
   "enter_bank_account_name": "ປ້ອນຊື່ບັນຊີທະນາຄານ",
-  "please_add_bank_account_first": "ກະລຸນາເພີ່ມບັນຊີທະນາຄານກ່ອນ"
+  "please_add_bank_account_first": "ກະລຸນາເພີ່ມບັນຊີທະນາຄານກ່ອນ",
+  "claim_management": "ຈັດການເຄລມເງິນ",
+  "rejection_reason": "ເຫດຜົນທີ່ປະຕິເສດ",
+  "claiming": "ກຳລັງຂໍເຄລມ",
+  "approved": "ອະນຸມັດແລ້ວ",
+  "rejected": "ຖືກປະຕິເສດ"
 }

@@ -1,14 +1,15 @@
 import React from "react";
+import { Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import EmptyState from "./components/EmptyState";
 import PaginationControls from "./components/PaginationControls";
 
-const ClaimedTab = ({
+const RejectedTab = ({
   amountData,
   storeDetail,
-  claimedData,
+  rejectedData,
   totalPageCount,
   currentPage,
   onPageChange,
@@ -45,13 +46,16 @@ const ClaimedTab = ({
                 {t("status")}
               </th>
               <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
+                {t("rejection_reason")}
+              </th>
+              <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
                 {t("date_time")}
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {claimedData?.length > 0 ? (
-              claimedData.map((item, index) => (
+            {rejectedData?.length > 0 ? (
+              rejectedData.map((item, index) => (
                 <tr
                   key={index}
                   className="hover:bg-gray-50 transition-colors duration-150"
@@ -66,10 +70,13 @@ const ClaimedTab = ({
                     {formatCurrency(item?.totalPrice, item?.currency)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      <FontAwesomeIcon icon={faCheckCircle} className="mr-1" />
-                      {t("approved")}
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                      <FontAwesomeIcon icon={faTimesCircle} className="mr-1" />
+                      {t("rejected")}
                     </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-start text-red-600">
+                    {item?.rejectedReason || t("no_reason_provided")}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
                     {item?.createdAt
@@ -104,4 +111,4 @@ const ClaimedTab = ({
   );
 };
 
-export default ClaimedTab;
+export default RejectedTab;

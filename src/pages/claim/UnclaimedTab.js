@@ -1,12 +1,13 @@
 import React from "react";
 import { Form } from "react-bootstrap";
-import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
-import MoneySummaryCard from "./components/MoneySummaryCard";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
+import moment from "moment";
 import EmptyState from "./components/EmptyState";
 import PaginationControls from "./components/PaginationControls";
 import { Button as CustomButton } from "../../components/ui/Button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import moment from "moment";
+import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import { cn } from "../../utils/cn";
 
 const UnclaimedTab = ({
   amountData,
@@ -47,12 +48,6 @@ const UnclaimedTab = ({
 
   return (
     <div>
-      {/* Summary card showing total unclaimed amount */}
-      {/* <MoneySummaryCard
-        amount={amountData?.UNCLAIMED || 0}
-        currency={storeDetail?.firstCurrency}
-      /> */}
-
       <div>
         <div className="flex justify-end flex-wrap gap-3 mb-3">
           <div className="flex gap-2">
@@ -88,7 +83,6 @@ const UnclaimedTab = ({
         </div>
       </div>
 
-      {/* Table for unclaimed payments */}
       <div className="overflow-x-auto mb-6">
         <table className="w-full">
           <thead className="bg-gray-50">
@@ -114,9 +108,6 @@ const UnclaimedTab = ({
               </th>
               <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
                 {t("status")}
-              </th>
-              <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
-                {"ສະຖານະເຄລມ"}
               </th>
               <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
                 {t("date_time")}
@@ -157,13 +148,20 @@ const UnclaimedTab = ({
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-green-600">
                       {formatCurrency(item?.totalAmount, item?.currency)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-green-600">
-                      {item?.isPaidConfirm
-                        ? "ຢືນຢັນແລ້ວ"
-                        : t(item.status) ?? "-"}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-red-600">
-                      {item.claimStatus === "UNCLAIMED" ? "ຍັງບໍ່ຂໍເຄລມ" : "-"}
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                      <span
+                        className={cn(
+                          "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
+                          item?.isPaidConfirm
+                            ? "text-green-800 bg-green-100"
+                            : "text-blue-800 bg-blue-100"
+                        )}
+                      >
+                        <FontAwesomeIcon icon={faCreditCard} className="mr-1" />
+                        {item?.isPaidConfirm
+                          ? "ຢືນຢັນແລ້ວ"
+                          : t(item.status) ?? "-"}
+                      </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
                       {item?.createdAt

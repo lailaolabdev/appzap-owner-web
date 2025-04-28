@@ -1360,5 +1360,10 @@
   "bank_account_name": "Bank Account Name",
   "enter_bank_account_number": "Enter Bank Account Number",
   "enter_bank_account_name": "Enter Bank Account Name",
-  "please_add_bank_account_first": "Please add a bank account first"
+  "please_add_bank_account_first": "Please add a bank account first",
+  "claim_management": "Claim Management",
+  "rejection_reason": "Rejection Reason",
+  "claiming": "Claiming",
+  "approved": "Approved",
+  "rejected": "Rejected"
 }

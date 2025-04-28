@@ -1241,5 +1241,7 @@
   "bank_account_name": "ឈ្មោះគណនីធនាគារ",
   "enter_bank_account_number": "បញ្ចូលលេខគណនីធនាគារ",
   "enter_bank_account_name": "បញ្ចូលឈ្មោះគណនីធនាគារ",
-  "please_add_bank_account_first": "សូមបន្ថែមគណនីធនាគារដំបូង"
+  "please_add_bank_account_first": "សូមបន្ថែមគណនីធនាគារដំបូង",
+  "claim_management": "គ្រប់គ្រងការកត់ត្រាបំណុល",
+  "rejection_reason": "មូលហេតុបដិសេធ"
 }

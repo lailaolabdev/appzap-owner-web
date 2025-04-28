@@ -1247,5 +1247,7 @@
   "bank_account_name": "ชื่อบัญชีธนาคาร",
   "enter_bank_account_number": "กรอกหมายเลขบัญชีธนาคาร...",
   "enter_bank_account_name": "กรอกชื่อบัญชีธนาคาร...",
-  "please_add_bank_account_first": "กรุณาเพิ่มบัญชีธนาคารก่อน"
+  "please_add_bank_account_first": "กรุณาเพิ่มบัญชีธนาคารก่อน",
+  "claim_management": "จัดการคำขอเบิกเงิน",
+  "rejection_reason": "เหตุผลในการปฏิเสธ"
 }

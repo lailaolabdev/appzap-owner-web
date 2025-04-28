@@ -9,7 +9,15 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // Icons
-import { faListAlt, faTable, faCoins } from "@fortawesome/free-solid-svg-icons";
+import {
+  faListAlt,
+  faTable,
+  faCoins,
+  faClock,
+  faCheckCircle,
+  faTimesCircle,
+  faCreditCard,
+} from "@fortawesome/free-solid-svg-icons";
 
 // Constants, services and helpers
 import { END_POINT_SERVER_JUSTCAN, getLocalData } from "../../constants/api"; // Ignore spellcheck: JUSTCAN
@@ -29,6 +37,7 @@ import Loading from "../../components/Loading";
 import UnclaimedTab from "./UnclaimedTab";
 import ClaimingTab from "./ClaimingTab";
 import ClaimedTab from "./ClaimedTab";
+import RejectedTab from "./RejectedTab";
 import ConfirmPopUp from "./components/ConfirmPopUp";
 import CheckBillTab from "./CheckBillTab";
 import {
@@ -40,13 +49,13 @@ import {
 } from "../../components/ui/Dialog";
 import { Input } from "../../components/ui/Input";
 import { Button as CustomButton } from "../../components/ui/Button";
-import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 
 // Constants for claim statuses
 const CLAIM_STATUSES = {
   UNCLAIMED: "UNCLAIMED",
   CLAIMING: "CLAIMING",
   CLAIMED: "CLAIMED",
+  REJECTED: "REJECTED",
 };
 
 const TabButton = ({ isSelected, onClick, icon, title }) => (
@@ -75,11 +84,13 @@ export default function HistoryBankTransferClaim() {
     [CLAIM_STATUSES.UNCLAIMED]: [],
     [CLAIM_STATUSES.CLAIMING]: [],
     [CLAIM_STATUSES.CLAIMED]: [],
+    [CLAIM_STATUSES.REJECTED]: [],
   });
   const [amountData, setAmountData] = useState({
     [CLAIM_STATUSES.UNCLAIMED]: 0,
     [CLAIM_STATUSES.CLAIMING]: 0,
     [CLAIM_STATUSES.CLAIMED]: 0,
+    [CLAIM_STATUSES.REJECTED]: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
@@ -92,6 +103,7 @@ export default function HistoryBankTransferClaim() {
     [CLAIM_STATUSES.UNCLAIMED]: 0,
     [CLAIM_STATUSES.CLAIMING]: 0,
     [CLAIM_STATUSES.CLAIMED]: 0,
+    [CLAIM_STATUSES.REJECTED]: 0,
   });
 
   const { setTotalAmountClaim } = useClaimDataStore();
@@ -148,8 +160,6 @@ export default function HistoryBankTransferClaim() {
     }
   };
 
-  console.log("bankAccount", bankAccount);
-
   const fetchData = async (type, page, loading = true) => {
     try {
       if (loading) setIsLoading(true);
@@ -174,6 +184,11 @@ export default function HistoryBankTransferClaim() {
         [CLAIM_STATUSES.CLAIMED]: `${END_POINT_SERVER_JUSTCAN}/v6/checkout/claims?storeId=${
           DATA?.storeId
         }&status=APPROVED&skip=${
+          (page - 1) * rowsPerPage
+        }&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
+        [CLAIM_STATUSES.REJECTED]: `${END_POINT_SERVER_JUSTCAN}/v6/checkout/claims?storeId=${
+          DATA?.storeId
+        }&status=REJECTED&skip=${
           (page - 1) * rowsPerPage
         }&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
       };
@@ -537,6 +552,7 @@ export default function HistoryBankTransferClaim() {
     [CLAIM_STATUSES.UNCLAIMED]: claimData[CLAIM_STATUSES.UNCLAIMED] || [],
     [CLAIM_STATUSES.CLAIMING]: claimData[CLAIM_STATUSES.CLAIMING] || [],
     [CLAIM_STATUSES.CLAIMED]: claimData[CLAIM_STATUSES.CLAIMED] || [],
+    [CLAIM_STATUSES.REJECTED]: claimData[CLAIM_STATUSES.REJECTED] || [],
   };
 
   return (
@@ -547,7 +563,7 @@ export default function HistoryBankTransferClaim() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center py-3 gap-4">
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold text-gray-800">
-                {t("bank_transfer_claims")}
+                {t("claim_management")}
               </h1>
             </div>
             <CustomButton
@@ -619,8 +635,8 @@ export default function HistoryBankTransferClaim() {
                   setSelectedType(CLAIM_STATUSES.UNCLAIMED);
                   setCurrentPage(1);
                 }}
-                icon={faListAlt}
-                title="ລາຍການທີ່ບໍ່ສຳເລັດ"
+                icon={faCreditCard}
+                title="ລາຍການຊຳລະ"
               />
               <TabButton
                 isSelected={selectedType === CLAIM_STATUSES.CLAIMING}
@@ -628,8 +644,8 @@ export default function HistoryBankTransferClaim() {
                   setSelectedType(CLAIM_STATUSES.CLAIMING);
                   setCurrentPage(1);
                 }}
-                icon={faListAlt}
-                title="ລາຍການກຳລັງເຄລມ"
+                icon={faClock}
+                title="ລາຍການທີ່ກຳລັງເຄລມ"
               />
               <TabButton
                 isSelected={selectedType === CLAIM_STATUSES.CLAIMED}
@@ -637,17 +653,17 @@ export default function HistoryBankTransferClaim() {
                   setSelectedType(CLAIM_STATUSES.CLAIMED);
                   setCurrentPage(1);
                 }}
-                icon={faTable}
-                title="ລາຍການເຄລມເງິນ"
+                icon={faCheckCircle}
+                title="ລາຍການທີ່ເຄລມແລ້ວ"
               />
               <TabButton
-                isSelected={selectedType === "bill-checkout"}
+                isSelected={selectedType === CLAIM_STATUSES.REJECTED}
                 onClick={() => {
-                  setSelectedType("bill-checkout");
+                  setSelectedType(CLAIM_STATUSES.REJECTED);
                   setCurrentPage(1);
                 }}
-                icon={faTable}
-                title="ປະຫວັດການຊຳລະ"
+                icon={faTimesCircle}
+                title="ລາຍການທີ່ຖືກປະຕິເສດ"
               />
             </div>
           </div>
@@ -707,12 +723,12 @@ export default function HistoryBankTransferClaim() {
                 t={t}
               />
             )}
-            {selectedType === "bill-checkout" && (
-              <CheckBillTab
+            {selectedType === CLAIM_STATUSES.REJECTED && (
+              <RejectedTab
                 amountData={amountData}
                 storeDetail={storeDetail}
-                claimedData={tabData[CLAIM_STATUSES.CLAIMED]}
-                totalPageCount={calculateTotalPages(CLAIM_STATUSES.CLAIMED)}
+                rejectedData={tabData[CLAIM_STATUSES.REJECTED]}
+                totalPageCount={calculateTotalPages(CLAIM_STATUSES.REJECTED)}
                 currentPage={currentPage}
                 onPageChange={setCurrentPage}
                 rowsPerPage={rowsPerPage}
