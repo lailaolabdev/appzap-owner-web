@@ -174,16 +174,16 @@ export default function CheckOutPopup({
   };
 
   // console.log({ dataBill });
-  useEffect(() => {
-    setMemberData();
-    if (textSearchMember.length > 0) {
-      handleSearchOne();
-    }
-  }, [textSearchMember]);
+  // useEffect(() => {
+  //   setMemberData();
+  //   if (textSearchMember.length > 0) {
+  //     handleSearchOne();
+  //   }
+  // }, [textSearchMember]);
 
-  const handleSearchOne = async () => {
+  const handleSearchOne = async (searchTerm) => {
     try {
-      const url = `${END_POINT_SEVER_TABLE_MENU}/v6/members/search-one?phone=${textSearchMember}`;
+      const url = `${END_POINT_SEVER_TABLE_MENU}/v6/members/search-one?phone=${searchTerm}`;
       const _header = await getHeaders();
       const _res = await axios.get(url, { headers: _header });
       if (!_res.data) throw new Error("Empty!");
@@ -264,7 +264,8 @@ export default function CheckOutPopup({
 
     const cashAmount = Number.parseFloat(cash) || 0;
     const transferAmount = Number.parseFloat(transfer) || 0;
-    const totalReceived = cashAmount + transferAmount;
+    const pointAmount = Number.parseFloat(point) || 0;
+    const totalReceived = cashAmount + transferAmount + pointAmount;
 
     moneyReceived =
       selectCurrency?.name === "LAK"
@@ -496,6 +497,7 @@ export default function CheckOutPopup({
       billId: dataBill?._id,
       storeId: storeDetail?._id,
       memberId: memberData?._id,
+      pointDateExpirt: datePointExpirt,
     };
     return await PointUser(data);
   };
@@ -871,8 +873,9 @@ export default function CheckOutPopup({
     };
   });
 
-  const handleSearchInput = (option) => {
+  const handleSearchInput = async (option) => {
     setTextSearchMember(option.value);
+    await handleSearchOne(option.value);
   };
 
   useEffect(() => {
@@ -1154,16 +1157,19 @@ export default function CheckOutPopup({
                       <div className="flex flex-1 justify-start dmd:justify-end">
                         <div className="box-name">
                           <InputGroup.Text>
-                            {t("name")}: {dataBill?.Name ? dataBill?.Name : ""}
+                            {t("name")}:{" "}
+                            {SelectedDataBill?.Name
+                              ? SelectedDataBill?.Name
+                              : ""}
                           </InputGroup.Text>
                         </div>
                         <div className="box-name">
                           <InputGroup.Text>
                             {t("point")}:{" "}
                             {point
-                              ? convertNumber(dataBill?.Point - point)
-                              : convertNumber(dataBill?.Point)
-                              ? convertNumber(dataBill?.Point)
+                              ? convertNumber(SelectedDataBill?.Point - point)
+                              : convertNumber(SelectedDataBill?.Point)
+                              ? convertNumber(SelectedDataBill?.Point)
                               : "0"}
                           </InputGroup.Text>
                         </div>
@@ -1174,15 +1180,14 @@ export default function CheckOutPopup({
                         <InputGroup.Text>{t("point")}</InputGroup.Text>
                         <input
                           disabled={
-                            dataBill?.Point <= 0 ||
-                            !dataBill?.Name ||
-                            !dataBill?.Point ||
-                            dataBill?.Point <= point ||
-                            (dataBill?.ExpireDateForPoint &&
-                              moment(dataBill.ExpireDateForPoint).isBefore(
-                                moment(),
-                                "day"
-                              )) // Disable if expired
+                            SelectedDataBill?.Point <= 0 ||
+                            !SelectedDataBill?.Name ||
+                            !SelectedDataBill?.Point ||
+                            SelectedDataBill?.Point <= point ||
+                            (SelectedDataBill?.ExpireDateForPoint &&
+                              moment(
+                                SelectedDataBill.ExpireDateForPoint
+                              ).isBefore(moment(), "day")) // Disable if expired
                           }
                           type="text"
                           placeholder="0"
@@ -1197,19 +1202,21 @@ export default function CheckOutPopup({
                           className="w-[320px] text-[20px] h-[45px] p-2 border rounded-r-lg focus:outline-none"
                         />
                       </InputGroup>
-                      {dataBill?.ExpireDateForPoint && (
+                      {SelectedDataBill?.ExpireDateForPoint && (
                         <div className="w-[250px]">
                           <span className="text-[18px] font-bold">
                             {t("expire_date_debt")}:{" "}
-                            {dataBill?.ExpireDateForPoint &&
-                            moment(dataBill.ExpireDateForPoint).isValid()
-                              ? moment(dataBill.ExpireDateForPoint).format(
-                                  "DD-MM-YYYY"
-                                )
+                            {SelectedDataBill?.ExpireDateForPoint &&
+                            moment(
+                              SelectedDataBill.ExpireDateForPoint
+                            ).isValid()
+                              ? moment(
+                                  SelectedDataBill.ExpireDateForPoint
+                                ).format("DD-MM-YYYY")
                               : "-"}
                           </span>
                           <br />
-                          {CountDateExpire(dataBill.ExpireDateForPoint)}
+                          {CountDateExpire(SelectedDataBill.ExpireDateForPoint)}
                         </div>
                       )}
                     </div>
@@ -1255,9 +1262,9 @@ export default function CheckOutPopup({
                         <InputGroup.Text>
                           {t("point")}:{" "}
                           {point
-                            ? dataBill?.Point - point
-                            : dataBill?.Point
-                            ? dataBill?.Point
+                            ? convertNumber(dataBill?.Point - point)
+                            : convertNumber(dataBill?.Point)
+                            ? convertNumber(dataBill?.Point)
                             : "0"}
                         </InputGroup.Text>
                       </div>
@@ -1398,6 +1405,7 @@ export default function CheckOutPopup({
                       setTab("cash");
                       setSelectInput("inputCash");
                       setForcus("CASH");
+                      clearSelectedDataBill();
                     }}
                   >
                     {t("cash")}
@@ -1418,6 +1426,7 @@ export default function CheckOutPopup({
                       setTransfer(transferCal);
                       setTab("transfer");
                       setForcus("TRANSFER");
+                      clearSelectedDataBill();
                     }}
                   >
                     {t("transfer")}
@@ -1457,6 +1466,7 @@ export default function CheckOutPopup({
                       setTab("cash_transfer");
                       setSelectInput("inputCash");
                       setForcus("TRANSFER_CASH");
+                      clearSelectedDataBill();
                     }}
                   >
                     {t("cash_transfer")}
@@ -1481,6 +1491,7 @@ export default function CheckOutPopup({
                         setTab("cash_transfer_point");
                         setSelectInput("inputCash");
                         setForcus("CASH_TRANSFER_POINT");
+                        clearSelectedDataBill();
                       }}
                     >
                       {t("transfercashpoint")}

@@ -32,6 +32,12 @@ export const usePaymentStore = create(
             moneyReceived: 0,
             moneyChange: 0,
             paymentMethod: "OTHER",
+            memberId: "",
+            memberPhone: "",
+            memberName: "",
+            Name: "",
+            Point: 0,
+            ExpireDateForPoint: "",
           },
         });
       },
