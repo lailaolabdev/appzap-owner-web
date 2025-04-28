@@ -95,11 +95,9 @@ export default function NavBar() {
     try {
       const { DATA } = await getLocalData();
       const _res = await axios.get(
-        `${END_POINT_SERVER_JUSTCAN}/v5/checkout-total-amount?storeId=${DATA?.storeId}`
+        `${END_POINT_SERVER_JUSTCAN}/v6/checkout/amount/unclaimed?storeId=${DATA?.storeId}`
       );
-      console.log("_res.data");
-      console.log(_res.data);
-      setTotalAmountClaim(_res?.data?.totalAmount);
+      setTotalAmountClaim(_res?.data?.unclaimedAmount);
     } catch (err) {
       console.log(err);
     }

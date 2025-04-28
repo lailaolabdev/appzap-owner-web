@@ -9,7 +9,15 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 // Icons
-import { faListAlt, faTable } from "@fortawesome/free-solid-svg-icons";
+import {
+  faListAlt,
+  faTable,
+  faCoins,
+  faClock,
+  faCheckCircle,
+  faTimesCircle,
+  faCreditCard,
+} from "@fortawesome/free-solid-svg-icons";
 
 // Constants, services and helpers
 import { END_POINT_SERVER_JUSTCAN, getLocalData } from "../../constants/api"; // Ignore spellcheck: JUSTCAN
@@ -29,44 +37,60 @@ import Loading from "../../components/Loading";
 import UnclaimedTab from "./UnclaimedTab";
 import ClaimingTab from "./ClaimingTab";
 import ClaimedTab from "./ClaimedTab";
+import RejectedTab from "./RejectedTab";
 import ConfirmPopUp from "./components/ConfirmPopUp";
 import CheckBillTab from "./CheckBillTab";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "../../components/ui/Dialog";
+import { Input } from "../../components/ui/Input";
+import { Button as CustomButton } from "../../components/ui/Button";
 
 // Constants for claim statuses
 const CLAIM_STATUSES = {
   UNCLAIMED: "UNCLAIMED",
   CLAIMING: "CLAIMING",
   CLAIMED: "CLAIMED",
+  REJECTED: "REJECTED",
 };
 
 const TabButton = ({ isSelected, onClick, icon, title }) => (
-  <Button
-    className="menu-report-stocks"
-    style={{
-      background: isSelected ? COLOR_APP : "white",
-      color: isSelected ? "white" : COLOR_APP,
-    }}
+  <CustomButton
+    variant={isSelected ? "primary" : "outline"}
+    className="rounded-lg border-2 border-[#FB6E3B]"
     onClick={onClick}
   >
     <span className="flex gap-2 items-center">
-      <FontAwesomeIcon icon={icon} /> {title}
+      <FontAwesomeIcon icon={icon} className="text-lg" />
+      <span className="text-sm md:text-base">{title}</span>
     </span>
-  </Button>
+  </CustomButton>
 );
 
 export default function HistoryBankTransferClaim() {
   const { t } = useTranslation();
   const [selectedType, setSelectedType] = useState(CLAIM_STATUSES.UNCLAIMED);
   const [selectedPayment, setSelectedPayment] = useState([]);
+  const [bankAccount, setBankAccount] = useState({
+    accountNumber: "",
+    accountName: "",
+  });
+  const [openBankAccountForm, setOpenBankAccountForm] = useState(false);
   const [claimData, setClaimData] = useState({
     [CLAIM_STATUSES.UNCLAIMED]: [],
     [CLAIM_STATUSES.CLAIMING]: [],
     [CLAIM_STATUSES.CLAIMED]: [],
+    [CLAIM_STATUSES.REJECTED]: [],
   });
   const [amountData, setAmountData] = useState({
     [CLAIM_STATUSES.UNCLAIMED]: 0,
     [CLAIM_STATUSES.CLAIMING]: 0,
     [CLAIM_STATUSES.CLAIMED]: 0,
+    [CLAIM_STATUSES.REJECTED]: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
@@ -79,6 +103,7 @@ export default function HistoryBankTransferClaim() {
     [CLAIM_STATUSES.UNCLAIMED]: 0,
     [CLAIM_STATUSES.CLAIMING]: 0,
     [CLAIM_STATUSES.CLAIMED]: 0,
+    [CLAIM_STATUSES.REJECTED]: 0,
   });
 
   const { setTotalAmountClaim } = useClaimDataStore();
@@ -89,6 +114,7 @@ export default function HistoryBankTransferClaim() {
   useEffect(() => {
     fetchData(selectedType, currentPage);
     getClaimAmountData();
+    loadBankAccountInfo();
   }, [selectedType, currentPage]);
 
   const getClaimAmountData = async () => {
@@ -99,14 +125,38 @@ export default function HistoryBankTransferClaim() {
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       const response = await axios.get(
-        `${END_POINT_SERVER_JUSTCAN}/v5/checkout-total-amount?storeId=${DATA?.storeId}`, // Ignore spellcheck: JUSTCAN
+        `${END_POINT_SERVER_JUSTCAN}/v6/checkout/amount/unclaimed?storeId=${DATA?.storeId}`, // Ignore spellcheck: JUSTCAN
         { signal: controller.signal }
       );
 
       clearTimeout(timeoutId);
-      setTotalAmountClaim(response?.data?.totalAmount);
+      setTotalAmountClaim(response?.data?.unclaimedAmount);
     } catch (err) {
       console.log("Error fetching claim amount data:", err.message);
+    }
+  };
+
+  const loadBankAccountInfo = async () => {
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+
+      // Get bank accounts with correct filter parameters
+      const response = await axios.get(
+        `${END_POINT_SERVER_JUSTCAN}/v5/earning/accounts?referenceId=${DATA?.storeId}&referenceType=STORE`,
+        { headers: TOKEN }
+      );
+
+      const bankAccounts = response.data.data; // Access the data array from the response
+      if (bankAccounts?.length > 0) {
+        const defaultAccount =
+          bankAccounts.find((acc) => acc.isDefault) || bankAccounts[0];
+        setBankAccount({
+          accountNumber: defaultAccount.accountNumber || "",
+          accountName: defaultAccount.accountName || "",
+        });
+      }
+    } catch (error) {
+      console.error("Error loading bank account info:", error);
     }
   };
 
@@ -121,19 +171,26 @@ export default function HistoryBankTransferClaim() {
 
       // Map claim types to API endpoints
       const endpoints = {
-        [CLAIM_STATUSES.UNCLAIMED]: `${END_POINT_SERVER_JUSTCAN}/v5/checkouts?storeId=${
+        [CLAIM_STATUSES.UNCLAIMED]: `${END_POINT_SERVER_JUSTCAN}/v6/checkouts?storeId=${
           DATA?.storeId
-        }&claimStatus=UNCLAIMED&paymentMethod=BANK_TRANSFER&status=PAID&skip=${
+        }&status=PAYMENT_COMPLETED&startPrice=1&endPrice=100000000&skip=${
           (page - 1) * rowsPerPage
         }&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
-        [CLAIM_STATUSES.CLAIMING]: `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${
+        [CLAIM_STATUSES.CLAIMING]: `${END_POINT_SERVER_JUSTCAN}/v6/checkout/claims?storeId=${
           DATA?.storeId
-        }&status=CLAIMING&skip=${
+        }&status=REQUESTING&skip=${
           (page - 1) * rowsPerPage
         }&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
-        [CLAIM_STATUSES.CLAIMED]: `${END_POINT_SERVER_JUSTCAN}/v5/claim-payments?storeId=${
+        [CLAIM_STATUSES.CLAIMED]: `${END_POINT_SERVER_JUSTCAN}/v6/checkout/claims?storeId=${
           DATA?.storeId
-        }&status=CLAIMED&skip=${(page - 1) * rowsPerPage}&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
+        }&status=APPROVED&skip=${
+          (page - 1) * rowsPerPage
+        }&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
+        [CLAIM_STATUSES.REJECTED]: `${END_POINT_SERVER_JUSTCAN}/v6/checkout/claims?storeId=${
+          DATA?.storeId
+        }&status=REJECTED&skip=${
+          (page - 1) * rowsPerPage
+        }&limit=${rowsPerPage}`, // Ignore spellcheck: JUSTCAN
       };
 
       const apiUrl = endpoints[type];
@@ -146,6 +203,8 @@ export default function HistoryBankTransferClaim() {
         headers: TOKEN,
         signal: controller.signal,
       });
+
+      console.log("Response data:", response.data);
 
       clearTimeout(timeoutId);
 
@@ -209,35 +268,135 @@ export default function HistoryBankTransferClaim() {
     return selectedPayment.some((x) => x._id === payment._id);
   };
 
+  const handleBankAccountSubmit = async () => {
+    try {
+      setIsLoading(true);
+      const { TOKEN, DATA } = await getLocalData();
+
+      // First check if earnings record exists
+      const earningsResponse = await axios.get(
+        `${END_POINT_SERVER_JUSTCAN}/v5/earnings?referenceId=${DATA?.storeId}&referenceType=STORE`,
+        { headers: TOKEN }
+      );
+
+      const earnings = earningsResponse.data[0];
+
+      if (!earnings) {
+        // Create new earnings record with bank account
+        await axios.post(
+          `${END_POINT_SERVER_JUSTCAN}/v5/earning/create`,
+          {
+            referenceId: DATA?.storeId,
+            referenceType: "STORE",
+            bankAccount: {
+              type: "ACCOUNT_NUMBER",
+              accountNumber: bankAccount.accountNumber,
+              accountName: bankAccount.accountName,
+              isDefault: true,
+            },
+          },
+          { headers: TOKEN }
+        );
+      } else if (!earnings.bankAccounts || earnings.bankAccounts.length === 0) {
+        // Add new bank account only if no accounts exist
+        await axios.post(
+          `${END_POINT_SERVER_JUSTCAN}/v5/earning/account/add`,
+          {
+            referenceId: DATA?.storeId,
+            referenceType: "STORE",
+            bankAccount: {
+              type: "ACCOUNT_NUMBER",
+              accountNumber: bankAccount.accountNumber,
+              accountName: bankAccount.accountName,
+              isDefault: true,
+            },
+          },
+          { headers: TOKEN }
+        );
+      } else {
+        // Update the default bank account
+        const defaultAccount =
+          earnings.bankAccounts.find((acc) => acc.isDefault) ||
+          earnings.bankAccounts[0];
+        await axios.post(
+          `${END_POINT_SERVER_JUSTCAN}/v5/earning/account/update`,
+          {
+            referenceId: DATA?.storeId,
+            referenceType: "STORE",
+            accountId: defaultAccount._id,
+            accountName: bankAccount.accountName,
+            accountNumber: bankAccount.accountNumber,
+            type: "ACCOUNT_NUMBER",
+            isDefault: true,
+          },
+          { headers: TOKEN }
+        );
+      }
+
+      setOpenBankAccountForm(false);
+      successAdd(t("bank_account_saved"));
+    } catch (error) {
+      console.error("Error saving bank account:", error);
+      errorAdd(t("error_saving_bank_account"));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const claimSelectedPayment = async () => {
     setOpenSelectClaim(false);
 
     const billIds = selectedPayment
       .filter((x) => x.isPaidConfirm)
-      .map((x) => x._id);
+      .map((x) => x.paymentData);
 
     if (billIds.length === 0) {
-      errorAdd(`ບໍ່ມີລາຍການທີ່ຢືນຢັນການປິດໂຕະແລ້ວ`); // Ignore spellcheck: ກະລຸນາເລືອກບິນທີ່ຕ້ອງການຊຳລະໄດ້
+      errorAdd(`ບໍ່ມີລາຍການທີ່ຢືນຢັນການປິດໂຕະແລ້ວ`);
       return;
     }
-    try {
-      setIsLoading(true);
-      const { TOKEN, DATA } = await getLocalData();
 
+    try {
+      // Check if bank account exists
+      const { TOKEN, DATA } = await getLocalData();
+      const response = await axios.get(
+        `${END_POINT_SERVER_JUSTCAN}/v5/earning/accounts?referenceId=${DATA?.storeId}&referenceType=STORE`,
+        { headers: TOKEN }
+      );
+
+      const bankAccounts = response.data.data;
+      if (!bankAccounts || bankAccounts.length === 0) {
+        errorAdd(t("please_add_bank_account_first"));
+        setOpenBankAccountForm(true);
+        return;
+      }
+
+      const defaultAccount =
+        bankAccounts.find((acc) => acc.isDefault) || bankAccounts[0];
+      if (!defaultAccount.accountNumber || !defaultAccount.accountName) {
+        errorAdd(t("please_add_bank_account_first"));
+        setOpenBankAccountForm(true);
+        return;
+      }
+
+      setIsLoading(true);
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      await axios.post(
-        `${END_POINT_SERVER_JUSTCAN}/v5/claim-payment/create`, // Ignore spellcheck: JUSTCAN
+      const claimResponse = await axios.post(
+        `${END_POINT_SERVER_JUSTCAN}/v6/checkout/claim/create`,
         {
-          storeId: DATA?.storeId,
-          billIds: billIds,
+          payments: billIds,
+          bankAccount: defaultAccount.accountNumber,
+          bankAccountName: defaultAccount.accountName,
+          shopId: DATA?.storeId,
         },
         {
           headers: TOKEN,
           signal: controller.signal,
         }
       );
+
+      console.log("claim payment response:", claimResponse.data);
 
       clearTimeout(timeoutId);
 
@@ -250,37 +409,6 @@ export default function HistoryBankTransferClaim() {
     } catch (error) {
       errorAdd(`ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່`); // Ignore spellcheck: ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່
       console.error("Error claiming payment:", error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const claimAllPayment = async () => {
-    try {
-      setOpenConfirm(false);
-      setIsLoading(true);
-
-      const { TOKEN, DATA } = await getLocalData();
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-      await axios.post(
-        `${END_POINT_SERVER_JUSTCAN}/v5/claim-payment/create-all`, // Ignore spellcheck: JUSTCAN
-        { storeId: DATA?.storeId },
-        {
-          headers: TOKEN,
-          signal: controller.signal,
-        }
-      );
-
-      clearTimeout(timeoutId);
-
-      successAdd(`ສຳເລັດທັງໝົດແລ້ວ`); // Ignore spellcheck: ສຳເລັດທັງໝົດແລ້ວ
-      fetchData(CLAIM_STATUSES.UNCLAIMED, currentPage);
-    } catch (error) {
-      errorAdd(`ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່`); // Ignore spellcheck: ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່
-      console.error("Error claiming all payments:", error.message);
     } finally {
       setIsLoading(false);
     }
@@ -424,143 +552,263 @@ export default function HistoryBankTransferClaim() {
     [CLAIM_STATUSES.UNCLAIMED]: claimData[CLAIM_STATUSES.UNCLAIMED] || [],
     [CLAIM_STATUSES.CLAIMING]: claimData[CLAIM_STATUSES.CLAIMING] || [],
     [CLAIM_STATUSES.CLAIMED]: claimData[CLAIM_STATUSES.CLAIMED] || [],
+    [CLAIM_STATUSES.REJECTED]: claimData[CLAIM_STATUSES.REJECTED] || [],
   };
 
-  console.log("tabData:", selectedPayment);
-
   return (
-    <div className="p-2 bg-gray-50">
-      {/* Tabs */}
-      <div
-        className={`flex gap-2 justify-start items-center ${
-          selectedType === CLAIM_STATUSES.CLAIMED ? "mb-3" : "m-1"
-        }`}
-      >
-        <TabButton
-          isSelected={selectedType === CLAIM_STATUSES.UNCLAIMED}
-          onClick={() => {
-            setSelectedType(CLAIM_STATUSES.UNCLAIMED);
-            setCurrentPage(1); // Reset page when changing tabs
-          }}
-          icon={faListAlt}
-          title="ລາຍການທີ່ບໍ່ສຳເລັດ" // Ignore spellcheck: ລາຍການທີ່ບໍ່ສຳເລັດ
-        />
-
-        <TabButton
-          isSelected={selectedType === CLAIM_STATUSES.CLAIMING}
-          onClick={() => {
-            setSelectedType(CLAIM_STATUSES.CLAIMING);
-            setCurrentPage(1); // Reset page when changing tabs
-          }}
-          icon={faListAlt}
-          title="ລາຍການກຳລັງເຄລມ" // Ignore spellcheck: ລາຍການກຳລັງເຄລມ
-        />
-
-        <TabButton
-          isSelected={selectedType === CLAIM_STATUSES.CLAIMED}
-          onClick={() => {
-            setSelectedType(CLAIM_STATUSES.CLAIMED);
-            setCurrentPage(1); // Reset page when changing tabs
-          }}
-          icon={faTable}
-          title="ລາຍການເຄລມເງິນ" // Ignore spellcheck: ລາຍການເຄລມເງິນ
-        />
-        <TabButton
-          isSelected={selectedType === "bill-checkout"}
-          onClick={() => {
-            setSelectedType("bill-checkout");
-            setCurrentPage(1); // Reset page when changing tabs
-          }}
-          icon={faTable}
-          title="ປະຫວັດການຊຳລະ" // Ignore spellcheck: ລາຍການເຄລມເງິນ
-        />
+    <div className="min-h-screen bg-gray-50">
+      {/* Top Navigation Bar */}
+      <div className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center py-3 gap-4">
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-bold text-gray-800">
+                {t("claim_management")}
+              </h1>
+            </div>
+            <CustomButton
+              variant="primary"
+              onClick={() => setOpenBankAccountForm(true)}
+            >
+              <span className="flex gap-2 items-center">
+                <FontAwesomeIcon icon={faCreditCard} className="text-xl" />
+                <span className="text-sm md:text-base">
+                  {t("bank_accounts")}
+                </span>
+              </span>
+            </CustomButton>
+          </div>
+        </div>
       </div>
 
-      {/* Loading indicator */}
-      {isLoading && <Loading />}
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-full bg-orange-100">
+                <FontAwesomeIcon
+                  icon={faCoins}
+                  className="text-xl text-orange-500"
+                />
+              </div>
+              <div>
+                <div className="text-base font-medium text-gray-500">
+                  {t("total_money_claim")}
+                </div>
+                <div className="text-xl font-bold text-color-app">
+                  {amountData[selectedType]?.toLocaleString() || 0} {t("LAK")}
+                </div>
+              </div>
+            </div>
+          </div>
 
-      {/* Tab content */}
-      {selectedType === CLAIM_STATUSES.UNCLAIMED && (
-        <UnclaimedTab
-          amountData={amountData}
-          storeDetail={storeDetail}
-          selectedPayment={selectedPayment}
-          selectAllPayment={selectAllPayment}
-          unClaimedData={tabData[CLAIM_STATUSES.UNCLAIMED]}
-          setSelectedPayment={setSelectedPayment}
-          claimSelectedPayment={claimSelectedPayment}
-          setOpenConfirm={setOpenConfirm}
-          page={currentPage}
-          rowsPerPage={rowsPerPage}
-          checkPaymentSelected={checkPaymentSelected}
-          selectPayment={selectPayment}
-          setOpenSelectClaim={setOpenSelectClaim}
-          setOpenConfirmClaimAndClose={setOpenConfirmClaimAndClose}
-          totalPageCount={calculateTotalPages(CLAIM_STATUSES.UNCLAIMED)}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-          t={t}
-        />
-      )}
-      {selectedType === CLAIM_STATUSES.CLAIMING && (
-        <ClaimingTab
-          amountData={amountData}
-          storeDetail={storeDetail}
-          claimingData={tabData[CLAIM_STATUSES.CLAIMING]}
-          totalPageCount={calculateTotalPages(CLAIM_STATUSES.CLAIMING)}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-          rowsPerPage={rowsPerPage}
-          t={t}
-        />
-      )}
-      {selectedType === CLAIM_STATUSES.CLAIMED && (
-        <ClaimedTab
-          amountData={amountData}
-          storeDetail={storeDetail}
-          claimedData={tabData[CLAIM_STATUSES.CLAIMED]}
-          totalPageCount={calculateTotalPages(CLAIM_STATUSES.CLAIMED)}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-          rowsPerPage={rowsPerPage}
-          t={t}
-        />
-      )}
-      {selectedType === "bill-checkout" && (
-        <CheckBillTab
-          amountData={amountData}
-          storeDetail={storeDetail}
-          claimedData={tabData[CLAIM_STATUSES.CLAIMED]}
-          totalPageCount={calculateTotalPages(CLAIM_STATUSES.CLAIMED)}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-          rowsPerPage={rowsPerPage}
-          t={t}
-        />
-      )}
+          <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-full bg-blue-100">
+                <FontAwesomeIcon
+                  icon={faListAlt}
+                  className="text-xl text-blue-500"
+                />
+              </div>
+              <div>
+                <div className="text-base font-medium text-gray-500">
+                  {t("total_transactions")}
+                </div>
+                <div className="text-xl font-bold text-gray-800">
+                  {claimData[selectedType]?.length || 0}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      {/* Confirm dialogs */}
-      <PopUpConfirms
-        open={openConfirm}
-        text={"ເຄລມທັງໝົດ"} // Ignore spellcheck: ເຄລມທັງໝົດ
-        textBefore={"ທ່ານຕ້ອງການ"} // Ignore spellcheck: ທ່ານຕ້ອງການ
-        textAfter={"ແທ້ບໍ?"} // Ignore spellcheck: ແທ້ບໍ
-        onClose={() => setOpenConfirm(false)}
-        onSubmit={claimAllPayment}
-      />
+        {/* Content Section */}
+        <div className="bg-white rounded-xl shadow-sm">
+          {/* Tabs */}
+          <div className="p-6 pb-4 border-b border-gray-100">
+            <div className="flex flex-wrap gap-2">
+              <TabButton
+                isSelected={selectedType === CLAIM_STATUSES.UNCLAIMED}
+                onClick={() => {
+                  setSelectedType(CLAIM_STATUSES.UNCLAIMED);
+                  setCurrentPage(1);
+                }}
+                icon={faCreditCard}
+                title="ລາຍການຊຳລະ"
+              />
+              <TabButton
+                isSelected={selectedType === CLAIM_STATUSES.CLAIMING}
+                onClick={() => {
+                  setSelectedType(CLAIM_STATUSES.CLAIMING);
+                  setCurrentPage(1);
+                }}
+                icon={faClock}
+                title="ລາຍການທີ່ກຳລັງເຄລມ"
+              />
+              <TabButton
+                isSelected={selectedType === CLAIM_STATUSES.CLAIMED}
+                onClick={() => {
+                  setSelectedType(CLAIM_STATUSES.CLAIMED);
+                  setCurrentPage(1);
+                }}
+                icon={faCheckCircle}
+                title="ລາຍການທີ່ເຄລມແລ້ວ"
+              />
+              <TabButton
+                isSelected={selectedType === CLAIM_STATUSES.REJECTED}
+                onClick={() => {
+                  setSelectedType(CLAIM_STATUSES.REJECTED);
+                  setCurrentPage(1);
+                }}
+                icon={faTimesCircle}
+                title="ລາຍການທີ່ຖືກປະຕິເສດ"
+              />
+            </div>
+          </div>
+
+          {/* Loading indicator */}
+          {isLoading && (
+            <div className="flex justify-center items-center">
+              <Loading />
+            </div>
+          )}
+
+          {/* Table Content */}
+          <div className="p-6 pt-4 overflow-x-auto">
+            {selectedType === CLAIM_STATUSES.UNCLAIMED && (
+              <UnclaimedTab
+                amountData={amountData}
+                storeDetail={storeDetail}
+                selectedPayment={selectedPayment}
+                selectAllPayment={selectAllPayment}
+                unClaimedData={tabData[CLAIM_STATUSES.UNCLAIMED]}
+                setSelectedPayment={setSelectedPayment}
+                claimSelectedPayment={claimSelectedPayment}
+                setOpenConfirm={setOpenConfirm}
+                page={currentPage}
+                rowsPerPage={rowsPerPage}
+                checkPaymentSelected={checkPaymentSelected}
+                selectPayment={selectPayment}
+                setOpenSelectClaim={setOpenSelectClaim}
+                setOpenConfirmClaimAndClose={setOpenConfirmClaimAndClose}
+                totalPageCount={calculateTotalPages(CLAIM_STATUSES.UNCLAIMED)}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+                t={t}
+              />
+            )}
+            {selectedType === CLAIM_STATUSES.CLAIMING && (
+              <ClaimingTab
+                amountData={amountData}
+                storeDetail={storeDetail}
+                claimingData={tabData[CLAIM_STATUSES.CLAIMING]}
+                totalPageCount={calculateTotalPages(CLAIM_STATUSES.CLAIMING)}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+                rowsPerPage={rowsPerPage}
+                t={t}
+              />
+            )}
+            {selectedType === CLAIM_STATUSES.CLAIMED && (
+              <ClaimedTab
+                amountData={amountData}
+                storeDetail={storeDetail}
+                claimedData={tabData[CLAIM_STATUSES.CLAIMED]}
+                totalPageCount={calculateTotalPages(CLAIM_STATUSES.CLAIMED)}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+                rowsPerPage={rowsPerPage}
+                t={t}
+              />
+            )}
+            {selectedType === CLAIM_STATUSES.REJECTED && (
+              <RejectedTab
+                amountData={amountData}
+                storeDetail={storeDetail}
+                rejectedData={tabData[CLAIM_STATUSES.REJECTED]}
+                totalPageCount={calculateTotalPages(CLAIM_STATUSES.REJECTED)}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+                rowsPerPage={rowsPerPage}
+                t={t}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Bank Account Settings Dialog */}
+      <Dialog open={openBankAccountForm} onOpenChange={setOpenBankAccountForm}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{t("bank_accounts")}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-6 py-4">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">
+                {t("bank_account_number")}
+              </label>
+              <Input
+                type="text"
+                value={bankAccount.accountNumber}
+                onChange={(e) =>
+                  setBankAccount((prev) => ({
+                    ...prev,
+                    accountNumber: e.target.value,
+                  }))
+                }
+                placeholder={t("enter_bank_account_number")}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-gray-700">
+                {t("bank_account_name")}
+              </label>
+              <Input
+                type="text"
+                value={bankAccount.accountName}
+                onChange={(e) =>
+                  setBankAccount((prev) => ({
+                    ...prev,
+                    accountName: e.target.value,
+                  }))
+                }
+                placeholder={t("enter_bank_account_name")}
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-3">
+            <CustomButton
+              variant="outline"
+              className="px-5 py-2.5 flex-1 font-medium"
+              onClick={() => setOpenBankAccountForm(false)}
+            >
+              {t("cancel")}
+            </CustomButton>
+            <CustomButton
+              variant="primary"
+              className="px-5 py-2.5 flex-1 font-medium"
+              onClick={handleBankAccountSubmit}
+            >
+              {t("save")}
+            </CustomButton>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <ConfirmPopUp
         open={openSelectClaim}
-        header={"ເຄລມເງິນລາຍການທີ່ເລືອກ"} // Ignore spellcheck:
+        header={"ເຄລມເງິນລາຍການທີ່ເລືອກ"}
         content={
-          <div className="flex flex-col items-center text-lg gap-1">
-            <span>ຈຳນວນເງິນເຄລມທັງໝົດ</span>
-            <span className="text-color-app text-2xl font-bold">
+          <div className="flex flex-col items-center text-lg">
+            <div className="text-color-app text-2xl font-bold">
               {selectedPayment
                 .reduce((total, payment) => total + payment.totalAmount, 0)
                 .toLocaleString()}{" "}
               {selectedPayment[0]?.currency ?? "LAK"}
-            </span>
+            </div>
           </div>
         }
         onClose={() => setOpenSelectClaim(false)}
@@ -569,18 +817,18 @@ export default function HistoryBankTransferClaim() {
 
       <ConfirmPopUp
         open={openConfirmClaimAndClose}
-        header={"ຢືນຢັນການຊໍາລະເງິນ ພ້ອມປິດໂຕະ"} // Ignore spellcheck: ເຄລມແລະປິດໂຕະ
+        header={"ຢືນຢັນການຊໍາລະເງິນ ພ້ອມປິດໂຕະ"}
         content={
-          <div className="flex flex-col items-center text-lg gap-2">
-            <div className="flex flex-col gap-0">
+          <div className="flex flex-col items-center text-lg">
+            <div className="w-full mb-2">
               {selectedPayment
                 .filter((payment) => !payment.isPaidConfirm)
                 .map((payment, index) => (
                   <div
                     key={index}
-                    className="text-lg font-bold flex flex-row gap-2"
+                    className="text-base font-medium flex flex-row justify-between items-center py-1 border-b border-gray-100"
                   >
-                    <span>{`${payment.tableName} (${payment.code}):`}</span>
+                    <span>{`${payment.tableName} (${payment.code})`}</span>
                     <span className="text-color-app">
                       {payment.totalAmount.toLocaleString()}{" "}
                       {payment.currency === "LAK" ? "ກີບ" : payment.currency}
@@ -588,18 +836,20 @@ export default function HistoryBankTransferClaim() {
                   </div>
                 ))}
             </div>
-            <span className="text-xl font-bold">
-              <span>{`ລວມທັງໝົດ: `}</span>
-              <span className="text-color-app">
-                {uniquePaymentData
-                  .filter((payment) => !payment.isPaidConfirm)
-                  .reduce((total, payment) => total + payment.totalAmount, 0)
-                  .toLocaleString()}{" "}
-                {uniquePaymentData[0]?.currency === "LAK"
-                  ? "ກີບ"
-                  : uniquePaymentData[0]?.currency}
-              </span>
-            </span>
+            <div className="w-full pt-2 border-t border-gray-200">
+              <div className="flex justify-between items-center text-lg font-bold">
+                <span>{t("total")}:</span>
+                <span className="text-color-app">
+                  {uniquePaymentData
+                    .filter((payment) => !payment.isPaidConfirm)
+                    .reduce((total, payment) => total + payment.totalAmount, 0)
+                    .toLocaleString()}{" "}
+                  {uniquePaymentData[0]?.currency === "LAK"
+                    ? "ກີບ"
+                    : uniquePaymentData[0]?.currency}
+                </span>
+              </div>
+            </div>
           </div>
         }
         onClose={() => setOpenConfirmClaimAndClose(false)}

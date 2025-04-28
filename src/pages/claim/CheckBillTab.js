@@ -6,8 +6,7 @@ import moment from "moment";
 import axios from "axios";
 import { END_POINT_SEVER } from "../../constants/api";
 import { getHeaders } from "../../services/auth";
-import { Card, CardHeader } from "../../components/ui/Card";
-import { Button } from "react-bootstrap";
+import { Button } from "../../components/ui/Button";
 import { BsFillCalendarWeekFill } from "react-icons/bs";
 import PopUpSetStartAndEndDateDebt from "../../components/popup/PopUpSetStartAndEndDateDebt";
 import { moneyCurrency } from "../../helpers";
@@ -62,84 +61,106 @@ const CheckBillTab = ({ storeDetail, currentPage, t }) => {
 
   return (
     <div>
-      <Card className="my-4 p-2">
-        {/* Table for claiming payments */}
-        <div className="w-full flex-row justify-end mt-2">
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        {/* Date Filter Button */}
+        <div className="flex justify-end mb-4">
           <Button
-            variant="outline-primary"
-            size="small"
-            style={{ display: "flex", gap: 10, alignItems: "center" }}
+            variant="outline"
+            className="flex items-center gap-2"
             onClick={() => setPopup({ popupfiltter: true })}
           >
-            <BsFillCalendarWeekFill />
-            <div>
-              {startDate} {startTime}
-            </div>{" "}
-            ~{" "}
-            <div>
-              {endDate} {endTime}
+            <BsFillCalendarWeekFill className="text-lg" />
+            <div className="flex items-center gap-2">
+              <span>
+                {startDate} {startTime}
+              </span>
+              <span className="text-gray-400">~</span>
+              <span>
+                {endDate} {endTime}
+              </span>
             </div>
           </Button>
         </div>
-        <Card className="overflow-x-auto my-4">
-          <table className="table table-hover">
-            <thead className="thead-light">
-              <tr>
-                <th style={{ textWrap: "nowrap" }} scope="col">
+
+        {/* Table */}
+        <div className="overflow-x-auto mb-6">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr className="text-sm font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                   {t("no")}
                 </th>
-                <th style={{ textWrap: "nowrap" }} scope="col">
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                   {t("manager_name")}
                 </th>
-                <th style={{ textWrap: "nowrap" }} scope="col">
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                   {t("detail")}
                 </th>
-                <th style={{ textWrap: "nowrap" }} scope="col">
+                <th className="px-6 py-3 text-right text-sm font-medium text-gray-500 uppercase tracking-wider">
                   {t("amount")}
                 </th>
-                <th style={{ textWrap: "nowrap" }} scope="col">
+                <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                   {t("cause")}
                 </th>
-
-                <th style={{ textWrap: "nowrap" }} scope="col">
+                <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
                   {t("date_time")}
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="bg-white divide-y divide-gray-200">
               {dataBillHistory?.length > 0 ? (
                 dataBillHistory?.map((item, index) => (
-                  <tr key={"finance-" + index}>
-                    <td>{page * rowsPerPage + index + 1}</td>
-                    <td>{item?.user ? item?.user : "-"}</td>
-                    <td>{item?.eventDetail ? item?.eventDetail : "-"}</td>
-                    <td>
+                  <tr
+                    key={"finance-" + index}
+                    className="hover:bg-gray-50 transition-colors duration-150"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {page * rowsPerPage + index + 1}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item?.user ? item?.user : "-"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item?.eventDetail ? item?.eventDetail : "-"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-green-600">
                       {moneyCurrency(item?.billAmount)}{" "}
                       {storeDetail?.firstCurrency}
                     </td>
-                    <td>{item?.reason ? item?.reason : "-"}</td>
-                    <td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {item?.reason ? item?.reason : "-"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">
                       {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
                     </td>
                   </tr>
                 ))
               ) : (
-                <EmptyState />
+                <tr>
+                  <td colSpan="6" className="px-6 py-4 text-center">
+                    <div className="flex justify-center items-center">
+                      <EmptyState />
+                    </div>
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
-        </Card>
+        </div>
 
         {/* Pagination controls */}
         {dataBillHistoryTotal > 0 && (
-          <PaginationControls
-            pageCount={dataBillHistoryTotal}
-            onPageChange={(e) => e?.selected + 1}
-            forcePage={currentPage - 1}
-            t={t}
-          />
+          <div className="mt-4">
+            <PaginationControls
+              pageCount={dataBillHistoryTotal}
+              onPageChange={(e) => e?.selected + 1}
+              forcePage={currentPage - 1}
+              t={t}
+            />
+          </div>
         )}
-      </Card>
+      </div>
+
       <PopUpSetStartAndEndDateDebt
         open={popup?.popupfiltter}
         onClose={() => setPopup()}

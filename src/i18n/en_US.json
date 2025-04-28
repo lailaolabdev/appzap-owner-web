@@ -1351,6 +1351,20 @@
   "description_counter_only": "Enable this option to make the counter display information only for users.",
   "description_counter_access": "The counter can be accessed for management.",
   "change_qr_code": "Change QR Code End of bill",
-  "upload_qr_code" : "Upload Qr Code",
-  "choose_employee" : "Choose employee"
+  "choose_employee" : "Choose employee",
+  "upload_qr_code": "Upload Qr Code",
+  "choose_employee" : "Choose employee",
+  "bank_accounts": "Bank Accounts",
+  "bank_account_added": "Bank Account Added",
+  "total_transactions": "Total Transactions",
+  "bank_account_number": "Bank Account Number",
+  "bank_account_name": "Bank Account Name",
+  "enter_bank_account_number": "Enter Bank Account Number",
+  "enter_bank_account_name": "Enter Bank Account Name",
+  "please_add_bank_account_first": "Please add a bank account first",
+  "claim_management": "Claim Management",
+  "rejection_reason": "Rejection Reason",
+  "claiming": "Claiming",
+  "approved": "Approved",
+  "rejected": "Rejected"
 }
