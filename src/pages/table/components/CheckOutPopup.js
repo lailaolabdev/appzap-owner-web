@@ -285,10 +285,11 @@ export default function CheckOutPopup({
       ...prev,
       moneyReceived: moneyReceived,
       moneyChange: moneyChange,
+      pointRecived: pointAmount,
       dataStaffConfirm:
         `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-",
     }));
-  }, [cash, transfer, selectCurrency?.name]);
+  }, [cash, transfer, selectCurrency?.name, point]);
 
   useEffect(() => {
     if (!open) return;
