@@ -665,6 +665,15 @@ export default function HistoryBankTransferClaim() {
                 icon={faTimesCircle}
                 title="ລາຍການທີ່ຖືກປະຕິເສດ"
               />
+              <TabButton
+                isSelected={selectedType === "bill-checkout"}
+                onClick={() => {
+                  setSelectedType("bill-checkout");
+                  setCurrentPage(1); // Reset page when changing tabs
+                }}
+                icon={faTable}
+                title="ປະຫວັດການຊຳລະ" // Ignore spellcheck: ລາຍການເຄລມເງິນ
+              />
             </div>
           </div>
 
@@ -729,6 +738,18 @@ export default function HistoryBankTransferClaim() {
                 storeDetail={storeDetail}
                 rejectedData={tabData[CLAIM_STATUSES.REJECTED]}
                 totalPageCount={calculateTotalPages(CLAIM_STATUSES.REJECTED)}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+                rowsPerPage={rowsPerPage}
+                t={t}
+              />
+            )}
+            {selectedType === "bill-checkout" && (
+              <CheckBillTab
+                amountData={amountData}
+                storeDetail={storeDetail}
+                claimedData={tabData[CLAIM_STATUSES.CLAIMED]}
+                totalPageCount={calculateTotalPages(CLAIM_STATUSES.CLAIMED)}
                 currentPage={currentPage}
                 onPageChange={setCurrentPage}
                 rowsPerPage={rowsPerPage}

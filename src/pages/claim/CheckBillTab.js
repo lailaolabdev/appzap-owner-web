@@ -61,7 +61,7 @@ const CheckBillTab = ({ storeDetail, currentPage, t }) => {
 
   return (
     <div>
-      <div className="bg-white rounded-xl shadow-sm p-6">
+      <div className="bg-white rounded-xl">
         {/* Date Filter Button */}
         <div className="flex justify-end mb-4">
           <Button
