@@ -46,7 +46,7 @@ export const useOrderStore = create((set) => ({
           .subtract(2, "days")
           .format("YYYY-MM-DD")}&`;
         findby += `endDate=${moment(moment()).format("YYYY-MM-DD")}&`;
-        findby += `shiftId=${shiftCurrent[0]?._id}&`;
+        // findby += `shiftId=${shiftCurrent[0]?._id}&`;
         findby += `skip=${skip}&`;
         findby += `limit=${limit}`;
       }
