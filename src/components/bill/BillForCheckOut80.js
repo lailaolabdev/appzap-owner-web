@@ -500,7 +500,7 @@ export default function BillForCheckOut80({
           </Col>
         </Row>
 
-        {currencyData?.map((item, index) => (
+        {/* {currencyData?.map((item, index) => (
           <Row key={index}>
             <Col xs={7}>
               <div style={{ textAlign: "right" }}>{item?.currencyCode}:</div>
@@ -513,7 +513,7 @@ export default function BillForCheckOut80({
               </div>
             </Col>
           </Row>
-        ))}
+        ))} */}
       </div>
       {isShowExchangeRate && (
         <>
