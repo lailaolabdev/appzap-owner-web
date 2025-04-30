@@ -1254,11 +1254,6 @@ function Homecafe() {
   };
 
   const billForCherCancel80 = useRef([]);
-  // Add this useEffect to properly manage references
-  useEffect(() => {
-    // Initialize the ref array properly when SelectedMenus changes
-    billForCherCancel80.current = SelectedMenus.map(() => []);
-  }, [SelectedMenus]);
 
   // console.log("billForCherCancel80", billForCherCancel80);
 
@@ -1271,270 +1266,71 @@ function Homecafe() {
 
   // console.log("billForCherCancel80", billForCherCancel80);
 
-  // const onPrintForCherLaBel = async () => {
-  //   let _dataBill = {
-  //     ...bill,
-  //     typePrint: "PRINT_BILL_LABEL",
-  //   };
-  //   await _createHistoriesPrinter(_dataBill);
-
-  //   const orderSelect = selectedMenu?.filter((e) => e);
-
-  //   const printDate = billForCherCancel80.current.flat().filter(Boolean); // Flatten and filter out null/undefined
-
-  //   let dataUrls = [];
-  //   for (const _ref of printDate) {
-  //     try {
-  //       const dataUrl = await html2canvas(_ref, {
-  //         useCORS: true,
-  //         scrollX: 10,
-  //         scrollY: 0,
-  //         scale: 530 / widthBill80,
-  //       });
-  //       dataUrls.push(dataUrl);
-  //     } catch (err) {
-  //       console.error("Error generating canvas for print:", err);
-  //     }
-  //   }
-
-  //   for (let _index = 0; _index < printDate.length; _index++) {
-  //     const _printer = printers.find((e) => {
-  //       return e?._id === orderSelect?.[_index]?.printer;
-  //     });
-
-  //     console.log("_index", _index);
-
-  //     try {
-  //       let urlForPrinter = USB_LABEL_PRINTER_PORT;
-  //       let dataUrl = dataUrls[_index];
-
-  //       console.log("dataUrl", dataUrl);
-
-  //       const _file = await base64ToBlob(dataUrl.toDataURL());
-
-  //       console.log("_file", _file);
-
-  //       var bodyFormData = new FormData();
-  //       bodyFormData.append("ip", _printer?.ip);
-  //       bodyFormData.append("isdrawer", false);
-  //       bodyFormData.append("port", "9100");
-  //       bodyFormData.append("image", _file);
-  //       bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
-  //       if (_index === 0) {
-  //         bodyFormData.append("beep1", 1);
-  //         bodyFormData.append("beep2", 9);
-  //       }
-  //       await axios({
-  //         method: "post",
-  //         url: urlForPrinter,
-  //         data: bodyFormData,
-  //         headers: { "Content-Type": "multipart/form-data" },
-  //       });
-  //     } catch (err) {
-  //       console.error("Error printing label:", err);
-  //       if (_index === 0) {
-  //         await Swal.fire({
-  //           icon: "error",
-  //           title: "ປິ້ນສະຕິກເກີ້ບໍ່ສຳເລັດ",
-  //           showConfirmButton: false,
-  //           timer: 1500,
-  //         });
-  //         return { error: true, err };
-  //       }
-  //     }
-  //   }
-  // };
-
   const onPrintForCherLaBel = async () => {
-    try {
-      setIsLoading(true);
+    let _dataBill = {
+      ...bill,
+      typePrint: "PRINT_BILL_LABEL",
+    };
+    await _createHistoriesPrinter(_dataBill);
 
-      // Record print history
-      let _dataBill = {
-        ...bill,
-        typePrint: "PRINT_BILL_LABEL",
-      };
-      await _createHistoriesPrinter(_dataBill);
+    const orderSelect = selectedMenu?.filter((e) => e);
 
-      const orderSelect = SelectedMenus?.filter((e) => e);
+    const printDate = billForCherCancel80.current.flat().filter(Boolean); // Flatten and filter out null/undefined
 
-      // Add a small delay to ensure DOM elements are fully rendered
-      await new Promise((resolve) => setTimeout(resolve, 300));
-
-      // Get all valid references
-      const printRefs = [];
-
-      // Gather all valid refs in the correct order
-      for (let i = 0; i < billForCherCancel80.current.length; i++) {
-        if (
-          billForCherCancel80.current[i] &&
-          Array.isArray(billForCherCancel80.current[i])
-        ) {
-          for (let j = 0; j < billForCherCancel80.current[i].length; j++) {
-            const ref = billForCherCancel80.current[i][j];
-            if (ref) {
-              printRefs.push({
-                ref: ref,
-                menuIndex: i,
-                itemIndex: j,
-              });
-            }
-          }
-        }
-      }
-
-      if (printRefs.length === 0) {
-        setIsLoading(false);
-        await Swal.fire({
-          icon: "error",
-          title: t("no_labels_found"),
-          text: t("try_again"),
-          showConfirmButton: true,
+    let dataUrls = [];
+    for (const _ref of printDate) {
+      try {
+        const dataUrl = await html2canvas(_ref, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 530 / widthBill80,
         });
-        return;
+        dataUrls.push(dataUrl);
+      } catch (err) {
+        console.error("Error generating canvas for print:", err);
       }
+    }
 
-      // Process each reference and generate canvas
-      const processedData = [];
-      for (const { ref, menuIndex } of printRefs) {
-        try {
-          // Wait for all images to load within this reference
-          const images = ref.querySelectorAll("img");
-          if (images.length > 0) {
-            await Promise.all(
-              [...images].map((img) => {
-                if (img.complete && img.naturalWidth !== 0)
-                  return Promise.resolve();
-                return new Promise((resolve) => {
-                  img.onload = resolve;
-                  img.onerror = resolve; // Handle error case too
-                  // Set a backup timeout in case the image never loads
-                  setTimeout(resolve, 1000);
-                });
-              })
-            );
-          }
-
-          // Now capture the element
-          const canvas = await html2canvas(ref, {
-            useCORS: true,
-            scrollX: 10,
-            scrollY: 0,
-            scale: 530 / widthBill80,
-            allowTaint: true,
-            backgroundColor: "white",
-            logging: false,
-          });
-
-          // Add to processed data
-          processedData.push({
-            dataUrl: canvas.toDataURL("image/png"),
-            menuIndex: menuIndex,
-            printer: orderSelect[menuIndex]?.printer,
-          });
-        } catch (err) {
-          console.error(
-            `Error generating canvas for print at index ${menuIndex}:`,
-            err
-          );
-        }
-      }
-
-      if (processedData.length === 0) {
-        setIsLoading(false);
-        await Swal.fire({
-          icon: "error",
-          title: t("failed_to_generate_labels"),
-          showConfirmButton: true,
-        });
-        return;
-      }
-
-      // Print each label sequentially
-      const printResults = [];
-      for (let i = 0; i < processedData.length; i++) {
-        const item = processedData[i];
-        const _printer = printers.find((p) => p?._id === item.printer);
-
-        if (!_printer) {
-          printResults.push({ success: false, error: "Printer not found" });
-          continue;
-        }
-
-        try {
-          let urlForPrinter = USB_LABEL_PRINTER_PORT;
-          const _file = await base64ToBlob(item.dataUrl);
-
-          var bodyFormData = new FormData();
-          bodyFormData.append("ip", _printer?.ip);
-          bodyFormData.append("isdrawer", false);
-          bodyFormData.append("port", "9100");
-          bodyFormData.append("image", _file);
-          bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
-
-          // Only add beep to the first item
-          if (i === 0) {
-            bodyFormData.append("beep1", 1);
-            bodyFormData.append("beep2", 9);
-          }
-
-          // Wait for the print request to complete
-          const response = await axios({
-            method: "post",
-            url: urlForPrinter,
-            data: bodyFormData,
-            headers: { "Content-Type": "multipart/form-data" },
-            timeout: 10000, // 10 second timeout
-          });
-
-          printResults.push({ success: true });
-        } catch (err) {
-          console.error(`Error printing label at index ${i}:`, err);
-          printResults.push({ success: false, error: err.message });
-        }
-      }
-
-      // Check results and show appropriate message
-      const successCount = printResults.filter((r) => r.success).length;
-      const totalCount = printResults.length;
-
-      if (successCount === 0) {
-        await Swal.fire({
-          icon: "error",
-          title: t("print_failed"),
-          text: t("unable_to_print_any_labels"),
-          showConfirmButton: true,
-        });
-      } else if (successCount < totalCount) {
-        await Swal.fire({
-          icon: "warning",
-          title: t("partial_print_success"),
-          text: `${successCount} ${t("of")} ${totalCount} ${t(
-            "labels_printed"
-          )}`,
-          showConfirmButton: true,
-        });
-      } else {
-        await Swal.fire({
-          icon: "success",
-          title: t("print_success"),
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      }
-
-      return { success: successCount > 0 };
-    } catch (err) {
-      console.error("Error in print process:", err);
-      await Swal.fire({
-        icon: "error",
-        title: t("print_failed"),
-        text: err.message || t("unknown_error"),
-        showConfirmButton: true,
+    for (let _index = 0; _index < printDate.length; _index++) {
+      const _printer = printers.find((e) => {
+        return e?._id === orderSelect?.[_index]?.printer;
       });
-      return { success: false, error: err };
-    } finally {
-      setIsLoading(false);
+
+      try {
+        let urlForPrinter = USB_LABEL_PRINTER_PORT;
+        let dataUrl = dataUrls[_index];
+
+        const _file = await base64ToBlob(dataUrl.toDataURL());
+
+        var bodyFormData = new FormData();
+        bodyFormData.append("ip", _printer?.ip);
+        bodyFormData.append("isdrawer", false);
+        bodyFormData.append("port", "9100");
+        bodyFormData.append("image", _file);
+        bodyFormData.append("paper", _printer?.width === "58mm" ? 58 : 80);
+        if (_index === 0) {
+          bodyFormData.append("beep1", 1);
+          bodyFormData.append("beep2", 9);
+        }
+        await axios({
+          method: "post",
+          url: urlForPrinter,
+          data: bodyFormData,
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      } catch (err) {
+        console.error("Error printing label:", err);
+        if (_index === 0) {
+          await Swal.fire({
+            icon: "error",
+            title: "ປິ້ນສະຕິກເກີ້ບໍ່ສຳເລັດ",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          return { error: true, err };
+        }
+      }
     }
   };
 
@@ -2627,6 +2423,7 @@ function Homecafe() {
         />
       </div>
       {SelectedMenus?.map((val, i) => {
+        console.log("INDEX", i);
         const totalPrice = () => {
           const totalOptionPrice = val?.totalOptionPrice || 0;
           const price = val?.price || 0;
@@ -2641,23 +2438,17 @@ function Homecafe() {
           }
         };
 
-        // Ensure quantity is a valid number
-        const quantity = Number(val?.quantity) || 0;
-
-        // Create an array of the correct length based on quantity
-        return Array.from({ length: quantity }).map((_, index) => {
-          const key = `label-${i}-${index}`;
+        return Array.from({ length: val?.quantity }).map((_, index) => {
+          const key = `${index}`;
           return (
             <div
               key={key}
               className="w-[80mm] pr-[20px] pb-[10px]"
               ref={(el) => {
                 if (el) {
-                  // Initialize the array for this menu item if needed
                   if (!billForCherCancel80.current[i]) {
                     billForCherCancel80.current[i] = [];
                   }
-                  // Store the ref
                   billForCherCancel80.current[i][index] = el;
                 }
               }}
