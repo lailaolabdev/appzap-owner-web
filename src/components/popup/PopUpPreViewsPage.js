@@ -102,6 +102,32 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
     }
   };
 
+  const calculateTotalQuantityWithUnits = (items) => {
+    // Group items by unit
+    const unitGroups = {};
+
+    items.forEach((item) => {
+      const unit = item?.unit || "";
+      const quantity = parseFloat(item?.quantity) || 0;
+
+      if (!unitGroups[unit]) {
+        unitGroups[unit] = 0;
+      }
+
+      unitGroups[unit] += quantity;
+    });
+
+    // Format the result with each unit on a new line
+    return (
+      <div style={{ textAlign: "left" }}>
+        {Object.entries(unitGroups).map(([unit, quantity], index) => (
+          <div key={index}>
+            ({index + 1}) : {quantity.toLocaleString()} {unit}
+          </div>
+        ))}
+      </div>
+    );
+  };
   return (
     <Modal show={open} onHide={onClose} centered>
       <div ref={billRef}>
@@ -204,6 +230,34 @@ export default function PopUpPreViewsPage({ onClose, open, datas, storeData }) {
                     </td>
                   </tr>
                 ))}
+                {/* Total row */}
+                <tr>
+                  <td
+                    colSpan="3"
+                    style={{
+                      padding: "4px 2px",
+                      textAlign: "end",
+                      border: "1.5px solid #000",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <p className="flex justify-center items-center">
+                      {t("total")}:
+                    </p>
+                  </td>
+                  <td
+                    style={{
+                      padding: "4px 2px",
+                      textAlign: "center",
+                      border: "1.5px solid #000",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    <p className="flex justify-center items-center">
+                      {calculateTotalQuantityWithUnits(datas)}
+                    </p>
+                  </td>
+                </tr>
               </tbody>
             </Table>
           </div>

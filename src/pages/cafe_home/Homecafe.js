@@ -126,7 +126,7 @@ function Homecafe() {
 
   const [cartModal, setCartModal] = useState(false);
   const [editingRowId, setEditingRowId] = useState(null); // Track the row being edited
-
+  const [totalQuantity, setTotalQuantity] = useState(0);
   const { shiftCurrent } = useShiftStore();
   const { setSelectedMenus, SelectedMenus, clearSelectedMenus } =
     useMenuSelectStore();
@@ -422,12 +422,39 @@ function Homecafe() {
     _calculateTotal();
   }, [SelectedMenus]);
 
+  // const _calculateTotal = () => {
+  //   let _total = 0;
+  //   for (const _data of SelectedMenus || []) {
+  //     if (_data.status !== "CANCELED") {
+  //       const totalOptionPrice = _data?.totalOptionPrice || 0;
+  //       const itemPrice = _data?.price + totalOptionPrice;
+  //       if (storeDetail?.isStatusCafe && _data?.isWeightMenu) {
+  //         _total +=
+  //           _data?.unitWeightMenu === "g"
+  //             ? convertUnitgramAndKilogram(_data?.quantity) * itemPrice
+  //             : _data?.quantity * itemPrice;
+  //       } else {
+  //         _total += _data?.quantity * itemPrice;
+  //       }
+  //     }
+  //   }
+  //   d;
+  //   const roundedNumber = matchRoundNumber(_total);
+  //   setTotal(roundedNumber);
+  // };
+
   const _calculateTotal = () => {
     let _total = 0;
+    let _totalQuantity = 0;
+
     for (const _data of SelectedMenus || []) {
       if (_data.status !== "CANCELED") {
         const totalOptionPrice = _data?.totalOptionPrice || 0;
         const itemPrice = _data?.price + totalOptionPrice;
+
+        // Add to total quantity
+        _totalQuantity += _data?.quantity || 0;
+
         if (storeDetail?.isStatusCafe && _data?.isWeightMenu) {
           _total +=
             _data?.unitWeightMenu === "g"
@@ -441,6 +468,9 @@ function Homecafe() {
 
     const roundedNumber = matchRoundNumber(_total);
     setTotal(roundedNumber);
+
+    // Store the total quantity in state if needed
+    setTotalQuantity(_totalQuantity);
   };
   // Helper function to sort options by ID
   const sortOptionsById = (options) => {
@@ -1915,6 +1945,12 @@ function Homecafe() {
                           </div>
                         )}
                       </div>
+                      {!storeDetail?.isStatusCafe && (
+                        <div className="flex flex-row gap-4 font-bold mb-4">
+                          <span>{t("amount")} :</span>
+                          <span>{moneyCurrency(totalQuantity)}</span>
+                        </div>
+                      )}
                     </>
                   ) : (
                     ""
