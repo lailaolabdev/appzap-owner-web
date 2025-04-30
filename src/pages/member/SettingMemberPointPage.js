@@ -419,8 +419,8 @@ export default function SettingMemberPointPage() {
     setLoading(true);
     setError(false);
     try {
+      const { DATA } = await getLocalData(DATA.storeId);
       const data = await getAllStorePoints();
-      const { DATA } = await getLocalData();
       const filteredData = data.filter(
         (point) => point.storeId === DATA.storeId
       );
