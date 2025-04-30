@@ -36,6 +36,7 @@ import { useUserStore } from "../../../zustand/userStore";
 import { useShiftStore } from "../../../zustand/ShiftStore";
 import { useClaimDataStore } from "../../../zustand/claimData";
 import { usePaymentStore } from "../../../zustand/paymentStore";
+import { usePointStore } from "../../../zustand/pointStore";
 import { getUsersV5 } from "../../../services/user";
 
 export default function CheckOutPopup({
@@ -104,6 +105,9 @@ export default function CheckOutPopup({
     usePaymentStore();
 
   const { shiftCurrent } = useShiftStore();
+  const { PointStore } = usePointStore();
+
+  console.log("PointStore?.data[0]?.moneyUse", PointStore?.data[0]?.moneyUse);
 
   const serviceChargeRef = useRef(serviceCharge);
 
@@ -1128,7 +1132,7 @@ export default function CheckOutPopup({
 
                 {tab === "point" || tab === "cash_transfer_point" ? (
                   <div hidden={hasCRM} style={{ marginBottom: 10 }}>
-                    <div className="w-full flex flex-col dmd:flex-row justify-between gap-2">
+                    <div className="w-full flex flex-col md:flex-row justify-between gap-2 mb-3">
                       <div className="whitespace-nowrap flex-1 flex gap-1.5">
                         <div className="flex-1">
                           <Select
@@ -1155,72 +1159,121 @@ export default function CheckOutPopup({
                         </div>
                       </div>
 
-                      <div className="flex flex-1 justify-start dmd:justify-end">
-                        <div className="box-name">
-                          <InputGroup.Text>
-                            {t("name")}:{" "}
-                            {SelectedDataBill?.Name
-                              ? SelectedDataBill?.Name
-                              : ""}
-                          </InputGroup.Text>
-                        </div>
-                        <div className="box-name">
-                          <InputGroup.Text>
-                            {t("point")}:{" "}
-                            {point
-                              ? convertNumber(SelectedDataBill?.Point - point)
-                              : convertNumber(SelectedDataBill?.Point)
-                              ? convertNumber(SelectedDataBill?.Point)
-                              : "0"}
-                          </InputGroup.Text>
+                      <div className="flex flex-col flex-1 justify-start md:justify-end gap-2">
+                        <div className="box-name flex-1">
+                          <div className="border rounded p-2 bg-light w-full h-[38px] flex items-center">
+                            <span className="font-medium">{t("name")}:</span>{" "}
+                            <span className="font-bold ml-1">
+                              {SelectedDataBill?.Name
+                                ? `${SelectedDataBill?.Name} (${SelectedDataBill?.memberPhone})`
+                                : "-"}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-row justify-between items-center">
-                      <InputGroup style={{ marginTop: 10 }}>
-                        <InputGroup.Text>{t("point")}</InputGroup.Text>
-                        <input
-                          disabled={
-                            SelectedDataBill?.Point <= 0 ||
-                            !SelectedDataBill?.Name ||
-                            !SelectedDataBill?.Point ||
-                            SelectedDataBill?.Point <= point ||
-                            (SelectedDataBill?.ExpireDateForPoint &&
+                    {SelectedDataBill?.ExpireDateForPoint && (
+                      <>
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-3 mb-3">
+                          <div className="flex flex-col gap-2 flex-1 border bg-light rounded-lg p-3">
+                            <div className="flex items-center">
+                              <div className="border rounded-l p-2 bg-light h-[40px] flex items-center font-medium">
+                                {t("point")}
+                              </div>
+                              <input
+                                disabled={
+                                  SelectedDataBill?.Point <= 0 ||
+                                  !SelectedDataBill?.Name ||
+                                  !SelectedDataBill?.Point ||
+                                  SelectedDataBill?.Point <= point ||
+                                  (SelectedDataBill?.ExpireDateForPoint &&
+                                    moment(
+                                      SelectedDataBill.ExpireDateForPoint
+                                    ).isBefore(moment(), "day"))
+                                }
+                                type="text"
+                                placeholder="0"
+                                value={convertNumber(point)}
+                                onClick={() => {
+                                  setSelectInput("inputPoint");
+                                }}
+                                onChange={(e) => {
+                                  onChangePointInput(e.target.value);
+                                }}
+                                className="flex-1 text-[20px] h-[40px] p-2 border rounded-r-lg focus:outline-none"
+                              />
+                            </div>
+                            <div className="border rounded p-2 bg-light w-full h-[38px] flex items-center">
+                              <span className="font-medium">
+                                {t("money_amount")}:
+                              </span>{" "}
+                              <span className="font-bold ml-1 text-orange-500">
+                                {convertNumber(
+                                  point * PointStore?.data[0]?.moneyUse || 0
+                                )}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col flex-1 border bg-light rounded-lg p-3">
+                            <div className="flex flex-col sm:flex-row gap-2">
+                              <div className="rounded w-full h-[38px] flex items-center">
+                                <span className="font-medium">
+                                  {t("point")}:
+                                </span>{" "}
+                                <span className="font-bold ml-1 text-orange-500">
+                                  {point
+                                    ? convertNumber(
+                                        SelectedDataBill?.Point - point
+                                      )
+                                    : convertNumber(SelectedDataBill?.Point)
+                                    ? convertNumber(SelectedDataBill?.Point)
+                                    : "0"}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-2 mt-2">
+                              <div className="rounded w-full h-[38px] flex items-center">
+                                <span className="font-medium">
+                                  {t("money_amount")}:
+                                </span>{" "}
+                                <span className="font-bold ml-1 text-orange-500">
+                                  {convertNumber(
+                                    (SelectedDataBill?.Point *
+                                      PointStore?.data[0]?.moneyUse || 0) -
+                                      (point * PointStore?.data[0]?.moneyUse ||
+                                        0)
+                                  )}
+                                  {storeDetail?.firstCurrency}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex justify-start items-center mt-2 gap-2">
+                          <div className="text-[16px] font-medium">
+                            {t("expire_date_debt")}:{" "}
+                            <span className="font-bold">
+                              {SelectedDataBill?.ExpireDateForPoint &&
                               moment(
                                 SelectedDataBill.ExpireDateForPoint
-                              ).isBefore(moment(), "day")) // Disable if expired
-                          }
-                          type="text"
-                          placeholder="0"
-                          value={convertNumber(point)}
-                          onClick={() => {
-                            setSelectInput("inputPoint");
-                          }}
-                          onChange={(e) => {
-                            onChangePointInput(e.target.value);
-                          }}
-                          size="lg"
-                          className="w-[320px] text-[20px] h-[45px] p-2 border rounded-r-lg focus:outline-none"
-                        />
-                      </InputGroup>
-                      {SelectedDataBill?.ExpireDateForPoint && (
-                        <div className="w-[250px]">
-                          <span className="text-[18px] font-bold">
-                            {t("expire_date_debt")}:{" "}
-                            {SelectedDataBill?.ExpireDateForPoint &&
-                            moment(
+                              ).isValid()
+                                ? moment(
+                                    SelectedDataBill.ExpireDateForPoint
+                                  ).format("DD-MM-YYYY")
+                                : "-"}
+                            </span>
+                          </div>
+                          <div className="">
+                            (
+                            {CountDateExpire(
                               SelectedDataBill.ExpireDateForPoint
-                            ).isValid()
-                              ? moment(
-                                  SelectedDataBill.ExpireDateForPoint
-                                ).format("DD-MM-YYYY")
-                              : "-"}
-                          </span>
-                          <br />
-                          {CountDateExpire(SelectedDataBill.ExpireDateForPoint)}
+                            )}
+                            )
+                          </div>
                         </div>
-                      )}
-                    </div>
+                      </>
+                    )}
                   </div>
                 ) : (
                   ""
