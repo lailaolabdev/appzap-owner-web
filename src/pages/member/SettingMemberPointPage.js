@@ -61,6 +61,7 @@ export default function SettingMemberPointPage() {
   const [showUsePoint, setShowUsePoint] = useState(false);
 
   const [editMode, setEditMode] = useState(false);
+  const [editModePointUse, setEditModePointUse] = useState(false);
   const [menuData, setMenuData] = useState([]);
   const [filterCategory, setFilterCategory] = useState("All");
   const [filterName, setFilterName] = useState("");
@@ -419,8 +420,8 @@ export default function SettingMemberPointPage() {
     setLoading(true);
     setError(false);
     try {
-      const { DATA } = await getLocalData(DATA.storeId);
-      const data = await getAllStorePoints();
+      const { DATA } = await getLocalData();
+      const data = await getAllStorePoints(DATA.storeId);
       const filteredData = data.filter(
         (point) => point.storeId === DATA.storeId
       );
@@ -461,7 +462,7 @@ export default function SettingMemberPointPage() {
       const response = await updatePointUseStore(dataToSend);
       if (response.error) throw new Error("Cannot update point");
       fetchPointsData();
-      setEditMode(false);
+      setEditModePointUse(false);
     } catch (err) {
       console.error("Failed to update points data: ", err);
     }
@@ -589,7 +590,7 @@ export default function SettingMemberPointPage() {
                             <Form.Label>{t("bill_total_price")}</Form.Label>
                             <Form.Control
                               name="money"
-                              value={moneyCurrency(pointsData[0].money)}
+                              value={pointsData[0].money}
                               onChange={handleUpdateChange}
                               disabled={!editMode}
                             />
@@ -669,21 +670,21 @@ export default function SettingMemberPointPage() {
                               name="piontUse"
                               value={pointsData[0].piontUse}
                               onChange={handleUpdateChangePointUse}
-                              disabled={!editMode}
+                              disabled={!editModePointUse}
                             />
                           </div>
                           <div>
                             <Form.Label>{t("money_amount")}</Form.Label>
                             <Form.Control
                               name="moneyUse"
-                              value={moneyCurrency(pointsData[0].moneyUse)}
+                              value={pointsData[0].moneyUse}
                               onChange={handleUpdateChangePointUse}
-                              disabled={!editMode}
+                              disabled={!editModePointUse}
                             />
                           </div>
                         </div>
                       </div>
-                      {editMode ? (
+                      {editModePointUse ? (
                         <Button
                           variant="primary"
                           onClick={handleUpdatePointUse}
@@ -693,7 +694,7 @@ export default function SettingMemberPointPage() {
                       ) : (
                         <Button
                           variant="secondary"
-                          onClick={() => setEditMode(true)}
+                          onClick={() => setEditModePointUse(true)}
                         >
                           {t("update_redemption_item")}
                         </Button>

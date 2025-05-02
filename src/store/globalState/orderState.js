@@ -82,14 +82,15 @@ export const useOrderState = () => {
       const _userData = await getLocalData();
 
       let findby = "?";
-      if (status === "SERVED" || status === "CANCELED") {
-        findby += `status=${status}&`;
-        findby += `storeId=${_userData?.DATA?.storeId}&`;
-        findby += `startDate=${moment(moment()).format("YYYY-MM-DD")}&`;
-        findby += `endDate=${moment(moment()).format("YYYY-MM-DD")}&`;
-        findby += `skip=${skip}&`;
-        findby += `limit=${limit}`;
-      }
+      // if (status === "SERVED" || status === "CANCELED") {
+      // if (status === "SERVED" || status === "CANCELED") {
+      findby += `status=${status}&`;
+      findby += `storeId=${_userData?.DATA?.storeId}&`;
+      findby += `startDate=${moment(moment()).format("YYYY-MM-DD")}&`;
+      findby += `endDate=${moment(moment()).format("YYYY-MM-DD")}&`;
+      findby += `skip=${skip}&`;
+      findby += `limit=${limit}`;
+      // }
 
       await setOrderLoading(true);
 

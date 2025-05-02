@@ -1049,9 +1049,13 @@ export default function DashboardFinance({
                     </span> */}
                     <span>
                       ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
-                      {new Intl.NumberFormat("ja-JP", {
-                        currency: "JPY",
-                      }).format(totalPriceAmount - totalPriceOfPoint)}{" "}
+                      {dataModal?.pointToMoney > 0
+                        ? new Intl.NumberFormat("ja-JP", {
+                            currency: "JPY",
+                          }).format(totalPriceAmount - dataModal?.pointToMoney)
+                        : new Intl.NumberFormat("ja-JP", {
+                            currency: "JPY",
+                          }).format(totalPriceAmount - totalPriceOfPoint)}{" "}
                       {storeDetail?.firstCurrency}
                     </span>
                     <span>
@@ -1233,18 +1237,19 @@ export default function DashboardFinance({
                             dataModal?.point - dataModal?.taxAmount
                           )}{" "}
                           {t("point")} {t("can_be_exchanged")}{" "}
-                          {moneyCurrency(
-                            dataModal.exchangePointStoreId.reduce(
-                              (sum, item) => {
-                                // แต่ละ item มี menuId เป็น array และเราต้องเข้าถึง price ของ menuId[0]
-                                const itemPrice =
-                                  item.menuId[0].price *
-                                  item.menuId[0].quantity;
-                                return sum + itemPrice;
-                              },
-                              0
-                            )
-                          )}{" "}
+                          {dataModal?.pointToMoney > 0
+                            ? moneyCurrency(dataModal?.pointToMoney)
+                            : moneyCurrency(
+                                dataModal.exchangePointStoreId.reduce(
+                                  (sum, item) => {
+                                    const itemPrice =
+                                      item.menuId[0].price *
+                                      item.menuId[0].quantity;
+                                    return sum + itemPrice;
+                                  },
+                                  0
+                                )
+                              )}{" "}
                           {storeDetail?.firstCurrency})
                         </span>
                         {/* <span>
@@ -1276,9 +1281,15 @@ export default function DashboardFinance({
                     dataModal?.point > 0 ? (
                       <span>
                         (
-                        {new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(totalPriceAmount - totalPriceOfPoint)}{" "}
+                        {dataModal?.pointToMoney > 0
+                          ? moneyCurrency(
+                              totalPriceAmount - dataModal?.pointToMoney
+                            )
+                          : new Intl.NumberFormat("ja-JP", {
+                              currency: "JPY",
+                            }).format(
+                              totalPriceAmount - totalPriceOfPoint
+                            )}{" "}
                         {storeDetail?.firstCurrency})
                       </span>
                     ) : (

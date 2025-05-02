@@ -865,7 +865,9 @@ export default function TableList() {
       setSelectedDataBill((prev) => ({
         ...prev,
         moneyReceived: 0,
+        pointToMoney: 0,
         moneyChange: 0,
+        pointRecived: 0,
         paymentMethod: "OTHER",
         dataStaffConfirm:
           `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-",

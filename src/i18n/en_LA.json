@@ -1366,5 +1366,7 @@
   "claiming": "ກຳລັງຂໍເຄລມ",
   "approved": "ອະນຸມັດແລ້ວ",
   "rejected": "ຖືກປະຕິເສດ",
-  "point_use_setting_form" : "ຟອມຕັ້ງຄ່າການໃຊ້ຄະແນນ"
+  "point_use_setting_form" : "ຟອມຕັ້ງຄ່າການໃຊ້ຄະແນນ",
+  "point_remain" : "ຄະແນນທີ່ຍັງ",
+  "point_use" : "ຄະແນນທີ່ໃຊ້"
 }

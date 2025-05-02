@@ -1366,5 +1366,7 @@
   "claiming": "Claiming",
   "approved": "Approved",
   "rejected": "Rejected",
-  "point_use_setting_form": "Point Use Setting Form"
+  "point_use_setting_form": "Point Use Setting Form",
+  "point_remain" : "Point remain",
+  "point_use" : "Point use"
 }

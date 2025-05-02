@@ -8,6 +8,7 @@ import {
   getLocalDataCustomer,
 } from "../../constants/api";
 import { usePaymentStore } from "../../zustand/paymentStore";
+import { usePointStore } from "../../zustand/pointStore";
 import { useUserStore } from "../../zustand/userStore";
 import { convertRole } from "../../helpers/convertRole";
 import Axios from "axios";
@@ -44,6 +45,8 @@ export default function BillForCheckOut80({
   );
 
   const { SelectedDataBill } = usePaymentStore();
+  const { PointStore } = usePointStore();
+
   const { selectUserEmployee } = useUserStore();
 
   // Replace the current useRef and console.log
@@ -231,7 +234,10 @@ export default function BillForCheckOut80({
         }}
       >
         <div>
-          {t("getMoney")} {moneyCurrency(SelectedDataBill?.moneyReceived) || 0}{" "}
+          {t("getMoney")}{" "}
+          {moneyCurrency(
+            SelectedDataBill?.moneyReceived - SelectedDataBill?.pointRecived
+          ) || 0}{" "}
           {storeDetail?.firstCurrency} <span>{paymentMethodText}</span>
         </div>
         {","}
@@ -316,8 +322,8 @@ export default function BillForCheckOut80({
                     ? `${dataBill?.memberPhone} (${t(
                         "point"
                       )} : ${moneyCurrency(
-                        Number(dataBill?.Point || 0) -
-                          Number(storeDetail?.point || 0)
+                        Number(SelectedDataBill?.Point || 0) -
+                          Number(SelectedDataBill?.pointRecived || 0)
                       )})`
                     : ""}
                 </span>
@@ -414,7 +420,7 @@ export default function BillForCheckOut80({
           <Col>
             {SelectedDataBill?.pointRecived > 0 ? (
               <div style={{ textAlign: "right" }}>
-                {moneyCurrency(total - SelectedDataBill?.pointRecived)}
+                {moneyCurrency(total - SelectedDataBill?.pointToMoney)}
               </div>
             ) : (
               <div style={{ textAlign: "right" }}>{moneyCurrency(total)}</div>
@@ -438,25 +444,23 @@ export default function BillForCheckOut80({
             </div>
           </Col>
         </Row>
-        {dataBill?.memberPhone
-          ? storeDetail?.point > 0 && (
+        {SelectedDataBill?.memberPhone
+          ? SelectedDataBill?.Point > 0 && (
               <Row>
                 <Col xs={7}>
-                  <div style={{ textAlign: "right" }}>{t("point")}: </div>
+                  <div style={{ textAlign: "right" }}>{t("point_use")}: </div>
                 </Col>
                 <Col>
                   <div style={{ textAlign: "right" }}>
-                    {storeDetail?.point ? moneyCurrency(storeDetail?.point) : 0}
+                    {SelectedDataBill?.pointRecived
+                      ? `${moneyCurrency(
+                          SelectedDataBill?.pointRecived
+                        )} => ${moneyCurrency(
+                          SelectedDataBill?.pointToMoney || 0
+                        )}`
+                      : 0}
                   </div>
                 </Col>
-                {/* <Col xs={7}>
-              <div style={{ textAlign: "right" }}>
-                ໄດ້ພ໋ອຍຈາກການຊື້ຄັ້ງນີ້:{" "}
-              </div>
-            </Col>
-            <Col>
-              <div style={{ textAlign: "right" }}>150</div>
-            </Col> */}
               </Row>
             )
           : ""}
@@ -490,7 +494,12 @@ export default function BillForCheckOut80({
               style={{ textAlign: "right", fontSize: 16, fontWeight: "bold" }}
             >
               {moneyCurrency(
-                Math.floor(totalAfterDiscount + taxAmount + serviceChargeAmount)
+                Math.floor(
+                  totalAfterDiscount +
+                    taxAmount +
+                    serviceChargeAmount -
+                    SelectedDataBill?.pointToMoney
+                )
               )}
             </div>
           </Col>
@@ -510,14 +519,31 @@ export default function BillForCheckOut80({
             </Col>
           </Row>
         ))}
+        {storeDetail?.isCRM && dataBill?.memberPhone && (
+          <Row>
+            <Col xs={7}>
+              <div style={{ textAlign: "right" }}>{t("point_remain")}:</div>
+            </Col>
+            <Col>
+              <div style={{ textAlign: "right" }}>
+                {moneyCurrency(
+                  SelectedDataBill?.Point - SelectedDataBill?.pointRecived
+                )}
+              </div>
+            </Col>
+          </Row>
+        )}
       </div>
 
       {isShowExchangeRate && (
         <>
           <div style={{ height: 10 }} />
           <hr style={{ border: "1px dashed #000", margin: 0 }} />
+          {storeDetail?.isCRM && (
+            <span className="text-[12px] ml-[10px]">{t("exchangeRate")} :</span>
+          )}
           <div style={{ fontSize: 12, textAlign: "center" }}>
-            <span>{t("exchangeRate")}&nbsp;</span>
+            {!storeDetail?.isCRM && <span>{t("exchangeRate")}&nbsp;</span>}
             {currencyData?.map((item, index) => (
               <span key={index}>
                 {item?.currencyCode}: {moneyCurrency(item?.sell)}
@@ -528,11 +554,12 @@ export default function BillForCheckOut80({
                 )}
               </span>
             ))}
-            {","}
-            &nbsp;
-            {storeDetail?.isCRM && dataBill?.memberPhone && (
+            <span className="mx-2">{"|"}</span>
+            {storeDetail?.isCRM && (
               <span>
-                1 {t("point")} = 1 {storeDetail?.firstCurrency}
+                {PointStore?.data[0]?.piontUse} {t("point")} :{" "}
+                {moneyCurrency(PointStore?.data[0]?.moneyUse)}{" "}
+                {storeDetail?.firstCurrency}
               </span>
             )}
           </div>
