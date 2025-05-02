@@ -41,7 +41,7 @@ import printFlutter from "../../helpers/printFlutter";
 import BillForCheckOut80 from "../../components/bill/BillForCheckOut80";
 import BillForCheckOutCafe80 from "../../components/bill/BillForCheckOutCafe80";
 import { convertUnitgramAndKilogram } from "../../helpers/convertUnitgramAndKilogram";
-import { Button } from "../../components/ui/Button";
+import { Button } from "react-bootstrap";
 import PopUpCommentCancelOrder from "../../components/popup/PopUpCommentCancelOrder";
 
 const limitData = 50;
