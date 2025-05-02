@@ -51,9 +51,6 @@ export default function BillForCheckOut80({
 
   // Replace the current useRef and console.log
   const serviceChargeRef = useRef(serviceCharge);
-  const moneyReciveRef = useRef(dataBill?.moneyReceived);
-  const moneyChangeRef = useRef(dataBill?.moneyChange);
-  const paymentMethodRef = useRef(dataBill?.paymentMethod);
   const enableServiceChangeRef = useRef(enableServiceChange);
 
   const orders =
@@ -67,27 +64,9 @@ export default function BillForCheckOut80({
     if (serviceCharge > 0) {
       serviceChargeRef.current = serviceCharge;
     }
-    if (dataBill?.moneyReceived > 0) {
-      moneyReciveRef.current = dataBill?.moneyReceived;
-    }
-    if (dataBill?.moneyChange > 0) {
-      moneyChangeRef.current = dataBill?.moneyChange;
-    }
-    // if (dataBill?.paymentMethod !== undefined) {
-    //   paymentMethodRef.current = dataBill?.paymentMethod;
-    // }
-    if (paymentMethod) {
-      paymentMethodRef.current = paymentMethod;
-    } else if (dataBill?.paymentMethod !== undefined) {
-      paymentMethodRef.current = dataBill?.paymentMethod;
-    }
     // Always update enableServiceChangeRef with the latest value
     enableServiceChangeRef.current = enableServiceChange;
   }, [
-    dataBill?.moneyReceived,
-    dataBill?.moneyChange,
-    dataBill?.paymentMethod,
-    paymentMethod,
     taxPercent,
     serviceCharge,
     totalBillBillForCheckOut80,
@@ -170,12 +149,6 @@ export default function BillForCheckOut80({
     setServiceChargeAmount(serviceChargeTotal);
     setTotal(totalAmountAll);
   };
-
-  // Remove console logs for production
-  // console.log("serviceChargeRef.current", serviceChargeRef.current);
-  // console.log("storeDetail?.serviceChargePer 1", storeDetail?.serviceChargePer);
-  // console.log("serviceChargeAmount", serviceChargeAmount);
-  // console.log("TotalServiceChange", TotalServiceChange);
 
   const getDataCurrency = async () => {
     try {
@@ -555,13 +528,15 @@ export default function BillForCheckOut80({
               </span>
             ))}
             <span className="mx-2">{"|"}</span>
-            {storeDetail?.isCRM && (
-              <span>
-                {PointStore?.data[0]?.piontUse} {t("point")} :{" "}
-                {moneyCurrency(PointStore?.data[0]?.moneyUse)}{" "}
-                {storeDetail?.firstCurrency}
-              </span>
-            )}
+            {storeDetail?.isCRM &&
+              PointStore?.data &&
+              PointStore.data.length > 0 && (
+                <span>
+                  {PointStore.data[0]?.piontUse || 0} {t("point")} :{" "}
+                  {moneyCurrency(PointStore.data[0]?.moneyUse || 0)}{" "}
+                  {storeDetail?.firstCurrency}
+                </span>
+              )}
           </div>
         </>
       )}

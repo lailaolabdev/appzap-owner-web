@@ -57,9 +57,6 @@ export default function CheckOutPopup({
   setPaymentMethod,
 }) {
   const { t } = useTranslation();
-  // ref
-  // const inputCashRef = useRef(null);
-  // const inputTransferRef = useRef(null);
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
   const navigate = useNavigate();
 
