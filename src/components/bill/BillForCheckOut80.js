@@ -158,14 +158,11 @@ export default function BillForCheckOut80({
       setTotalAfterDiscount(totalAmountAll);
     }
 
-    setTotal(totalAmountAll);
-
     setTaxAmount((totalAmountAll * taxPercent) / 100);
 
-    // ใช้ serviceCharge จาก prop แทน storeDetail?.serviceChargePer
+    // Service charge calculation using the improved TotalServiceChange
     const serviceChargeTotal = Math.floor(
-      (totalAmountAll * serviceChargeRef.current ||
-        storeDetail?.serviceChargePer) / 100
+      (totalAmountAll * TotalServiceChange) / 100
     );
     setServiceChargeAmount(serviceChargeTotal);
     setTotal(totalAmountAll);
@@ -514,6 +511,7 @@ export default function BillForCheckOut80({
           </Row>
         ))}
       </div>
+
       {isShowExchangeRate && (
         <>
           <div style={{ height: 10 }} />
@@ -540,71 +538,12 @@ export default function BillForCheckOut80({
           </div>
         </>
       )}
+
       <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
+
       {paymentDisplay}
-      {isShowExchangeRate && (
-        <div style={{ fontSize: 12, textAlign: "center" }}>
-          <span>{t("exchangeRate")}&nbsp;</span>
-          {currencyData?.map((item, index) => (
-            <span key={index}>
-              {item?.currencyCode}: {moneyCurrency(item?.sell)}
-              {index + 1 < currencyData?.length ? (
-                <span style={{ marginLeft: 10, marginRight: 10 }}>|</span>
-              ) : (
-                ""
-              )}
-            </span>
-          ))}
-          {","}
-          &nbsp;
-          {storeDetail?.isCRM && dataBill?.memberPhone && (
-            <span>
-              1 {t("point")} = 1 {storeDetail?.firstCurrency}
-            </span>
-          )}
-        </div>
-      )}{" "}
-      <div style={{ height: 10 }} />
-      <hr style={{ border: "1px dashed #000", margin: 0 }} />
-      <div
-        style={{
-          display: "flex",
-          gap: 2,
-          justifyContent: "center",
-          fontSize: 12,
-        }}
-      >
-        <div>
-          {t("getMoney")} {moneyCurrency(moneyReciveRef.current) || 0}{" "}
-          {storeDetail?.firstCurrency}{" "}
-          <span>
-            {dataBill?.paymentMethod === "CASH"
-              ? "(ເງີນສົດ)"
-              : dataBill?.paymentMethod === "TRANSFER"
-              ? "(ເງີນໂອນ)"
-              : dataBill?.paymentMethod === "TRANSFER_CASH"
-              ? "(ເງີນສົດແລະໂອນ)"
-              : dataBill?.paymentMethod === "CASH_TRANSFER_POINT"
-              ? "(ເງີນສົດ + ໂອນ + ພ໋ອຍ)"
-              : ""}
-          </span>
-        </div>
-        {","}
-        <div>
-          {t("moneyWithdrawn")} {moneyCurrency(moneyChangeRef.current) || 0}{" "}
-          {storeDetail?.firstCurrency}
-        </div>
-      </div>
-      {/* <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        {" "}
-        ໂອນເງີນສຳລະ{" "}
-      </div> */}
+
       <div
         style={{
           display: "flex",
@@ -621,6 +560,7 @@ export default function BillForCheckOut80({
           />
         </Img>
       </div>
+
       {storeDetail?.textForBill?.trim().length > 0 && (
         <div>
           <div className="text-center text-[12px] font-thin">
