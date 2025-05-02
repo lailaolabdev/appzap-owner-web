@@ -346,7 +346,7 @@ export default function OrderPage() {
 
   useEffect(() => {
     if (!onPrinting) {
-      getOrderItemsStore(selectOrderStatus);
+      // getOrderItemsStore(selectOrderStatus);
       // getOrderWaitingAndDoingByStore();
       setNewOrderTransaction(false);
     }
@@ -355,7 +355,7 @@ export default function OrderPage() {
   useEffect(() => {
     if (!onPrinting) {
       if (newOrderTransaction) {
-        getOrderItemsStore(selectOrderStatus);
+        // getOrderItemsStore(selectOrderStatus);
         // getOrderWaitingAndDoingByStore();
         setNewOrderTransaction(false);
       }
@@ -475,7 +475,7 @@ export default function OrderPage() {
           id="OrderTabs"
           onSelect={(select) => {
             setorderItemForPrintBillSelect([]);
-            getOrderItemsStore(select);
+            // getOrderItemsStore(select);
             setSelectOrderStatus(select);
             // getOrderWaitingAndDoingByStore();
           }}
