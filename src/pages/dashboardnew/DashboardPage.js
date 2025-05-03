@@ -92,6 +92,8 @@ export default function DashboardPage() {
   const [openModalFree, setOpenModalFree] = useState(false);
   const [openModalDiscount, setOpenModalDiscount] = useState(false);
   const [openModalExchange, setOpenModalExchange] = useState(false);
+  const [openModalUsePoint, setOpenModalUsePoint] = useState(false);
+  const [dataModalUsePoint, setDataModalUsePoint] = useState(false);
 
   const [shiftData, setShiftData] = useState([]);
   const [shiftId, setShiftId] = useState([]);
@@ -917,19 +919,28 @@ export default function DashboardPage() {
                         <td className="flex gap-2 items-center justify-end">
                           {moneyCurrency(e?.amount)}{" "}
                           {e?.unit || storeDetail?.firstCurrency}
-                          {e?.unit && (
-                            <div
-                              className=" text-orange-500 cursor-pointer"
-                              onKeyDown={() => {}}
-                              onClick={() =>
-                                handleGetDataExchangePoint(
-                                  promotionDiscountAndFreeReport?.discountedMenus
-                                )
-                              }
-                            >
-                              <BsArrowDownRightSquare />
-                            </div>
-                          )}
+                          {e?.unit &&
+                            (storeDetail?.isStatusCafe ? (
+                              <div
+                                className=" text-orange-500 cursor-pointer"
+                                onKeyDown={() => {}}
+                                onClick={() =>
+                                  handleGetDataExchangePoint(
+                                    promotionDiscountAndFreeReport?.discountedMenus
+                                  )
+                                }
+                              >
+                                <BsArrowDownRightSquare />
+                              </div>
+                            ) : (
+                              <div
+                                className=" text-orange-500 cursor-pointer"
+                                onKeyDown={() => {}}
+                                onClick={() => setOpenModalUsePoint(true)}
+                              >
+                                <BsArrowDownRightSquare />
+                              </div>
+                            ))}
                         </td>
                       </tr>
                     ))}
@@ -1006,7 +1017,9 @@ export default function DashboardPage() {
                         {moneyCurrency(e?.totalSaleDeliveryAmount)}
                       </td>
                       <td style={{ textAlign: "center" }}>
-                        {moneyCurrency(e?.totalExchangePointSum)}
+                        {e?.PointTotal > 0
+                          ? moneyCurrency(e?.PointTotal)
+                          : moneyCurrency(e?.totalExchangePointSum)}
                       </td>
 
                       <td style={{ textAlign: "right" }}>
@@ -1016,7 +1029,8 @@ export default function DashboardPage() {
                             (moneyReport?.taxAmount || 0) -
                             (promotionDiscountAndFreeReport?.totalDiscountValue ||
                               0) -
-                            (e?.totalSaleDeliveryAmount || 0)
+                            (e?.totalSaleDeliveryAmount || 0) -
+                            (e?.totalPointToMoney || 0)
                         )}
                         {storeDetail?.firstCurrency}
                       </td>
@@ -1364,6 +1378,62 @@ export default function DashboardPage() {
             </p>
             <p className="text-orange-500 text-[18px] pt-3 font-bold">
               ລວມຈຳນວນເງິນທັງໝົດ : {moneyCurrency(totalPrice)}{" "}
+              {storeDetail?.firstCurrency}
+            </p>
+          </div>
+        </Modal.Body>
+      </Modal>
+      <Modal
+        show={openModalUsePoint}
+        size="lg"
+        onHide={() => setOpenModalUsePoint(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>{t("ລາຍລະອຽດການແລກພ໋ອຍ")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <table style={{ width: "100%" }}>
+            <tr className="border-b">
+              <th className="text-left">{t("no")}</th>
+              {/* <th className="text-left">{t("point")}</th> */}
+              <th className="text-left">{t("name")}</th>
+              <th className="text-right">{t("quantity")}</th>
+              <th className="text-right">{t("price")}</th>
+            </tr>
+            {moneyReport?.pointToMoneySummary?.orders?.length > 0 ? (
+              moneyReport?.pointToMoneySummary?.orders?.map((m, index) => (
+                <tr key={m?._id} className="border-b">
+                  <td className="text-left">{index + 1}</td>
+                  {/* <td className="text-left">
+                    {moneyCurrency(m?.exchangePoint)}
+                  </td> */}
+                  <td className="text-left">{m?.name}</td>
+                  <td className="text-right">{m?.quantity}</td>
+                  <td className="text-right">{moneyCurrency(m?.price)}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6}>
+                  <div className="flex justify-center">
+                    <p className="text-[16px] font-bold text-gray-900">
+                      ບໍ່ມີລາຍການ
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </table>
+          <div className="flex justify-between mt-2">
+            <p className="text-orange-500 text-[18px] pt-3 font-bold">
+              ລວມຄະແນນ :{" "}
+              {moneyCurrency(
+                moneyReport?.pointToMoneySummary?.totalPointToMoney
+              )}
+            </p>
+            <p className="text-orange-500 text-[18px] pt-3 font-bold">
+              ລວມຈຳນວນເງິນທັງໝົດ :{" "}
+              {moneyCurrency(moneyReport?.pointToMoneySummary?.totalPrice)}{" "}
               {storeDetail?.firstCurrency}
             </p>
           </div>

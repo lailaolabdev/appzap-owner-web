@@ -36,7 +36,9 @@ import { useUserStore } from "../../../zustand/userStore";
 import { useShiftStore } from "../../../zustand/ShiftStore";
 import { useClaimDataStore } from "../../../zustand/claimData";
 import { usePaymentStore } from "../../../zustand/paymentStore";
+import { usePointStore } from "../../../zustand/pointStore";
 import { getUsersV5 } from "../../../services/user";
+import matchRoundNumber from "../../../helpers/matchRound";
 
 export default function CheckOutPopup({
   onPrintDrawer,
@@ -55,9 +57,6 @@ export default function CheckOutPopup({
   setPaymentMethod,
 }) {
   const { t } = useTranslation();
-  // ref
-  // const inputCashRef = useRef(null);
-  // const inputTransferRef = useRef(null);
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
   const navigate = useNavigate();
 
@@ -104,6 +103,7 @@ export default function CheckOutPopup({
     usePaymentStore();
 
   const { shiftCurrent } = useShiftStore();
+  const { PointStore } = usePointStore();
 
   const serviceChargeRef = useRef(serviceCharge);
 
@@ -211,7 +211,61 @@ export default function CheckOutPopup({
       errorAdd("ບໍ່ພົບສະມາຊິກ");
     }
   };
+  useEffect(() => {
+    // Only call calculatePointValue when point changes and not on every render
+    if (point !== undefined) {
+      calculatePointValue(point);
+    }
+  }, [point]);
 
+  const calculatePointValue = (pointAmount) => {
+    if (
+      !pointAmount ||
+      !PointStore?.data[0]?.piontUse ||
+      !PointStore?.data[0]?.moneyUse
+    ) {
+      return 0;
+    }
+
+    const calculatedValue = (
+      (pointAmount / PointStore?.data[0]?.piontUse) *
+      PointStore?.data[0]?.moneyUse
+    ).toFixed(2);
+
+    return Number(calculatedValue);
+  };
+
+  // Add a separate useEffect to update the selectedDataBill
+  useEffect(() => {
+    if (point !== undefined) {
+      const calculatedValue = calculatePointValue(point);
+
+      if (calculatedValue > totalBillMoney) {
+        Swal.fire({
+          title: "ແຈ້ງເຕືອນ",
+          text: `ຈຳນວນເງິນທີ່ແລກປ່ຽນຈາກຄະແນນ ${moneyCurrency(
+            point
+          )} ເປັນເງິນ ${moneyCurrency(calculatedValue)} ${
+            storeDetail?.firstCurrency
+          } ໃຫຍ່ກວ່າ ລາຄາລວມຂອງບິນທັງໝົດ ${moneyCurrency(totalBillMoney)} ${
+            storeDetail?.firstCurrency
+          }`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#fb6e3b",
+          cancelButtonColor: "#5a5a5a",
+          confirmButtonText: "ຕົກລົງ",
+          cancelButtonText: "ຍົກເລີກ",
+        });
+        clearSelectedDataBill();
+        setPoint();
+      }
+      setSelectedDataBill((prev) => ({
+        ...prev,
+        pointToMoney: calculatedValue,
+      }));
+    }
+  }, [point, PointStore?.data]);
   const getMembersData = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
@@ -385,7 +439,8 @@ export default function CheckOutPopup({
       transferAmount: transfer,
       deliveryAmount: delivery,
       point: point,
-      billAmount: totalBill,
+      pointToMoney: calculatePointValue(point),
+      billAmount: totalBill - calculatePointValue(point),
       paymentMethod:
         tableData?.isOrderingPaid && !statusServedForOrdering
           ? "APPZAP_TRANSFER"
@@ -529,7 +584,9 @@ export default function CheckOutPopup({
         setSelectedDataBill((prev) => ({
           ...prev,
           moneyReceived: 0,
+          pointToMoney: 0,
           moneyChange: 0,
+          pointRecived: 0,
           paymentMethod: "OTHER",
         }));
       } catch {
@@ -714,20 +771,28 @@ export default function CheckOutPopup({
         (Number.parseInt(point) || 0);
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
-          if (_sum >= totalBill - (totalBill * dataBill?.discount) / 100) {
+          if (
+            _sum >=
+            totalBill -
+              calculatePointValue(point) -
+              (totalBill * dataBill?.discount) / 100
+          ) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
           }
         } else {
-          if (_sum >= totalBill - dataBill?.discount) {
+          if (
+            _sum >=
+            totalBill - calculatePointValue(point) - dataBill?.discount
+          ) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
           }
         }
       } else {
-        if (_sum >= totalBill) {
+        if (_sum >= totalBill - calculatePointValue(point)) {
           setCanCheckOut(true);
         } else {
           setCanCheckOut(false);
@@ -975,7 +1040,9 @@ export default function CheckOutPopup({
             >
               <span>{t("bill_total")}: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
-                {moneyCurrency(totalBillMoney)}
+                {calculatePointValue(point) > 0
+                  ? moneyCurrency(totalBillMoney - calculatePointValue(point))
+                  : moneyCurrency(totalBillMoney)}
                 {""} {storeDetail?.firstCurrency}
               </span>
               <span
@@ -1128,7 +1195,7 @@ export default function CheckOutPopup({
 
                 {tab === "point" || tab === "cash_transfer_point" ? (
                   <div hidden={hasCRM} style={{ marginBottom: 10 }}>
-                    <div className="w-full flex flex-col dmd:flex-row justify-between gap-2">
+                    <div className="w-full flex flex-col md:flex-row justify-between gap-2 mb-3">
                       <div className="whitespace-nowrap flex-1 flex gap-1.5">
                         <div className="flex-1">
                           <Select
@@ -1155,72 +1222,123 @@ export default function CheckOutPopup({
                         </div>
                       </div>
 
-                      <div className="flex flex-1 justify-start dmd:justify-end">
-                        <div className="box-name">
-                          <InputGroup.Text>
-                            {t("name")}:{" "}
-                            {SelectedDataBill?.Name
-                              ? SelectedDataBill?.Name
-                              : ""}
-                          </InputGroup.Text>
-                        </div>
-                        <div className="box-name">
-                          <InputGroup.Text>
-                            {t("point")}:{" "}
-                            {point
-                              ? convertNumber(SelectedDataBill?.Point - point)
-                              : convertNumber(SelectedDataBill?.Point)
-                              ? convertNumber(SelectedDataBill?.Point)
-                              : "0"}
-                          </InputGroup.Text>
+                      <div className="flex flex-col flex-1 justify-start md:justify-end gap-2">
+                        <div className="box-name flex-1">
+                          <div className="border rounded p-2 bg-light w-full h-[38px] flex items-center">
+                            <span className="font-medium">{t("name")}:</span>{" "}
+                            <span className="font-bold ml-1">
+                              {SelectedDataBill?.Name
+                                ? `${SelectedDataBill?.Name} (${SelectedDataBill?.memberPhone})`
+                                : "-"}
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-row justify-between items-center">
-                      <InputGroup style={{ marginTop: 10 }}>
-                        <InputGroup.Text>{t("point")}</InputGroup.Text>
-                        <input
-                          disabled={
-                            SelectedDataBill?.Point <= 0 ||
-                            !SelectedDataBill?.Name ||
-                            !SelectedDataBill?.Point ||
-                            SelectedDataBill?.Point <= point ||
-                            (SelectedDataBill?.ExpireDateForPoint &&
+                    {SelectedDataBill?.Point > 0 ? (
+                      <>
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-3 mb-3">
+                          <div className="flex flex-col gap-2 flex-1 border bg-light rounded-lg p-3">
+                            <div className="flex items-center">
+                              <div className="border rounded-l p-2 bg-light h-[40px] flex items-center font-medium">
+                                {t("point")}
+                              </div>
+                              <input
+                                disabled={
+                                  SelectedDataBill?.Point <= 0 ||
+                                  !SelectedDataBill?.Name ||
+                                  !SelectedDataBill?.Point ||
+                                  SelectedDataBill?.Point <= point ||
+                                  (SelectedDataBill?.ExpireDateForPoint &&
+                                    moment(SelectedDataBill.ExpireDateForPoint)
+                                      .startOf("day")
+                                      .isSameOrBefore(moment().startOf("day")))
+                                }
+                                type="text"
+                                placeholder="0"
+                                value={convertNumber(point)}
+                                onClick={() => {
+                                  setSelectInput("inputPoint");
+                                }}
+                                onChange={(e) => {
+                                  onChangePointInput(e.target.value);
+                                }}
+                                className="flex-1 text-[20px] h-[40px] p-2 border rounded-r-lg focus:outline-none"
+                              />
+                            </div>
+                            <div className="border rounded p-2 bg-light w-full h-[38px] flex items-center">
+                              <span className="font-medium">
+                                {t("money_amount")}:
+                              </span>{" "}
+                              <span className="font-bold ml-1 text-orange-500">
+                                {convertNumber(calculatePointValue(point))}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col flex-1 border bg-light rounded-lg p-3">
+                            <div className="flex flex-col sm:flex-row gap-2">
+                              <div className="rounded w-full h-[38px] flex items-center">
+                                <span className="font-medium">
+                                  {t("total_point")}:
+                                </span>{" "}
+                                <span className="font-bold ml-1 text-orange-500">
+                                  {point
+                                    ? convertNumber(
+                                        SelectedDataBill?.Point - point
+                                      )
+                                    : convertNumber(SelectedDataBill?.Point)
+                                    ? convertNumber(SelectedDataBill?.Point)
+                                    : "0"}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-2 mt-2">
+                              <div className="rounded w-full h-[38px] flex items-center">
+                                <span className="font-medium">
+                                  {t("money_amount")}:
+                                </span>{" "}
+                                <span className="font-bold ml-1 text-orange-500">
+                                  {convertNumber(
+                                    (SelectedDataBill?.Point *
+                                      PointStore?.data[0]?.moneyUse || 0) -
+                                      calculatePointValue(point)
+                                  )}
+                                  {storeDetail?.firstCurrency}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex justify-start items-center mt-2 gap-2">
+                          <div className="text-[16px] font-medium">
+                            {t("expire_date_debt")}:{" "}
+                            <span className="font-bold">
+                              {SelectedDataBill?.ExpireDateForPoint &&
                               moment(
                                 SelectedDataBill.ExpireDateForPoint
-                              ).isBefore(moment(), "day")) // Disable if expired
-                          }
-                          type="text"
-                          placeholder="0"
-                          value={convertNumber(point)}
-                          onClick={() => {
-                            setSelectInput("inputPoint");
-                          }}
-                          onChange={(e) => {
-                            onChangePointInput(e.target.value);
-                          }}
-                          size="lg"
-                          className="w-[320px] text-[20px] h-[45px] p-2 border rounded-r-lg focus:outline-none"
-                        />
-                      </InputGroup>
-                      {SelectedDataBill?.ExpireDateForPoint && (
-                        <div className="w-[250px]">
-                          <span className="text-[18px] font-bold">
-                            {t("expire_date_debt")}:{" "}
-                            {SelectedDataBill?.ExpireDateForPoint &&
-                            moment(
-                              SelectedDataBill.ExpireDateForPoint
-                            ).isValid()
-                              ? moment(
-                                  SelectedDataBill.ExpireDateForPoint
-                                ).format("DD-MM-YYYY")
-                              : "-"}
-                          </span>
-                          <br />
-                          {CountDateExpire(SelectedDataBill.ExpireDateForPoint)}
+                              ).isValid()
+                                ? moment(
+                                    SelectedDataBill.ExpireDateForPoint
+                                  ).format("DD-MM-YYYY")
+                                : "-"}
+                            </span>
+                          </div>
+                          {SelectedDataBill.ExpireDateForPoint && (
+                            <div className="">
+                              (
+                              {CountDateExpire(
+                                SelectedDataBill.ExpireDateForPoint
+                              )}
+                              )
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
+                      </>
+                    ) : (
+                      ""
+                    )}
                   </div>
                 ) : (
                   ""
@@ -1578,36 +1696,20 @@ export default function CheckOutPopup({
               {t("debt")}
             </Button>
 
-            {/* <Button
-              onClick={() => {
-                setPrintBillLoading(true);
-                saveServiceChargeDetails();
-                onPrintBill().then(() => {
-                  setPrintBillLoading(false);
-                  handleSubmit();
-                });
-              }}
-              style={{ display: "flex", gap: "10px", alignItems: "center" }}
-              disabled={!canCheckOut || printBillLoading}
-            >
-              {printBillLoading && (
-                <Spinner
-                  animation="border"
-                  size="sm"
-                  style={{ marginRight: 8 }}
-                />
-              )}
-              <BiSolidPrinter />
-              {t("print_checkbill")}
-            </Button> */}
-
             <Button
               onClick={async () => {
                 setPrintBillLoading(true);
                 saveServiceChargeDetails();
 
                 try {
-                  await onPrintBill(); // Only run if handleSubmit is successful
+                  if (
+                    SelectedDataBill?.ExpireDateForPoint &&
+                    moment(SelectedDataBill.ExpireDateForPoint)
+                      .startOf("day")
+                      .isSameOrBefore(moment().startOf("day")) === false
+                  ) {
+                    await onPrintBill(); // Only run if handleSubmit is successful
+                  }
                   await handleSubmit(); // Run handleSubmit first
                 } catch (error) {
                   Swal.fire({

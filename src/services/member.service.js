@@ -100,9 +100,9 @@ export const addMemberPoint = async (data) => {
   }
 };
 
-export const getAllStorePoints = async () => {
+export const getAllStorePoints = async (storeId) => {
   try {
-    const url = `${END_POINT_SEVER}/v4/piont-stroe`;
+    const url = `${END_POINT_SEVER}/v4/piont-stroe?storeId=${storeId}`;
     const response = await axios.get(url);
     return response?.data;
   } catch (error) {
@@ -118,6 +118,26 @@ export const updatePointStore = async (data) => {
     return response?.data;
   } catch (error) {
     console.error("Error in updatePointStore: ", error);
+    return { error: true };
+  }
+};
+
+export const updatePointUseStore = async (data) => {
+  try {
+    const url = `${END_POINT_SEVER}/v7/piontStore/use/update`;
+    const response = await axios.put(url, data);
+    return response?.data;
+  } catch (error) {
+    console.error("Error in updatePointStore: ", error);
+    return { error: true };
+  }
+};
+export const addMemberPointUse = async (data) => {
+  try {
+    const url = `${END_POINT_SEVER}/v7/piontStroe/use/create`;
+    const response = await axios.post(url, data);
+    return response?.data;
+  } catch (error) {
     return { error: true };
   }
 };

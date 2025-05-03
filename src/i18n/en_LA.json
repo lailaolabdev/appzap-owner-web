@@ -1353,7 +1353,6 @@
   "free_items": "ລາຍການເມນູແຖມ",
   "discount_items": "ລາຍການເມນູສ່ວນຫຼຸດ",
   "discount_amounts": "ຈຳນວນທີ່ຫຼຸດ",
-  "choose_employee" : "ເລືອກພະນັກງານ",
   "bank_accounts": "ບັນຊີທະນາຄານ",
   "bank_account_added": "ເພີ່ມບັນຊີທະນາຄານແລ້ວ",
   "total_transactions": "ຈຳນວນລາຍການ",
@@ -1366,5 +1365,8 @@
   "rejection_reason": "ເຫດຜົນທີ່ປະຕິເສດ",
   "claiming": "ກຳລັງຂໍເຄລມ",
   "approved": "ອະນຸມັດແລ້ວ",
-  "rejected": "ຖືກປະຕິເສດ"
+  "rejected": "ຖືກປະຕິເສດ",
+  "point_use_setting_form" : "ຟອມຕັ້ງຄ່າການໃຊ້ຄະແນນ",
+  "point_remain" : "ຄະແນນທີ່ຍັງ",
+  "point_use" : "ຄະແນນທີ່ໃຊ້"
 }

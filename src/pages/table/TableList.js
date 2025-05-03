@@ -66,6 +66,7 @@ import {
   callToUpdatePrintBillBefore,
   getCodes,
 } from "../../services/code";
+import { getAllStorePoints } from "../../services/member.service";
 import PopUpAddDiscount from "../../components/popup/PopUpAddDiscount";
 import { useTranslation } from "react-i18next";
 import PopupOpenTable from "../../components/popup/PopupOpenTable";
@@ -96,6 +97,7 @@ import { useShiftStore } from "../../zustand/ShiftStore";
 import { useClaimDataStore } from "../../zustand/claimData";
 import { useOrderStore } from "../../zustand/orderStore";
 import { usePaymentStore } from "../../zustand/paymentStore";
+import { usePointStore } from "../../zustand/pointStore";
 import theme from "../../theme";
 import PopUpConfirms from "../../components/popup/PopUpConfirms";
 import { set } from "lodash";
@@ -202,6 +204,7 @@ export default function TableList() {
   const { setStatusServedForOrdering } = useClaimDataStore();
   const { fetchOrdersByStatus, orderItems } = useOrderStore();
   const { setSelectedDataBill, clearSelectedDataBill } = usePaymentStore();
+  const { setPointStore, PointStore } = usePointStore();
 
   const reLoadData = () => {
     setReload(true);
@@ -322,12 +325,22 @@ export default function TableList() {
       serviceChargePer: 0,
       zoneCheckBill: false,
     });
-  }, []);
-
-  useEffect(() => {
     reLoadData();
     ableToCheckoutFunc(isCheckedOrderItem);
+    fetchPointsData();
   }, []);
+
+  const fetchPointsData = async () => {
+    try {
+      const data = await getAllStorePoints(storeDetail?._id);
+      setPointStore((prev) => ({
+        ...prev,
+        data: data,
+      }));
+    } catch (error) {
+      console.error("Failed to fetch points data: ", error);
+    }
+  };
 
   useEffect(() => {
     ableToCheckoutFunc(isCheckedOrderItem);
@@ -852,7 +865,9 @@ export default function TableList() {
       setSelectedDataBill((prev) => ({
         ...prev,
         moneyReceived: 0,
+        pointToMoney: 0,
         moneyChange: 0,
+        pointRecived: 0,
         paymentMethod: "OTHER",
         dataStaffConfirm:
           `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-",
