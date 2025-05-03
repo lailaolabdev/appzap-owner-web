@@ -1702,14 +1702,7 @@ export default function CheckOutPopup({
                 saveServiceChargeDetails();
 
                 try {
-                  if (
-                    SelectedDataBill?.ExpireDateForPoint &&
-                    moment(SelectedDataBill.ExpireDateForPoint)
-                      .startOf("day")
-                      .isSameOrBefore(moment().startOf("day")) === false
-                  ) {
-                    await onPrintBill(); // Only run if handleSubmit is successful
-                  }
+                  await onPrintBill();
                   await handleSubmit(); // Run handleSubmit first
                 } catch (error) {
                   Swal.fire({
