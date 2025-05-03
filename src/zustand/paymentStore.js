@@ -39,6 +39,7 @@ export const usePaymentStore = create(
             Point: 0,
             ExpireDateForPoint: "",
             pointRecived: 0,
+            pointToMoney: 0,
           },
         });
       },

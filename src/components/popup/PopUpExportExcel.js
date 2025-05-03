@@ -11,8 +11,20 @@ import { errorAdd } from "../../helpers/sweetalert";
 import { END_POINT_EXPORT } from "../../constants/api";
 
 import { useStoreStore } from "../../zustand/storeStore";
+import {
+  exportMemberOrdersToExcel,
+  exportMembersToExcel,
+  exportTopMembersToExcel,
+} from "../../pages/member/excel/exportExcel";
 
-export default function PopUpExportExcel({ open, onClose, setPopup }) {
+export default function PopUpExportExcel({
+  open,
+  onClose,
+  setPopup,
+  dataMemberListTop,
+  dataMemberOrder,
+  dataMember,
+}) {
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const { t } = useTranslation();
 
@@ -156,14 +168,29 @@ export default function PopUpExportExcel({ open, onClose, setPopup }) {
         >
           <Button
             style={{ height: 100, padding: 20 }}
-            onClick={exportAllMember}
+            // onClick={exportAllMember}
+            onClick={() =>
+              exportMembersToExcel(dataMember, "members", storeDetail, t)
+            }
           >
             <span>{t("member_list")}</span>
           </Button>
-          <Button style={{ height: 100, padding: 20 }} onClick={exportTopTen}>
+          <Button
+            style={{ height: 100, padding: 20 }}
+            // onClick={exportTopTen}
+            onClick={() =>
+              exportTopMembersToExcel(dataMemberListTop, t, "top_members")
+            }
+          >
             <span>{t("lists_top")}</span>
           </Button>
-          <Button style={{ height: 100, padding: 20 }} onClick={exportOrders}>
+          <Button
+            style={{ height: 100, padding: 20 }}
+            // onClick={exportOrders}
+            onClick={() => {
+              exportMemberOrdersToExcel(dataMemberOrder, t, "member_orders");
+            }}
+          >
             <span>{t("lists_export_order")}</span>
           </Button>
         </div>

@@ -24,6 +24,8 @@ import {
   addMemberPoint,
   getAllStorePoints,
   updatePointStore,
+  addMemberPointUse,
+  updatePointUseStore,
 } from "../../services/member.service";
 import { useStoreStore } from "../../zustand/storeStore";
 import { useMenuStore } from "../../zustand/menuStore";
@@ -56,8 +58,10 @@ export default function SettingMemberPointPage() {
   const [error, setError] = useState(false);
   const [pointsData, setPointsData] = useState([]);
   const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
+  const [showUsePoint, setShowUsePoint] = useState(false);
+
   const [editMode, setEditMode] = useState(false);
+  const [editModePointUse, setEditModePointUse] = useState(false);
   const [menuData, setMenuData] = useState([]);
   const [filterCategory, setFilterCategory] = useState("All");
   const [filterName, setFilterName] = useState("");
@@ -73,10 +77,19 @@ export default function SettingMemberPointPage() {
     status: "active",
     selectedMenus: [],
   });
+
+  const handleClose = () => setShow(false);
+  const handleCloseUsePoint = () => setShowUsePoint(false);
+
   const handleShow = async () => {
     const { DATA } = await getLocalData();
     setFormData((prevData) => ({ ...prevData, storeId: DATA.storeId }));
     setShow(true);
+  };
+  const handleShowUsePoint = async () => {
+    const { DATA } = await getLocalData();
+    setFormData((prevData) => ({ ...prevData, storeId: DATA.storeId }));
+    setShowUsePoint(true);
   };
 
   // provider
@@ -365,6 +378,25 @@ export default function SettingMemberPointPage() {
       setDisabledButton(false);
     }
   };
+  const createMemberPointUse = async () => {
+    try {
+      setDisabledButton(true);
+      const body = {
+        moneyUse: formData.totalAmount,
+        piontUse: formData.points,
+        storeId: formData.storeId,
+      };
+      const _data = await addMemberPointUse(body);
+      if (_data.error) throw new Error("Cannot create point");
+      handleClose();
+
+      fetchPointsData();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDisabledButton(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -377,13 +409,19 @@ export default function SettingMemberPointPage() {
     updatedPointsData[0] = { ...updatedPointsData[0], [name]: value };
     setPointsData(updatedPointsData);
   };
+  const handleUpdateChangePointUse = (e) => {
+    const { name, value } = e.target;
+    const updatedPointsData = [...pointsData];
+    updatedPointsData[0] = { ...updatedPointsData[0], [name]: value };
+    setPointsData(updatedPointsData);
+  };
 
   const fetchPointsData = async () => {
     setLoading(true);
     setError(false);
     try {
-      const data = await getAllStorePoints();
       const { DATA } = await getLocalData();
+      const data = await getAllStorePoints(DATA.storeId);
       const filteredData = data.filter(
         (point) => point.storeId === DATA.storeId
       );
@@ -414,6 +452,21 @@ export default function SettingMemberPointPage() {
       console.error("Failed to update points data: ", err);
     }
   };
+  const handleUpdatePointUse = async () => {
+    try {
+      const dataToSend = {
+        piontStoreId: pointsData[0]._id,
+        moneyUse: pointsData[0].moneyUse,
+        pointUse: pointsData[0].piontUse,
+      };
+      const response = await updatePointUseStore(dataToSend);
+      if (response.error) throw new Error("Cannot update point");
+      fetchPointsData();
+      setEditModePointUse(false);
+    } catch (err) {
+      console.error("Failed to update points data: ", err);
+    }
+  };
 
   useEffect(() => {
     fetchPointsData();
@@ -421,8 +474,6 @@ export default function SettingMemberPointPage() {
       changeUi: "setting_point",
     });
   }, []);
-
-
 
   return (
     <>
@@ -456,11 +507,11 @@ export default function SettingMemberPointPage() {
           </Nav.Item>
           <Nav.Item>
             <Nav.Link
-              eventKey="/listRedeem/Point"
+              eventKey="/use/Point"
               style={{
                 color: theme.primaryColor,
                 backgroundColor:
-                  storeDetail.changeUi === "setting_change_point"
+                  storeDetail.changeUi === "setting_use_point"
                     ? theme.mutedColor
                     : "",
                 border: "none",
@@ -471,15 +522,43 @@ export default function SettingMemberPointPage() {
               }}
               onClick={() => {
                 setStoreDetail({
-                  changeUi: "setting_change_point",
+                  changeUi: "setting_use_point",
                 });
               }}
             >
               {/* <FontAwesomeIcon icon={faBirthdayCake}></FontAwesomeIcon>{" "} */}
               <div style={{ width: 8 }} />{" "}
-              <span>{t("setting_change_point")}</span>
+              <span>{t("point_use_setting_form")}</span>
             </Nav.Link>
           </Nav.Item>
+          {storeDetail?.isStatusCafe && (
+            <Nav.Item>
+              <Nav.Link
+                eventKey="/listRedeem/Point"
+                style={{
+                  color: theme.primaryColor,
+                  backgroundColor:
+                    storeDetail.changeUi === "setting_change_point"
+                      ? theme.mutedColor
+                      : "",
+                  border: "none",
+                  height: 45,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onClick={() => {
+                  setStoreDetail({
+                    changeUi: "setting_change_point",
+                  });
+                }}
+              >
+                {/* <FontAwesomeIcon icon={faBirthdayCake}></FontAwesomeIcon>{" "} */}
+                <div style={{ width: 8 }} />{" "}
+                <span>{t("setting_change_point")}</span>
+              </Nav.Link>
+            </Nav.Item>
+          )}
         </div>
         {loading ? (
           <div className="pt-[15rem]">
@@ -491,55 +570,57 @@ export default function SettingMemberPointPage() {
           <>
             {storeDetail.changeUi === "setting_point" &&
               (pointsData.length > 0 ? (
-                <Card className="w-[500px]">
-                  <h3 className="p-3 rounded-t-lg bg-color-app text-white text-[16px] font-bold">
-                    {t("point_setting_form")}
-                  </h3>
-                  <div className="p-4">
-                    <div>
-                      <div
-                        className="mb-3"
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns: "1fr 1fr",
-                          gap: 20,
-                          width: "100%",
-                        }}
-                      >
-                        <div>
-                          <Form.Label>{t("bill_total_price")}</Form.Label>
-                          <Form.Control
-                            name="money"
-                            value={pointsData[0].money}
-                            onChange={handleUpdateChange}
-                            disabled={!editMode}
-                          />
-                        </div>
-                        <div>
-                          <Form.Label>{t("money_will_got")}</Form.Label>
-                          <Form.Control
-                            name="piont"
-                            value={pointsData[0].piont}
-                            onChange={handleUpdateChange}
-                            disabled={!editMode}
-                          />
+                <div className="flex gap-2">
+                  <Card className="w-[500px]">
+                    <h3 className="p-3 rounded-t-lg bg-color-app text-white text-[16px] font-bold">
+                      {t("point_setting_form")}
+                    </h3>
+                    <div className="p-4">
+                      <div>
+                        <div
+                          className="mb-3"
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr 1fr",
+                            gap: 20,
+                            width: "100%",
+                          }}
+                        >
+                          <div>
+                            <Form.Label>{t("bill_total_price")}</Form.Label>
+                            <Form.Control
+                              name="money"
+                              value={pointsData[0].money}
+                              onChange={handleUpdateChange}
+                              disabled={!editMode}
+                            />
+                          </div>
+                          <div>
+                            <Form.Label>{t("money_will_got")}</Form.Label>
+                            <Form.Control
+                              name="piont"
+                              value={pointsData[0].piont}
+                              onChange={handleUpdateChange}
+                              disabled={!editMode}
+                            />
+                          </div>
                         </div>
                       </div>
+                      {editMode ? (
+                        <Button variant="primary" onClick={handleUpdate}>
+                          {t("save")}
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="secondary"
+                          onClick={() => setEditMode(true)}
+                        >
+                          {t("update")}
+                        </Button>
+                      )}
                     </div>
-                    {editMode ? (
-                      <Button variant="primary" onClick={handleUpdate}>
-                        {t("save")}
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="secondary"
-                        onClick={() => setEditMode(true)}
-                      >
-                        {t("update")}
-                      </Button>
-                    )}
-                  </div>
-                </Card>
+                  </Card>
+                </div>
               ) : (
                 <div
                   style={{
@@ -552,6 +633,87 @@ export default function SettingMemberPointPage() {
                   <Button
                     variant="primary"
                     onClick={handleShow}
+                    disabled={disabledButton}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <BsInfoCircle />
+                    {t("setting_point")}
+                  </Button>
+                </div>
+              ))}
+            {storeDetail.changeUi === "setting_use_point" &&
+              (pointsData.length > 0 ? (
+                <div className="flex gap-2">
+                  <Card className="w-[500px]">
+                    <h3 className="p-3 rounded-t-lg bg-color-app text-white text-[16px] font-bold">
+                      {t("point_use_setting_form")}
+                    </h3>
+                    <div className="p-4">
+                      <div>
+                        <div
+                          className="mb-3"
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "1fr 1fr",
+                            gap: 20,
+                            width: "100%",
+                          }}
+                        >
+                          <div>
+                            <Form.Label>{t("money_will_got")}</Form.Label>
+                            <Form.Control
+                              name="piontUse"
+                              value={pointsData[0].piontUse}
+                              onChange={handleUpdateChangePointUse}
+                              disabled={!editModePointUse}
+                            />
+                          </div>
+                          <div>
+                            <Form.Label>{t("money_amount")}</Form.Label>
+                            <Form.Control
+                              name="moneyUse"
+                              value={pointsData[0].moneyUse}
+                              onChange={handleUpdateChangePointUse}
+                              disabled={!editModePointUse}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {editModePointUse ? (
+                        <Button
+                          variant="primary"
+                          onClick={handleUpdatePointUse}
+                        >
+                          {t("save")}
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="secondary"
+                          onClick={() => setEditModePointUse(true)}
+                        >
+                          {t("update_redemption_item")}
+                        </Button>
+                      )}
+                    </div>
+                  </Card>
+                </div>
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "80vh",
+                  }}
+                >
+                  <Button
+                    variant="primary"
+                    onClick={handleShowUsePoint}
                     disabled={disabledButton}
                     style={{
                       display: "flex",
@@ -892,7 +1054,7 @@ export default function SettingMemberPointPage() {
 
         <Modal show={show} onHide={handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>{t("point_setting_form")}</Modal.Title>
+            <Modal.Title>{t("point_use_setting_form")}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form>
@@ -935,6 +1097,57 @@ export default function SettingMemberPointPage() {
             <Button
               variant="primary"
               onClick={createMemberPoint}
+              disabled={disabledButton}
+            >
+              {t("set_point")}
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <Modal show={showUsePoint} onHide={handleCloseUsePoint}>
+          <Modal.Header closeButton>
+            <Modal.Title>{t("point_use_setting_form")}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <div
+                className="mb-3"
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 20,
+                  width: "100%",
+                }}
+              >
+                <Form.Group>
+                  <Form.Label>{t("bill_total_price")}</Form.Label>
+                  <Form.Control
+                    name="totalAmount"
+                    value={formData.totalAmount}
+                    onChange={handleChange}
+                    type="number"
+                    required
+                  />
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label>{t("point_will_got")}</Form.Label>
+                  <Form.Control
+                    name="points"
+                    value={formData.points}
+                    onChange={handleChange}
+                    type="number"
+                    required
+                  />
+                </Form.Group>
+              </div>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseUsePoint}>
+              {t("close")}
+            </Button>
+            <Button
+              variant="primary"
+              onClick={createMemberPointUse}
               disabled={disabledButton}
             >
               {t("set_point")}

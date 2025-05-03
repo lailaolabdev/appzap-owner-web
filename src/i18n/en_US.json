@@ -1353,7 +1353,6 @@
   "change_qr_code": "Change QR Code End of bill",
   "choose_employee" : "Choose employee",
   "upload_qr_code": "Upload Qr Code",
-  "choose_employee" : "Choose employee",
   "bank_accounts": "Bank Accounts",
   "bank_account_added": "Bank Account Added",
   "total_transactions": "Total Transactions",
@@ -1366,5 +1365,8 @@
   "rejection_reason": "Rejection Reason",
   "claiming": "Claiming",
   "approved": "Approved",
-  "rejected": "Rejected"
+  "rejected": "Rejected",
+  "point_use_setting_form": "Point Use Setting Form",
+  "point_remain" : "Point remain",
+  "point_use" : "Point use"
 }
