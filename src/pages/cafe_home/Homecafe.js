@@ -1944,7 +1944,7 @@ function Homecafe() {
                           </div>
                         )}
                       </div>
-                      {!storeDetail?.isStatusCafe && (
+                      {storeDetail?.isShowAmountCafe && (
                         <div className="flex flex-row gap-4 font-bold mb-4">
                           <span>{t("amount")} :</span>
                           <span>{moneyCurrency(totalQuantity)}</span>
