@@ -1368,5 +1368,7 @@
   "rejected": "ຖືກປະຕິເສດ",
   "point_use_setting_form" : "ຟອມຕັ້ງຄ່າການໃຊ້ຄະແນນ",
   "point_remain" : "ຄະແນນທີ່ຍັງ",
-  "point_use" : "ຄະແນນທີ່ໃຊ້"
+  "point_use" : "ຄະແນນທີ່ໃຊ້",
+  "show_amount" : "ສະແດງຈຳນວນໃນໜ້າຂາຍສຳລັບຄາເຟ",
+  "show_amount_open" : "ເປີດໃຊ້ງານ"
 }

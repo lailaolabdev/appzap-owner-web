@@ -10,7 +10,25 @@ import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import { getHeaders } from "../../services/auth";
 import { useTranslation } from "react-i18next";
 import { useStore } from "../../store";
-
+import { Badge } from "../../components/ui/Badge";
+import { Input } from "../../components/ui/Input";
+import { Separator } from "../../components/ui/Separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../components/ui/Dialog";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from "../../components/ui/table";
+import { Button as CustomButton } from "../../components/ui/Button";
 import { useStoreStore } from "../../zustand/storeStore";
 
 export const preventNegativeValues = (e) =>
@@ -197,267 +215,208 @@ export default function PopUpAddDiscount({
   };
 
   return (
-    <Modal show={open} onHide={onClose}>
-      <Modal.Header closeButton>{t("discount")}</Modal.Header>
-      <Modal.Body>
-        <TableCustom>
-          <thead>
-            <tr>
-              <th>{t("no")}</th>
-              <th>{t("menu_name")}</th>
-              <th>{t("qty")}</th>
-              <th>{t("status")}</th>
-              <th>{t("who_order")}</th>
-              <th>{t("time")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {value
-              ? value?.map((orderItem, index) => (
-                  <tr
-                    key={"order" + index}
-                    style={{ borderBottom: "1px solid #eee" }}
-                  >
-                    <td>{index + 1}</td>
-                    <td>{orderItem?.name}</td>
-                    <td>{orderItem?.quantity}</td>
-                    <td
-                      style={{
-                        color:
-                          orderItem?.status === `SERVED`
-                            ? "green"
-                            : orderItem?.status === "DOING"
-                            ? ""
-                            : "red",
-                      }}
+    <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="text-start sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle>{t("discount")}</DialogTitle>
+        </DialogHeader>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="w-12 font-medium">{t("no")}</TableHead>
+                <TableHead className="font-medium">{t("menu_name")}</TableHead>
+                <TableHead className="w-16 font-medium">{t("qty")}</TableHead>
+                <TableHead className="font-medium">{t("status")}</TableHead>
+                <TableHead className="font-medium">{t("who_order")}</TableHead>
+                <TableHead className="font-medium">{t("time")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {value
+                ? value?.map((orderItem, index) => (
+                    <TableRow
+                      key={"order" + index}
+                      style={{ borderBottom: "1px solid #eee" }}
                     >
-                      {orderItem?.status ? orderStatus(orderItem?.status) : "-"}
-                    </td>
-                    <td>{orderItem?.createdBy?.firstname}</td>
-                    <td>
-                      {orderItem?.createdAt
-                        ? moment(orderItem?.createdAt).format("HH:mm A")
-                        : "-"}
-                    </td>
-                  </tr>
-                ))
-              : ""}
-          </tbody>
-        </TableCustom>
-        <div
-          style={{
-            padding: "10px 0",
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-        >
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{orderItem?.name}</TableCell>
+                      <TableCell>{orderItem?.quantity}</TableCell>
+                      <TableCell>
+                        <Badge
+                          className={
+                            orderItem?.status === "SERVED"
+                              ? "bg-green-100 text-green-800"
+                              : orderItem?.status === "DOING"
+                              ? "bg-gray-100 text-gray-800"
+                              : "bg-red-100 text-red-800"
+                          }
+                        >
+                          {orderItem?.status
+                            ? orderStatus(orderItem?.status)
+                            : "-"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{orderItem?.createdBy?.firstname}</TableCell>
+                      <TableCell>
+                        {orderItem?.createdAt
+                          ? moment(orderItem?.createdAt).format("HH:mm")
+                          : "-"}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                : ""}
+            </TableBody>
+          </Table>
+
+          <div className="py-2 text-right">
+            <p className="font-semibold text-lg">
+              {t("total")}: {moneyCurrency(total)} {storeDetail?.firstCurrency}
+            </p>
+          </div>
+          <hr />
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div>{t("discount")}</div>
+            <div className="flex border border-gray-300 rounded-md">
+              <CustomButton
+                onClick={() => setSelectedButton("%")}
+                className={`w-10 h-10 flex items-center justify-center ${
+                  selectedButton === "%"
+                    ? "bg-color-app text-white"
+                    : "bg-white"
+                }`}
+              >
+                %
+              </CustomButton>
+              <CustomButton
+                onClick={() => setSelectedButton(storeDetail?.firstCurrency)}
+                className={`w-10 h-10 flex items-center justify-center ${
+                  selectedButton === storeDetail?.firstCurrency
+                    ? "bg-color-app text-white"
+                    : "bg-white"
+                }`}
+              >
+                {storeDetail?.firstCurrency}
+              </CustomButton>
+            </div>
+            <Input
+              onKeyDown={preventNegativeValues}
+              type="number"
+              value={discount}
+              min="0"
+              className="w-32 h-10"
+              onChange={(e) => {
+                setDiscount(e.target.value);
+              }}
+              disabled={selectedCategory !== "All"}
+            />
+            <div>{selectedButton}</div>
+          </div>
+          <hr />
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}></div>
           <div>
-            {t("total")}: {moneyCurrency(total)} {storeDetail?.firstCurrency}
+            <h5>{t("discount_for_food")}</h5>
           </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div>{t("discount")}</div>
-          <div style={{ display: "flex", border: "1px solid #ccc" }}>
-            <div
-              onClick={() => setSelectedButton("%")}
-              style={
-                selectedButton !== ""
-                  ? {
-                      backgroundColor:
-                        selectedButton === "%" ? COLOR_APP : "white",
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }
-                  : {
-                      backgroundColor: COLOR_APP,
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }
-              }
+          <div style={{ marginTop: "10px", marginBottom: "10px" }}>
+            <label style={{ marginRight: "18px" }}>{t("type")}</label>
+            <select
+              className="form-control"
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+              style={{ display: "inline-block", width: "auto" }}
             >
-              %
-            </div>
-            <div
-              onClick={() => setSelectedButton(storeDetail?.firstCurrency)}
-              style={
-                selectedButton !== ""
-                  ? {
-                      backgroundColor:
-                        selectedButton === storeDetail?.firstCurrency
-                          ? COLOR_APP
-                          : "white",
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }
-                  : {
-                      backgroundColor: COLOR_APP,
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }
-              }
-            >
-              {storeDetail?.firstCurrency}
-            </div>
+              <option value="All">{t("chose_type")}</option>
+              {categorysType &&
+                categorysType?.map((data, index) => {
+                  return (
+                    <option key={"categoryType" + index} value={data?._id}>
+                      {data?.name}
+                    </option>
+                  );
+                })}
+            </select>
           </div>
-          <input
-            onKeyDown={preventNegativeValues}
-            type="number"
-            value={discount}
-            min="0"
-            style={{ height: 40 }}
-            onChange={(e) => {
-              setDiscount(e.target.value);
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div>{t("discount")}</div>
+            <div className="flex border border-gray-300 rounded-md">
+              <CustomButton
+                onClick={() => setSelectedButtonCategory("%")}
+                className={`w-10 h-10 flex items-center justify-center ${
+                  selectedButtonCategory === "%"
+                    ? "bg-color-app text-white"
+                    : "bg-white"
+                }`}
+              >
+                %
+              </CustomButton>
+              <CustomButton
+                onClick={() =>
+                  setSelectedButtonCategory(storeDetail?.firstCurrency)
+                }
+                className={`w-10 h-10 flex items-center justify-center ${
+                  selectedButtonCategory === storeDetail?.firstCurrency
+                    ? "bg-color-app text-white"
+                    : "bg-white"
+                }`}
+              >
+                {storeDetail?.firstCurrency}
+              </CustomButton>
+            </div>
+
+            <div style={{ display: "flex", border: "1px solid #ccc" }}></div>
+            <Input
+              type="number"
+              onKeyDown={preventNegativeValues}
+              value={discountCategory}
+              min="0"
+              className="w-32 h-10"
+              onChange={(e) => {
+                setDiscountCategory(e.target.value);
+              }}
+              disabled={selectedCategory === "All"}
+            />
+            <div>{selectedButtonCategory}</div>
+          </div>
+          <div
+            style={{
+              padding: "10px 0",
+              display: "flex",
+              justifyContent: "flex-end",
             }}
-            disabled={selectedCategory !== "All"}
-          />
-          <div>{selectedButton}</div>
+          >
+            {t("total")}: {moneyCurrency(categoryTotal)}{" "}
+            {storeDetail?.firstCurrency}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          >
+            {t("discount_for_food")}: {moneyCurrency(discountOrder)}{" "}
+            {storeDetail?.firstCurrency}
+          </div>
         </div>
         <hr />
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}></div>
-        <div>
-          <h5>{t("discount_for_food")}</h5>
-        </div>
-        <div style={{ marginTop: "10px", marginBottom: "10px" }}>
-          <label style={{ marginRight: "18px" }}>{t("type")}</label>
-          <select
-            className="form-control"
-            value={selectedCategory}
-            onChange={handleCategoryChange}
-            style={{ display: "inline-block", width: "auto" }}
-          >
-            <option value="All">{t("chose_type")}</option>
-            {categorysType &&
-              categorysType?.map((data, index) => {
-                return (
-                  <option key={"categoryType" + index} value={data?._id}>
-                    {data?.name}
-                  </option>
-                );
-              })}
-          </select>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div>{t("discount")}</div>
-          <div style={{ display: "flex", border: "1px solid #ccc" }}>
-            <div
-              onClick={() => setSelectedButtonCategory("%")}
-              style={
-                selectedButtonCategory !== ""
-                  ? {
-                      backgroundColor:
-                        selectedButtonCategory === "%" ? COLOR_APP : "white",
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }
-                  : {
-                      backgroundColor: COLOR_APP,
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }
-              }
-            >
-              %
-            </div>
-            <div
-              onClick={() =>
-                setSelectedButtonCategory(storeDetail?.firstCurrency)
-              }
-              style={
-                setSelectedButtonCategory !== ""
-                  ? {
-                      backgroundColor:
-                        selectedButtonCategory === storeDetail?.firstCurrency
-                          ? COLOR_APP
-                          : "white",
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }
-                  : {
-                      backgroundColor: COLOR_APP,
-                      width: 40,
-                      height: 40,
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }
-              }
-            >
-              {storeDetail?.firstCurrency}
-            </div>
-          </div>
-
-          <div style={{ display: "flex", border: "1px solid #ccc" }}></div>
-          <input
-            onKeyDown={preventNegativeValues}
-            type="number"
-            value={discountCategory}
-            min="0"
-            style={{ height: 40 }}
-            onChange={(e) => {
-              setDiscountCategory(e.target.value);
+        <div className="flex justify-end">
+          <CustomButton
+            disabled={buttonDisabled}
+            className="bg-color-app text-white rounded-md text-lg"
+            // style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+            onClick={async () => {
+              setButtonDisabled(true);
+              await setDiscountBill();
+              onSubmit().then(() => {
+                onClose();
+                setButtonDisabled(false);
+              });
             }}
-            disabled={selectedCategory === "All"}
-          />
-          <div>{selectedButtonCategory}</div>
+          >
+            {t("append_discount")}
+          </CustomButton>
         </div>
-        <div
-          style={{
-            padding: "10px 0",
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-        >
-          {t("total")}: {moneyCurrency(categoryTotal)}{" "}
-          {storeDetail?.firstCurrency}
-        </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-          }}
-        >
-          {t("discount_for_food")}: {moneyCurrency(discountOrder)}{" "}
-          {storeDetail?.firstCurrency}
-        </div>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button
-          disabled={buttonDisabled}
-          style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-          onClick={async () => {
-            setButtonDisabled(true);
-            await setDiscountBill();
-            onSubmit().then(() => {
-              onClose();
-              setButtonDisabled(false);
-            });
-          }}
-        >
-          {t("append_discount")}
-        </Button>
-      </Modal.Footer>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   );
 }
 

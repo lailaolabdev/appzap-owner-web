@@ -18,6 +18,7 @@ import { Image, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import _ from "lodash";
+import { data } from "autoprefixer";
 
 export default function BillForCheckOut80({
   storeDetail,
@@ -149,6 +150,10 @@ export default function BillForCheckOut80({
     setServiceChargeAmount(serviceChargeTotal);
     setTotal(totalAmountAll);
   };
+
+  useEffect(() => {
+    _calculateTotal();
+  }, [dataBill?.discount]);
 
   const getDataCurrency = async () => {
     try {
