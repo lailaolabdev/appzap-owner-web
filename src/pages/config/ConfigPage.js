@@ -20,6 +20,7 @@ import {
   updateSettingDelivery,
   updateSettingShift,
   updateSettingServiceChange,
+  updateSettingShowAmountCafe,
 } from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
 import PopUpEditServiceCharge from "../../components/popup/PopUpEditServiceCharge";
@@ -137,6 +138,12 @@ export default function ConfigPage() {
   const changeSericeChange = async (e) => {
     const isType = e.target.checked;
     await updateSettingServiceChange(profile?.data.storeId, { data: isType });
+    // console.log("changeSericeChange", isType);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+  const changeShowAmountCafe = async (e) => {
+    const isType = e.target.checked;
+    await updateSettingShowAmountCafe(profile?.data.storeId, { data: isType });
     // console.log("changeSericeChange", isType);
     await fetchStoreDetail(storeDetail?._id);
   };
@@ -779,6 +786,59 @@ export default function ConfigPage() {
                       checked={storeDetail?.isServiceChange}
                       id={`service_charge-${item?.key}`}
                       onChange={changeSericeChange}
+                    />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("show_amount")}
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: t("show_amount_open"),
+                  key: "show_amount_cafe",
+                },
+              ].map((item) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={item?.key}
+                >
+                  <div>{item?.title}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={`show_amount_cafe-${item?.key}`}>
+                      {storeDetail?.isShowAmountCafe
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.isShowAmountCafe}
+                      id={`show_amount_cafe-${item?.key}`}
+                      onChange={changeShowAmountCafe}
                     />
                   </div>
                 </div>

@@ -1368,5 +1368,7 @@
   "rejected": "Rejected",
   "point_use_setting_form": "Point Use Setting Form",
   "point_remain" : "Point remain",
-  "point_use" : "Point use"
+  "point_use" : "Point use",
+  "show_amount" : "Show Amount in sale page for cafe",
+  "show_amount_open" : "Open for use"
 }
