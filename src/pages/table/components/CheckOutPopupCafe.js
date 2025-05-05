@@ -467,6 +467,128 @@ export default function CheckOutPopupCafe({
         }
       )
       .then(async (response) => {
+        console.log("response", response);
+        if (response?.status === 200) {
+          onPrintBill();
+          setSelectedTable();
+          getTableDataStore();
+          setCashCurrency();
+          setTab("cash");
+          setCash();
+          setSelectCurrency("LAK");
+          setRateCurrency(1);
+          setTransfer();
+          setShowTotalPointPrice(false);
+          setSelectInput("inputCash");
+          setHasCRM(false);
+          setPlatform("");
+          setDeliveryCode("");
+          setTextSearchMember("");
+          // setSelectedMenus([]);
+          localStorage.removeItem("STAFFCONFIRM_DATA");
+          setIsLoading(false);
+          setIsDelivery(false);
+          onClose();
+          onQueue();
+          setTotalPointPrice();
+          if (!storeDetail?.isStatusCafe) {
+            await onPrintForCher();
+          }
+
+          // await onPrintForCherLaBel();
+          ClearChangeAmount();
+        }
+
+        navigate("/cafe");
+      })
+      .catch((error) => {
+        errorAdd("ທ່ານບໍ່ສາມາດ checkBill ໄດ້..... ");
+        setIsLoading(false);
+        onClose();
+      });
+  };
+  const _checkBillNotPrint = async () => {
+    setIsLoading(true);
+    const moneyChange = calculateReturnAmount();
+    const Orders = dataBill?.map((itemOrder) => itemOrder);
+
+    let statusPoint = "";
+
+    if (storeDetail?.isCRM && tab === "cash_transfer_point") {
+      statusPoint = "REDEEM";
+    }
+    if (storeDetail?.isCRM && hasCRM) {
+      statusPoint = "EARN";
+    }
+
+    const datas = {
+      billId: billId,
+      selectedBank: selectedBank.name,
+      bankId: selectedBank.id,
+      order: Orders,
+      statusBill: statusBill,
+      storeId: profile.data.storeId,
+      isCheckout: "true",
+      status: "CHECKOUT",
+      payAmount: cash,
+      billAmount:
+        totalPoints < memberDataSearch?.point && !hasCRM
+          ? DiscountMember() - totalPointPrice
+          : DiscountMember(),
+      transferAmount: isDelivery ? 0 : transfer,
+      deliveryAmount: isDelivery ? matchRoundNumber(transfer) : 0,
+      deliveryName: platform,
+      deliveryCode: deliveryCode,
+      paymentMethod: isDelivery ? "DELIVERY" : forcus,
+      billAmountBefore: totalBill,
+      shiftId: shiftCurrent[0]?._id,
+      taxAmount: null,
+      taxPercent: taxPercent,
+      customerId: null,
+      userNanme: null,
+      saveCafe: true,
+      phone: null,
+      queue: bill,
+      point: point,
+      change: moneyChange,
+      isCafe: true,
+      memberId: memberDataSearch?._id,
+      memberName: memberDataSearch?.name,
+      memberPhone: memberDataSearch?.phone,
+      memberDiscount: memberDataSearch?.discountPercentage,
+      discount:
+        memberDataSearch?.discountPercentage > 0
+          ? memberDataSearch?.discountPercentage
+          : dataBillEdit?.discount > 0
+          ? dataBillEdit?.discount
+          : 0,
+      discountType: "PERCENT",
+      statusPoint: statusPoint,
+      fullnameStaffCheckOut:
+        `${profile.data.firstname ? profile.data.firstname : "--"} ${
+          profile.data.lastname ? profile.data.lastname : "--"
+        }` ?? "-",
+      staffCheckOutId: profile.data._id,
+      exchangePointStoreId: exchangePointStoreIds,
+    };
+
+    if (selectCurrency?.id !== "LAK") {
+      datas.currencyId = selectCurrency?.id;
+      datas.currency = cashCurrency;
+      datas.currencyName = selectCurrency?.name;
+    }
+
+    await axios
+      .post(
+        `${END_POINT}/v7/admin/bill-cafe-checkout`,
+        {
+          data: datas,
+        },
+        {
+          headers: await getHeaders(),
+        }
+      )
+      .then(async (response) => {
         if (response?.status === 200) {
           setSelectedTable();
           getTableDataStore();
@@ -482,7 +604,7 @@ export default function CheckOutPopupCafe({
           setPlatform("");
           setDeliveryCode("");
           setTextSearchMember("");
-          setSelectedMenus([]);
+          // setSelectedMenus([]);
           localStorage.removeItem("STAFFCONFIRM_DATA");
           setIsLoading(false);
           setIsDelivery(false);
@@ -492,6 +614,7 @@ export default function CheckOutPopupCafe({
           if (!storeDetail?.isStatusCafe) {
             await onPrintForCher();
           }
+
           // await onPrintForCherLaBel();
           ClearChangeAmount();
         }
@@ -855,8 +978,6 @@ export default function CheckOutPopupCafe({
 
   const totalCashAndTransfer =
     (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
-
-  // console.log("totalPointPrice", totalPointPrice);
 
   return (
     <Modal
@@ -1605,9 +1726,9 @@ export default function CheckOutPopupCafe({
           <div className="flex flex-col dmd:flex-row gap-2 items-end">
             <Button
               onClick={async () => {
-                await onPrintBill().then(() => {
-                  handleSubmit();
-                });
+                // await onPrintBill().then(() => {
+                handleSubmit();
+                // });
 
                 // await onPrintForCher();
               }}
@@ -1625,7 +1746,7 @@ export default function CheckOutPopupCafe({
             </Button>
             <Button
               className="dmd:w-fit w-full"
-              onClick={handleSubmit}
+              onClick={() => _checkBillNotPrint()}
               disabled={
                 !canCheckOut ||
                 (isDelivery && platform.length <= 0) ||
