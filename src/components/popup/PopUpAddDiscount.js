@@ -215,21 +215,31 @@ export default function PopUpAddDiscount({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="text-start sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle>{t("discount")}</DialogTitle>
-        </DialogHeader>
-        <div className="overflow-x-auto">
+    <Modal show={open} onHide={onClose} centered size="lg">
+      <Modal.Header closeButton>
+        <Modal.Title>{t("discount")}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div className="overflow-x-auto h-[300px]">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="w-12 font-medium">{t("no")}</TableHead>
-                <TableHead className="font-medium">{t("menu_name")}</TableHead>
-                <TableHead className="w-16 font-medium">{t("qty")}</TableHead>
-                <TableHead className="font-medium">{t("status")}</TableHead>
-                <TableHead className="font-medium">{t("who_order")}</TableHead>
-                <TableHead className="font-medium">{t("time")}</TableHead>
+                <TableHead className="font-medium">{t("no")}</TableHead>
+                <TableHead className="font-medium text-center">
+                  {t("menu_name")}
+                </TableHead>
+                <TableHead className="font-medium text-center">
+                  {t("qty")}
+                </TableHead>
+                <TableHead className="font-medium text-center">
+                  {t("status")}
+                </TableHead>
+                <TableHead className="font-medium text-center">
+                  {t("who_order")}
+                </TableHead>
+                <TableHead className="font-medium text-end">
+                  {t("time")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -239,10 +249,14 @@ export default function PopUpAddDiscount({
                       key={"order" + index}
                       style={{ borderBottom: "1px solid #eee" }}
                     >
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{orderItem?.name}</TableCell>
-                      <TableCell>{orderItem?.quantity}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-center">{index + 1}</TableCell>
+                      <TableCell className="text-center">
+                        {orderItem?.name}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {orderItem?.quantity}
+                      </TableCell>
+                      <TableCell className="text-center">
                         <Badge
                           className={
                             orderItem?.status === "SERVED"
@@ -258,9 +272,9 @@ export default function PopUpAddDiscount({
                         </Badge>
                       </TableCell>
                       <TableCell>{orderItem?.createdBy?.firstname}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-right">
                         {orderItem?.createdAt
-                          ? moment(orderItem?.createdAt).format("HH:mm")
+                          ? moment(orderItem?.createdAt).format("HH:mm A")
                           : "-"}
                       </TableCell>
                     </TableRow>
@@ -268,7 +282,8 @@ export default function PopUpAddDiscount({
                 : ""}
             </TableBody>
           </Table>
-
+        </div>
+        <div className="overflow-x-auto ">
           <div className="py-2 text-right">
             <p className="font-semibold text-lg">
               {t("total")}: {moneyCurrency(total)} {storeDetail?.firstCurrency}
@@ -402,7 +417,6 @@ export default function PopUpAddDiscount({
           <CustomButton
             disabled={buttonDisabled}
             className="bg-color-app text-white rounded-md text-lg"
-            // style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={async () => {
               setButtonDisabled(true);
               await setDiscountBill();
@@ -415,8 +429,8 @@ export default function PopUpAddDiscount({
             {t("append_discount")}
           </CustomButton>
         </div>
-      </DialogContent>
-    </Dialog>
+      </Modal.Body>
+    </Modal>
   );
 }
 

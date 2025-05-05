@@ -117,7 +117,7 @@ export default function EditMenu() {
         name_cn: formData?.name_cn,
         name_kr: formData?.name_kr,
         quantity: formData?.quantity,
-        categoryId: formData?.categoryId?._id,
+        categoryId: formData?.categoryId,
         price: formData?.price,
         detail: formData?.detail,
         unit: formData?.unit,
@@ -126,6 +126,7 @@ export default function EditMenu() {
         sort: formData?.sort,
         storeId: storeDetail?._id,
       };
+
       const updatedMenu = await updateMenuItem(menuData, data?._id);
       if (updatedMenu?.status === 200) {
         successAdd(`${t("edit_success")}`);

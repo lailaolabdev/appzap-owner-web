@@ -2081,34 +2081,36 @@ function HomecafeEdit() {
                   </div>
                   <hr />
                   {SelectedMenus?.length > 0 ? (
-                    <div className="mb-3 flex">
-                      <div className="flex flex-row gap-4 font-bold">
-                        <span>{t("pricesTotal")} :</span>
+                    <>
+                      <div className="mb-3 flex">
+                        <div className="flex flex-row gap-4 font-bold">
+                          <span>{t("pricesTotal")} :</span>
 
-                        <span>
-                          {dataBillEdit?.discount > 0
-                            ? moneyCurrency(
-                                total - (total * dataBillEdit?.discount) / 100
-                              )
-                            : moneyCurrency(total)}{" "}
-                          {t("nameCurrency")}
-                        </span>
-                      </div>
-                      {totalExchangePoints > 0 && (
-                        <div className="flex ml-5 flex-row gap-4 font-bold">
-                          <span>{t("point")} :</span>
                           <span>
-                            {moneyCurrency(totalExchangePoints)} {t("point")}
+                            {dataBillEdit?.discount > 0
+                              ? moneyCurrency(
+                                  total - (total * dataBillEdit?.discount) / 100
+                                )
+                              : moneyCurrency(total)}{" "}
+                            {t("nameCurrency")}
                           </span>
                         </div>
-                      )}
+                        {totalExchangePoints > 0 && (
+                          <div className="flex ml-5 flex-row gap-4 font-bold">
+                            <span>{t("point")} :</span>
+                            <span>
+                              {moneyCurrency(totalExchangePoints)} {t("point")}
+                            </span>
+                          </div>
+                        )}
+                      </div>
                       {storeDetail?.isShowAmountCafe && (
                         <div className="flex flex-row gap-4 font-bold mb-4">
                           <span>{t("amount")} :</span>
                           <span>{moneyCurrency(totalQuantity)}</span>
                         </div>
                       )}
-                    </div>
+                    </>
                   ) : (
                     ""
                   )}
