@@ -511,7 +511,6 @@ export default function CheckOutPopupCafe({
         onClose();
       });
   };
-
   const _checkBillNotPrint = async () => {
     onClose();
     setIsLoading(true);
