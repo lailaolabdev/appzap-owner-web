@@ -507,6 +507,7 @@ export default function CheckOutPopupCafe({
         onClose();
       });
   };
+
   const _checkBillNotPrint = async () => {
     setIsLoading(true);
     const moneyChange = calculateReturnAmount();
