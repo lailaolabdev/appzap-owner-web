@@ -114,16 +114,16 @@ export default function MainLayout({ children }) {
     GetOpenShift(startDate);
   }, []);
 
-  useEffect(() => {
-    if (storeDetail) {
-      fetchData();
-      const intervalId = setInterval(fetchData, 30000);
-      return () => clearInterval(intervalId);
-    } else {
-      setIsLoading(false);
-      setPopup({ PopUpShowSales: false });
-    }
-  }, [storeId]);
+  // useEffect(() => {
+  //   if (storeDetail) {
+  //     fetchData();
+  //     const intervalId = setInterval(fetchData, 30000);
+  //     return () => clearInterval(intervalId);
+  //   } else {
+  //     setIsLoading(false);
+  //     setPopup({ PopUpShowSales: false });
+  //   }
+  // }, [storeId]);
 
   useEffect(() => {
     let updateIntervalId = null;
