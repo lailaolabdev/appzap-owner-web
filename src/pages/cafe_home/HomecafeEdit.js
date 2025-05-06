@@ -1119,8 +1119,13 @@ function HomecafeEdit() {
   const bill58Ref = useRef(null);
 
   useLayoutEffect(() => {
-    setWidthBill80(bill80Ref.current.offsetWidth);
-    // setWidthBill58(bill58Ref.current.offsetWidth);
+    // Add null check before accessing properties
+    if (bill80Ref.current) {
+      setWidthBill80(bill80Ref.current.offsetWidth);
+    }
+    if (bill58Ref.current) {
+      setWidthBill58(bill58Ref.current.offsetWidth);
+    }
   }, [bill80Ref, bill58Ref]);
 
   // ສ້າງປະຫວັດການພິມບິນຂອງແຕ່ລະໂຕະ
@@ -1420,7 +1425,6 @@ function HomecafeEdit() {
       ...bill,
       typePrint: "PRINT_BILL_LABEL",
     };
-    await _createHistoriesPrinter(_dataBill);
 
     const orderSelect = selectedMenu?.filter((e) => e);
 
@@ -1470,14 +1474,8 @@ function HomecafeEdit() {
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
-        // if (_index === 0) {
-        //   await Swal.fire({
-        //     icon: "success",
-        //     title: `${t("print_success")}`,
-        //     showConfirmButton: false,
-        //     timer: 1500,
-        //   });
-        // }
+
+        await _createHistoriesPrinter(_dataBill);
       } catch (err) {
         console.log(err);
         if (_index === 0) {
@@ -1498,17 +1496,19 @@ function HomecafeEdit() {
 
   const onPrintBill = async () => {
     try {
+      setPopup({ CheckOutType: false });
       setIsLoading(true);
       const _dataBill = {
         typePrint: "PRINT_BILL_CHECKOUT",
       };
-      await _createHistoriesPrinter(_dataBill);
 
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
+
       const printerBillData = printers?.find(
         (e) => e?._id === _printerCounters?.BILL
       );
+
       let dataImageForPrint;
       if (printerBillData?.width === "80mm") {
         dataImageForPrint = await html2canvas(bill80Ref.current, {
@@ -1564,20 +1564,20 @@ function HomecafeEdit() {
           });
         }
       );
-      await onPrintForCherLaBel();
-      setIsLoading(false);
-      setSelectedTable();
-      getTableDataStore();
+
       setSelectedMenu([]);
       setSelectedMenus([]);
+      setSelectedTable();
+      getTableDataStore();
       clearSelectedMenus();
-
+      setIsLoading(false);
       await Swal.fire({
         icon: "success",
         title: `${t("print_success")}`,
         showConfirmButton: false,
         timer: 1500,
       });
+      await _createHistoriesPrinter(_dataBill);
     } catch (err) {
       setIsLoading(false);
       await Swal.fire({
@@ -1703,9 +1703,6 @@ function HomecafeEdit() {
   useEffect(() => {
     setTotalExchangePoints(calculateTotalExchangePoints(SelectedMenus));
   }, [totalExchangePoints, SelectedMenus]);
-
-  console.log("totalExchangePoints: ", totalExchangePoints);
-  console.log("SelectedMenus: ", SelectedMenus);
 
   return (
     <div>
@@ -2656,66 +2653,5 @@ const CafeMenu = styled.div`
   height: 90vh;
   overflow-y: scroll;
 `;
-const SubCafeMenu = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
 
-  .images-menu-cafe {
-    height: 200px;
-  }
-
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
-
-    .images-menu-cafe {
-      height: 150px;
-    }
-  }
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(3, 1fr);
-
-    .images-menu-cafe {
-      height: 100px;
-    }
-  }
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
-
-    .images-menu-cafe {
-      height: 100px;
-    }
-  }
-  @media (max-width: 820px) {
-    grid-template-columns: repeat(3, 1fr);
-
-    .images-menu-cafe {
-      height: 100px;
-    }
-  }
-`;
-
-const CafeCart = styled.div`
-  width: 60rem;
-  background-color: #fff;
-  max-height: 90vh;
-  border-color: black;
-  overflow-y: scroll;
-  border-width: 1;
-  padding-left: 20;
-  padding-top: 20;
-  margin-top: 15px;
-
-  @media (max-width: 768px) {
-    width: 80rem;
-    margin-top: 15px;
-  }
-  @media (max-width: 820px) {
-    width: 80rem;
-    margin-top: 15px;
-  }
-  @media (max-width: 900px) {
-    width: 80rem;
-    margin-top: 15px;
-  }
-`;
 export default HomecafeEdit;

@@ -387,6 +387,7 @@ export default function CheckOutPopupCafe({
 
   const _checkBill = async (currencyId, currencyName) => {
     setIsLoading(true);
+    onClose();
     const moneyChange = calculateReturnAmount();
     const Orders = dataBill?.map((itemOrder) => itemOrder);
 
@@ -467,7 +468,7 @@ export default function CheckOutPopupCafe({
         }
       )
       .then(async (response) => {
-        console.log("response", response);
+        // console.log("response", response);
         if (response?.status === 200) {
           onPrintBill();
           setSelectedTable();
@@ -486,6 +487,9 @@ export default function CheckOutPopupCafe({
           setTextSearchMember("");
           // setSelectedMenus([]);
           localStorage.removeItem("STAFFCONFIRM_DATA");
+          // setIsLoading(false);
+          // setIsDelivery(false);
+
           setIsLoading(false);
           setIsDelivery(false);
           onClose();
@@ -507,8 +511,8 @@ export default function CheckOutPopupCafe({
         onClose();
       });
   };
-
   const _checkBillNotPrint = async () => {
+    onClose();
     setIsLoading(true);
     const moneyChange = calculateReturnAmount();
     const Orders = dataBill?.map((itemOrder) => itemOrder);
@@ -607,9 +611,9 @@ export default function CheckOutPopupCafe({
           setTextSearchMember("");
           // setSelectedMenus([]);
           localStorage.removeItem("STAFFCONFIRM_DATA");
-          setIsLoading(false);
+          // setIsLoading(false);
           setIsDelivery(false);
-          onClose();
+          // onClose();
           onQueue();
           setTotalPointPrice();
           if (!storeDetail?.isStatusCafe) {
