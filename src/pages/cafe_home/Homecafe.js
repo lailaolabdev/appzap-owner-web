@@ -1365,6 +1365,7 @@ function Homecafe() {
 
   const onPrintBill = async () => {
     try {
+      setPopup({ CheckOutType: false });
       setIsLoading(true);
       const _dataBill = {
         typePrint: "PRINT_BILL_CHECKOUT",
@@ -1373,9 +1374,12 @@ function Homecafe() {
 
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
+      console.log("_printerCounters", _printerCounters);
       const printerBillData = printers?.find(
         (e) => e?._id === _printerCounters?.BILL
       );
+      console.log("printerBillData", printerBillData);
+
       let dataImageForPrint;
       if (printerBillData?.width === "80mm") {
         dataImageForPrint = await html2canvas(bill80Ref.current, {
@@ -1384,7 +1388,9 @@ function Homecafe() {
           scrollY: 0,
           scale: 530 / widthBill80,
         });
+        console.log("dataImageForPrint in", dataImageForPrint);
       }
+      console.log("dataImageForPrint out", dataImageForPrint);
 
       if (printerBillData?.width === "58mm") {
         dataImageForPrint = await html2canvas(bill58Ref.current, {
@@ -1432,12 +1438,12 @@ function Homecafe() {
         }
       );
       await onPrintForCherLaBel();
-      setIsLoading(false);
       setSelectedTable();
       getTableDataStore();
       setSelectedMenu([]);
       setSelectedMenus([]);
       clearSelectedMenus();
+      setIsLoading(false);
 
       await Swal.fire({
         icon: "success",
@@ -2458,7 +2464,6 @@ function Homecafe() {
         />
       </div>
       {SelectedMenus?.map((val, i) => {
-        console.log("INDEX", i);
         const totalPrice = () => {
           const totalOptionPrice = val?.totalOptionPrice || 0;
           const price = val?.price || 0;
@@ -2512,66 +2517,5 @@ const CafeMenu = styled.div`
   height: 90vh;
   overflow-y: scroll;
 `;
-const SubCafeMenu = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
 
-  .images-menu-cafe {
-    height: 200px;
-  }
-
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
-
-    .images-menu-cafe {
-      height: 150px;
-    }
-  }
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(3, 1fr);
-
-    .images-menu-cafe {
-      height: 100px;
-    }
-  }
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
-
-    .images-menu-cafe {
-      height: 100px;
-    }
-  }
-  @media (max-width: 820px) {
-    grid-template-columns: repeat(3, 1fr);
-
-    .images-menu-cafe {
-      height: 100px;
-    }
-  }
-`;
-
-const CafeCart = styled.div`
-  width: 60rem;
-  background-color: #fff;
-  max-height: 90vh;
-  border-color: black;
-  overflow-y: scroll;
-  border-width: 1;
-  padding-left: 20;
-  padding-top: 20;
-  margin-top: 15px;
-
-  @media (max-width: 768px) {
-    width: 80rem;
-    margin-top: 15px;
-  }
-  @media (max-width: 820px) {
-    width: 80rem;
-    margin-top: 15px;
-  }
-  @media (max-width: 900px) {
-    width: 80rem;
-    margin-top: 15px;
-  }
-`;
 export default Homecafe;
