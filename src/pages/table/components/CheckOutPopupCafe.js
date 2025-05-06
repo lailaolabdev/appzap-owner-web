@@ -468,7 +468,7 @@ export default function CheckOutPopupCafe({
         }
       )
       .then(async (response) => {
-        // console.log("response", response);
+        console.log("response", response);
         if (response?.status === 200) {
           onPrintBill();
           setSelectedTable();
@@ -485,7 +485,7 @@ export default function CheckOutPopupCafe({
           setPlatform("");
           setDeliveryCode("");
           setTextSearchMember("");
-          // setSelectedMenus([]);
+          setSelectedMenus([]);
           localStorage.removeItem("STAFFCONFIRM_DATA");
           // setIsLoading(false);
           // setIsDelivery(false);
@@ -609,9 +609,9 @@ export default function CheckOutPopupCafe({
           setPlatform("");
           setDeliveryCode("");
           setTextSearchMember("");
-          // setSelectedMenus([]);
+          setSelectedMenus([]);
           localStorage.removeItem("STAFFCONFIRM_DATA");
-          // setIsLoading(false);
+          setIsLoading(false);
           setIsDelivery(false);
           // onClose();
           onQueue();
@@ -623,6 +623,13 @@ export default function CheckOutPopupCafe({
           // await onPrintForCherLaBel();
           ClearChangeAmount();
         }
+
+        await Swal.fire({
+          icon: "success",
+          title: `${t("calculate")}${t("success")}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
 
         navigate("/cafe");
       })
