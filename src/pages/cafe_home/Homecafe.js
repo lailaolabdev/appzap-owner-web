@@ -1293,8 +1293,6 @@ function Homecafe() {
       .map((_, i) => billForCherCancel80.current[i] || null);
   }
 
-  // console.log("billForCherCancel80", billForCherCancel80);
-
   const onPrintForCherLaBel = async () => {
     let _dataBill = {
       ...bill,
