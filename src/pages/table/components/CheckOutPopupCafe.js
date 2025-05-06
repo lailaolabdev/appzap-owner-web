@@ -488,8 +488,11 @@ export default function CheckOutPopupCafe({
           // setSelectedMenus([]);
           localStorage.removeItem("STAFFCONFIRM_DATA");
           // setIsLoading(false);
-          setIsDelivery(false);
+          // setIsDelivery(false);
 
+          setIsLoading(false);
+          setIsDelivery(false);
+          onClose();
           onQueue();
           setTotalPointPrice();
           if (!storeDetail?.isStatusCafe) {
@@ -607,7 +610,7 @@ export default function CheckOutPopupCafe({
           setPlatform("");
           setDeliveryCode("");
           setTextSearchMember("");
-          setSelectedMenus([]);
+          // setSelectedMenus([]);
           localStorage.removeItem("STAFFCONFIRM_DATA");
           // setIsLoading(false);
           setIsDelivery(false);

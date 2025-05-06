@@ -29,6 +29,8 @@ export default function BillForCheckOutCafe80({
   totalPointPrice,
   point,
   paymentMethod,
+  isModalData,
+  index,
 }) {
   // state
   const [total, setTotal] = useState();
@@ -131,7 +133,9 @@ export default function BillForCheckOutCafe80({
     <div className="p-1 bg-white rounded-lg shadow-md w-[285px] mr-[-12px]">
       <div className="flex flex-col mb-2 items-center ">
         <span className="">{t("queue no")}</span>
-        <span className="text-[18px] font-bold">{data || 0}</span>
+        <span className="text-[18px] font-bold">
+          {isModalData ? index : data + 1}
+        </span>
       </div>
       <hr className="border-b border-dashed border-gray-600" />
       <div className=" flex justify-center relative">
@@ -181,7 +185,7 @@ export default function BillForCheckOutCafe80({
           <div className="mb-1">
             {t("date")}:{" "}
             <span style={{ fontWeight: "bold" }}>
-              {moment(dataBill?.createdAt).format("DD-MM-YYYY - HH:mm:ss")}
+              {moment(dataModal?.createdAt).format("DD-MM-YYYY - HH:mm:ss")}
             </span>
           </div>
           <div>
