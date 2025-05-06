@@ -61,6 +61,7 @@ export default function DashboardFinance({
   const { accessToken } = useQuery();
   const params = useParams();
   const [data, setData] = useState();
+  const [index, setIndex] = useState(0);
   const [disCountDataKib, setDisCountDataKib] = useState(0);
   const [disCountDataPercent, setDisCountDataPercent] = useState(0);
   const [dataNotCheckBill, setDataNotCheckBill] = useState({});
@@ -813,6 +814,7 @@ export default function DashboardFinance({
                 key={item?._id}
                 onClick={() => {
                   setSelectOrder(item);
+                  setIndex((pagination - 1) * limitData + index + 1);
                   handleShow(item);
                 }}
                 style={{
@@ -1393,6 +1395,8 @@ export default function DashboardFinance({
             data={dataModal?.length}
             memberData={""}
             dataModal={dataModal}
+            isModalData={true}
+            index={index}
           />
         </div>
       ) : (

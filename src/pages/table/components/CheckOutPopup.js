@@ -493,12 +493,12 @@ export default function CheckOutPopup({
           name: "LAK",
         });
         setSelectInput("inputCash");
-        // setForcus("CASH");
+        setForcus("CASH");
         setRateCurrency(1);
         setHasCRM(false);
         setTextSearchMember("");
-        //setCash();
-        //setTransfer();
+        setCash();
+        setTransfer();
         setOrderPayBefore([]);
         // callCheckOutPrintBillOnly(selectedTable?._id);
         clearEmployee();
