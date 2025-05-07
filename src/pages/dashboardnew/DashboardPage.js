@@ -101,7 +101,7 @@ export default function DashboardPage() {
   // provider
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const { profile } = useStore();
-  const { shiftCurrent } = useShiftStore();
+  const { shiftCurrent, OpenShiftForCounter } = useShiftStore();
 
   // useEffect
   useEffect(() => {
@@ -565,14 +565,17 @@ export default function DashboardPage() {
                   />
                 </div>
               )
-            : ""}
-          {/* <Button
-            variant="outline-primary"
-            style={{ display: "flex", gap: 10, alignItems: "center" }}
-            onClick={() => setPopup({ PopupDaySplitView: true })}
-          >
-            <BsFillCalendarEventFill /> DAY SPLIT VIEW
-          </Button> */}
+            : storeDetail?.isShift &&
+              OpenShiftForCounter && (
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Select
+                    placeholder={`${t("plachoder_shift")}...`}
+                    className="min-w-[170px] w-full border-orange-500"
+                    options={optionsData}
+                    onChange={handleSearchInput}
+                  />
+                </div>
+              )}
           <div style={{ flex: 1 }} />
           <Button
             variant="outline-primary"

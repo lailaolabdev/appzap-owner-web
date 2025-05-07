@@ -1370,5 +1370,6 @@
   "point_remain" : "ຄະແນນທີ່ຍັງ",
   "point_use" : "ຄະແນນທີ່ໃຊ້",
   "show_amount" : "ສະແດງຈຳນວນໃນໜ້າຂາຍສຳລັບຄາເຟ",
-  "show_amount_open" : "ເປີດໃຊ້ງານ"
+  "show_amount_open" : "ເປີດໃຊ້ງານ",
+  "counter_can_use_filter_shift" : "ສິດເຄົ້າເຕີສາມາດເບິ່ງແຍກຕາມກະໄດ້"
 }

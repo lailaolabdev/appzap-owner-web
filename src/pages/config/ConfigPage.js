@@ -21,6 +21,7 @@ import {
   updateSettingShift,
   updateSettingServiceChange,
   updateSettingShowAmountCafe,
+  updateCounterFilterShift,
 } from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
 import PopUpEditServiceCharge from "../../components/popup/PopUpEditServiceCharge";
@@ -144,6 +145,12 @@ export default function ConfigPage() {
   const changeShowAmountCafe = async (e) => {
     const isType = e.target.checked;
     await updateSettingShowAmountCafe(profile?.data.storeId, { data: isType });
+    // console.log("changeSericeChange", isType);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+  const changeCounterFilterShift = async (e) => {
+    const isType = e.target.checked;
+    await updateCounterFilterShift(profile?.data.storeId, { data: isType });
     // console.log("changeSericeChange", isType);
     await fetchStoreDetail(storeDetail?._id);
   };
@@ -732,6 +739,49 @@ export default function ConfigPage() {
                       checked={storeDetail?.isShift}
                       id={`switch-shift-${item?.key}`}
                       onChange={changeShift}
+                    />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+            <Card.Body>
+              {[
+                {
+                  title: t("counter_can_use_filter_shift"),
+                  key: "filter_shift",
+                },
+              ].map((item) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={item?.key}
+                >
+                  <div>{item?.title}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label
+                      htmlFor={`switch-CounterFilterShift-${item?.key}`}
+                    >
+                      {storeDetail?.isCounterFilterShift
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.isCounterFilterShift}
+                      id={`switch-CounterFilterShift-${item?.key}`}
+                      onChange={changeCounterFilterShift}
                     />
                   </div>
                 </div>

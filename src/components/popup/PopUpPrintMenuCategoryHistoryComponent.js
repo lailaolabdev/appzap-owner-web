@@ -49,7 +49,7 @@ export default function PopUpPrintMenuCategoryHistoryComponent({
   // provider
   const { printerCounter, printers, profile } = useStore();
   const { storeDetail } = useStoreStore();
-  const { shiftCurrent } = useShiftStore();
+  const { shiftCurrent, OpenShiftForCounter } = useShiftStore();
 
   const fetchShift = async () => {
     await getAllShift()
@@ -265,7 +265,17 @@ export default function PopUpPrintMenuCategoryHistoryComponent({
                   />
                 </div>
               )
-            : ""}
+            : storeDetail?.isShift &&
+              OpenShiftForCounter && (
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Select
+                    placeholder={`${t("plachoder_shift")}...`}
+                    className="min-w-[170px] w-full border-orange-500"
+                    options={optionsData}
+                    onChange={handleSearchInput}
+                  />
+                </div>
+              )}
         </div>
         <div
           ref={billRef}
@@ -304,11 +314,11 @@ export default function PopUpPrintMenuCategoryHistoryComponent({
                     <td style={{ textAlign: "center" }}>{e?.served}</td>
                     <td style={{ textAlign: "center" }}>{e?.cenceled}</td>
                     <td style={{ textAlign: "right" }}>
-                    {e?.totalPointAmount > 0
-                          ? moneyCurrency(
-                              e?.totalSaleAmount - e?.totalPointAmount
-                            )
-                          : moneyCurrency(e?.totalSaleAmount)}
+                      {e?.totalPointAmount > 0
+                        ? moneyCurrency(
+                            e?.totalSaleAmount - e?.totalPointAmount
+                          )
+                        : moneyCurrency(e?.totalSaleAmount)}
                       {storeDetail?.firstCurrency}
                     </td>
                   </tr>
