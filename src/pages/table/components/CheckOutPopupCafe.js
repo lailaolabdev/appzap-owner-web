@@ -621,6 +621,12 @@ export default function CheckOutPopupCafe({
           // await onPrintForCherLaBel();
           ClearChangeAmount();
         }
+        await Swal.fire({
+          icon: "success",
+          title: `${t("calculate")}${t("success")}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
 
         navigate("/cafe");
       })
