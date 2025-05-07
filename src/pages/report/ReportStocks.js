@@ -486,6 +486,11 @@ export default function ReportStocks() {
 
         <div class="flex gap-2">
           <StockExport stock={stocks} storeName={storeDetail?.name} />
+          <StockExport
+            stock={stockAll}
+            storeName={storeDetail?.name}
+            allStock={true}
+          />
           <button
             class="bg-color-app hover:bg-color-app/70 text-white font-md py-2 px-3 rounded-md"
             onClick={() => setPopup({ PopUpPreViewsPage: true })}

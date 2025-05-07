@@ -25,7 +25,7 @@ const toDataURL = (url) => {
   });
 };
 
-export default function StockExport({ stock, storeName }) {
+export default function StockExport({ stock, storeName, allStock }) {
   const { t } = useTranslation();
 
   const header = [
@@ -196,7 +196,7 @@ export default function StockExport({ stock, storeName }) {
           title={t("Export")}
         >
           <FontAwesomeIcon icon={faFileExport} style={{ marginRight: "8px" }} />
-          {t("Export")}
+          {allStock ? t("Export all") : t("Export")}
         </button>
       </div>
     </>
