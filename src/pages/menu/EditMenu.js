@@ -117,7 +117,7 @@ export default function EditMenu() {
         name_cn: formData?.name_cn,
         name_kr: formData?.name_kr,
         quantity: formData?.quantity,
-        categoryId: formData?.categoryId,
+        categoryId: formData?.categoryId?._id || formData?.categoryId,
         price: formData?.price,
         detail: formData?.detail,
         unit: formData?.unit,
