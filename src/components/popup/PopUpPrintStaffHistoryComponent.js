@@ -45,7 +45,7 @@ export default function PopUpPrintStaffHistoryComponent({
   // provider
   const { printerCounter, printers, profile } = useStore();
   const { storeDetail } = useStoreStore();
-  const { shiftCurrent } = useShiftStore();
+  const { shiftCurrent, OpenShiftForCounter } = useShiftStore();
 
   const fetchShift = async () => {
     await getAllShift()
@@ -253,7 +253,17 @@ export default function PopUpPrintStaffHistoryComponent({
                   />
                 </div>
               )
-            : ""}
+            : storeDetail?.isShift &&
+              OpenShiftForCounter && (
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Select
+                    placeholder={`${t("plachoder_shift")}...`}
+                    className="min-w-[170px] w-full border-orange-500"
+                    options={optionsData}
+                    onChange={handleSearchInput}
+                  />
+                </div>
+              )}
         </div>
         <div
           ref={billRef}

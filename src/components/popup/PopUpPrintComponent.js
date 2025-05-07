@@ -65,7 +65,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   // provider
   const { printers, printerCounter, profile } = useStore();
   const { storeDetail } = useStoreStore();
-  const { shiftCurrent } = useShiftStore();
+  const { shiftCurrent, OpenShiftForCounter } = useShiftStore();
 
   // useEffect
   useEffect(() => {
@@ -414,7 +414,17 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                   />
                 </div>
               )
-            : ""}
+            : storeDetail?.isShift &&
+              OpenShiftForCounter && (
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Select
+                    placeholder={`${t("plachoder_shift")}...`}
+                    className="min-w-[170px] w-full border-orange-500"
+                    options={optionsData}
+                    onChange={handleSearchInput}
+                  />
+                </div>
+              )}
         </div>
 
         <div
