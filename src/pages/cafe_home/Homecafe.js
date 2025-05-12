@@ -371,7 +371,6 @@ function Homecafe() {
       findby += `timeFrom=${startTime}&`;
       findby += `timeTo=${endTime}`;
       const res = await getBillCountCafe(findby);
-
       setBill(res?.data?.billCountCafe);
     } catch (error) {
       console.log(error);
