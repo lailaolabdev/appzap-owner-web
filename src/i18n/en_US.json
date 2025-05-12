@@ -1372,5 +1372,12 @@
   "show_amount" : "Show Amount in sale page for cafe",
   "show_amount_open" : "Open for use",
   "counter_can_use_filter_shift" : "Counter can use filter shift",
-  "paymentMethod": "Payment Method"
+  "paymentMethod": "Payment Method",
+  "update_selected_expiry_date": "Update Selected Expiry Date",
+  "expiry_date": "Expiry Date",
+  "expiry_date_updated": "Expiry Date Updated",
+  "you_selected": "You selected",
+  "members" : "Members",
+  "new_expiry_date": "New Expiry Date",
+  "you_selected_all" : "You selected all"
 }

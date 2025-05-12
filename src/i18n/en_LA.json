@@ -1372,5 +1372,12 @@
   "show_amount" : "ສະແດງຈຳນວນໃນໜ້າຂາຍສຳລັບຄາເຟ",
   "show_amount_open" : "ເປີດໃຊ້ງານ",
   "counter_can_use_filter_shift" : "ສິດເຄົ້າເຕີສາມາດເບິ່ງແຍກຕາມກະໄດ້",
-  "paymentMethod": "ວິທີການຊຳລະ"
+  "paymentMethod": "ວິທີການຊຳລະ",
+  "update_selected_expiry_date": "ອັບເດດວັນທີໝົດອາຍຸຂອງສະມາຊິກທີ່ລືອກ",
+  "expiry_date": "ວັນທີອາຍຸ",
+  "expiry_date_updated": "ອັບເດດວັນທີອາຍຸສຳເລັດ",
+  "you_selected": "ທ່ານເລືອກ",
+  "members" : "ສະມາຊິກ",
+  "new_expiry_date": "ວັນທີອາຍຸໃໝ່",
+  "you_selected_all" : "ທ່ານເລືອກທັງໝົດ"
 }
