@@ -1,8 +1,8 @@
 import { USER_KEY } from "./index";
 
 // TODO: check domain name and set end point
-const production_domain =
-  "https://0ihbqok863.execute-api.ap-southeast-1.amazonaws.com"; // Production
+const production_domain = "https://vercel.restaurant.appzap.la/"; // Production
+
 const now_domain = window.location.hostname;
 // const dev = "https://api.appzap.la:445"; // dev endpoint report & other
 // const dev1 = "https://api.appzap.la:444"; // dev endpoint table & menu
@@ -16,7 +16,8 @@ const dev1 = "http://localhost:7070"; //locals
 const dev2 = "http://localhost:7070"; //locals
 const production = "https://api.appzap.la:445"; // Production report & other [7079 - 7080]
 const production1 = "https://api.appzap.la:444"; // Production table & menu [7076 - 7078]
-const production2 = "https://api.appzap.la"; // Production bill & order [7070 - 7075]
+const production2 =
+  "https://0ihbqok863.execute-api.ap-southeast-1.amazonaws.com"; // Production bill & order [7070 - 7075]
 const production_socket = "https://api.appzap.la:8888"; // Production
 const dev_socket = "https://api.appzap.la:8888";
 const production_web_client = "https://client.appzap.la/store/";
