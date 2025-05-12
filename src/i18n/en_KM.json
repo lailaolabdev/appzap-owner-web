@@ -1233,7 +1233,7 @@
   "counter_access_only": "ចូលដំណើរការតុគិតលុយតែប៉ុណ្ណោះ",
   "description_counter_only": "បើកជម្រើសនេះដើម្បីធ្វើឱ្យតុគិតលុយបង្ហាញព័ត៌មានសម្រាប់អ្នកប្រើប្រាស់តែប៉ុណ្ណោះ។",
   "description_counter_access": "តុគិតលុយអាចចូលដំណើរការសម្រាប់ការគ្រប់គ្រង។",
-  "choose_employee" : "ជ្រើសរើសបុគ្គលិក",
+  "choose_employee": "ជ្រើសរើសបុគ្គលិក",
   "bank_accounts": "គណនីធនាគារ",
   "bank_account_added": "គណនីធនាគារដែលបានបន្ថែម",
   "total_transactions": "ចំនួនការងារសហការ",
@@ -1243,5 +1243,6 @@
   "enter_bank_account_name": "បញ្ចូលឈ្មោះគណនីធនាគារ",
   "please_add_bank_account_first": "សូមបន្ថែមគណនីធនាគារដំបូង",
   "claim_management": "គ្រប់គ្រងការកត់ត្រាបំណុល",
-  "rejection_reason": "មូលហេតុបដិសេធ"
+  "rejection_reason": "មូលហេតុបដិសេធ",
+  "paymentMethod": "វិធីសាស្ត្រទូទាត់"
 }

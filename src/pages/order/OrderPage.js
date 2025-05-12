@@ -36,6 +36,13 @@ import {
 import { useStoreStore } from "../../zustand/storeStore";
 import { useOrderStore } from "../../zustand/orderStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
+import {
+  getCustomerSocketInstance,
+  initCustomerSocket,
+} from "../../services/socket";
+
+import socketClient from "socket.io-client";
+import { END_POINT_SOCKET_CUSTOMER } from "../../constants/api";
 
 export default function OrderPage() {
   const {
@@ -89,6 +96,38 @@ export default function OrderPage() {
 
   const [ordersUpdating, setOrdersUpdating] = useState(false);
   const [canceledfromStatus, setCanceledfromStatus] = useState(WAITING_STATUS);
+
+  const customerSocket = getCustomerSocketInstance();
+
+  // const customerSocket = socketClient(END_POINT_SOCKET_CUSTOMER, {
+  //   transports: ["websocket", "polling"],
+  // });
+
+  // useEffect(() => {
+  //   // Initialize the socket
+  //   initCustomerSocket();
+
+  //   const customerSocket = getCustomerSocketInstance();
+
+  //   if (!customerSocket) {
+  //     console.error(
+  //       "Socket instance is null. Ensure initCustomerSocket() is called."
+  //     );
+  //     return;
+  //   }
+
+  //   if (!customerSocket.connected) {
+  //     customerSocket.connect();
+  //   }
+
+  //   customerSocket.emit("joinRoom", storeDetail?._id);
+
+  //   return () => {
+  //     if (customerSocket) {
+  //       customerSocket.disconnect(); // Clean up on unmount
+  //     }
+  //   };
+  // }, [storeDetail?._id]);
 
   useEffect(() => {
     const fetchAllOrders = async () => {
@@ -153,6 +192,10 @@ export default function OrderPage() {
         seletedCancelOrderItem,
       }));
 
+      const uniqueBillIds = [
+        ...new Set(_updateItems.map((item) => item.billId)),
+      ];
+
       // Update order status in the backend
       const response = await updateOrderItemV7(
         _updateItems,
@@ -164,6 +207,10 @@ export default function OrderPage() {
 
       if (response?.data?.message === "UPDATE_ORDER_SUCCESS") {
         setOrdersUpdating(false);
+        // customerSocket.emit("ORDERS_MENU_LISTENING", {
+        //   storeId: storeDetail?._id,
+        //   billIds: uniqueBillIds,
+        // });
         // Show success message
         Swal.fire({
           icon: "success",

@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheckCircle,
+  faReceipt,
+  faClock,
+  faUser,
+  faMoneyBillWave,
+  faWallet,
+} from "@fortawesome/free-solid-svg-icons";
 import moment from "moment";
 import EmptyState from "./components/EmptyState";
 import PaginationControls from "./components/PaginationControls";
+import BillDetailDialog from "./components/BillDetailDialog";
+import axios from "axios";
+import { END_POINT_SERVER_JUSTCAN, getLocalData } from "../../constants/api";
 
 const ClaimedTab = ({
   amountData,
@@ -15,6 +25,11 @@ const ClaimedTab = ({
   rowsPerPage,
   t,
 }) => {
+  const [selectedClaim, setSelectedClaim] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [billDetail, setBillDetail] = useState(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+
   // Calculate the starting index for the current page
   const startIndex = (currentPage - 1) * rowsPerPage;
 
@@ -24,6 +39,32 @@ const ClaimedTab = ({
     return `${amount.toLocaleString()} ${
       currency || storeDetail?.firstCurrency === "LAK" ? "ກີບ" : "LAK"
     }`;
+  };
+
+  const handleRowClick = async (item) => {
+    setSelectedClaim(item);
+    setIsModalOpen(true);
+    setLoadingDetail(true);
+    try {
+      const { TOKEN } = await getLocalData();
+      const res = await axios.get(
+        `${END_POINT_SERVER_JUSTCAN}/v6/checkout/bill/${item._id}`,
+        { headers: TOKEN }
+      );
+      setBillDetail(res.data.data);
+    } catch (err) {
+      setBillDetail(null);
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
+
+  // Helper for status text
+  const getStatusText = (status) => {
+    if (status === "APPROVED") return t("approved");
+    if (status === "REJECTED") return t("rejected");
+    if (status === "CLAIMED") return t("claimed");
+    return t(status);
   };
 
   return (
@@ -36,7 +77,7 @@ const ClaimedTab = ({
                 {t("no")}
               </th>
               <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
-                {t("tableCode")}
+                {t("billNo")}
               </th>
               <th className="px-6 py-3 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
                 {t("amount")}
@@ -54,7 +95,8 @@ const ClaimedTab = ({
               claimedData.map((item, index) => (
                 <tr
                   key={index}
-                  className="hover:bg-gray-50 transition-colors duration-150"
+                  className="hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
+                  onClick={() => handleRowClick(item)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {startIndex + index + 1}
@@ -100,6 +142,19 @@ const ClaimedTab = ({
           t={t}
         />
       )}
+
+      {/* Details Dialog */}
+      <BillDetailDialog
+        isOpen={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        loadingDetail={loadingDetail}
+        billDetail={billDetail}
+        formatCurrency={formatCurrency}
+        getStatusText={getStatusText}
+        t={t}
+        status="approved"
+        statusText={t("approved")}
+      />
     </div>
   );
 };

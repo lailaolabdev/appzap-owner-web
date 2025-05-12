@@ -2136,6 +2136,7 @@ export default function TableList() {
             ].map((item, index) => {
               return (
                 <div
+                  key={index}
                   className={cn(
                     "min-h-[80px] h-full flex xl:gap-2.5 xl:flex-row bg-white py-2 xl:justify-start items-center rounded-[8px] shadow-sm",
                     selectTable

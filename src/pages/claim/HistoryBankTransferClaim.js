@@ -355,6 +355,10 @@ export default function HistoryBankTransferClaim() {
       return;
     }
 
+    const checkoutIds = selectedPayment
+      .filter((x) => x.isPaidConfirm)
+      .map((x) => x._id);
+
     try {
       // Check if bank account exists
       const { TOKEN, DATA } = await getLocalData();
@@ -389,6 +393,7 @@ export default function HistoryBankTransferClaim() {
           bankAccount: defaultAccount.accountNumber,
           bankAccountName: defaultAccount.accountName,
           shopId: DATA?.storeId,
+          checkoutIds: checkoutIds,
         },
         {
           headers: TOKEN,

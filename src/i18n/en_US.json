@@ -1351,7 +1351,7 @@
   "description_counter_only": "Enable this option to make the counter display information only for users.",
   "description_counter_access": "The counter can be accessed for management.",
   "change_qr_code": "Change QR Code End of bill",
-  "choose_employee" : "Choose employee",
+  "choose_employee": "Choose employee",
   "upload_qr_code": "Upload Qr Code",
   "bank_accounts": "Bank Accounts",
   "bank_account_added": "Bank Account Added",
@@ -1371,5 +1371,6 @@
   "point_use" : "Point use",
   "show_amount" : "Show Amount in sale page for cafe",
   "show_amount_open" : "Open for use",
-  "counter_can_use_filter_shift" : "Counter can use filter shift"
+  "counter_can_use_filter_shift" : "Counter can use filter shift",
+  "paymentMethod": "Payment Method"
 }
