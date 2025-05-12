@@ -1,18 +1,19 @@
 import { USER_KEY } from "./index";
 
 // TODO: check domain name and set end point
-const production_domain = "restaurant.appzap.la"; // Production
+const production_domain =
+  "https://0ihbqok863.execute-api.ap-southeast-1.amazonaws.com"; // Production
 const now_domain = window.location.hostname;
 // const dev = "https://api.appzap.la:445"; // dev endpoint report & other
 // const dev1 = "https://api.appzap.la:444"; // dev endpoint table & menu
 // const dev2 = "https://api.appzap.la"; // dev endpoint bill & order
-const dev = "https://api.appzap.la:17072"; // dev endpoint report & other [7079 - 7080]
-const dev1 = "https://api.appzap.la:17071"; // dev endpoint table & menu [7076 - 7078]
-const dev2 = "https://api.appzap.la:17070"; // dev endpoint bill & order [7070 - 7075]
+// const dev = "https://api.appzap.la:17072"; // dev endpoint report & other [7079 - 7080]
+// const dev1 = "https://api.appzap.la:17071"; // dev endpoint table & menu [7076 - 7078]
+// const dev2 = "https://api.appzap.la:17070"; // dev endpoint bill & order [7070 - 7075]
 // const dev = "https://api.appzap.la"; //local
-// const dev = "http://localhost:7070"; //locals
-// const dev1 = "http://localhost:7070"; //locals
-// const dev2 = "http://localhost:7070"; //locals
+const dev = "http://localhost:7070"; //locals
+const dev1 = "http://localhost:7070"; //locals
+const dev2 = "http://localhost:7070"; //locals
 const production = "https://api.appzap.la:445"; // Production report & other [7079 - 7080]
 const production1 = "https://api.appzap.la:444"; // Production table & menu [7076 - 7078]
 const production2 = "https://api.appzap.la"; // Production bill & order [7070 - 7075]
