@@ -74,7 +74,6 @@ import { useMenuSelectStore } from "../../zustand/menuSelectStore";
 
 import theme from "../../theme";
 import moment from "moment";
-import url from "socket.io-client/lib/url";
 import { getAllStorePoints } from "../../services/member.service";
 import AnimationLoading from "../../constants/loading";
 import { convertUnitgramAndKilogram } from "../../helpers/convertUnitgramAndKilogram";
