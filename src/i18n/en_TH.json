@@ -1239,7 +1239,7 @@
   "counter_access_only": "สิทธิ์เข้าถึงเคาน์เตอร์เท่านั้น",
   "description_counter_only": "เปิดใช้งานตัวเลือกนี้เพื่อให้เคาน์เตอร์แสดงข้อมูลเท่านั้นสำหรับผู้ใช้.",
   "description_counter_access": "เคาน์เตอร์สามารถเข้าถึงได้เพื่อการจัดการ.",
-  "choose_employee" : "เลือกพนักงาน",
+  "choose_employee": "เลือกพนักงาน",
   "bank_accounts": "บัญชีธนาคาร",
   "bank_account_added": "บัญชีธนาคารถูกเพิ่มแล้ว",
   "total_transactions": "จำนวนการทำธุรกรรม",
@@ -1249,5 +1249,6 @@
   "enter_bank_account_name": "กรอกชื่อบัญชีธนาคาร...",
   "please_add_bank_account_first": "กรุณาเพิ่มบัญชีธนาคารก่อน",
   "claim_management": "จัดการคำขอเบิกเงิน",
-  "rejection_reason": "เหตุผลในการปฏิเสธ"
+  "rejection_reason": "เหตุผลในการปฏิเสธ",
+  "paymentMethod": "วิธีการชำระเงิน"
 }
