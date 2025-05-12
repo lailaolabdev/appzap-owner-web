@@ -4,18 +4,9 @@ import { USER_KEY } from "./index";
 const production_domain = "https://vercel.restaurant.appzap.la/"; // Production
 
 const now_domain = window.location.hostname;
-// const dev = "https://api.appzap.la:445"; // dev endpoint report & other
-// const dev1 = "https://api.appzap.la:444"; // dev endpoint table & menu
-// const dev2 = "https://api.appzap.la"; // dev endpoint bill & order
-// const dev = "https://api.appzap.la:17072"; // dev endpoint report & other [7079 - 7080]
-// const dev1 = "https://api.appzap.la:17071"; // dev endpoint table & menu [7076 - 7078]
-// const dev2 = "https://api.appzap.la:17070"; // dev endpoint bill & order [7070 - 7075]
-// const dev = "https://api.appzap.la"; //local
+
 const dev = "http://localhost:7070"; //locals
-const dev1 = "http://localhost:7070"; //locals
-const dev2 = "http://localhost:7070"; //locals
-const production = "https://api.appzap.la:445"; // Production report & other [7079 - 7080]
-const production1 = "https://api.appzap.la:444"; // Production table & menu [7076 - 7078]
+
 const production2 =
   "https://0ihbqok863.execute-api.ap-southeast-1.amazonaws.com"; // Production bill & order [7070 - 7075]
 const production_socket = "https://api.appzap.la:8888"; // Production
@@ -29,8 +20,8 @@ const isProduction = production_domain === now_domain;
 // const isProduction = true;
 export const END_POINT_APP = isProduction ? production2 : dev;
 export const END_POINT_SEVER = isProduction ? production2 : dev; // endpoint report & other [7079 - 7080]
-export const END_POINT_SEVER_TABLE_MENU = isProduction ? production2 : dev1; // endpoint table & menu [7076 - 7078]
-export const END_POINT_SEVER_BILL_ORDER = isProduction ? production2 : dev2; // endpoint bill & order [7070 - 7075]
+export const END_POINT_SEVER_TABLE_MENU = isProduction ? production2 : dev; // endpoint table & menu [7076 - 7078]
+export const END_POINT_SEVER_BILL_ORDER = isProduction ? production2 : dev; // endpoint bill & order [7070 - 7075]
 export const END_POINT_SOCKET = isProduction ? production_socket : dev_socket;
 export const END_POINT_WEB_CLIENT = isProduction
   ? production_web_client
