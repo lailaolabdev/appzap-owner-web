@@ -10,6 +10,15 @@ export const getMembers = async (findBy, TOKEN) => {
     return error;
   }
 };
+export const getAllMembersIds = async (findBy, TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v7/all-members-Id${findBy}`;
+    const res = await axios.get(url, { headers: TOKEN });
+    return res?.data;
+  } catch (error) {
+    return error;
+  }
+};
 export const getMembersAll = async (findBy, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/members/all${findBy}`;
@@ -201,6 +210,17 @@ export const getTotalPoint = async (memmberId, findBy, TOKEN) => {
 export const updateMember = async (id, data, TOKEN) => {
   try {
     const url = `${END_POINT_SEVER}/v4/member/update/${id}`;
+    const response = await axios.put(url, data, {
+      headers: TOKEN,
+    });
+    return response?.data;
+  } catch (error) {
+    return { error: true };
+  }
+};
+export const updatePointExportsMember = async (findBy, data, TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v7/member/update-date-expirt${findBy}`;
     const response = await axios.put(url, data, {
       headers: TOKEN,
     });
