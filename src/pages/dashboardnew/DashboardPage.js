@@ -454,13 +454,13 @@ export default function DashboardPage() {
 
   const TotalPriceFreeItems = () => {
     return dataFreeItems?.reduce((currentValue, nextValue) => {
-      return currentValue + nextValue.price;
+      return currentValue + nextValue.price * nextValue.quantity;
     }, 0);
   };
 
   const TotalPriceDicount = () => {
     return dataDiscountItems?.reduce((currentValue, nextValue) => {
-      return currentValue + nextValue.priceDiscount;
+      return currentValue + nextValue.priceDiscount * nextValue.quantity;
     }, 0);
   };
 
@@ -1243,6 +1243,7 @@ export default function DashboardPage() {
             <tr className="border-b">
               <th className="text-left">{t("no")}</th>
               <th className="text-left">{t("name")}</th>
+              <th className="text-left">{t("amount")}</th>
               <th className="text-right">{t("price")}</th>
             </tr>
             {dataFreeItems.length > 0 ? (
@@ -1250,6 +1251,7 @@ export default function DashboardPage() {
                 <tr key={m?._id} className="border-b">
                   <td className="text-left">{index + 1}</td>
                   <td className="text-left">{m?.name}</td>
+                  <td className="text-left">{m?.quantity}</td>
                   <td className="text-right">{moneyCurrency(m?.price)}</td>
                 </tr>
               ))
@@ -1287,6 +1289,7 @@ export default function DashboardPage() {
             <tr className="border-b">
               <th className="text-left">{t("no")}</th>
               <th className="text-left">{t("name")}</th>
+              <th className="text-right">{t("amount")}</th>
               <th className="text-right">{t("price_basic")}</th>
               <th className="text-right">{t("discount_price")}</th>
               <th className="text-right">{t("discount_amounts")}</th>
@@ -1296,6 +1299,7 @@ export default function DashboardPage() {
                 <tr key={m?._id} className="border-b">
                   <td className="text-left">{index + 1}</td>
                   <td className="text-left">{m?.name}</td>
+                  <td className="text-left">{m?.quantity}</td>
                   <td className="text-right">{moneyCurrency(m?.price)}</td>
                   <td className="text-right">
                     {moneyCurrency(Math.max(m?.price - m?.priceDiscount), 0)}
