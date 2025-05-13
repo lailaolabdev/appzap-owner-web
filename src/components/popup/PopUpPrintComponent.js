@@ -584,7 +584,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                     {t("sale_price_amount")}
                   </th>
                 </tr>
-                {categoryReport
+                {/* {categoryReport
                   ?.sort((x, y) => {
                     return y.served - x.served;
                   })
@@ -603,7 +603,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                         {storeDetail?.firstCurrency}
                       </td>
                     </tr>
-                  ))}
+                  ))} */}
 
                 {/* Summary row */}
                 <tr className="font-bold pt-2">
@@ -648,7 +648,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                   <td style={{ textAlign: "right" }}>{t("total_bill")}</td>
                 </tr>
 
-                {bills?.map((e, i) => (
+                {/* {bills?.map((e, i) => (
                   <tr key={e?._id}>
                     <td style={{ textAlign: "left" }}>{i + 1}</td>
                     <td style={{ textAlign: "center" }}>
@@ -666,11 +666,11 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                       {moneyCurrency(e?.billAmount) || moneyCurrency(0)}
                     </td>
                   </tr>
-                ))}
+                ))} */}
 
                 {/* Total Row */}
                 <tr style={{ fontWeight: "bold" }}>
-                  <td colSpan="2" style={{ textAlign: "right" }}>
+                  <td colSpan="2" style={{ textAlign: "left" }}>
                     {t("total")}:
                   </td>
                   <td style={{ textAlign: "center" }}>
