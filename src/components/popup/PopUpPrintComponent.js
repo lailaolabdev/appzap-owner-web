@@ -641,14 +641,16 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
             <div>
               <TableComponent>
                 <tr style={{ fontWeight: "bold" }}>
-                  <td style={{ textAlign: "left" }}>#</td>
-                  <td style={{ textAlign: "center" }}>{t("no")}</td>
+                  <td style={{ textAlign: "left" }}></td>
+                  <td style={{ textAlign: "center" }}></td>
                   <td style={{ textAlign: "center" }}>{t("order")}</td>
                   <td style={{ textAlign: "center" }}>{t("discount")}</td>
-                  <td style={{ textAlign: "right" }}>{t("total_bill")}</td>
+                  <td style={{ textAlign: "right" }}>
+                    {t("sale_price_amount")}
+                  </td>
                 </tr>
 
-                {bills?.map((e, i) => (
+                {/* {bills?.map((e, i) => (
                   <tr key={e?._id}>
                     <td style={{ textAlign: "left" }}>{i + 1}</td>
                     <td style={{ textAlign: "center" }}>
@@ -666,12 +668,12 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                       {moneyCurrency(e?.billAmount) || moneyCurrency(0)}
                     </td>
                   </tr>
-                ))}
+                ))} */}
 
                 {/* Total Row */}
                 <tr style={{ fontWeight: "bold" }}>
                   <td colSpan="2" style={{ textAlign: "right" }}>
-                    {t("total")}:
+                    {/* {t("total")}: */}
                   </td>
                   <td style={{ textAlign: "center" }}>
                     {bills?.reduce(
