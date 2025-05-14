@@ -57,8 +57,6 @@ export default function PopUpAddDiscount({
   const [filteredCategories, setFilteredCategories] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
 
-  console.log("discountCategory", discountCategory);
-
   const preventMinus = (e) => {
     if (e.code === "Minus") {
       e.preventDefault();
@@ -75,14 +73,6 @@ export default function PopUpAddDiscount({
     }
   }, [discountCategory]);
 
-  console.log("DiscountOrder", discountOrder);
-  console.log("discount", discount);
-  console.log("selectedButton", selectedButton);
-  console.log("selectedCategory", selectedCategory);
-  console.log("categoryTotal", categoryTotal);
-  console.log("discountCategory", discountCategory);
-  console.log("selectedButtonCategory", selectedButtonCategory);
-
   useEffect(() => {
     getCategoryType(storeDetail?._id);
   }, [open]);
@@ -94,9 +84,6 @@ export default function PopUpAddDiscount({
         selectedCategory !== "All" ? discountOrder : discount;
       const discountType =
         selectedCategory !== "All" ? selectedButtonCategory : selectedButton;
-
-      console.log("discountAmount", discountAmount);
-      console.log("discountType", discountType);
 
       const _body = {
         id: dataBill?._id,
