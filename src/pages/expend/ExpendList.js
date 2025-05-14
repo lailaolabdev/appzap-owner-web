@@ -283,7 +283,7 @@ export default function ExpendList() {
           findby += `&startTime=${startTime}&endTime=${endTime}&`;
         }
 
-        if (shiftId) {
+        if (storeDetail?.isShift && shiftId) {
           findby += `&shiftId=${shiftId}`;
         }
       } else {
@@ -291,7 +291,7 @@ export default function ExpendList() {
         findby += `&date_lt=${endDate}&`;
         findby += `&startTime=${startTime}&`;
         findby += `&endTime=${endTime}&`;
-        if (shiftCurrent[0]) {
+        if (storeDetail?.isShift && shiftCurrent[0]) {
           findby += `&shiftId=${shiftCurrent[0]?._id}&`;
         }
       }
