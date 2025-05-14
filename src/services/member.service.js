@@ -1,5 +1,9 @@
 import axios from "axios";
-import { END_POINT_SEVER, END_POINT_SEVER_BILL_ORDER } from "../constants/api";
+import {
+  END_POINT_SEVER,
+  END_POINT_SEVER_BILL_ORDER,
+  getLocalData,
+} from "../constants/api";
 
 export const getMembers = async (findBy, TOKEN) => {
   try {
@@ -102,7 +106,8 @@ export const addMemberPoint = async (data) => {
 
 export const getAllStorePoints = async (storeId) => {
   try {
-    const url = `${END_POINT_SEVER}/v4/piont-stroe?storeId=${storeId}`;
+    const { DATA } = await getLocalData();
+    const url = `${END_POINT_SEVER}/v4/piont-stroe?storeId=${DATA?.storeId}`;
     const response = await axios.get(url);
     return response?.data;
   } catch (error) {

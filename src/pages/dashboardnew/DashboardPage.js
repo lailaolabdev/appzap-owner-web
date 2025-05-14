@@ -157,18 +157,18 @@ export default function DashboardPage() {
       findBy += `startDate=${startDate}&`;
       findBy += `endDate=${endDate}&`;
       findBy += `startTime=${startTime}&`;
-      findBy += `endTime=${endTime}&`;
+      findBy += `endTime=${endTime}`;
 
-      if (shiftId) {
-        findBy += `shiftId=${shiftId}&`;
+      if (storeDetail?.isShift && shiftId) {
+        findBy += `&shiftId=${shiftId}`;
       }
     } else {
       findBy += `startDate=${startDate}&`;
       findBy += `endDate=${endDate}&`;
       findBy += `startTime=${startTime}&`;
-      findBy += `endTime=${endTime}&`;
-      if (shiftCurrent?.[0]) {
-        findBy += `shiftId=${shiftCurrent[0]?._id}&`;
+      findBy += `endTime=${endTime}`;
+      if (storeDetail?.isShift && shiftCurrent?.[0]) {
+        findBy += `&shiftId=${shiftCurrent[0]?._id}`;
       }
     }
 
@@ -337,7 +337,7 @@ export default function DashboardPage() {
           findBy += `&timeTo=${startTime}`;
           findBy += `&timeFrom=${endTime}`;
 
-          if (shiftId) {
+          if (storeDetail?.isShift && shiftId) {
             findBy += `&shiftId=${shiftId}`;
           }
         } else {
@@ -345,7 +345,7 @@ export default function DashboardPage() {
           findBy += `&dateTo=${endDate}`;
           findBy += `&timeTo=${startTime}`;
           findBy += `&timeFrom=${endTime}`;
-          if (shiftCurrent[0]) {
+          if (storeDetail?.isShift && shiftCurrent[0]) {
             findBy += `&shiftId=${shiftCurrent[0]?._id}`;
           }
         }

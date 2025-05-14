@@ -293,7 +293,7 @@ export default function DashboardFinance({
       findby += `&skip=${(pagination - 1) * limitData}`;
       findby += `&limit=${limitData}`;
 
-      if (shiftId) {
+      if (storeDetail?.isShift && shiftId) {
         findby += `&shiftId=${shiftId}`;
       }
     } else {
@@ -304,7 +304,7 @@ export default function DashboardFinance({
       findby += `endTime=${endTime}`;
       findby += `&skip=${(pagination - 1) * limitData}`;
       findby += `&limit=${limitData}`;
-      if (shiftCurrent[0]) {
+      if (storeDetail?.isShift && shiftCurrent[0]) {
         findby += `&shiftId=${shiftCurrent[0]?._id}`;
       }
     }

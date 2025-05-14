@@ -133,7 +133,7 @@ export default function PopUpReportExportExcel({
         findBy += `dateTo=${storeDetail?.endDateReportExport}&`;
         findBy += `timeFrom=${storeDetail?.startTimeReportExport}&`;
         findBy += `timeTo=${storeDetail?.endTimeReportExport}`;
-        if (shiftId) {
+        if (storeDetail?.isShift && shiftId) {
           findBy += `&shiftId=${shiftId}`;
         }
       } else {
@@ -141,7 +141,7 @@ export default function PopUpReportExportExcel({
         findBy += `dateTo=${storeDetail?.endDateReportExport}&`;
         findBy += `timeFrom=${storeDetail?.startTimeReportExport}&`;
         findBy += `timeTo=${storeDetail?.endTimeReportExport}`;
-        if (shiftData) {
+        if (storeDetail?.isShift && shiftData) {
           findBy += `&shiftId=${shiftData?._id}`;
         }
       }
@@ -2494,7 +2494,7 @@ export default function PopUpReportExportExcel({
         findBy += `dateTo=${storeDetail?.endDateReportExport}&`;
         findBy += `timeFrom=${storeDetail?.startTimeReportExport}&`;
         findBy += `timeTo=${storeDetail?.endTimeReportExport}`;
-        if (shiftId) {
+        if (storeDetail?.isShift && shiftId) {
           findBy += `&shiftId=${shiftId}`;
         }
       } else {
@@ -2502,7 +2502,7 @@ export default function PopUpReportExportExcel({
         findBy += `dateTo=${storeDetail?.endDateReportExport}&`;
         findBy += `timeFrom=${storeDetail?.startTimeReportExport}&`;
         findBy += `timeTo=${storeDetail?.endTimeReportExport}`;
-        if (shiftData) {
+        if (storeDetail?.isShift && shiftData) {
           findBy += `&shiftId=${shiftData?._id}`;
         }
       }

@@ -641,11 +641,13 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
             <div>
               <TableComponent>
                 <tr style={{ fontWeight: "bold" }}>
-                  <td style={{ textAlign: "left" }}>#</td>
-                  <td style={{ textAlign: "center" }}>{t("no")}</td>
+                  <td style={{ textAlign: "left" }}></td>
+                  <td style={{ textAlign: "center" }}></td>
                   <td style={{ textAlign: "center" }}>{t("order")}</td>
                   <td style={{ textAlign: "center" }}>{t("discount")}</td>
-                  <td style={{ textAlign: "right" }}>{t("total_bill")}</td>
+                  <td style={{ textAlign: "right" }}>
+                    {t("sale_price_amount")}
+                  </td>
                 </tr>
 
                 {/* {bills?.map((e, i) => (
