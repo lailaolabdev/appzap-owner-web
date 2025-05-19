@@ -552,7 +552,7 @@
   "point_setting": "Point Settings",
   "member_list": "Member List",
   "add_member": "Add Member",
-  "member_name": "Member Name",
+  "member_name": "Member Name (NickName)",
   "point": "Points",
   "use_service": "Redeem Service",
   "regis_date": "Registration Date",
@@ -1379,5 +1379,6 @@
   "you_selected": "You selected",
   "members" : "Members",
   "new_expiry_date": "New Expiry Date",
-  "you_selected_all" : "You selected all"
+  "you_selected_all" : "You selected all",
+  "email" : "email"
 }

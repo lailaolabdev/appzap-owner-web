@@ -99,16 +99,30 @@ export default function PopUpMemberEdit({
           </div>
         )}
         <div className="mb-3">
-          <Form.Label>{t("tel")}</Form.Label>
+          <Form.Label>{t("tel")} (Whatapps, Wechat)</Form.Label>
           <InputGroup>
-            <InputGroup.Text id="phone-addon1">020</InputGroup.Text>
+            {/* <InputGroup.Text id="phone-addon1">020</InputGroup.Text> */}
             <Form.Control
               placeholder="XXXX-XXXX"
               aria-describedby="phone-addon1"
-              maxLength={15}
+              maxLength={20}
               value={formData?.phone}
               onChange={handleChange}
               name="phone"
+            />
+          </InputGroup>
+        </div>
+        <div className="mb-3">
+          <Form.Label>{t("email")}</Form.Label>
+          <InputGroup>
+            {/* <InputGroup.Text id="phone-addon1">020</InputGroup.Text> */}
+            <Form.Control
+              placeholder="example@gmail.com"
+              aria-describedby="email-addon1"
+              // maxLength={20}
+              value={formData?.email}
+              onChange={handleChange}
+              name="email"
             />
           </InputGroup>
         </div>
