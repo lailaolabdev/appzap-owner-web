@@ -81,18 +81,36 @@ export default function CreateMembers() {
                   />
                 </div>
                 <div className="mb-3">
-                  <Form.Label>{t("tel")}</Form.Label>
+                  <Form.Label>{t("tel")}(Whatapps)</Form.Label>
                   <InputGroup>
-                    <InputGroup.Text id="phone-addon1">020</InputGroup.Text>
+                    {/* <InputGroup.Text id="phone-addon1">020</InputGroup.Text> */}
                     <Form.Control
                       placeholder="XXXX-XXXX"
                       aria-describedby="phone-addon1"
-                      maxLength={8}
+                      maxLength={20}
                       value={formData?.phone}
                       onChange={(e) => {
                         setFormData((prev) => ({
                           ...prev,
                           phone: e.target.value,
+                        }));
+                      }}
+                    />
+                  </InputGroup>
+                </div>
+                <div className="mb-3">
+                  <Form.Label>{t("email")}</Form.Label>
+                  <InputGroup>
+                    {/* <InputGroup.Text id="phone-addon1">020</InputGroup.Text> */}
+                    <Form.Control
+                      placeholder="example@gmail.com"
+                      aria-describedby="email-addon1"
+                      // maxLength={8}
+                      value={formData?.email}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          email: e.target.value,
                         }));
                       }}
                     />

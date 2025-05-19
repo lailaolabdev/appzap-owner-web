@@ -202,9 +202,10 @@ export default function FormAddMenuStock() {
       findby += `storeId=${storeId}&`;
       findby += `stockCategoryId=${selectCategories}&`;
       const res = await getStocksAll(findby);
+      console.log("resStock:", res);
       if (res.status === 200) {
         setLoadStatus("SUCCESS");
-        setStocks(res?.data?.stockData);
+        setStocks(res?.data?.stockAll);
       }
       setIsLoading(false);
       // const _localData = await getLocalData();

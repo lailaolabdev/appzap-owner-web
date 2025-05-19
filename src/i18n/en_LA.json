@@ -603,7 +603,7 @@
   "point_setting": "ຕັ້ງຄ່າການໃຫ້ພ໋ອຍ",
   "member_list": "ລາຍການສະມາຊິກ",
   "add_member": "ເພີ່ມສະມາຊິກ",
-  "member_name": "ຊື່ສະມາຊິກ",
+  "member_name": "ຊື່ສະມາຊິກ (ຊື່ຫຼີ້ນ)",
   "point": "ຄະແນນ",
   "use_service": "ໃຊ້ບໍລິການ",
   "regis_date": "ວັນທີສະໝັກ",
@@ -1379,5 +1379,6 @@
   "you_selected": "ທ່ານເລືອກ",
   "members" : "ສະມາຊິກ",
   "new_expiry_date": "ວັນທີອາຍຸໃໝ່",
-  "you_selected_all" : "ທ່ານເລືອກທັງໝົດ"
+  "you_selected_all" : "ທ່ານເລືອກທັງໝົດ",
+  "email" : "ອີເມວ"
 }
