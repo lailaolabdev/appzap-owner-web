@@ -2584,7 +2584,10 @@ export default function TableList() {
                       </ButtonCustom>
                       <ButtonCustom
                         disabled={
-                          !isCheckedOrderItem.every((e) => e?.status === "PAID")
+                          !isCheckedOrderItem.every(
+                            (e) =>
+                              e?.status === "PAID" || e?.status === "CANCELED"
+                          )
                         }
                         style={{
                           backgroundColor: "#00C851",
