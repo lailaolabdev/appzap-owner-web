@@ -505,6 +505,7 @@ export default function DashboardFinance({
   const baseTotal =
     (dataModal?.point ?? 0) +
     (dataModal?.transferAmount ?? 0) +
+    (dataModal?.billAmount ?? 0) +
     (dataModal?.change ?? 0) +
     (dataModal?.payAmount ?? 0) -
     (dataModal?.discount ?? 0) -
@@ -512,11 +513,15 @@ export default function DashboardFinance({
 
   const totalAfter =
     dataModal?.paymentMethod === "CASH" ||
-    dataModal?.paymentMethod === "TRANSFER"
+    dataModal?.paymentMethod === "TRANSFER" ||
+    dataModal?.paymentMethod === "APPZAP_TRANSFER"
       ? baseTotal +
         (dataModal?.taxAmount ?? 0) +
         (dataModal?.serviceChargeAmount ?? 0)
       : baseTotal - dataModal?.change;
+
+  console.log("totalAfter", totalAfter);
+  console.log("dataModal", dataModal);
 
   let TotalCalculate = 0;
 
@@ -960,7 +965,7 @@ export default function DashboardFinance({
                 >
                   {item?.paymentMethod === "CASH"
                     ? t("payBycash")
-                    : item?.paymentMethod === "TRANSFER"
+                    : item?.paymentMethod === "TRANSFER" || "APPZAP_TRANSFER"
                     ? t("transferPayment")
                     : item?.paymentMethod === "DELIVERY"
                     ? `${t("transferPayment")} (delivery)`
@@ -1208,8 +1213,9 @@ export default function DashboardFinance({
                     </span>
                     <span>
                       {moneyCurrency(
-                        dataModal?.transferAmount > 0
-                          ? dataModal?.transferAmount - dataModal?.taxAmount
+                        dataModal?.transferAmount || dataModal?.billAmount > 0
+                          ? dataModal?.transferAmount - dataModal?.taxAmount ||
+                              dataModal?.billAmount - dataModal?.taxAmount
                           : 0
                       )}{" "}
                       {storeDetail?.firstCurrency}
