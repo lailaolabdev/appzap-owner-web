@@ -67,7 +67,7 @@ export default function PopUpAddDiscount({
     if (selectedButtonCategory === "%") {
       const calculatedDiscount = (categoryTotal * discountCategory) / 100;
       const totalDiscount = Math.floor(calculatedDiscount);
-      setDiscountOrder(totalDiscount);
+      setDiscountOrder(discountCategory);
     } else {
       setDiscountOrder(discountCategory);
     }
@@ -83,9 +83,8 @@ export default function PopUpAddDiscount({
       const discountAmount =
         selectedCategory !== "All" ? discountOrder : discount;
       const discountType =
-        selectedCategory !== "All"
-          ? selectedButtonCategory === "LAK"
-          : selectedButton;
+        selectedCategory !== "All" ? selectedButtonCategory : selectedButton;
+
       const _body = {
         id: dataBill?._id,
         data: {
@@ -122,7 +121,7 @@ export default function PopUpAddDiscount({
       );
       const json = await response.json();
 
-      const orderCategoryIds = value.map((order) => order.categoryId);
+      const orderCategoryIds = value.map((order) => order.categoryId?._id);
       const filteredCategories = json.filter((category) =>
         orderCategoryIds.includes(category._id)
       );
@@ -166,7 +165,7 @@ export default function PopUpAddDiscount({
     setSelectedCategory(selectedCategoryId);
     if (selectedCategoryId !== "All") {
       const filteredCategoriesType = filteredCategories.filter(
-        (category) => category?.categoryTypeId === selectedCategoryId
+        (category) => category?.categoryTypeId?._id === selectedCategoryId
       );
 
       const checked = value.filter(
@@ -175,7 +174,7 @@ export default function PopUpAddDiscount({
 
       const filteredOrders = checked.filter((order) =>
         filteredCategoriesType.some(
-          (category) => category?._id === order?.categoryId
+          (category) => category?._id === order?.categoryId?._id
         )
       );
 
