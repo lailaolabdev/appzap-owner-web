@@ -2586,7 +2586,9 @@ export default function TableList() {
                         disabled={
                           !isCheckedOrderItem.every(
                             (e) =>
-                              e?.status === "PAID" || e?.status === "CANCELED"
+                              e?.status === "PAID" ||
+                              e?.status === "CANCELED" ||
+                              e?.status === "SERVED"
                           )
                         }
                         style={{
