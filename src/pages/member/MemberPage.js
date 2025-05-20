@@ -1062,6 +1062,7 @@ export default function MemberPage() {
                   )}
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
+                  <th style={{ textAlign: "center" }}>{t("Email")}</th>
                   <th style={{ textAlign: "center" }}>{"ພ໋ອຍທັງໝົດ"}</th>
                   {!storeDetail?.isStatusCafe && (
                     <th style={{ textAlign: "center" }}>
@@ -1095,6 +1096,7 @@ export default function MemberPage() {
                       )}
                       <td style={{ textAlign: "left" }}>{e?.name}</td>
                       <td style={{ textAlign: "center" }}>{e?.phone}</td>
+                      <td style={{ textAlign: "center" }}>{e?.email || "-"}</td>
                       <td className="text-center font-bold">
                         {moneyCurrency(e?.point ?? 0)}
                         <br />
@@ -1656,6 +1658,7 @@ export default function MemberPage() {
                 <tr>
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
+                  <th style={{ textAlign: "center" }}>{t("Email")}</th>
                   <th style={{ textAlign: "center" }}>{t("point_g")}</th>
                   <th style={{ textAlign: "center" }}>
                     {t("bill_point_balance")}
