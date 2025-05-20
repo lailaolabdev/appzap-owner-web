@@ -147,14 +147,25 @@ export default function UserPage() {
             <span className="flex items-center gap-1">
               <IoPeople /> {t("staff_report")}
             </span>
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div>
+              <Button
+                variant="dark"
+                bg="dark"
+                style={{ marginRight: "5px" }}
+                onClick={() =>
+                  navigate(`/user/manage-counter/${storeDetail?._id}`)
+                }
+              >
+                {t("manage_counter")}
+              </Button>
               <Button
                 variant="dark"
                 bg="dark"
                 onClick={() => setPopup({ PopUpCreateUser: true })}
-                className="flex items-center gap-1"
               >
-                {t("add_list")}
+                <span className="flex items-center gap-1">
+                  <MdSettings /> {t("add_staff")}
+                </span>
               </Button>
             </div>
           </Card.Header>
