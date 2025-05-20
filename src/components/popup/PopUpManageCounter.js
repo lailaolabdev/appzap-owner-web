@@ -83,13 +83,9 @@ export default function PopUpManageCounter({
     { label: `${t("l_30days")}`, type: "30days", condition: 30 },
   ];
 
-<<<<<<< HEAD
   const minDate = moment()
     .subtract(days - 1, "days")
     .format("YYYY-MM-DD");
-=======
-  const minDate = moment().subtract(days - 1, "days").format("YYYY-MM-DD");
->>>>>>> 842de485 (done)
   const maxDate = moment().format("YYYY-MM-DD");
 
   return (
