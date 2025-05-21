@@ -358,11 +358,11 @@ export default function StockCreate() {
               />
             </div>
           </div>
-          <div className="mt-2 col-span-full">
-            <label className="block text-md font-medium text-gray-900">
+          {/* <div className="mt-2 col-span-full"> */}
+          {/* <label className="block text-md font-medium text-gray-900">
               {t("note")}
-            </label>
-            <div className="mt-2">
+            </label> */}
+          {/* <div className="mt-2">
               <textarea
                 name="detail"
                 value={stockOnec.detail}
@@ -372,11 +372,11 @@ export default function StockCreate() {
                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-orange-100 sm:text-sm/6"
                 defaultValue={""}
               />
-            </div>
-            {/* <p className="mt-3 text-sm/6 text-gray-600">
+            </div> */}
+          {/* <p className="mt-3 text-sm/6 text-gray-600">
             Write a few sentences about yourself.
           </p> */}
-          </div>
+          {/* </div> */}
           <button
             type="submit"
             className="mt-3 min-w-0 py-2 px-4 bg-color-app text-white font-medium rounded-md hover:bg-orange-400 focus:ring-2 focus:ring-orange-200 focus:outline-none"
@@ -403,7 +403,7 @@ export default function StockCreate() {
                   <th className="px-4 py-2 text-center">{t("stock_type")}</th>
                   <th className="px-4 py-2 text-center">{t("unit")}</th>
                   <th className="px-4 py-2 text-center">{t("low_stock")}</th>
-                  <th className="px-4 py-2 text-center">{t("note")}</th>
+                  {/* <th className="px-4 py-2 text-center">{t("note")}</th> */}
                   <th className="px-4 py-2 text-center">{t("manage")}</th>
                 </tr>
               </thead>
