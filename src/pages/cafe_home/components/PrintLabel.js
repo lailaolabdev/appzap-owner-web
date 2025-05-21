@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { moneyCurrency } from "../../../helpers";
 import { useStoreStore } from "../../../zustand/storeStore";
 
-export default function PrintLabel({ data, bill, totalPrice, no }) {
+export default function PrintLabel({ data, bill, totalPrice, no, isNo }) {
   const { storeDetail } = useStoreStore();
   return (
     <>
@@ -13,7 +13,7 @@ export default function PrintLabel({ data, bill, totalPrice, no }) {
         </span>
         <span className="flex items-center justify-between">
           <h5 className="font-bold">{bill?.name}</h5>
-          <p className="pt-2 font-bold"># {no > 0 ? no : data + 1}</p>
+          <p className="pt-2 font-bold"># {isNo ? data + 1 : no}</p>
         </span>
 
         <div className="flex gap-1">
