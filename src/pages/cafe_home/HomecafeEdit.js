@@ -2579,6 +2579,7 @@ function HomecafeEdit() {
 
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
         <BillForCheckOutCafe80
+          isModalData={true}
           data={bill}
           storeDetail={storeDetail}
           dataBill={SelectedMenus}
@@ -2630,7 +2631,7 @@ function HomecafeEdit() {
               }}
             >
               <PrintLabel
-                data={bill}
+                no={dataBillEdit?.no}
                 bill={{ ...val }}
                 totalPrice={FinalTotalPrice}
               />

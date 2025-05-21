@@ -2497,6 +2497,7 @@ function Homecafe() {
               }}
             >
               <PrintLabel
+                isNo={true}
                 data={bill}
                 bill={{ ...val }}
                 totalPrice={totalPrice}
