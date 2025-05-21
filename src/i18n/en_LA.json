@@ -1370,5 +1370,7 @@
   "point_remain" : "ຄະແນນທີ່ຍັງ",
   "point_use" : "ຄະແນນທີ່ໃຊ້",
   "show_amount" : "ສະແດງຈຳນວນໃນໜ້າຂາຍສຳລັບຄາເຟ",
-  "show_amount_open" : "ເປີດໃຊ້ງານ"
+  "show_amount_open" : "ເປີດໃຊ້ງານ",
+  "print_bill_and_sticker" :"ພິມບິນ ແລະ ສະຕິກເກີ້"
+
 }
