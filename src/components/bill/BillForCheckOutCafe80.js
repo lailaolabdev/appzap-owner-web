@@ -134,7 +134,7 @@ export default function BillForCheckOutCafe80({
       <div className="flex flex-col mb-2 items-center ">
         <span className="">{t("queue no")}</span>
         <span className="text-[18px] font-bold">
-          {isModalData ? index : data + 1}
+          {isModalData ? dataModal?.no : data + 1}
         </span>
       </div>
       <hr className="border-b border-dashed border-gray-600" />

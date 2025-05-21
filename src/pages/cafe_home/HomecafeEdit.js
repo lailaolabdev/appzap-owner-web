@@ -2630,7 +2630,7 @@ function HomecafeEdit() {
               }}
             >
               <PrintLabel
-                data={bill}
+                no={dataBillEdit?.no}
                 bill={{ ...val }}
                 totalPrice={FinalTotalPrice}
               />
