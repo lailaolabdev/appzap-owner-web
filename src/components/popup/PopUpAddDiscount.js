@@ -408,7 +408,7 @@ export default function PopUpAddDiscount({
             }}
           >
             {t("discount_for_food")}: {moneyCurrency(discountOrder)}{" "}
-            {storeDetail?.firstCurrency}
+            {selectedButtonCategory}
           </div>
         </div>
         <hr />
