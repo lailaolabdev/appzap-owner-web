@@ -504,8 +504,7 @@ export default function DashboardFinance({
 
   const baseTotal =
     (dataModal?.point ?? 0) +
-    (dataModal?.transferAmount ?? 0) +
-    (dataModal?.billAmount ?? 0) +
+    (dataModal?.transferAmount || (dataModal?.billAmount ?? 0)) +
     (dataModal?.change ?? 0) +
     (dataModal?.payAmount ?? 0) -
     (dataModal?.discount ?? 0) -
