@@ -504,8 +504,7 @@ export default function DashboardFinance({
 
   const baseTotal =
     (dataModal?.point ?? 0) +
-    (dataModal?.transferAmount ?? 0) +
-    (dataModal?.billAmount ?? 0) +
+    (dataModal?.transferAmount || (dataModal?.billAmount ?? 0)) +
     (dataModal?.change ?? 0) +
     (dataModal?.payAmount ?? 0) -
     (dataModal?.discount ?? 0) -
@@ -519,9 +518,6 @@ export default function DashboardFinance({
         (dataModal?.taxAmount ?? 0) +
         (dataModal?.serviceChargeAmount ?? 0)
       : baseTotal - dataModal?.change;
-
-  console.log("totalAfter", totalAfter);
-  console.log("dataModal", dataModal);
 
   let TotalCalculate = 0;
 
@@ -571,6 +567,7 @@ export default function DashboardFinance({
         createdBy: item?.createdBy?.firstname || "-",
         isWeightMenu: item?.isWeightMenu,
         unitWeightMenu: item?.unitWeightMenu,
+        price: item?.price || 0,
         totalPrice: (() => {
           if (isCanceled) return "CANCELED";
           try {
@@ -628,7 +625,7 @@ export default function DashboardFinance({
   const calculateTotalAmount = (orderData) => {
     try {
       return orderData.reduce((total, item) => {
-        const price = parseFloat(item.totalPrice.replace(/,/g, "")) || 0;
+        const price = item.price || 0;
         return total + price;
       }, 0);
     } catch {
@@ -1157,7 +1154,7 @@ export default function DashboardFinance({
                   </td>
                   <td>{item.createdBy}</td>
 
-                  <td>{calculateDiscount(item)}</td>
+                  <td>{item?.price || 0}</td>
 
                   {storeDetail?.isDelivery && (
                     <td style={{ textAlign: "center" }}>{item.deliveryCode}</td>
