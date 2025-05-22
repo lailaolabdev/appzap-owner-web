@@ -234,6 +234,8 @@ export default function HistoryBankTransferClaim() {
     }
   };
 
+  console.log(claimData);
+
   const selectPayment = (payment) => {
     const { tableName, tableCode, billId } = payment;
 
