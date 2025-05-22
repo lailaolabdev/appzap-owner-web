@@ -13,7 +13,7 @@ export default function PrintLabel({ data, bill, totalPrice, no, isNo }) {
         </span>
         <span className="flex items-center justify-between">
           <h5 className="font-bold">{bill?.name}</h5>
-          <p className="pt-2 font-bold"># {isNo ? data + 1 : no}</p>
+          <p className="pt-2 font-bold"># {isNo ? data : no}</p>
         </span>
 
         <div className="flex gap-1">
