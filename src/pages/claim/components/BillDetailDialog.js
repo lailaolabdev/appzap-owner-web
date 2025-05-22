@@ -326,12 +326,22 @@ const BillDetailDialog = ({
               </div>
             </div>
           ) : (
-            <div className="py-8 px-4 text-center">
-              <div className="bg-orange-50 p-2 rounded-full inline-block mb-2">
-                <AlertCircle size={20} className="text-orange-500" />
-              </div>
-              <div className="text-base font-medium text-gray-800">
-                {t("noData")}
+            <div className="bg-white w-full flex flex-col min-h-0 justify-center items-center py-8">
+              <div className="text-center max-w-sm mx-auto px-4">
+                {/* Icon */}
+                <div className="bg-orange-50 p-4 rounded-full inline-block mb-3">
+                  <Receipt size={32} className="text-orange-400" />
+                </div>
+
+                {/* Title */}
+                <div className="text-lg font-semibold text-gray-800 mb-2">
+                  {"ບໍ່ມີຂໍ້ມູນ"}
+                </div>
+
+                {/* Description */}
+                <div className="text-sm text-gray-500 mb-2">
+                  {"ບໍ່ມີຂໍ້ມູນການຊຳລະທີ່ຈະສະແດງ"}
+                </div>
               </div>
             </div>
           )}

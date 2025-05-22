@@ -7,7 +7,7 @@ import PaginationControls from "./components/PaginationControls";
 import { Button } from "../../components/ui/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button as CustomButton } from "../../components/ui/Button";
-import { faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import { faPlusCircle, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { cn } from "../../utils/cn";
 
 const UnclaimedTab = ({
@@ -158,7 +158,17 @@ const UnclaimedTab = ({
                             : "text-blue-800 bg-blue-100"
                         )}
                       >
-                        <FontAwesomeIcon icon={faCreditCard} className="mr-1" />
+                        {item?.isPaidConfirm ? (
+                          <FontAwesomeIcon
+                            icon={faCheckCircle}
+                            className="mr-1"
+                          />
+                        ) : (
+                          <FontAwesomeIcon
+                            icon={faCreditCard}
+                            className="mr-1"
+                          />
+                        )}
                         {item?.isPaidConfirm
                           ? "ຢືນຢັນແລ້ວ"
                           : t(item.status) ?? "-"}

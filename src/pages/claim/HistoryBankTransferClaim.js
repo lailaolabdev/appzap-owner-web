@@ -97,7 +97,7 @@ export default function HistoryBankTransferClaim() {
   const [openSelectClaim, setOpenSelectClaim] = useState(false);
   const [openConfirmClaimAndClose, setOpenConfirmClaimAndClose] =
     useState(false);
-  const [rowsPerPage] = useState(50); // Using rowsPerPage directly, no need for setter
+  const [rowsPerPage] = useState(40); // Using rowsPerPage directly, no need for setter
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState({
     [CLAIM_STATUSES.UNCLAIMED]: 0,
@@ -219,6 +219,8 @@ export default function HistoryBankTransferClaim() {
         [type]: response.data.totalAmount || 0,
       }));
 
+      console.log("rest", response.data);
+
       // Store total count for pagination
       setTotalItems((prev) => ({
         ...prev,
@@ -233,8 +235,6 @@ export default function HistoryBankTransferClaim() {
       setIsLoading(false);
     }
   };
-
-  console.log(claimData);
 
   const selectPayment = (payment) => {
     const { tableName, tableCode, billId } = payment;
