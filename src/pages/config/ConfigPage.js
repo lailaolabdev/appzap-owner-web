@@ -22,6 +22,7 @@ import {
   updateSettingServiceChange,
   updateSettingShowAmountCafe,
   updateOptionPrintBill,
+  updatePrintBillTwo,
 } from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
 import PopUpEditServiceCharge from "../../components/popup/PopUpEditServiceCharge";
@@ -151,6 +152,12 @@ export default function ConfigPage() {
   const changeOptionPrintBill = async (e) => {
     const isType = e.target.checked;
     await updateOptionPrintBill(profile?.data.storeId, { data: isType });
+    // console.log("changeSericeChange", isType);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+  const changePrintBillTwo = async (e) => {
+    const isType = e.target.checked;
+    await updatePrintBillTwo(profile?.data.storeId, { data: isType });
     // console.log("changeSericeChange", isType);
     await fetchStoreDetail(storeDetail?._id);
   };
@@ -865,45 +872,77 @@ export default function ConfigPage() {
                 {t("print_bill_and_sticker")}
               </Card.Header>
               <Card.Body>
-                {[
+                {/* {[
                   {
                     title: t("print_bill_and_sticker"),
                     key: "print_bill_and_sticker",
                   },
-                ].map((item) => (
+                ].map((item) => ( */}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  // key={item?.key}
+                >
+                  <div>{t("print_bill_and_sticker")}</div>
                   <div
                     style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
+                      display: "flex",
+                      alignItems: "center",
                       gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
+                      justifyContent: "center",
                     }}
-                    key={item?.key}
                   >
-                    <div>{item?.title}</div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Form.Label htmlFor={`show_amount_cafe-${item?.key}`}>
-                        {storeDetail?.optionPrintBill
-                          ? `${t("oppen")}`
-                          : `${t("close")}`}
-                      </Form.Label>
-                      <Form.Check
-                        type="switch"
-                        checked={storeDetail?.optionPrintBill}
-                        id={`print_bill_and_sticker-${item?.key}`}
-                        onChange={changeOptionPrintBill}
-                      />
-                    </div>
+                    <Form.Label htmlFor={`show_amount_cafe`}>
+                      {storeDetail?.optionPrintBill
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.optionPrintBill}
+                      id={`print_bill_and_sticker`}
+                      onChange={changeOptionPrintBill}
+                    />
                   </div>
-                ))}
+                </div>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  // key={item?.key}
+                >
+                  <div>{t("print_two_bill")}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={`printBillTwo`}>
+                      {storeDetail?.printBillTwo
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.printBillTwo}
+                      id={`printBillTwo`}
+                      onChange={changePrintBillTwo}
+                    />
+                  </div>
+                </div>
+                {/* ))} */}
               </Card.Body>
             </Card>
           )}

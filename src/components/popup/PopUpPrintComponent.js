@@ -497,10 +497,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 value: reportBill?.discounts,
                 type: storeDetail?.firstCurrency,
               },
-              {
-                name: `${t("active_bill")}:`,
-                value: reportBill?.pendingBills,
-              },
+              // {
+              //   name: `${t("active_bill")}:`,
+              //   value: reportBill?.pendingBills,
+              // },
 
               // {
               //   name: "ເງິນຄ້າງ:",
@@ -593,7 +593,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                       <td style={{ textAlign: "left" }}>{i + 1}</td>
                       <td style={{ textAlign: "center" }}>{e?.name}</td>
                       <td style={{ textAlign: "center" }}>{e?.served}</td>
-                      <td style={{ textAlign: "center" }}>{e?.cenceled}</td>
+                      <td style={{ textAlign: "center" }}>{e?.canceled}</td>
                       <td style={{ textAlign: "right" }}>
                         {e?.totalPointAmount > 0
                           ? moneyCurrency(
@@ -617,7 +617,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                   </td>
                   <td style={{ textAlign: "center" }}>
                     {categoryReport?.reduce(
-                      (sum, item) => sum + (item?.cenceled || 0),
+                      (sum, item) => sum + (item?.canceled || 0),
                       0
                     )}
                   </td>
@@ -643,7 +643,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 <tr style={{ fontWeight: "bold" }}>
                   <td style={{ textAlign: "left" }}></td>
                   <td style={{ textAlign: "center" }}></td>
-                  <td style={{ textAlign: "center" }}>{t("order")}</td>
+                  <td style={{ textAlign: "center" }}>{t("all_bill")}</td>
                   <td style={{ textAlign: "center" }}>{t("discount")}</td>
                   <td style={{ textAlign: "right" }}>
                     {t("sale_price_amount")}
@@ -676,10 +676,11 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                     {t("total")}:
                   </td>
                   <td style={{ textAlign: "center" }}>
-                    {bills?.reduce(
+                    {/* {bills?.reduce(
                       (sum, bill) => sum + (bill?.orderId?.length || 0),
                       0
-                    )}
+                    )} */}
+                    {moneyReport?.successAmount?.numberOfBills || 0}
                   </td>
                   <td style={{ textAlign: "center" }}>
                     {moneyCurrency(

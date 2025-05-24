@@ -27,9 +27,18 @@ export default function EditMenu() {
     t,
     i18n: { language },
   } = useTranslation();
-  const { updateMenuItem } = useMenuStore();
+  const { updateMenuItem, menu, getOneMenu } = useMenuStore();
   const { storeDetail } = useStoreStore();
   const [getTokken, setgetTokken] = useState();
+
+  console.log("data", data);
+  console.log("menu", menu);
+
+  useEffect(() => {
+    if (data?._id) {
+      getOneMenu(data._id);
+    }
+  }, [data]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -117,7 +126,10 @@ export default function EditMenu() {
         name_cn: formData?.name_cn,
         name_kr: formData?.name_kr,
         quantity: formData?.quantity,
-        categoryId: formData?.categoryId,
+        categoryId:
+          typeof formData.categoryId === "object"
+            ? formData.categoryId._id
+            : formData.categoryId,
         price: formData?.price,
         detail: formData?.detail,
         unit: formData?.unit,
@@ -137,10 +149,6 @@ export default function EditMenu() {
       errorAdd(`${t("edit_failed")}`);
     }
   };
-  console.log("DATA", data);
-  console.log("formData?.isWeightMenu", data?.isWeightMenu);
-  console.log("isWeightMenu", isWeightMenu);
-  console.log("formData?.unitWeightMenu", data?.unitWeightMenu);
 
   return (
     <div style={BODY}>
@@ -230,14 +238,14 @@ export default function EditMenu() {
           {errors.sort && <span className="text-red-500">ກະລຸນາປ້ອນລຳດັບ</span>}
         </div>
 
-        {/* Category Selection */}
         <div className="mb-4">
           <label>{t("category")}</label>
           <select
             {...register("categoryId")}
             className="w-full p-2 border rounded"
+            defaultValue={data?.categoryId?._id || ""}
           >
-            <option value={data?.categoryId?.name || t("select_category")}>
+            <option value={data?.categoryId?.id}>
               {data?.categoryId?.name || t("select_category")}
             </option>
             {categories.map((category) => (

@@ -560,7 +560,7 @@ export default function ChildStores() {
                                   {e?.served}
                                 </td>
                                 <td style={{ textAlign: "center" }}>
-                                  {e?.cenceled}
+                                  {e?.canceled}
                                 </td>
                                 <td style={{ textAlign: "right" }}>
                                   {moneyCurrency(e?.totalSaleAmount)}

@@ -5,8 +5,8 @@ const production_domain = "https://vercel.restaurant.appzap.la/"; // Production
 
 const now_domain = window.location.hostname;
 
-// const dev = "http://localhost:7070"; //locals
-const dev = "https://0ihbqok863.execute-api.ap-southeast-1.amazonaws.com"; //locals
+const dev = "http://localhost:7070"; //locals
+// const dev = "https://0ihbqok863.execute-api.ap-southeast-1.amazonaws.com"; //locals
 
 const production2 =
   "https://0ihbqok863.execute-api.ap-southeast-1.amazonaws.com"; // Production bill & order [7070 - 7075]

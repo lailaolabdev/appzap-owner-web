@@ -1075,7 +1075,7 @@ export default function DashboardPage() {
                       {moneyCurrency(e?.deliveryAmount)}{" "}
                       {storeDetail?.firstCurrency}
                     </td>
-                    <td>{moneyCurrency(e?.point)}</td>
+                    {storeDetail?.isCRM && <td>{moneyCurrency(e?.point)}</td>}
                     <td>
                       {moneyCurrency(e?.discount)}
                       {storeDetail?.firstCurrency}
@@ -1126,7 +1126,7 @@ export default function DashboardPage() {
                       <td style={{ textAlign: "left" }}>{e?.name}</td>
                       <td style={{ textAlign: "center" }}>{e?.served || 0}</td>
                       <td style={{ textAlign: "center" }}>
-                        {e?.cenceled || 0}
+                        {e?.canceled || 0}
                       </td>
                       <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
                       <td style={{ textAlign: "right" }}>

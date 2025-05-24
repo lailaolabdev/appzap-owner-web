@@ -11,6 +11,7 @@ import {
   getMenusByStoreId,
   updateCategoryMenu,
   updateMenu,
+  getOneMenu,
 } from "../services/menu"; // Import necessary API helpers
 import {
   addCategory,
@@ -26,6 +27,7 @@ export const useMenuStore = create(
     (set) => ({
       // Initial store state
       menus: [],
+      menu: {},
       menuCategories: [],
       selectedCategory: "All",
       isMenuLoading: false,
@@ -41,6 +43,10 @@ export const useMenuStore = create(
       setMenus: (menusData) => {
         // console.log("Setting menus data:", menusData);
         set({ menus: menusData });
+      },
+      setMenu: (menuData) => {
+        // console.log("Setting menu data:", menuData);
+        set({ menu: menuData });
       },
 
       // Action to set menu categories
@@ -65,6 +71,17 @@ export const useMenuStore = create(
         try {
           const data = await getMenusByStoreId(storeId);
           set({ menus: data, isMenuLoading: false });
+          return data;
+        } catch (error) {
+          console.error("Fetch menus error:", error.message);
+          set({ isMenuLoading: false });
+        }
+      },
+      getOneMenu: async (id) => {
+        set({ isMenuLoading: true });
+        try {
+          const data = await getOneMenu(id);
+          set({ menu: data, isMenuLoading: false });
           return data;
         } catch (error) {
           console.error("Fetch menus error:", error.message);

@@ -33,6 +33,15 @@ export const getMenu = async (categoryId) => {
     return error;
   }
 };
+export const getOneMenu = async (id) => {
+  try {
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu/${id}`;
+    const res = await axios.get(url);
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
 
 export const updateCategoryMenu = async (data, id) => {
   try {
