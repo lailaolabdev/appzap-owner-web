@@ -34,6 +34,7 @@ import StockHistory from "../pages/stock/HistoryList";
 import SettingList from "../pages/settingStore/SettingList";
 import MessagerList from "../pages/messager/MessagerList";
 import ReservationDashboard from "../pages/reservation_dashboard/ReservationDashboard";
+import DashboardPageBackup from "../pages/dashboardnew/DashboardnewBackup";
 
 // add new
 import CreateMembers from "../pages/member/CreateMembers";
@@ -133,6 +134,11 @@ function Router() {
     {
       path: "/add/newMembers",
       element: <CreateMembers />,
+    },
+
+    {
+      path: "/see-more/sales-report",
+      element: <DashboardPageBackup />,
     },
 
     {
@@ -415,6 +421,7 @@ function Router() {
           path: "/DashboardPage",
           element: <DashboardPage />,
         },
+
         {
           path: "/point-seting",
           element: <SettingMemberPointPage />,
