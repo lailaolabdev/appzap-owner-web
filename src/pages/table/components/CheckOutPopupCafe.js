@@ -472,19 +472,6 @@ export default function CheckOutPopupCafe({
       .then(async (response) => {
         // console.log("response", response);
         if (response?.status === 200) {
-          // if (storeDetail?.printBillTwo) {
-          //   // onPrintBill().then(() => {
-          //   //   setTimeout(() => {
-          //   //     onPrintBill2();
-          //   //   }, 1500);
-          //   // });
-          //   onPrintBill();
-          // } else {
-          //   onPrintBill();
-          //   setSelectedMenu([]);
-          //   setSelectedMenus([]);
-          //   clearSelectedMenus();
-          // }
           onPrintBill();
           setSelectedTable();
           getTableDataStore();

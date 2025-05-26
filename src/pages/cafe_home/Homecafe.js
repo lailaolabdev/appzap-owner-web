@@ -362,31 +362,6 @@ function Homecafe() {
     }
   };
 
-  // const billCountCafe = async () => {
-  //   try {
-  //     let findby = "?";
-  //     findby += `storeId=${storeDetail?._id}&`;
-  //     findby += `dateFrom=${startDate}&`;
-  //     findby += `dateTo=${endDate}&`;
-  //     findby += `timeFrom=${startTime}&`;
-  //     findby += `timeTo=${endTime}`;
-  //     const res = await getBillCountCafe(findby);
-
-  //     setBill(res?.data?.billCountCafe);
-
-  //     if (res && res.response.data.message === "BILL_NO_DUPLICATE") {
-  //       Swal.fire({
-  //         icon: "error",
-  //         title: "ອິນເຕີເນັດມີບັນຫາກະລະນາກົດ ຣີໂຫຼດ(reload) ໜຶ່ງຄັ້ງ",
-  //         showConfirmButton: false,
-  //         timer: 2500,
-  //       });
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   const billCountCafe = async () => {
     try {
       let findby = "?";
@@ -1562,21 +1537,30 @@ function Homecafe() {
             url: urlForPrinter,
             data: bodyFormData,
             headers: { "Content-Type": "multipart/form-data" },
+          }).then(async (response) => {
+            if (response.status < 300) {
+              // console.log("success print bill main status", response?.status);
+              // console.log("success print bill main", response?.data.message);
+
+              if (storeDetail?.printBillTwo) {
+                setTimeout(async () => {
+                  await onPrintBill2();
+                  setSelectedMenu([]);
+                  setSelectedMenus([]);
+                  clearSelectedMenus();
+                }, 2000);
+              }
+              if (storeDetail?.optionPrintBill) {
+                await onPrintForCherLaBel();
+              }
+            }
           });
         }
       );
 
-      if (storeDetail?.optionPrintBill) {
-        await onPrintForCherLaBel();
-      }
-      if (storeDetail?.printBillTwo) {
-        await onPrintBill2();
-      }
       setSelectedTable();
       getTableDataStore();
-      setSelectedMenu([]);
-      setSelectedMenus([]);
-      clearSelectedMenus();
+
       setIsLoading(false);
 
       await Swal.fire({
