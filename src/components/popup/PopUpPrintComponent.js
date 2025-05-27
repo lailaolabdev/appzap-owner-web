@@ -622,7 +622,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                     )}
                   </td>
                   <td style={{ textAlign: "right" }}>
-                    {moneyCurrency(
+                    {/* {moneyCurrency(
                       categoryReport?.reduce(
                         (sum, item) => sum + (item?.totalSaleAmount || 0),
                         0
@@ -631,6 +631,12 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                           (sum, item) => sum + (item?.totalPointAmount || 0),
                           0
                         )
+                    )} */}
+                    {moneyCurrency(
+                      bills?.reduce(
+                        (sum, bill) => sum + (bill?.billAmount || 0),
+                        0
+                      )
                     )}
                     {storeDetail?.firstCurrency}
                   </td>
