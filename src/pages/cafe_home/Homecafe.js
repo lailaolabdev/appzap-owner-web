@@ -1539,15 +1539,13 @@ function Homecafe() {
             headers: { "Content-Type": "multipart/form-data" },
           }).then(async (response) => {
             if (response.status < 300) {
-              // console.log("success print bill main status", response?.status);
-              // console.log("success print bill main", response?.data.message);
-
               if (storeDetail?.printBillTwo) {
                 setTimeout(async () => {
                   await onPrintBill2();
                   setSelectedMenu([]);
                   setSelectedMenus([]);
                   clearSelectedMenus();
+                  billCountCafe();
                 }, 2000);
               }
               if (storeDetail?.optionPrintBill) {
@@ -1560,16 +1558,13 @@ function Homecafe() {
 
       setSelectedTable();
       getTableDataStore();
-
       setIsLoading(false);
-
       await Swal.fire({
         icon: "success",
         title: `${t("print_success")}`,
         showConfirmButton: false,
         timer: 1500,
       });
-      billCountCafe();
     } catch (err) {
       setIsLoading(false);
       await Swal.fire({
