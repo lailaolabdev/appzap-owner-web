@@ -572,10 +572,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 </div>
               </>
             )}
-            <hr style={{ borderBottom: "1px dotted #000" }} />
+            {/* <hr style={{ borderBottom: "1px dotted #000" }} /> */}
             <div>
               <TableComponent>
-                <tr>
+                {/* <tr>
                   <td style={{ textAlign: "left" }}>#</td>
                   <th style={{ textAlign: "center" }}>{t("menu_type")}</th>
                   <th style={{ textAlign: "center" }}>{t("success_order")}</th>
@@ -583,7 +583,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                   <th style={{ textAlign: "right" }}>
                     {t("sale_price_amount")}
                   </th>
-                </tr>
+                </tr> */}
                 {/* {categoryReport
                   ?.sort((x, y) => {
                     return y.served - x.served;
@@ -606,7 +606,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                   ))} */}
 
                 {/* Summary row */}
-                <tr className="font-bold pt-2">
+                {/* <tr className="font-bold pt-2">
                   <td style={{ textAlign: "left" }}></td>
                   <td style={{ textAlign: "center" }}>{t("total")}</td>
                   <td style={{ textAlign: "center" }}>
@@ -634,7 +634,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                     )}
                     {storeDetail?.firstCurrency}
                   </td>
-                </tr>
+                </tr> */}
               </TableComponent>
             </div>
             <hr style={{ borderBottom: "1px dotted #000" }} />
