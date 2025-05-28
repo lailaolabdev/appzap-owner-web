@@ -1389,7 +1389,7 @@ function Homecafe() {
       const _dataBill = {
         typePrint: "PRINT_BILL_CHECKOUT",
       };
-      await _createHistoriesPrinter(_dataBill);
+      // await _createHistoriesPrinter(_dataBill);
 
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
@@ -1454,9 +1454,6 @@ function Homecafe() {
           });
         }
       );
-      // setSelectedMenu([]);
-      // setSelectedMenus([]);
-      // clearSelectedMenus();
     } catch (err) {
       setIsLoading(false);
       await Swal.fire({
@@ -1538,19 +1535,34 @@ function Homecafe() {
             data: bodyFormData,
             headers: { "Content-Type": "multipart/form-data" },
           }).then(async (response) => {
-            if (response.status < 300) {
+            if (response.status === 200) {
               if (storeDetail?.printBillTwo) {
                 setTimeout(async () => {
                   await onPrintBill2();
+                  if (storeDetail?.optionPrintBill) {
+                    await onPrintForCherLaBel();
+                  }
                   setSelectedMenu([]);
                   setSelectedMenus([]);
                   clearSelectedMenus();
                   billCountCafe();
-                }, 5000);
+                }, 3500);
+              } else {
+                if (storeDetail?.optionPrintBill) {
+                  await onPrintForCherLaBel();
+                }
+                setSelectedMenu([]);
+                setSelectedMenus([]);
+                clearSelectedMenus();
+                billCountCafe();
               }
-              if (storeDetail?.optionPrintBill) {
-                await onPrintForCherLaBel();
-              }
+
+              await Swal.fire({
+                icon: "success",
+                title: `${t("print_success")}`,
+                showConfirmButton: false,
+                timer: 1500,
+              });
             }
           });
         }
@@ -1559,12 +1571,6 @@ function Homecafe() {
       setSelectedTable();
       getTableDataStore();
       setIsLoading(false);
-      await Swal.fire({
-        icon: "success",
-        title: `${t("print_success")}`,
-        showConfirmButton: false,
-        timer: 1500,
-      });
     } catch (err) {
       setIsLoading(false);
       await Swal.fire({
