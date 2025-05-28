@@ -1371,5 +1371,7 @@
   "point_use" : "Point use",
   "show_amount" : "Show Amount in sale page for cafe",
   "show_amount_open" : "Open for use",
-  "print_bill_and_sticker" : "Print bill and Sticker"
+  "print_bill_and_sticker" : "Print bill and Sticker",
+  "print_two_bill" : "Print two bill",
+  "all_bill" : "All Bill"
 }

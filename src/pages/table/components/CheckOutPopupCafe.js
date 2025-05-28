@@ -46,6 +46,7 @@ export default function CheckOutPopupCafe({
   bill,
   onQueue,
   onPrintBill,
+  onPrintBill2,
   onPrintForCher,
   billId,
   open,
@@ -68,6 +69,7 @@ export default function CheckOutPopupCafe({
   point,
   paymentMethod,
   setPaymentMethod,
+  setSelectedMenu,
 }) {
   // ref
   const inputCashRef = useRef(null);
@@ -99,7 +101,7 @@ export default function CheckOutPopupCafe({
   const [membersData, setMembersData] = useState([]);
   const [currencyList, setCurrencyList] = useState([]);
   const { setSelectedTable, getTableDataStore } = useStore();
-  const { setSelectedMenus } = useMenuSelectStore();
+  const { setSelectedMenus, clearSelectedMenus } = useMenuSelectStore();
   const { SetChangeAmount, ClearChangeAmount } = useChangeMoney();
   const [selectedBank, setSelectedBank] = useState("");
   const [banks, setBanks] = useState([]);
@@ -427,7 +429,7 @@ export default function CheckOutPopupCafe({
       userNanme: null,
       saveCafe: true,
       phone: null,
-      no: dataBillEdit?.no ? dataBillEdit?.no : bill + 1,
+      no: dataBillEdit?.no ? dataBillEdit?.no : bill,
       point: point,
       change: moneyChange,
       isCafe: true,
@@ -490,7 +492,7 @@ export default function CheckOutPopupCafe({
           // setIsLoading(false);
           setIsDelivery(false);
 
-          onQueue();
+          // onQueue();
           setTotalPointPrice();
           if (!storeDetail?.isStatusCafe) {
             await onPrintForCher();
@@ -551,7 +553,7 @@ export default function CheckOutPopupCafe({
       userNanme: null,
       saveCafe: true,
       phone: null,
-      no: dataBillEdit?.no ? dataBillEdit?.no : bill + 1,
+      no: dataBillEdit?.no ? dataBillEdit?.no : bill,
       point: point,
       change: moneyChange,
       isCafe: true,

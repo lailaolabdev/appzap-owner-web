@@ -302,13 +302,13 @@ export default function PopUpPrintMenuCategoryHistoryComponent({
                     <td style={{ textAlign: "left" }}>{i + 1}</td>
                     <td style={{ textAlign: "center" }}>{e?.name}</td>
                     <td style={{ textAlign: "center" }}>{e?.served}</td>
-                    <td style={{ textAlign: "center" }}>{e?.cenceled}</td>
+                    <td style={{ textAlign: "center" }}>{e?.canceled}</td>
                     <td style={{ textAlign: "right" }}>
-                    {e?.totalPointAmount > 0
-                          ? moneyCurrency(
-                              e?.totalSaleAmount - e?.totalPointAmount
-                            )
-                          : moneyCurrency(e?.totalSaleAmount)}
+                      {e?.totalPointAmount > 0
+                        ? moneyCurrency(
+                            e?.totalSaleAmount - e?.totalPointAmount
+                          )
+                        : moneyCurrency(e?.totalSaleAmount)}
                       {storeDetail?.firstCurrency}
                     </td>
                   </tr>

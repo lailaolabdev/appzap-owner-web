@@ -371,8 +371,28 @@ function Homecafe() {
       findby += `timeFrom=${startTime}&`;
       findby += `timeTo=${endTime}`;
       const res = await getBillCountCafe(findby);
-      setBill(res?.data?.billCountCafe);
+
+      setBill(res?.data?.billCountCafe ?? []);
+
+      // If your API returns errors in the response, check here
+      if (res?.data?.message === "BILL_NO_DUPLICATE") {
+        Swal.fire({
+          icon: "error",
+          title: "ອິນເຕີເນັດມີບັນຫາກະລະນາກົດ ຣີໂຫຼດ(reload) ໜຶ່ງຄັ້ງ",
+          showConfirmButton: false,
+          timer: 2500,
+        });
+      }
     } catch (error) {
+      // If error.response exists, check for the message there
+      if (error?.response?.data?.message === "BILL_NO_DUPLICATE") {
+        Swal.fire({
+          icon: "error",
+          title: "ອິນເຕີເນັດມີບັນຫາກະລະນາກົດ ຣີໂຫຼດ(reload) ໜຶ່ງຄັ້ງ",
+          showConfirmButton: false,
+          timer: 2500,
+        });
+      }
       console.log(error);
     }
   };
@@ -1362,22 +1382,22 @@ function Homecafe() {
     }
   };
 
-  const onPrintBill = async () => {
+  const onPrintBill2 = async () => {
     try {
-      setPopup({ CheckOutType: false });
-      setIsLoading(true);
+      // setPopup({ CheckOutType: false });
+      // setIsLoading(true);
       const _dataBill = {
         typePrint: "PRINT_BILL_CHECKOUT",
       };
-      await _createHistoriesPrinter(_dataBill);
+      // await _createHistoriesPrinter(_dataBill);
 
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
-      console.log("_printerCounters", _printerCounters);
+      // console.log("_printerCounters", _printerCounters);
       const printerBillData = printers?.find(
         (e) => e?._id === _printerCounters?.BILL
       );
-      console.log("printerBillData", printerBillData);
+      // console.log("printerBillData", printerBillData);
 
       let dataImageForPrint;
       if (printerBillData?.width === "80mm") {
@@ -1387,9 +1407,7 @@ function Homecafe() {
           scrollY: 0,
           scale: 530 / widthBill80,
         });
-        console.log("dataImageForPrint in", dataImageForPrint);
       }
-      console.log("dataImageForPrint out", dataImageForPrint);
 
       if (printerBillData?.width === "58mm") {
         dataImageForPrint = await html2canvas(bill58Ref.current, {
@@ -1436,24 +1454,123 @@ function Homecafe() {
           });
         }
       );
-
-      if (storeDetail?.optionPrintBill) {
-        await onPrintForCherLaBel();
-      }
-
-      setSelectedTable();
-      getTableDataStore();
-      setSelectedMenu([]);
-      setSelectedMenus([]);
-      clearSelectedMenus();
+    } catch (err) {
       setIsLoading(false);
-
       await Swal.fire({
-        icon: "success",
-        title: `${t("print_success")}`,
+        icon: "error",
+        title: `${t("print_fial")}`,
         showConfirmButton: false,
         timer: 1500,
       });
+      return err;
+    }
+  };
+  const onPrintBill = async () => {
+    try {
+      setPopup({ CheckOutType: false });
+      setIsLoading(true);
+      const _dataBill = {
+        typePrint: "PRINT_BILL_CHECKOUT",
+      };
+      await _createHistoriesPrinter(_dataBill);
+
+      let urlForPrinter = "";
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      // console.log("_printerCounters", _printerCounters);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
+      // console.log("printerBillData", printerBillData);
+
+      let dataImageForPrint;
+      if (printerBillData?.width === "80mm") {
+        dataImageForPrint = await html2canvas(bill80Ref.current, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 530 / widthBill80,
+        });
+      }
+
+      if (printerBillData?.width === "58mm") {
+        dataImageForPrint = await html2canvas(bill58Ref.current, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 350 / widthBill58,
+        });
+      }
+      if (printerBillData?.type === "ETHERNET") {
+        urlForPrinter = ETHERNET_PRINTER_PORT;
+      }
+      if (printerBillData?.type === "BLUETOOTH") {
+        urlForPrinter = BLUETOOTH_PRINTER_PORT;
+      }
+      if (printerBillData?.type === "USB") {
+        urlForPrinter = USB_PRINTER_PORT;
+      }
+
+      const _file = await base64ToBlob(dataImageForPrint.toDataURL());
+      var bodyFormData = new FormData();
+      bodyFormData.append("ip", printerBillData?.ip);
+      bodyFormData.append("port", "9100");
+      bodyFormData.append("image", _file);
+      bodyFormData.append("beep1", 1);
+      bodyFormData.append("beep2", 9);
+      bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
+
+      // printFlutter({imageBuffer:dataImageForPrint.toDataURL(),ip:printerBillData?.ip,type:printerBillData?.type,port:"9100"});
+      await printFlutter(
+        {
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          }).then(async (response) => {
+            if (response.status === 200) {
+              if (storeDetail?.printBillTwo) {
+                setTimeout(async () => {
+                  await onPrintBill2();
+                  if (storeDetail?.optionPrintBill) {
+                    await onPrintForCherLaBel();
+                  }
+                  setSelectedMenu([]);
+                  setSelectedMenus([]);
+                  clearSelectedMenus();
+                  billCountCafe();
+                }, 3500);
+              } else {
+                if (storeDetail?.optionPrintBill) {
+                  await onPrintForCherLaBel();
+                }
+                setSelectedMenu([]);
+                setSelectedMenus([]);
+                clearSelectedMenus();
+                billCountCafe();
+              }
+
+              await Swal.fire({
+                icon: "success",
+                title: `${t("print_success")}`,
+                showConfirmButton: false,
+                timer: 1500,
+              });
+            }
+          });
+        }
+      );
+
+      setSelectedTable();
+      getTableDataStore();
+      setIsLoading(false);
     } catch (err) {
       setIsLoading(false);
       await Swal.fire({
@@ -2425,11 +2542,13 @@ function Homecafe() {
         bill={bill}
         onPrintForCher={onPrintForCher}
         onQueue={billCountCafe}
+        onPrintBill2={onPrintBill2}
         onPrintBill={onPrintBill}
         onPrintForCherLaBel={onPrintForCherLaBel}
         onPrintDrawer={onPrintDrawer}
         dataBill={SelectedMenus}
         open={popup?.CheckOutType}
+        setSelectedMenu={setSelectedMenu}
         onClose={() => setPopup()}
         setDataBill={setDataBill}
         taxPercent={taxPercent}

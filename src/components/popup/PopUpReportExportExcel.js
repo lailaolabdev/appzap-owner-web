@@ -1173,7 +1173,7 @@ export default function PopUpReportExportExcel({
           const row = sheet.addRow({
             category: category?.name || t("unknown"),
             order_success: category?.served || 0,
-            cancel: category?.cenceled || 0,
+            cancel: category?.canceled || 0,
             order_paid: category?.paid || 0, // No paid data available in API
             sale_price_amount: category?.totalSaleAmount || 0,
           });
@@ -1295,7 +1295,7 @@ export default function PopUpReportExportExcel({
           const row = sheet.addRow({
             menu: menu?.name || t("unknown"),
             order_success: menu?.served || 0,
-            cancel: menu?.cenceled || 0,
+            cancel: menu?.canceled || 0,
             order_paid: menu?.paid || 0, // No paid data available in API
             sale_price_amount: menu?.totalSaleAmount || 0,
           });
@@ -3228,7 +3228,7 @@ export default function PopUpReportExportExcel({
         const menuTypeRowData = [
           category?.name || t("unknown"),
           category?.served || 0,
-          category?.cenceled || 0,
+          category?.canceled || 0,
           category?.paid || 0,
           category?.totalSaleAmount || 0,
         ];
@@ -3284,7 +3284,7 @@ export default function PopUpReportExportExcel({
         const menuInfoRowData = [
           menu?.name || t("unknown"),
           menu?.served || 0,
-          menu?.cenceled || 0,
+          menu?.canceled || 0,
           menu?.paid || 0,
           menu?.totalSaleAmount || 0,
         ];

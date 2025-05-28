@@ -54,6 +54,7 @@ import { useStore } from "../../store";
 import { MdMarkChatRead, MdDelete, MdAdd } from "react-icons/md";
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
 import CheckOutPopupCafe from "../table/components/CheckOutPopupCafe";
+import EditPopupCafe from "../table/components/EditPopupCafe";
 import printFlutter from "../../helpers/printFlutter";
 import { cn } from "../../utils/cn";
 import { fontMap } from "../../utils/font-map";
@@ -2546,7 +2547,7 @@ function HomecafeEdit() {
         onClose={() => setIsRemoveItem(false)}
         onSubmit={async () => onRemoveFromCart(itemDeleting)}
       />
-      <CheckOutPopupCafe
+      <EditPopupCafe
         bill={bill}
         onPrintForCher={onPrintForCher}
         onQueue={billData}
