@@ -1546,7 +1546,7 @@ function Homecafe() {
                   setSelectedMenus([]);
                   clearSelectedMenus();
                   billCountCafe();
-                }, 2000);
+                }, 5000);
               }
               if (storeDetail?.optionPrintBill) {
                 await onPrintForCherLaBel();
