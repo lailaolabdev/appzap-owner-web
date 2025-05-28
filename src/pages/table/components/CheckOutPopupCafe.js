@@ -553,7 +553,7 @@ export default function CheckOutPopupCafe({
       userNanme: null,
       saveCafe: true,
       phone: null,
-      no: dataBillEdit?.no ? dataBillEdit?.no : bill + 1,
+      no: dataBillEdit?.no ? dataBillEdit?.no : bill,
       point: point,
       change: moneyChange,
       isCafe: true,
