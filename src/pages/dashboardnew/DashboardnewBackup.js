@@ -7,7 +7,7 @@ import {
   BsFillCalendarWeekFill,
   BsFillCalendarEventFill,
 } from "react-icons/bs";
-import { MdMenu, MdMore, MdOutlineCloudDownload } from "react-icons/md";
+import { MdOutlineCloudDownload } from "react-icons/md";
 import { AiFillPrinter } from "react-icons/ai";
 import Box from "../../components/Box";
 import { useStore } from "../../store";
@@ -26,6 +26,17 @@ import {
   getPromotionReportDisCountAndFree,
   getBillReport,
 } from "../../services/report";
+import {
+  getBillReportBackup,
+  getCategoryReportBackup,
+  getMenuReportBackup,
+  getMoneyReportBackup,
+  getPromotionReportBackup,
+  getPromotionReportDisCountAndFreeBackup,
+  getReportsBackup,
+  getSalesInformationReportBackup,
+  getUserReportBackup,
+} from "../../services/reportBackup";
 import { getAllShift } from "../../services/shift";
 import fileDownload from "js-file-download";
 import * as XLSX from "xlsx";
@@ -60,7 +71,7 @@ import PopUpPrintPromotion from "../../components/popup/PopUpPrintPromotion";
 
 import matchRoundNumber from "../../helpers/matchRound";
 
-export default function DashboardPage() {
+export default function DashboardPageBackup() {
   const { t } = useTranslation();
   // state
   const [reportData, setReportData] = useState([]);
@@ -177,7 +188,7 @@ export default function DashboardPage() {
 
   const getReportData = async () => {
     setLoading(true);
-    const data = await getReports(
+    const data = await getReportsBackup(
       storeDetail?._id,
       findByData(),
       selectedTableIds
@@ -187,7 +198,7 @@ export default function DashboardPage() {
   };
   const getSalesInformationReportData = async () => {
     setLoading(true);
-    const data = await getSalesInformationReport(
+    const data = await getSalesInformationReportBackup(
       storeDetail?._id,
       findByData(),
       selectedTableIds
@@ -197,7 +208,7 @@ export default function DashboardPage() {
   };
   const getUserReportData = async () => {
     setLoading(true);
-    const data = await getUserReport(
+    const data = await getUserReportBackup(
       storeDetail?._id,
       findByData(),
       selectedTableIds
@@ -207,7 +218,7 @@ export default function DashboardPage() {
   };
   const getMenuReportData = async () => {
     setLoading(true);
-    const data = await getMenuReport(
+    const data = await getMenuReportBackup(
       storeDetail?._id,
       findByData(),
       selectedTableIds
@@ -217,7 +228,7 @@ export default function DashboardPage() {
   };
   const getCategoryReportData = async () => {
     setLoading(true);
-    const data = await getCategoryReport(
+    const data = await getCategoryReportBackup(
       storeDetail?._id,
       findByData(),
       selectedTableIds
@@ -227,7 +238,7 @@ export default function DashboardPage() {
   };
   const getMoneyReportData = async () => {
     setLoading(true);
-    const data = await getMoneyReport(
+    const data = await getMoneyReportBackup(
       storeDetail?._id,
       findByData(),
       selectedTableIds
@@ -258,7 +269,7 @@ export default function DashboardPage() {
 
   const getPromotionReportData = async () => {
     setLoading(true);
-    const data = await getPromotionReport(
+    const data = await getPromotionReportBackup(
       storeDetail?._id,
       findByData(),
       selectedTableIds
@@ -268,7 +279,7 @@ export default function DashboardPage() {
   };
   const getPromotionDiscountAndFreeReportData = async () => {
     setLoading(true);
-    const data = await getPromotionReportDisCountAndFree(
+    const data = await getPromotionReportDisCountAndFreeBackup(
       storeDetail?._id,
       findByData(),
       selectedTableIds
@@ -305,7 +316,7 @@ export default function DashboardPage() {
 
   const getBillReportData = async () => {
     setLoading(true);
-    const data = await getBillReport(storeDetail?._id, findByData());
+    const data = await getBillReportBackup(storeDetail?._id, findByData());
     setBillReport(data);
     setLoading(false);
   };
@@ -523,13 +534,13 @@ export default function DashboardPage() {
   const { totalExchangePoint, totalPrice } = calculateTotals();
 
   return (
-    <div>
+    <div className="overflow-y-auto" style={{ maxHeight: "100vh" }}>
       {loading ? <Loading /> : ""}
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
-        {/* <Breadcrumb>
+        <Breadcrumb>
           <Breadcrumb.Item>ລາຍງານ</Breadcrumb.Item>
           <Breadcrumb.Item active>ລາຍງານຍອດຂາຍ</Breadcrumb.Item>
-        </Breadcrumb> */}
+        </Breadcrumb>
         <div style={{ marginBottom: 20, display: "flex", gap: 10 }}>
           <div style={{ display: "flex", gap: 10 }}>
             <Button
@@ -553,51 +564,21 @@ export default function DashboardPage() {
               {t("chose_table")}
             </Button>
           </div>
-          {profile?.data?.role === "APPZAP_ADMIN"
-            ? storeDetail?.isShift && (
-                <div className="flex items-center gap-2 whitespace-nowrap">
-                  {/* <span>{t("chose_shift")} : </span> */}
-                  <Select
-                    placeholder={t("chose_shift")}
-                    className="w-40 border-1 border-orange-500"
-                    options={optionsData}
-                    onChange={handleSearchInput}
-                  />
-                </div>
-              )
-            : storeDetail?.isShift &&
-              OpenShiftForCounter && (
-                <div className="flex items-center gap-2 whitespace-nowrap">
-                  <Select
-                    placeholder={`${t("plachoder_shift")}...`}
-                    className="min-w-[170px] w-full border-orange-500"
-                    options={optionsData}
-                    onChange={handleSearchInput}
-                  />
-                </div>
-              )}
           <div style={{ flex: 1 }} />
-          <Button
+          {/* <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
             onClick={() => setPopup({ printReport: true })}
           >
             <AiFillPrinter /> PRINT
-          </Button>
-          <Button
+          </Button> */}
+          {/* <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
             onClick={() => onExportData()}
           >
             <MdOutlineCloudDownload /> EXPORT
-          </Button>
-          <Button
-            variant="outline-primary"
-            style={{ display: "flex", gap: 10, alignItems: "center" }}
-            onClick={() => window.open("/see-more/sales-report")}
-          >
-            <MdMenu /> SEE MORE
-          </Button>
+          </Button> */}
         </div>
         <Box
           sx={{
