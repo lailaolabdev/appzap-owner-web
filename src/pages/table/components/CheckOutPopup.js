@@ -42,10 +42,10 @@ import matchRoundNumber from "../../../helpers/matchRound";
 
 export default function CheckOutPopup({
   onPrintDrawer,
-  onPrintBill = () => {},
+  onPrintBill = () => { },
   open,
   onClose,
-  onSubmit = () => {},
+  onSubmit = () => { },
   dataBill,
   tableData,
   totalBillCheckOutPopup,
@@ -245,11 +245,9 @@ export default function CheckOutPopup({
           title: "ແຈ້ງເຕືອນ",
           text: `ຈຳນວນເງິນທີ່ແລກປ່ຽນຈາກຄະແນນ ${moneyCurrency(
             point
-          )} ເປັນເງິນ ${moneyCurrency(calculatedValue)} ${
-            storeDetail?.firstCurrency
-          } ໃຫຍ່ກວ່າ ລາຄາລວມຂອງບິນທັງໝົດ ${moneyCurrency(totalBillMoney)} ${
-            storeDetail?.firstCurrency
-          }`,
+          )} ເປັນເງິນ ${moneyCurrency(calculatedValue)} ${storeDetail?.firstCurrency
+            } ໃຫຍ່ກວ່າ ລາຄາລວມຂອງບິນທັງໝົດ ${moneyCurrency(totalBillMoney)} ${storeDetail?.firstCurrency
+            }`,
           icon: "warning",
           showCancelButton: true,
           confirmButtonColor: "#fb6e3b",
@@ -272,7 +270,7 @@ export default function CheckOutPopup({
       const _data = await getMemberAllCount(DATA?.storeId, TOKEN);
       if (_data.error) throw new Error("error");
       setMembersData(_data?.data);
-    } catch (err) {}
+    } catch (err) { }
   };
 
   useEffect(() => {
@@ -313,8 +311,8 @@ export default function CheckOutPopup({
           ? totalBill - dataBill?.discount
           : 0
         : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-        ? totalBill - (totalBill * dataBill?.discount) / 100
-        : 0;
+          ? totalBill - (totalBill * dataBill?.discount) / 100
+          : 0;
 
     const cashAmount = Number.parseFloat(cash) || 0;
     const transferAmount = Number.parseFloat(transfer) || 0;
@@ -484,8 +482,10 @@ export default function CheckOutPopup({
         }
       )
       .then(async (response) => {
+        let localZone = localStorage.getItem("selectedZone");
+
         setSelectedTable();
-        getTableDataStore();
+        getTableDataStore({ zone: localZone });
         setCashCurrency();
         setTab("cash");
         setSelectCurrency({
@@ -534,8 +534,8 @@ export default function CheckOutPopup({
       storeDetail?.tableEdit === undefined
         ? false
         : !storeDetail?.tableEdit
-        ? false
-        : true;
+          ? false
+          : true;
 
     const data = {
       memberId: memberData?._id,
@@ -566,7 +566,7 @@ export default function CheckOutPopup({
 
       if (storeDetail?.isCRM && tab === "cash_transfer_point") {
         try {
-          await RedeemPointUser();
+          // await RedeemPointUser();
         } catch (err) {
           if (err?.response?.data.isExpire) {
             Swal.fire({
@@ -777,8 +777,8 @@ export default function CheckOutPopup({
           if (
             _sum >=
             totalBill -
-              calculatePointValue(point) -
-              (totalBill * dataBill?.discount) / 100
+            calculatePointValue(point) -
+            (totalBill * dataBill?.discount) / 100
           ) {
             setCanCheckOut(true);
           } else {
@@ -816,27 +816,27 @@ export default function CheckOutPopup({
         ? totalBill - dataBill?.discount
         : 0
       : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-      ? (totalBill * dataBill?.discount) / 100
-      : 0;
+        ? (totalBill * dataBill?.discount) / 100
+        : 0;
 
   const totalBillMoney =
     dataBill?.discountType === "LAK"
       ? Math.floor(
-          totalBill - dataBill?.discount > 0
-            ? totalBill - dataBill?.discount
-            : 0
-        )
+        totalBill - dataBill?.discount > 0
+          ? totalBill - dataBill?.discount
+          : 0
+      )
       : Math.floor(
-          totalBill - (totalBill * dataBill?.discount) / 100 > 0
-            ? totalBill - (totalBill * dataBill?.discount) / 100
-            : 0
-        );
+        totalBill - (totalBill * dataBill?.discount) / 100 > 0
+          ? totalBill - (totalBill * dataBill?.discount) / 100
+          : 0
+      );
   const serviceChangeTotal = () => {
     return (
       totalBillMoney +
       (totalBillMoney * serviceChargeRef.current ||
         storeDetail?.serviceChargePer) /
-        100
+      100
     );
   };
 
@@ -1076,8 +1076,8 @@ export default function CheckOutPopup({
                       ? totalBill - dataBill?.discount
                       : 0
                     : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-                    ? totalBill - (totalBill * dataBill?.discount) / 100
-                    : 0) / rateCurrency
+                      ? totalBill - (totalBill * dataBill?.discount) / 100
+                      : 0) / rateCurrency
                 )}{" "}
                 {selectCurrency?.name}
               </span>
@@ -1296,11 +1296,11 @@ export default function CheckOutPopup({
                                 <span className="font-bold ml-1 text-orange-500">
                                   {point
                                     ? convertNumber(
-                                        SelectedDataBill?.Point - point
-                                      )
+                                      SelectedDataBill?.Point - point
+                                    )
                                     : convertNumber(SelectedDataBill?.Point)
-                                    ? convertNumber(SelectedDataBill?.Point)
-                                    : "0"}
+                                      ? convertNumber(SelectedDataBill?.Point)
+                                      : "0"}
                                 </span>
                               </div>
                             </div>
@@ -1313,7 +1313,7 @@ export default function CheckOutPopup({
                                   {convertNumber(
                                     (SelectedDataBill?.Point *
                                       PointStore?.data[0]?.moneyUse || 0) -
-                                      calculatePointValue(point)
+                                    calculatePointValue(point)
                                   )}
                                   {storeDetail?.firstCurrency}
                                 </span>
@@ -1327,12 +1327,12 @@ export default function CheckOutPopup({
                             {t("expire_date_debt")}:{" "}
                             <span className="font-bold">
                               {SelectedDataBill?.ExpireDateForPoint &&
-                              moment(
-                                SelectedDataBill.ExpireDateForPoint
-                              ).isValid()
+                                moment(
+                                  SelectedDataBill.ExpireDateForPoint
+                                ).isValid()
                                 ? moment(
-                                    SelectedDataBill.ExpireDateForPoint
-                                  ).format("DD-MM-YYYY")
+                                  SelectedDataBill.ExpireDateForPoint
+                                ).format("DD-MM-YYYY")
                                 : "-"}
                             </span>
                           </div>
@@ -1394,8 +1394,8 @@ export default function CheckOutPopup({
                           {point
                             ? convertNumber(dataBill?.Point - point)
                             : convertNumber(dataBill?.Point)
-                            ? convertNumber(dataBill?.Point)
-                            : "0"}
+                              ? convertNumber(dataBill?.Point)
+                              : "0"}
                         </InputGroup.Text>
                       </div>
                     </div>
@@ -1464,23 +1464,23 @@ export default function CheckOutPopup({
                 {(tab === "transfer" ||
                   tab === "cash_transfer" ||
                   tab === "cash_transfer_point") && (
-                  <Form.Control
-                    as="select"
-                    style={{ width: 140 }}
-                    value={selectedBank?.id || ""}
-                    onChange={handleChange}
-                  >
-                    <option value="" disabled>
-                      ເລືອກທະນາຄານ
-                    </option>
-                    {Array.isArray(banks) &&
-                      banks.map((bank) => (
-                        <option key={bank._id} value={bank._id}>
-                          {bank.bankName}
-                        </option>
-                      ))}
-                  </Form.Control>
-                )}
+                    <Form.Control
+                      as="select"
+                      style={{ width: 140 }}
+                      value={selectedBank?.id || ""}
+                      onChange={handleChange}
+                    >
+                      <option value="" disabled>
+                        ເລືອກທະນາຄານ
+                      </option>
+                      {Array.isArray(banks) &&
+                        banks.map((bank) => (
+                          <option key={bank._id} value={bank._id}>
+                            {bank.bankName}
+                          </option>
+                        ))}
+                    </Form.Control>
+                  )}
               </div>
             </div>
             <div
@@ -1522,8 +1522,8 @@ export default function CheckOutPopup({
                       selectedTable?.isDeliveryTable
                         ? "outline-primary"
                         : tab === "cash"
-                        ? "primary"
-                        : "outline-primary"
+                          ? "primary"
+                          : "outline-primary"
                     }
                     disabled={selectedTable?.isDeliveryTable}
                     style={{
@@ -1611,8 +1611,8 @@ export default function CheckOutPopup({
                         selectedTable?.isDeliveryTable
                           ? "outline-primary"
                           : tab === "cash_transfer_point"
-                          ? "primary"
-                          : "outline-primary"
+                            ? "primary"
+                            : "outline-primary"
                       }
                       onClick={() => {
                         setCash();
