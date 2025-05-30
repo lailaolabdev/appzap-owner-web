@@ -583,7 +583,7 @@ export default function EditPopupCafe({
 
     await axios
       .post(
-        `${END_POINT}/v7/admin/bill-cafe-checkout`,
+        `${END_POINT}/v7/admin/bill-cafe-edit`,
         {
           data: datas,
         },

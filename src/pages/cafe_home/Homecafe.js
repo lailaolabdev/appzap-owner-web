@@ -1579,6 +1579,10 @@ function Homecafe() {
         showConfirmButton: false,
         timer: 1500,
       });
+      setSelectedMenu([]);
+      setSelectedMenus([]);
+      clearSelectedMenus();
+      billCountCafe();
       return err;
     }
   };

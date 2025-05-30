@@ -588,22 +588,34 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                   ?.sort((x, y) => {
                     return y.served - x.served;
                   })
-                  ?.map((e, i) => (
-                    <tr>
-                      <td style={{ textAlign: "left" }}>{i + 1}</td>
-                      <td style={{ textAlign: "center" }}>{e?.name}</td>
-                      <td style={{ textAlign: "center" }}>{e?.served}</td>
-                      <td style={{ textAlign: "center" }}>{e?.canceled}</td>
-                      <td style={{ textAlign: "right" }}>
-                        {e?.totalPointAmount > 0
-                          ? moneyCurrency(
-                              e?.totalSaleAmount - e?.totalPointAmount
-                            )
-                          : moneyCurrency(e?.totalSaleAmount)}
-                        {storeDetail?.firstCurrency}
-                      </td>
-                    </tr>
-                  ))}
+                  ?.map((e, i) => {
+                    const totallBill = bills?.reduce(
+                      (sum, bill) => sum + (bill?.billAmount || 0),
+                      0
+                    );
+                    const total = e?.totalSaleAmount - e?.totalPointAmount;
+
+                    const finalltotal = totallBill ?? 0 - total ?? 0;
+
+                    console.log("finalltotal", finalltotal);
+                    return (
+                      <tr>
+                        <td style={{ textAlign: "left" }}>{i + 1}</td>
+                        <td style={{ textAlign: "center" }}>{e?.name}</td>
+                        <td style={{ textAlign: "center" }}>{e?.served}</td>
+                        <td style={{ textAlign: "center" }}>{e?.canceled}</td>
+                        <td style={{ textAlign: "right" }}>
+                          {e?.totalPointAmount > 0
+                            ? moneyCurrency(
+                                e?.totalSaleAmount - e?.totalPointAmount
+                                // finalltotal
+                              )
+                            : moneyCurrency(e?.totalSaleAmount)}
+                          {storeDetail?.firstCurrency}
+                        </td>
+                      </tr>
+                    );
+                  })}
 
                 {/* Summary row */}
                 <tr className="font-bold pt-2">
