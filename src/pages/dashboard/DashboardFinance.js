@@ -446,7 +446,7 @@ export default function DashboardFinance({
       menu.promotionId.length === 0 ||
       menu.status === "CANCELED"
     ) {
-      return menu?.status === "CANCELED" ? 0 : menu?.totalPrice || 0;
+      return menu?.totalPrice ?? 0;
     }
 
     let finalPrice = menu.totalPrice;
@@ -571,7 +571,7 @@ export default function DashboardFinance({
         isWeightMenu: item?.isWeightMenu,
         unitWeightMenu: item?.unitWeightMenu,
         totalPrice: (() => {
-          if (isCanceled) return "CANCELED";
+          // if (isCanceled) return "CANCELED";
           try {
             const basePrice = item?.price || 0;
             const optionPrice = item?.totalOptionPrice || 0;
@@ -986,9 +986,11 @@ export default function DashboardFinance({
                       {new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
                       }).format(
-                        item?.orderId?.reduce((sum, orderItem) => {
-                          return sum + (orderItem?.totalPrice || 0);
-                        }, 0)
+                        item?.orderId
+                          // ?.filter((f) => f.status !== "CANCELED")
+                          .reduce((sum, orderItem) => {
+                            return sum + (orderItem?.totalPrice || 0);
+                          }, 0)
                       )}{" "}
                       {storeDetail?.firstCurrency}
                     </td>
