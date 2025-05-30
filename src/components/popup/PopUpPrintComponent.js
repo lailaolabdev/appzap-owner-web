@@ -575,7 +575,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
             {/* <hr style={{ borderBottom: "1px dotted #000" }} /> */}
             <div>
               <TableComponent>
-                {/* <tr>
+                <tr>
                   <td style={{ textAlign: "left" }}>#</td>
                   <th style={{ textAlign: "center" }}>{t("menu_type")}</th>
                   <th style={{ textAlign: "center" }}>{t("success_order")}</th>
@@ -583,30 +583,42 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                   <th style={{ textAlign: "right" }}>
                     {t("sale_price_amount")}
                   </th>
-                </tr> */}
-                {/* {categoryReport
+                </tr>
+                {categoryReport
                   ?.sort((x, y) => {
                     return y.served - x.served;
                   })
-                  ?.map((e, i) => (
-                    <tr>
-                      <td style={{ textAlign: "left" }}>{i + 1}</td>
-                      <td style={{ textAlign: "center" }}>{e?.name}</td>
-                      <td style={{ textAlign: "center" }}>{e?.served}</td>
-                      <td style={{ textAlign: "center" }}>{e?.canceled}</td>
-                      <td style={{ textAlign: "right" }}>
-                        {e?.totalPointAmount > 0
-                          ? moneyCurrency(
-                              e?.totalSaleAmount - e?.totalPointAmount
-                            )
-                          : moneyCurrency(e?.totalSaleAmount)}
-                        {storeDetail?.firstCurrency}
-                      </td>
-                    </tr>
-                  ))} */}
+                  ?.map((e, i) => {
+                    const totallBill = bills?.reduce(
+                      (sum, bill) => sum + (bill?.billAmount || 0),
+                      0
+                    );
+                    const total = e?.totalSaleAmount - e?.totalPointAmount;
+
+                    const finalltotal = totallBill ?? 0 - total ?? 0;
+
+                    console.log("finalltotal", finalltotal);
+                    return (
+                      <tr>
+                        <td style={{ textAlign: "left" }}>{i + 1}</td>
+                        <td style={{ textAlign: "center" }}>{e?.name}</td>
+                        <td style={{ textAlign: "center" }}>{e?.served}</td>
+                        <td style={{ textAlign: "center" }}>{e?.canceled}</td>
+                        <td style={{ textAlign: "right" }}>
+                          {e?.totalPointAmount > 0
+                            ? moneyCurrency(
+                                e?.totalSaleAmount - e?.totalPointAmount
+                                // finalltotal
+                              )
+                            : moneyCurrency(e?.totalSaleAmount)}
+                          {storeDetail?.firstCurrency}
+                        </td>
+                      </tr>
+                    );
+                  })}
 
                 {/* Summary row */}
-                {/* <tr className="font-bold pt-2">
+                <tr className="font-bold pt-2">
                   <td style={{ textAlign: "left" }}></td>
                   <td style={{ textAlign: "center" }}>{t("total")}</td>
                   <td style={{ textAlign: "center" }}>
@@ -622,7 +634,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                     )}
                   </td>
                   <td style={{ textAlign: "right" }}>
-                    {moneyCurrency(
+                    {/* {moneyCurrency(
                       categoryReport?.reduce(
                         (sum, item) => sum + (item?.totalSaleAmount || 0),
                         0
@@ -631,10 +643,16 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                           (sum, item) => sum + (item?.totalPointAmount || 0),
                           0
                         )
+                    )} */}
+                    {moneyCurrency(
+                      bills?.reduce(
+                        (sum, bill) => sum + (bill?.billAmount || 0),
+                        0
+                      )
                     )}
                     {storeDetail?.firstCurrency}
                   </td>
-                </tr> */}
+                </tr>
               </TableComponent>
             </div>
             <hr style={{ borderBottom: "1px dotted #000" }} />

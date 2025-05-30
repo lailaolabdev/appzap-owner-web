@@ -446,7 +446,7 @@ export default function DashboardFinance({
       menu.promotionId.length === 0 ||
       menu.status === "CANCELED"
     ) {
-      return menu?.status === "CANCELED" ? 0 : menu?.totalPrice || 0;
+      return menu?.totalPrice ?? 0;
     }
 
     let finalPrice = menu.totalPrice;
@@ -486,8 +486,8 @@ export default function DashboardFinance({
     TotalAmount =
       (dataModal?.point ?? 0) +
       (dataModal?.transferAmount ?? 0) +
-      (dataModal?.payAmount ?? 0) +
-      (dataModal?.change ?? 0) -
+      (dataModal?.payAmount ?? 0) -
+      // (dataModal?.change ?? 0) -
       (dataModal?.discount ?? 0);
   } else {
     TotalAmount =
@@ -505,37 +505,41 @@ export default function DashboardFinance({
   const baseTotal =
     (dataModal?.point ?? 0) +
     (dataModal?.transferAmount ?? 0) +
-    (dataModal?.change ?? 0) +
     (dataModal?.payAmount ?? 0) -
-    (dataModal?.discount ?? 0) -
-    (dataModal?.change ?? 0);
+    (dataModal?.discount ?? 0);
+  // (dataModal?.change ?? 0);
 
   const totalAfter =
     dataModal?.paymentMethod === "CASH" ||
     dataModal?.paymentMethod === "TRANSFER"
       ? baseTotal +
         (dataModal?.taxAmount ?? 0) +
-        (dataModal?.serviceChargeAmount ?? 0)
+        (dataModal?.serviceChargeAmount ?? 0) -
+        (dataModal?.change ?? 0)
       : baseTotal - dataModal?.change;
 
   let TotalCalculate = 0;
 
   if (dataModal?.paymentMethod === "CASH") {
     TotalCalculate =
-      baseTotal +
+      (dataModal?.payAmount ?? 0) +
       (dataModal?.taxAmount ?? 0) +
       (dataModal?.serviceChargeAmount ?? 0) +
       (dataModal?.discount ?? 0);
   } else if (dataModal?.paymentMethod === "TRANSFER") {
     TotalCalculate =
-      baseTotal +
+      (dataModal?.transferAmount ?? 0) +
       (dataModal?.taxAmount ?? 0) +
       (dataModal?.serviceChargeAmount ?? 0) +
       (dataModal?.discount ?? 0);
   } else if (dataModal?.paymentMethod === "TRANSFER_CASH") {
-    TotalCalculate = baseTotal ?? 0 - dataModal?.change ?? 0;
+    TotalCalculate =
+      (dataModal?.transferAmount ?? 0) + (dataModal?.payAmount ?? 0);
   } else if (dataModal?.paymentMethod === "CASH_TRANSFER_POINT") {
-    TotalCalculate = baseTotal ?? 0 - dataModal?.change ?? 0;
+    TotalCalculate =
+      (dataModal?.transferAmount ?? 0) +
+      (dataModal?.payAmount ?? 0) +
+      (dataModal?.point ?? 0);
   }
 
   useEffect(() => {
@@ -567,7 +571,7 @@ export default function DashboardFinance({
         isWeightMenu: item?.isWeightMenu,
         unitWeightMenu: item?.unitWeightMenu,
         totalPrice: (() => {
-          if (isCanceled) return "CANCELED";
+          // if (isCanceled) return "CANCELED";
           try {
             const basePrice = item?.price || 0;
             const optionPrice = item?.totalOptionPrice || 0;
@@ -982,9 +986,11 @@ export default function DashboardFinance({
                       {new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
                       }).format(
-                        item?.orderId?.reduce((sum, orderItem) => {
-                          return sum + (orderItem?.totalPrice || 0);
-                        }, 0)
+                        item?.orderId
+                          // ?.filter((f) => f.status !== "CANCELED")
+                          .reduce((sum, orderItem) => {
+                            return sum + (orderItem?.totalPrice || 0);
+                          }, 0)
                       )}{" "}
                       {storeDetail?.firstCurrency}
                     </td>
@@ -1198,9 +1204,7 @@ export default function DashboardFinance({
                       {moneyCurrency(
                         dataModal?.payAmount > 0
                           ? dataModal?.paymentMethod === "CASH"
-                            ? dataModal?.payAmount -
-                              dataModal?.taxAmount +
-                              dataModal?.change
+                            ? dataModal?.payAmount
                             : dataModal?.payAmount - dataModal?.taxAmount
                           : 0
                       )}{" "}

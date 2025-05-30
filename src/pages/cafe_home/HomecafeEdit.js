@@ -636,7 +636,7 @@ function HomecafeEdit() {
       menu?.exchangePointStoreId?.[0]?.status === "active";
 
     const mainMenuData = {
-      id: menu._id,
+      _id: menu._id,
       name: menu.name,
       quantity:
         activePromotions.length > 0 && activePromotions[0].buyQuantity !== null
