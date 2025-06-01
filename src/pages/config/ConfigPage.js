@@ -159,407 +159,70 @@ export default function ConfigPage() {
     const isType = e.target.checked;
     await updatePrintBillTwo(profile?.data.storeId, { data: isType });
     await fetchStoreDetail(storeDetail?._id);
-    }
+  };
 
-    const BankPayment = async (e) => {
-      const isChecked = e.target.checked;
+  const BankPayment = async (e) => {
+    const isChecked = e.target.checked;
 
-      // zustand store
-      await updateStoreDetail(
-        { isBankPaymentAvailable: isChecked },
-        storeDetail?._id
-      );
-      await fetchStoreDetail(storeDetail?._id);
-    };
-
-    const changeBooking = async (e) => {
-      const isChecked = e.target.checked;
-
-      // zustand store
-      await updateStoreDetail({ isReservable: isChecked }, storeDetail?._id);
-      await fetchStoreDetail(storeDetail?._id);
-    };
-
-    const TooltipFunc = ({ id, children, title }) => (
-      <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
-        <BsExclamationDiamondFill style={{ color: COLOR_APP }} />
-      </OverlayTrigger>
+    // zustand store
+    await updateStoreDetail(
+      { isBankPaymentAvailable: isChecked },
+      storeDetail?._id
     );
+    await fetchStoreDetail(storeDetail?._id);
+  };
 
-    return (
-      <>
+  const changeBooking = async (e) => {
+    const isChecked = e.target.checked;
+
+    // zustand store
+    await updateStoreDetail({ isReservable: isChecked }, storeDetail?._id);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+
+  const TooltipFunc = ({ id, children, title }) => (
+    <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
+      <BsExclamationDiamondFill style={{ color: COLOR_APP }} />
+    </OverlayTrigger>
+  );
+
+  return (
+    <>
+      <Box
+        sx={{ padding: { md: 20, xs: 10 } }}
+        style={{
+          maxHeight: "100vh",
+          overflowY: "auto",
+          height: "100%",
+          padding: "20px 20px 80px 20px",
+        }}
+      >
+        <Breadcrumb>
+          <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
+          <Breadcrumb.Item active>{t("posconfig")}</Breadcrumb.Item>
+        </Breadcrumb>
         <Box
-          sx={{ padding: { md: 20, xs: 10 } }}
-          style={{
-            maxHeight: "100vh",
-            overflowY: "auto",
-            height: "100%",
-            padding: "20px 20px 80px 20px",
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { md: "1fr 1fr", xs: "1fr" },
+            gap: 20,
+            gridTemplateRows: "masonry",
           }}
         >
-          <Breadcrumb>
-            <Breadcrumb.Item>{t("setting")}</Breadcrumb.Item>
-            <Breadcrumb.Item active>{t("posconfig")}</Breadcrumb.Item>
-          </Breadcrumb>
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: { md: "1fr 1fr", xs: "1fr" },
-              gap: 20,
-              gridTemplateRows: "masonry",
-            }}
-          >
-            {!storeDetail?.isStatusCafe && (
-              <>
-                <Card border="primary" style={{ margin: 0 }}>
-                  <Card.Header
-                    style={{
-                      backgroundColor: COLOR_APP,
-                      color: "#fff",
-                      fontSize: 18,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {t("tax")}
-                  </Card.Header>
-                  <Card.Body>
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr auto",
-                        gap: 10,
-                        padding: "10px 0",
-                        borderBottom: `1px dotted ${COLOR_APP}`,
-                      }}
-                    >
-                      <div>
-                        {t("tax")}: {tax}%
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 10,
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Button
-                          onClick={() => setPopup({ PopUpEditTax: true })}
-                        >
-                          {t("edit")}
-                        </Button>
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr auto",
-                        gap: 10,
-                        padding: "10px 0",
-                        borderBottom: `1px dotted ${COLOR_APP}`,
-                      }}
-                    >
-                      <div>
-                        {t("service_charge")}: {serviceCharge}%
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 10,
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Button
-                          onClick={() =>
-                            setPopup({ PopUpEditServiceCharge: true })
-                          }
-                        >
-                          {t("edit")}
-                        </Button>
-                      </div>
-                    </div>
-                  </Card.Body>
-                </Card>
-
-                <Card border="primary" style={{ margin: 0 }}>
-                  <Card.Header
-                    style={{
-                      backgroundColor: COLOR_APP,
-                      color: "#fff",
-                      fontSize: 18,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    SMART MENU & SELF ORDERING
-                  </Card.Header>
-                  <Card.Body>
-                    {[
-                      {
-                        title: `${t("oppen_smart_menu")}`,
-                        key: "open",
-                        tooltip: `${t("close_oppen_for_work")}`,
-                        disabled: true,
-                        default: true,
-                      },
-                      {
-                        title: `${t("oppen_table_first")}`,
-                        key: "shouldOpenTableForSelfOrdering",
-                        tooltip: "",
-                        disabled: true,
-                      },
-                      {
-                        title: `${t("auto_oppen")}`,
-                        key: "autoOpenTable",
-                        tooltip: "",
-                        disabled: true,
-                      },
-                      {
-                        title: `${t("table_qr")}`,
-                        key: "tableQrEveryoneCanSelfOrdering",
-                        tooltip: "",
-                        disabled: true,
-                      },
-                    ].map((item, index) => (
-                      <div
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns: "1fr auto",
-                          gap: 10,
-                          padding: "10px 0",
-                          borderBottom: `1px dotted ${COLOR_APP}`,
-                        }}
-                        key={index}
-                      >
-                        <div>
-                          {item?.title}{" "}
-                          <TooltipFunc title={item?.tooltip} id={index} />
-                        </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 10,
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                            {switchState?.[item?.key] || item?.default
-                              ? `${t("oppen")}`
-                              : `${t("close")}`}
-                          </Form.Label>
-                          <Form.Check
-                            disabled={item?.disabled}
-                            type="switch"
-                            checked={switchState?.[item?.key] || item?.default}
-                            id={"switch-audio-" + item?.key}
-                            onChange={(e) => {
-                              changeSwitchData({
-                                [`smartMenu.${item?.key}`]: e.target.checked,
-                              })
-                                .then((e) => {
-                                  getSettingData();
-                                })
-                                .catch((er) => console.log(er));
-                            }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </Card.Body>
-                </Card>
-
-                <Card border="primary" style={{ margin: 0 }}>
-                  <Card.Header
-                    style={{
-                      backgroundColor: COLOR_APP,
-                      color: "#fff",
-                      fontSize: 18,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {t("stock_system")}
-                  </Card.Header>
-                  <Card.Body>
-                    {[
-                      {
-                        title: `${t("enable_stock")}`,
-                        key: "sang",
-                        default: false,
-                        disabled: true,
-                      },
-                    ].map((item, index) => (
-                      <div
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns: "1fr auto",
-                          gap: 10,
-                          padding: "10px 0",
-                          borderBottom: `1px dotted ${COLOR_APP}`,
-                        }}
-                        key={index}
-                      >
-                        <div>{item?.title}</div>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 10,
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                            {audioSetting?.[item?.key] || item?.default
-                              ? `${t("oppen")}`
-                              : `${t("close")}`}
-                          </Form.Label>
-                          <Form.Check
-                            disabled={item?.disabled}
-                            type="switch"
-                            checked={audioSetting?.[item?.key] || item?.default}
-                            id={"switch-audio-" + item?.key}
-                            onChange={(e) =>
-                              setAudioSetting((prev) => ({
-                                ...prev,
-                                [item?.key]: e.target.checked,
-                              }))
-                            }
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </Card.Body>
-                </Card>
-
-                <Card border="primary" style={{ margin: 0 }}>
-                  <Card.Header
-                    style={{
-                      backgroundColor: COLOR_APP,
-                      color: "#fff",
-                      fontSize: 18,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {t("booking")}
-                  </Card.Header>
-                  <Card.Body>
-                    {[
-                      {
-                        title: `${t("enable_booking")}`,
-                        key: "fer",
-                        disabled: false,
-                      },
-                    ].map((item, index) => (
-                      <div
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns: "1fr auto",
-                          gap: 10,
-                          padding: "10px 0",
-                          borderBottom: `1px dotted ${COLOR_APP}`,
-                        }}
-                        key={index}
-                      >
-                        <div>{item?.title}</div>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 10,
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Form.Label htmlFor={"booking-" + item?.key}>
-                            {storeDetail?.isReservable
-                              ? `${t("oppen")}`
-                              : `${t("close")}`}
-                          </Form.Label>
-                          <Form.Check
-                            disabled={item?.disabled}
-                            type="switch"
-                            checked={storeDetail?.isReservable}
-                            id={"booking-" + item?.key}
-                            onChange={changeBooking}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </Card.Body>
-                </Card>
-
-                <Card border="primary" style={{ margin: 0 }}>
-                  <Card.Header
-                    style={{
-                      backgroundColor: COLOR_APP,
-                      color: "#fff",
-                      fontSize: 18,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {t("isCafe")}
-                  </Card.Header>
-                  <Card.Body>
-                    {[
-                      {
-                        title: t("enable_cafe"),
-                        key: "fer",
-                      },
-                    ].map((item, index) => (
-                      <div
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns: "1fr auto",
-                          gap: 10,
-                          padding: "10px 0",
-                          borderBottom: `1px dotted ${COLOR_APP}`,
-                        }}
-                        key={index}
-                      >
-                        <div>{item?.title}</div>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 10,
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Form.Label htmlFor={"switch-cafe-" + item?.key}>
-                            {storeDetail?.isRestuarant == "CAFE"
-                              ? `${t("oppen")}`
-                              : `${t("close")}`}
-                          </Form.Label>
-                          <Form.Check
-                            type="switch"
-                            checked={storeDetail?.isRestuarant == "CAFE"}
-                            id={"switch-cafe-" + item?.key}
-                            onChange={changeCafe}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </Card.Body>
-                </Card>
-              </>
-            )}
-            <Card border="primary" style={{ margin: 0 }}>
-              <Card.Header
-                style={{
-                  backgroundColor: COLOR_APP,
-                  color: "#fff",
-                  fontSize: 18,
-                  fontWeight: "bold",
-                }}
-              >
-                {t("bank_payment_available")}
-              </Card.Header>
-              <Card.Body>
-                {[
-                  {
-                    title: t("enable_bank_payment"),
-                    key: "fer",
-                  },
-                ].map((item, index) => (
+          {!storeDetail?.isStatusCafe && (
+            <>
+              <Card border="primary" style={{ margin: 0 }}>
+                <Card.Header
+                  style={{
+                    backgroundColor: COLOR_APP,
+                    color: "#fff",
+                    fontSize: 18,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {t("tax")}
+                </Card.Header>
+                <Card.Body>
                   <div
                     style={{
                       display: "grid",
@@ -568,9 +231,10 @@ export default function ConfigPage() {
                       padding: "10px 0",
                       borderBottom: `1px dotted ${COLOR_APP}`,
                     }}
-                    key={index}
                   >
-                    <div>{item?.title}</div>
+                    <div>
+                      {t("tax")}: {tax}%
+                    </div>
                     <div
                       style={{
                         display: "flex",
@@ -579,23 +243,409 @@ export default function ConfigPage() {
                         justifyContent: "center",
                       }}
                     >
-                      <Form.Label htmlFor={"transfer-payment-" + item?.key}>
-                        {storeDetail?.isBankPaymentAvailable
-                          ? `${t("oppen")}`
-                          : `${t("close")}`}
-                      </Form.Label>
-                      <Form.Check
-                        // disabled={true}
-                        type="switch"
-                        checked={storeDetail?.isBankPaymentAvailable}
-                        id={"transfer-payment-" + item?.key}
-                        onChange={BankPayment}
-                      />
+                      <Button onClick={() => setPopup({ PopUpEditTax: true })}>
+                        {t("edit")}
+                      </Button>
                     </div>
                   </div>
-                ))}
-              </Card.Body>
-            </Card>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: 10,
+                      padding: "10px 0",
+                      borderBottom: `1px dotted ${COLOR_APP}`,
+                    }}
+                  >
+                    <div>
+                      {t("service_charge")}: {serviceCharge}%
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Button
+                        onClick={() =>
+                          setPopup({ PopUpEditServiceCharge: true })
+                        }
+                      >
+                        {t("edit")}
+                      </Button>
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+
+              <Card border="primary" style={{ margin: 0 }}>
+                <Card.Header
+                  style={{
+                    backgroundColor: COLOR_APP,
+                    color: "#fff",
+                    fontSize: 18,
+                    fontWeight: "bold",
+                  }}
+                >
+                  SMART MENU & SELF ORDERING
+                </Card.Header>
+                <Card.Body>
+                  {[
+                    {
+                      title: `${t("oppen_smart_menu")}`,
+                      key: "open",
+                      tooltip: `${t("close_oppen_for_work")}`,
+                      disabled: true,
+                      default: true,
+                    },
+                    {
+                      title: `${t("oppen_table_first")}`,
+                      key: "shouldOpenTableForSelfOrdering",
+                      tooltip: "",
+                      disabled: true,
+                    },
+                    {
+                      title: `${t("auto_oppen")}`,
+                      key: "autoOpenTable",
+                      tooltip: "",
+                      disabled: true,
+                    },
+                    {
+                      title: `${t("table_qr")}`,
+                      key: "tableQrEveryoneCanSelfOrdering",
+                      tooltip: "",
+                      disabled: true,
+                    },
+                  ].map((item, index) => (
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr auto",
+                        gap: 10,
+                        padding: "10px 0",
+                        borderBottom: `1px dotted ${COLOR_APP}`,
+                      }}
+                      key={index}
+                    >
+                      <div>
+                        {item?.title}{" "}
+                        <TooltipFunc title={item?.tooltip} id={index} />
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Form.Label htmlFor={"switch-audio-" + item?.key}>
+                          {switchState?.[item?.key] || item?.default
+                            ? `${t("oppen")}`
+                            : `${t("close")}`}
+                        </Form.Label>
+                        <Form.Check
+                          disabled={item?.disabled}
+                          type="switch"
+                          checked={switchState?.[item?.key] || item?.default}
+                          id={"switch-audio-" + item?.key}
+                          onChange={(e) => {
+                            changeSwitchData({
+                              [`smartMenu.${item?.key}`]: e.target.checked,
+                            })
+                              .then((e) => {
+                                getSettingData();
+                              })
+                              .catch((er) => console.log(er));
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </Card.Body>
+              </Card>
+
+              <Card border="primary" style={{ margin: 0 }}>
+                <Card.Header
+                  style={{
+                    backgroundColor: COLOR_APP,
+                    color: "#fff",
+                    fontSize: 18,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {t("stock_system")}
+                </Card.Header>
+                <Card.Body>
+                  {[
+                    {
+                      title: `${t("enable_stock")}`,
+                      key: "sang",
+                      default: false,
+                      disabled: true,
+                    },
+                  ].map((item, index) => (
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr auto",
+                        gap: 10,
+                        padding: "10px 0",
+                        borderBottom: `1px dotted ${COLOR_APP}`,
+                      }}
+                      key={index}
+                    >
+                      <div>{item?.title}</div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Form.Label htmlFor={"switch-audio-" + item?.key}>
+                          {audioSetting?.[item?.key] || item?.default
+                            ? `${t("oppen")}`
+                            : `${t("close")}`}
+                        </Form.Label>
+                        <Form.Check
+                          disabled={item?.disabled}
+                          type="switch"
+                          checked={audioSetting?.[item?.key] || item?.default}
+                          id={"switch-audio-" + item?.key}
+                          onChange={(e) =>
+                            setAudioSetting((prev) => ({
+                              ...prev,
+                              [item?.key]: e.target.checked,
+                            }))
+                          }
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </Card.Body>
+              </Card>
+
+              <Card border="primary" style={{ margin: 0 }}>
+                <Card.Header
+                  style={{
+                    backgroundColor: COLOR_APP,
+                    color: "#fff",
+                    fontSize: 18,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {t("booking")}
+                </Card.Header>
+                <Card.Body>
+                  {[
+                    {
+                      title: `${t("enable_booking")}`,
+                      key: "fer",
+                      disabled: false,
+                    },
+                  ].map((item, index) => (
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr auto",
+                        gap: 10,
+                        padding: "10px 0",
+                        borderBottom: `1px dotted ${COLOR_APP}`,
+                      }}
+                      key={index}
+                    >
+                      <div>{item?.title}</div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Form.Label htmlFor={"booking-" + item?.key}>
+                          {storeDetail?.isReservable
+                            ? `${t("oppen")}`
+                            : `${t("close")}`}
+                        </Form.Label>
+                        <Form.Check
+                          disabled={item?.disabled}
+                          type="switch"
+                          checked={storeDetail?.isReservable}
+                          id={"booking-" + item?.key}
+                          onChange={changeBooking}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </Card.Body>
+              </Card>
+
+              <Card border="primary" style={{ margin: 0 }}>
+                <Card.Header
+                  style={{
+                    backgroundColor: COLOR_APP,
+                    color: "#fff",
+                    fontSize: 18,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {t("isCafe")}
+                </Card.Header>
+                <Card.Body>
+                  {[
+                    {
+                      title: t("enable_cafe"),
+                      key: "fer",
+                    },
+                  ].map((item, index) => (
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "1fr auto",
+                        gap: 10,
+                        padding: "10px 0",
+                        borderBottom: `1px dotted ${COLOR_APP}`,
+                      }}
+                      key={index}
+                    >
+                      <div>{item?.title}</div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 10,
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Form.Label htmlFor={"switch-cafe-" + item?.key}>
+                          {storeDetail?.isRestuarant == "CAFE"
+                            ? `${t("oppen")}`
+                            : `${t("close")}`}
+                        </Form.Label>
+                        <Form.Check
+                          type="switch"
+                          checked={storeDetail?.isRestuarant == "CAFE"}
+                          id={"switch-cafe-" + item?.key}
+                          onChange={changeCafe}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </Card.Body>
+              </Card>
+            </>
+          )}
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("bank_payment_available")}
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: t("enable_bank_payment"),
+                  key: "fer",
+                },
+              ].map((item, index) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={index}
+                >
+                  <div>{item?.title}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={"transfer-payment-" + item?.key}>
+                      {storeDetail?.isBankPaymentAvailable
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      // disabled={true}
+                      type="switch"
+                      checked={storeDetail?.isBankPaymentAvailable}
+                      id={"transfer-payment-" + item?.key}
+                      onChange={BankPayment}
+                    />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("is_crm")}
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: t("open_crm"),
+                  key: "crm",
+                },
+              ].map((item) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={item?.key}
+                >
+                  <div>{item?.title}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={`switch-crm-${item?.key}`}>
+                      {storeDetail?.isCRM ? `${t("oppen")}` : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.isCRM}
+                      id={`switch-crm-${item?.key}`}
+                      onChange={changeCRM}
+                    />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
+          {!storeDetail?.isStatusCafe && (
             <Card border="primary" style={{ margin: 0 }}>
               <Card.Header
                 style={{
@@ -605,13 +655,13 @@ export default function ConfigPage() {
                   fontWeight: "bold",
                 }}
               >
-                {t("is_crm")}
+                {"Delivery Function"}
               </Card.Header>
               <Card.Body>
                 {[
                   {
-                    title: t("open_crm"),
-                    key: "crm",
+                    title: t("open_delivery"),
+                    key: "delivery",
                   },
                 ].map((item) => (
                   <div
@@ -634,385 +684,330 @@ export default function ConfigPage() {
                       }}
                     >
                       <Form.Label htmlFor={`switch-crm-${item?.key}`}>
-                        {storeDetail?.isCRM ? `${t("oppen")}` : `${t("close")}`}
+                        {storeDetail?.isDelivery
+                          ? `${t("oppen")}`
+                          : `${t("close")}`}
                       </Form.Label>
                       <Form.Check
                         type="switch"
-                        checked={storeDetail?.isCRM}
-                        id={`switch-crm-${item?.key}`}
-                        onChange={changeCRM}
+                        checked={storeDetail?.isDelivery}
+                        id={`switch-delivery-${item?.key}`}
+                        onChange={changeDelivery}
                       />
                     </div>
                   </div>
                 ))}
               </Card.Body>
             </Card>
-            {!storeDetail?.isStatusCafe && (
-              <Card border="primary" style={{ margin: 0 }}>
-                <Card.Header
+          )}
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("shift")}
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: t("open_function_shift"),
+                  key: "shift",
+                },
+              ].map((item) => (
+                <div
                   style={{
-                    backgroundColor: COLOR_APP,
-                    color: "#fff",
-                    fontSize: 18,
-                    fontWeight: "bold",
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
                   }}
+                  key={item?.key}
                 >
-                  {"Delivery Function"}
-                </Card.Header>
-                <Card.Body>
-                  {[
-                    {
-                      title: t("open_delivery"),
-                      key: "delivery",
-                    },
-                  ].map((item) => (
-                    <div
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr auto",
-                        gap: 10,
-                        padding: "10px 0",
-                        borderBottom: `1px dotted ${COLOR_APP}`,
-                      }}
-                      key={item?.key}
-                    >
-                      <div>{item?.title}</div>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 10,
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Form.Label htmlFor={`switch-crm-${item?.key}`}>
-                          {storeDetail?.isDelivery
-                            ? `${t("oppen")}`
-                            : `${t("close")}`}
-                        </Form.Label>
-                        <Form.Check
-                          type="switch"
-                          checked={storeDetail?.isDelivery}
-                          id={`switch-delivery-${item?.key}`}
-                          onChange={changeDelivery}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </Card.Body>
-              </Card>
-            )}
-            <Card border="primary" style={{ margin: 0 }}>
-              <Card.Header
-                style={{
-                  backgroundColor: COLOR_APP,
-                  color: "#fff",
-                  fontSize: 18,
-                  fontWeight: "bold",
-                }}
-              >
-                {t("shift")}
-              </Card.Header>
-              <Card.Body>
-                {[
-                  {
-                    title: t("open_function_shift"),
-                    key: "shift",
-                  },
-                ].map((item) => (
+                  <div>{item?.title}</div>
                   <div
                     style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
+                      display: "flex",
+                      alignItems: "center",
                       gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
+                      justifyContent: "center",
                     }}
-                    key={item?.key}
                   >
-                    <div>{item?.title}</div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Form.Label htmlFor={`switch-shift-${item?.key}`}>
-                        {storeDetail?.isShift
-                          ? `${t("oppen")}`
-                          : `${t("close")}`}
-                      </Form.Label>
-                      <Form.Check
-                        type="switch"
-                        checked={storeDetail?.isShift}
-                        id={`switch-shift-${item?.key}`}
-                        onChange={changeShift}
-                      />
-                    </div>
+                    <Form.Label htmlFor={`switch-shift-${item?.key}`}>
+                      {storeDetail?.isShift ? `${t("oppen")}` : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.isShift}
+                      id={`switch-shift-${item?.key}`}
+                      onChange={changeShift}
+                    />
                   </div>
-                ))}
-              </Card.Body>
-              <Card.Body>
-                {[
-                  {
-                    title: t("counter_can_use_filter_shift"),
-                    key: "filter_shift",
-                  },
-                ].map((item) => (
+                </div>
+              ))}
+            </Card.Body>
+            <Card.Body>
+              {[
+                {
+                  title: t("counter_can_use_filter_shift"),
+                  key: "filter_shift",
+                },
+              ].map((item) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={item?.key}
+                >
+                  <div>{item?.title}</div>
                   <div
                     style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
+                      display: "flex",
+                      alignItems: "center",
                       gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
+                      justifyContent: "center",
                     }}
-                    key={item?.key}
                   >
-                    <div>{item?.title}</div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        justifyContent: "center",
-                      }}
+                    <Form.Label
+                      htmlFor={`switch-CounterFilterShift-${item?.key}`}
                     >
-                      <Form.Label
-                        htmlFor={`switch-CounterFilterShift-${item?.key}`}
-                      >
-                        {storeDetail?.isCounterFilterShift
-                          ? `${t("oppen")}`
-                          : `${t("close")}`}
-                      </Form.Label>
-                      <Form.Check
-                        type="switch"
-                        checked={storeDetail?.isCounterFilterShift}
-                        id={`switch-CounterFilterShift-${item?.key}`}
-                        onChange={changeCounterFilterShift}
-                      />
-                    </div>
+                      {storeDetail?.isCounterFilterShift
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.isCounterFilterShift}
+                      id={`switch-CounterFilterShift-${item?.key}`}
+                      onChange={changeCounterFilterShift}
+                    />
                   </div>
-                ))}
-              </Card.Body>
-            </Card>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
 
-            <Card border="primary" style={{ margin: 0 }}>
-              <Card.Header
-                style={{
-                  backgroundColor: COLOR_APP,
-                  color: "#fff",
-                  fontSize: 18,
-                  fontWeight: "bold",
-                }}
-              >
-                {t("service_charge")}
-              </Card.Header>
-              <Card.Body>
-                {[
-                  {
-                    title: t("service_charge_open"),
-                    key: "service_charge",
-                  },
-                ].map((item) => (
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
-                      gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
-                    }}
-                    key={item?.key}
-                  >
-                    <div>{item?.title}</div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Form.Label htmlFor={`service_charge-${item?.key}`}>
-                        {storeDetail?.isServiceChange
-                          ? `${t("oppen")}`
-                          : `${t("close")}`}
-                      </Form.Label>
-                      <Form.Check
-                        type="switch"
-                        checked={storeDetail?.isServiceChange}
-                        id={`service_charge-${item?.key}`}
-                        onChange={changeSericeChange}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </Card.Body>
-            </Card>
-            <Card border="primary" style={{ margin: 0 }}>
-              <Card.Header
-                style={{
-                  backgroundColor: COLOR_APP,
-                  color: "#fff",
-                  fontSize: 18,
-                  fontWeight: "bold",
-                }}
-              >
-                {t("show_amount")}
-              </Card.Header>
-              <Card.Body>
-                {[
-                  {
-                    title: t("show_amount_open"),
-                    key: "show_amount_cafe",
-                  },
-                ].map((item) => (
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
-                      gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
-                    }}
-                    key={item?.key}
-                  >
-                    <div>{item?.title}</div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Form.Label htmlFor={`show_amount_cafe-${item?.key}`}>
-                        {storeDetail?.isShowAmountCafe
-                          ? `${t("oppen")}`
-                          : `${t("close")}`}
-                      </Form.Label>
-                      <Form.Check
-                        type="switch"
-                        checked={storeDetail?.isShowAmountCafe}
-                        id={`show_amount_cafe-${item?.key}`}
-                        onChange={changeShowAmountCafe}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </Card.Body>
-            </Card>
-            {storeDetail?.isStatusCafe && (
-              <Card border="primary" style={{ margin: 0 }}>
-                <Card.Header
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("service_charge")}
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: t("service_charge_open"),
+                  key: "service_charge",
+                },
+              ].map((item) => (
+                <div
                   style={{
-                    backgroundColor: COLOR_APP,
-                    color: "#fff",
-                    fontSize: 18,
-                    fontWeight: "bold",
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
                   }}
+                  key={item?.key}
                 >
-                  {t("print_bill_and_sticker")}
-                </Card.Header>
-                <Card.Body>
-                  {/* {[
+                  <div>{item?.title}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={`service_charge-${item?.key}`}>
+                      {storeDetail?.isServiceChange
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.isServiceChange}
+                      id={`service_charge-${item?.key}`}
+                      onChange={changeSericeChange}
+                    />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("show_amount")}
+            </Card.Header>
+            <Card.Body>
+              {[
+                {
+                  title: t("show_amount_open"),
+                  key: "show_amount_cafe",
+                },
+              ].map((item) => (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  key={item?.key}
+                >
+                  <div>{item?.title}</div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Form.Label htmlFor={`show_amount_cafe-${item?.key}`}>
+                      {storeDetail?.isShowAmountCafe
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.isShowAmountCafe}
+                      id={`show_amount_cafe-${item?.key}`}
+                      onChange={changeShowAmountCafe}
+                    />
+                  </div>
+                </div>
+              ))}
+            </Card.Body>
+          </Card>
+          {storeDetail?.isStatusCafe && (
+            <Card border="primary" style={{ margin: 0 }}>
+              <Card.Header
+                style={{
+                  backgroundColor: COLOR_APP,
+                  color: "#fff",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                {t("print_bill_and_sticker")}
+              </Card.Header>
+              <Card.Body>
+                {/* {[
                   {
                     title: t("print_bill_and_sticker"),
                     key: "print_bill_and_sticker",
                   },
                 ].map((item) => ( */}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  // key={item?.key}
+                >
+                  <div>{t("print_bill_and_sticker")}</div>
                   <div
                     style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
+                      display: "flex",
+                      alignItems: "center",
                       gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
+                      justifyContent: "center",
                     }}
-                    // key={item?.key}
                   >
-                    <div>{t("print_bill_and_sticker")}</div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Form.Label htmlFor={`show_amount_cafe`}>
-                        {storeDetail?.optionPrintBill
-                          ? `${t("oppen")}`
-                          : `${t("close")}`}
-                      </Form.Label>
-                      <Form.Check
-                        type="switch"
-                        checked={storeDetail?.optionPrintBill}
-                        id={`print_bill_and_sticker`}
-                        onChange={changeOptionPrintBill}
-                      />
-                    </div>
+                    <Form.Label htmlFor={`show_amount_cafe`}>
+                      {storeDetail?.optionPrintBill
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.optionPrintBill}
+                      id={`print_bill_and_sticker`}
+                      onChange={changeOptionPrintBill}
+                    />
                   </div>
+                </div>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr auto",
+                    gap: 10,
+                    padding: "10px 0",
+                    borderBottom: `1px dotted ${COLOR_APP}`,
+                  }}
+                  // key={item?.key}
+                >
+                  <div>{t("print_two_bill")}</div>
                   <div
                     style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr auto",
+                      display: "flex",
+                      alignItems: "center",
                       gap: 10,
-                      padding: "10px 0",
-                      borderBottom: `1px dotted ${COLOR_APP}`,
+                      justifyContent: "center",
                     }}
-                    // key={item?.key}
                   >
-                    <div>{t("print_two_bill")}</div>
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 10,
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Form.Label htmlFor={`printBillTwo`}>
-                        {storeDetail?.printBillTwo
-                          ? `${t("oppen")}`
-                          : `${t("close")}`}
-                      </Form.Label>
-                      <Form.Check
-                        type="switch"
-                        checked={storeDetail?.printBillTwo}
-                        id={`printBillTwo`}
-                        onChange={changePrintBillTwo}
-                      />
-                    </div>
+                    <Form.Label htmlFor={`printBillTwo`}>
+                      {storeDetail?.printBillTwo
+                        ? `${t("oppen")}`
+                        : `${t("close")}`}
+                    </Form.Label>
+                    <Form.Check
+                      type="switch"
+                      checked={storeDetail?.printBillTwo}
+                      id={`printBillTwo`}
+                      onChange={changePrintBillTwo}
+                    />
                   </div>
-                  {/* ))} */}
-                </Card.Body>
-              </Card>
-            )}
-          </Box>
+                </div>
+                {/* ))} */}
+              </Card.Body>
+            </Card>
+          )}
         </Box>
-        {/* popup */}
-        <PopUpEditTax
-          open={popup?.PopUpEditTax}
-          onClose={() => setPopup()}
-          prevTax={tax}
-          onSubmit={handleChangeTax}
-        />
-        <PopUpEditServiceCharge
-          open={popup?.PopUpEditServiceCharge}
-          onClose={() => setPopup()}
-          prevServiceCharge={serviceCharge}
-          onSubmit={handleChangeServiceCharge}
-        />
-        <PopUpCreateServiceCharge
-          open={popup?.PopUpCreateServiceCharge}
-          onClose={() => setPopup()}
-          onSubmit={handleCreateServiceCharge}
-        />
-      </>
-    );
-  };
+      </Box>
+      {/* popup */}
+      <PopUpEditTax
+        open={popup?.PopUpEditTax}
+        onClose={() => setPopup()}
+        prevTax={tax}
+        onSubmit={handleChangeTax}
+      />
+      <PopUpEditServiceCharge
+        open={popup?.PopUpEditServiceCharge}
+        onClose={() => setPopup()}
+        prevServiceCharge={serviceCharge}
+        onSubmit={handleChangeServiceCharge}
+      />
+      <PopUpCreateServiceCharge
+        open={popup?.PopUpCreateServiceCharge}
+        onClose={() => setPopup()}
+        onSubmit={handleCreateServiceCharge}
+      />
+    </>
+  );
 }
