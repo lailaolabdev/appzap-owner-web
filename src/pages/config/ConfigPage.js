@@ -23,7 +23,6 @@ import {
   updateSettingShowAmountCafe,
   updateOptionPrintBill,
   updatePrintBillTwo,
-  updateCounterFilterShift,
 } from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
 import PopUpEditServiceCharge from "../../components/popup/PopUpEditServiceCharge";
@@ -159,12 +158,8 @@ export default function ConfigPage() {
   const changePrintBillTwo = async (e) => {
     const isType = e.target.checked;
     await updatePrintBillTwo(profile?.data.storeId, { data: isType });
-    const changeCounterFilterShift = async (e) => {
-      const isType = e.target.checked;
-      await updateCounterFilterShift(profile?.data.storeId, { data: isType });
-      // console.log("changeSericeChange", isType);
-      await fetchStoreDetail(storeDetail?._id);
-    };
+    await fetchStoreDetail(storeDetail?._id);
+    }
 
     const BankPayment = async (e) => {
       const isChecked = e.target.checked;
