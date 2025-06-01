@@ -1373,5 +1373,6 @@
   "show_amount_open" : "Open for use",
   "print_bill_and_sticker" : "Print bill and Sticker",
   "print_two_bill" : "Print two bill",
-  "all_bill" : "All Bill"
+  "all_bill" : "All Bill",
+  "counter_can_use_filter_shift" : "Counter can use filter shift"
 }

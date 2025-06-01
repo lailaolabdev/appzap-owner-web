@@ -292,6 +292,8 @@ const DiscountForm = () => {
               fetchDataMenu();
             }
           });
+        } else if (err?.response?.data?.isExitsName) {
+          errorAdd(`ລາຍການ "${err?.response?.data?.data}" ນີ້ມີຢູ່ແລ້ວ`);
         } else {
           errorAdd("ເພີ່ມບໍ່ສຳເລັດ");
         }

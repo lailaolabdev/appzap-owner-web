@@ -248,7 +248,7 @@ const Promotion = () => {
               {t("choose_status_promotion")}
             </option>
             <option value={""}>{t("all")}</option>
-            <option value={"ACTIVE"}>{t("open")}</option>
+            <option value={"ACTIVE"}>{t("oppen")}</option>
             <option value={"INACTIVE"}>{t("close")}</option>
           </select>
           <input

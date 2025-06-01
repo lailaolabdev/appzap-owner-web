@@ -9,6 +9,8 @@ export const useShiftStore = create(
       shift: [],
       shiftList: [],
       shiftCurrent: [],
+      OpenShiftForCounter: false,
+      setOpenShiftForCounter: (value) => set({ OpenShiftForCounter: value }),
       setShiftList: (Data) => set({ shiftList: Data }),
       setShiftListCurrent: (Data) => set({ shiftCurrent: Data }),
 

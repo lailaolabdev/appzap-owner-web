@@ -79,7 +79,7 @@ export default function Dashboard() {
   const [shiftId, setShiftId] = useState(null);
 
   const { storeDetail } = useStoreStore();
-  const { shiftCurrent } = useShiftStore();
+  const { shiftCurrent, OpenShiftForCounter } = useShiftStore();
   const { profile } = useStore();
 
   const fetchShift = async () => {
@@ -248,22 +248,6 @@ export default function Dashboard() {
     }
   };
 
-  // const optionsData = shifts?.map((item) => {
-  //   // console.log(item);
-  //   return {
-  //     value: {
-  //       startTime: item.startTime,
-  //       endTime: item.endTime,
-  //       shiftID: item._id,
-  //     },
-  //     label: item.shiftName,
-  //   };
-  // });
-
-  // const handleSearchInput = (option) => {
-  //   setShiftId(option?.value?.shiftID);
-  // };
-
   return (
     <div
       style={{
@@ -341,8 +325,18 @@ export default function Dashboard() {
                   />
                 </div>
               )
-            : ""}
-          {/* <div style={{ flex: 1 }} /> */}
+            : storeDetail?.isShift &&
+              OpenShiftForCounter && (
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <span>{t("chose_shift")} : </span>
+                  <Select
+                    placeholder={`${t("plachoder_shift")}...`}
+                    className="min-w-[170px] w-full border-orange-500"
+                    options={optionsData}
+                    onChange={handleSearchInput}
+                  />
+                </div>
+              )}
         </div>
         <Box
           sx={{

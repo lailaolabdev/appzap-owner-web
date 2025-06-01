@@ -40,7 +40,8 @@ export const useSocketState = ({ setRunSound }) => {
   const [runNT, setRunNT] = useState(false);
 
   const { storeDetail, fetchStoreDetail } = useStoreStore();
-  const { setShiftList, setShiftListCurrent } = useShiftStore();
+  const { setShiftList, setShiftListCurrent, setOpenShiftForCounter } =
+    useShiftStore();
   const { setUseSlideImage, setUseSlideImageData } = useSlideImageStore();
   const { Settoggle, SettoggleTable, SettoggleSlide, SettoggleOpenTwoScreen } =
     useCombinedToggleSlide();
@@ -98,7 +99,7 @@ export const useSocketState = ({ setRunSound }) => {
       setCheckoutTable(true);
     };
     const handleNotifyCreated = (data) => {
-      console.log(`APP_NOTIFY_CREATED:${storeDetail._id}`, data);
+      // console.log(`APP_NOTIFY_CREATED:${storeDetail._id}`, data);
       setNewNotify(data);
     };
 
@@ -116,26 +117,30 @@ export const useSocketState = ({ setRunSound }) => {
     };
     const useSlideImage = async (data) => {
       setUseSlideImage(data?.data);
-      console.log("useSlideImage socket", data?.data);
+      // console.log("useSlideImage socket", data?.data);
     };
     const showTable = async (data) => {
-      console.log("socket showTable", data?.data?.showTable);
+      // console.log("socket showTable", data?.data?.showTable);
       SettoggleTable(data?.data?.showTable);
     };
     const showSlide = async (data) => {
-      console.log("socket showSlide", data?.data?.showSlide);
+      // console.log("socket showSlide", data?.data?.showSlide);
       SettoggleSlide(data?.data?.showSlide);
     };
     const showTitle = async (data) => {
-      console.log("socket showTitle", data?.data?.showTitle);
+      // console.log("socket showTitle", data?.data?.showTitle);
       Settoggle(data?.data?.showTitle);
     };
     const OpenTwoScreen = async (data) => {
-      console.log("socket OpenTwoScreen", data?.data?.isOpenSecondScreen);
+      // console.log("socket OpenTwoScreen", data?.data?.isOpenSecondScreen);
       SettoggleOpenTwoScreen(data?.data?.isOpenSecondScreen);
     };
     const ImageSlidData = async (data) => {
       setUseSlideImageData(data?.data);
+    };
+    const updateCounterFilterShift = async (data) => {
+      // console.log("updateCounterFilterShift", data?.data?.isCounterFilterShift);
+      setOpenShiftForCounter(data?.data?.isCounterFilterShift);
     };
 
     const getClaimAmountData = async () => {
@@ -188,6 +193,10 @@ export const useSocketState = ({ setRunSound }) => {
     socket.on(`OPEN_TWO_SCREEN:${storeDetail._id}`, OpenTwoScreen);
     socket.on(`IMAGE_SLIDE:${storeDetail._id}`, ImageSlidData);
     socket.on(`CHECKOUT_UPDATED:${storeDetail._id}`, getClaimAmountData);
+    socket.on(
+      `OPEN_COUNTER_FILTER_SHIFT:${storeDetail._id}`,
+      updateCounterFilterShift
+    );
 
     // Cleanup listeners to prevent duplicates
     return () => {
@@ -217,6 +226,10 @@ export const useSocketState = ({ setRunSound }) => {
       socket.off(`OPEN_TWO_SCREEN:${storeDetail._id}`, OpenTwoScreen);
       socket.off(`IMAGE_SLIDE:${storeDetail._id}`, ImageSlidData);
       socket.off(`CHECKOUT_UPDATED:${storeDetail._id}`, getClaimAmountData);
+      socket.off(
+        `OPEN_COUNTER_FILTER_SHIFT:${storeDetail._id}`,
+        updateCounterFilterShift
+      );
     };
   }, [storeDetail, setRunSound]);
 
