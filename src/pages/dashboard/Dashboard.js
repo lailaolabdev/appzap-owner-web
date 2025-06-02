@@ -150,6 +150,7 @@ export default function Dashboard() {
 
   const getMoneyReportData = async () => {
     const data = await getMoneyReport(storeDetail?._id, findByData());
+    console.log("logs data:--> ", data)
     setMoneyReport(data);
   };
 
@@ -315,28 +316,28 @@ export default function Dashboard() {
           </Button>
           {profile?.data?.role === "APPZAP_ADMIN"
             ? storeDetail?.isShift && (
-                <div className="flex items-center gap-2 whitespace-nowrap">
-                  <span>{t("chose_shift")} : </span>
-                  <Select
-                    placeholder={`${t("plachoder_shift")}...`}
-                    className="min-w-[170px] w-full border-orange-500"
-                    options={optionsData}
-                    onChange={handleSearchInput}
-                  />
-                </div>
-              )
+              <div className="flex items-center gap-2 whitespace-nowrap">
+                <span>{t("chose_shift")} : </span>
+                <Select
+                  placeholder={`${t("plachoder_shift")}...`}
+                  className="min-w-[170px] w-full border-orange-500"
+                  options={optionsData}
+                  onChange={handleSearchInput}
+                />
+              </div>
+            )
             : storeDetail?.isShift &&
-              OpenShiftForCounter && (
-                <div className="flex items-center gap-2 whitespace-nowrap">
-                  <span>{t("chose_shift")} : </span>
-                  <Select
-                    placeholder={`${t("plachoder_shift")}...`}
-                    className="min-w-[170px] w-full border-orange-500"
-                    options={optionsData}
-                    onChange={handleSearchInput}
-                  />
-                </div>
-              )}
+            OpenShiftForCounter && (
+              <div className="flex items-center gap-2 whitespace-nowrap">
+                <span>{t("chose_shift")} : </span>
+                <Select
+                  placeholder={`${t("plachoder_shift")}...`}
+                  className="min-w-[170px] w-full border-orange-500"
+                  options={optionsData}
+                  onChange={handleSearchInput}
+                />
+              </div>
+            )}
         </div>
         <Box
           sx={{
@@ -349,6 +350,7 @@ export default function Dashboard() {
             gap: 10,
           }}
         >
+           
           <Card border="primary" style={{ margin: 0 }}>
             <Card.Header
               style={{
@@ -362,28 +364,33 @@ export default function Dashboard() {
               {t("all_amount")}
             </Card.Header>
             <Card.Body>
-              <div className={fontMap[language]}>
-                {t("numberOfBill")}
-                {" : "}
-                {countAllBillReport?.count - countIsDebtTrue || 0} {t("bill")}
+              <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
+                <span style={{ fontWeight: 'bold' }}>{t("numberOfBill")}</span>
+                <span style={{ margin: '0 8px' }}>:</span>
+                <span>{countAllBillReport?.count - countIsDebtTrue || 0} {t("bill")}</span>
               </div>
-              <div className={fontMap[language]}>
-                {t("total_will_get")}
-                {" : "}
-                {convertNumber(
-                  (totalBillActiveReport?.total || 0) +
+
+              <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
+                <span style={{ fontWeight: 'bold' }}>{t("total_will_get")}</span>
+                <span style={{ margin: '0 8px' }}>:</span>
+                <span>
+                  {convertNumber(
+                    (totalBillActiveReport?.total || 0) +
                     salesInformationReport?.totalSales || 0
-                )}
+                  )}
+                </span>
               </div>
-              <div className={fontMap[language]}>
-                {t("outstandingDebt")}
-                {" : "}
-                {convertNumber(countBillActiveReport?.count)} {t("bill")}
+
+              <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
+                <span style={{ fontWeight: 'bold' }}>{t("outstandingDebt")}</span>
+                <span style={{ margin: '0 8px' }}>:</span>
+                <span>{convertNumber(countBillActiveReport?.count)} {t("bill")}</span>
               </div>
+
               <div className={fontMap[language]}>
-                {t("money_crash")}
-                {" : "}
-                {convertNumber(totalBillActiveReport?.total)}
+                <span style={{ fontWeight: 'bold' }}>{t("money_crash")}</span>
+                <span style={{ margin: '0 8px' }}>:</span>
+                <span>{convertNumber(totalBillActiveReport?.total)}</span>
               </div>
             </Card.Body>
           </Card>
@@ -401,64 +408,76 @@ export default function Dashboard() {
               {t("success_amount")}
             </Card.Header>
             <Card.Body>
-              <div className={fontMap[language]}>
-                {t("numberOfBill")}
-                {" : "}
-                {convertNumber(moneyReport?.successAmount?.numberOfBills)}{" "}
-                {t("bill")}
-              </div>
-              <div className={fontMap[language]}>
-                {t("totalBalance")}
-                {" : "}
-                {convertNumber(
-                  (moneyReport?.successAmount?.payByCash || 0) +
-                    (moneyReport?.successAmount?.transferPayment || 0)
-                  // +(moneyReport?.successAmount?.point || 0)
-                )}
-                {/* {convertNumber(moneyReport?.successAmount?.totalBalance)} */}
-              </div>
-              <div className={fontMap[language]}>
-                {t("payBycash")}
-                {" : "}
-                {convertNumber(moneyReport?.successAmount?.payByCash || 0)}
-              </div>
-              <div className={fontMap[language]}>
-                {t("transferPayment")}
-                {" : "}
-                {convertNumber(
-                  moneyReport?.successAmount?.transferPayment || 0
-                )}
-              </div>
-              <div className={fontMap[language]}>
-                {t("money_from_appzap")}
-                {" : "}
-                {convertNumber(
-                  moneyReport?.successAmount?.moneyFromOrdering || 0
-                )}
+              <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
+                <span style={{ fontWeight: 'bold' }}>{t("numberOfBill")}</span>
+                <span style={{ margin: '0 8px' }}>:</span>
+                <span>
+                  {convertNumber(moneyReport?.successAmount?.numberOfBills)} {t("bill")}
+                </span>
               </div>
 
-              <div>
-                {"Delivery"}
-                {" : "}
-                {convertNumber(
-                  moneyReport?.delivery[0]?.totalRevenue[0]?.totalRevenue || 0
-                )}
-              </div>
-              <div>
-                {t("point")}
-                {" : "}
-                {convertNumber(moneyReport?.successAmount?.point || 0)}
+              <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
+                <span style={{ fontWeight: 'bold' }}>{t("totalBalance")}</span>
+                <span style={{ margin: '0 8px' }}>:</span>
+                <span>{convertNumber(moneyReport?.successAmount?.totalBalance)}</span>
               </div>
 
-              <div>
-                {t("cashDiscount")}
-                {" : "}
-                {convertNumber(promotionReport?.[0]?.totalSaleAmount)}|
-                {convertNumber(promotionReport?.[0]?.count)}
-                {t("bill")}
+              <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
+                <span style={{ fontWeight: 'bold' }}>{t("payBycash")}</span>
+                <span style={{ margin: '0 8px' }}>:</span>
+                <span>{convertNumber(moneyReport?.successAmount?.payByCash  || 0)}</span>
+              </div>
+
+              <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
+                <span style={{ fontWeight: 'bold' }}>{t("transferPayment")}</span>
+                <span style={{ margin: '0 8px' }}>:</span>
+                <span>
+                  {convertNumber(moneyReport?.successAmount?.transferPayment || 0)}
+                </span>
+              </div>
+
+              <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
+                <span style={{ fontWeight: 'bold' }}>{t("return")}</span>
+                <span style={{ margin: '0 8px' }}>:</span>
+                <span>
+                  {convertNumber(moneyReport?.successAmount?.changeAmount || 0)}
+                </span>
+              </div>
+
+              <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
+                <span style={{ fontWeight: 'bold' }}>{t("money_from_appzap")}</span>
+                <span style={{ margin: '0 8px' }}>:</span>
+                <span>
+                  {convertNumber(moneyReport?.successAmount?.moneyFromOrdering || 0)}
+                </span>
+              </div>
+
+              <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
+                <span style={{ fontWeight: 'bold' }}>Delivery</span>
+                <span style={{ margin: '0 8px' }}>:</span>
+                <span>
+                  {convertNumber(
+                    moneyReport?.delivery[0]?.totalRevenue[0]?.totalRevenue || 0
+                  )}
+                </span>
+              </div>
+
+              <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
+                <span style={{ fontWeight: 'bold' }}>{t("point")}</span>
+                <span style={{ margin: '0 8px' }}>:</span>
+                <span>{convertNumber(moneyReport?.successAmount?.point || 0)}</span>
+              </div>
+
+              <div className={fontMap[language]}>
+                <span style={{ fontWeight: 'bold' }}>{t("cashDiscount")}</span>
+                <span style={{ margin: '0 8px' }}>:</span>
+                <span>
+                  {convertNumber(promotionReport?.[0]?.totalSaleAmount)} | {convertNumber(promotionReport?.[0]?.count)} {t("bill")}
+                </span>
               </div>
             </Card.Body>
           </Card>
+
           <Card border="primary" style={{ margin: 0 }}>
             <Card.Header
               style={{
@@ -472,18 +491,22 @@ export default function Dashboard() {
               {t("bill_not_pay")}
             </Card.Header>
             <Card.Body>
-              <div className={fontMap[language]}>
-                {t("numberOfBill")}
-                {" : "}
-                {convertNumber(countBillActiveReport?.count)} {t("bill")}
+              <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
+                <span style={{ fontWeight: 'bold' }}>{t("numberOfBill")}</span>
+                <span style={{ margin: '0 8px' }}>:</span>
+                <span>
+                  {convertNumber(countBillActiveReport?.count)} {t("bill")}
+                </span>
               </div>
+
               <div className={fontMap[language]}>
-                {t("money_crash")}
-                {" : "}
-                {convertNumber(totalBillActiveReport?.total)}
+                <span style={{ fontWeight: 'bold' }}>{t("money_crash")}</span>
+                <span style={{ margin: '0 8px' }}>:</span>
+                <span>{convertNumber(totalBillActiveReport?.total)}</span>
               </div>
             </Card.Body>
           </Card>
+
         </Box>
       </div>
       {changeUi === "MONEY_CHART" && (
