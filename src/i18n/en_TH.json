@@ -1250,5 +1250,6 @@
   "please_add_bank_account_first": "กรุณาเพิ่มบัญชีธนาคารก่อน",
   "claim_management": "จัดการคำขอเบิกเงิน",
   "rejection_reason": "เหตุผลในการปฏิเสธ",
-  "paymentMethod": "วิธีการชำระเงิน"
+  "paymentMethod": "วิธีการชำระเงิน",
+  "entries": "รายการ"
 }
