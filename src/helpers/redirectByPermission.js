@@ -103,7 +103,7 @@ export const redirectByPermission = (user, storeDetail) => {
     case "MANAGE_DELIVERY":
       return `settingStore/delivery/${storeDetail?._id}`;
     case "CONFIGURE_SECOND_SCREEN":
-      return `setting-screen`;
+      return `settingScreen`;
     case "CONFIGURE_STORE_DETAIL":
       return `settingStore/storeDetail/${storeDetail?._id}`;
     case "PROMOTION":

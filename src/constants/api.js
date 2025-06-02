@@ -5,10 +5,10 @@ const production_domain = "https://vercel.restaurant.appzap.la/"; // Production
 
 const now_domain = window.location.hostname;
 
-// const dev = "http://localhost:7070"; //locals
+const dev = "http://localhost:7070"; //locals
 // const dev = "http://54.254.146.213:7070"; //locals
 
-const dev = "https://api.appzap.la:7070"; //locals
+// const dev = "https://api.appzap.la:7070"; //locals
 
 const production2 = "https://api.appzap.la:7070"; // Production bill & order [7070 - 7075]
 const production_socket = "https://api.appzap.la:8888"; // Production

@@ -400,11 +400,11 @@ function Router() {
           element: <ZoneList />,
         },
         {
-          path: "/setting-screen",
+          path: "/settingScreen",
           element: <MainScreen />,
         },
         {
-          path: "/member/crm",
+          path: "/crm",
           element: <MemberPage />,
         },
         {

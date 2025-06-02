@@ -668,9 +668,15 @@ function HomecafeEdit() {
         : "",
     };
 
+    console.log("updatedSelectedMenus", updatedSelectedMenus);
+    console.log("menu", menu);
+
     const existingMenuIndex = updatedSelectedMenus.findIndex(
-      (item) => item.id === menu._id
+      (item) => item.menuId === menu._id
     );
+
+    console.log("existingMenuIndex", existingMenuIndex);
+
     if (existingMenuIndex !== -1) {
       updatedSelectedMenus[existingMenuIndex].quantity += 1;
     } else {
@@ -874,7 +880,7 @@ function HomecafeEdit() {
           ? sortOptionsById([...item.options])
           : [];
         return (
-          item.id === selectedItem._id &&
+          item.menuId === selectedItem._id &&
           JSON.stringify(sortedItemOptionsForComparison) ===
             JSON.stringify(sortedFilteredOptionsForComparison)
         );
@@ -1675,35 +1681,12 @@ function HomecafeEdit() {
     return category ? category.name : "";
   };
 
-  const calculateTotalExchangePoints = (menuItems) => {
-    let totalPoints = 0;
-
-    // Loop through each menu item
-    menuItems.forEach((menuItem) => {
-      // Get the quantity (default to 1 if not specified)
-      const quantity = menuItem?.quantity || 1;
-
-      // Check if the menu item has exchangePointStoreId array
-      if (
-        menuItem?.exchangePointStoreId &&
-        Array.isArray(menuItem.exchangePointStoreId)
-      ) {
-        // Loop through each exchangePointStoreId entry
-        menuItem.exchangePointStoreId.forEach((pointStore) => {
-          // Check if the pointStore has exchangePoint property
-          if (pointStore && pointStore?.exchangePoint) {
-            // Add the exchangePoint value multiplied by quantity to the total
-            totalPoints += pointStore?.exchangePoint * quantity;
-          }
-        });
-      }
-    });
-
-    return totalPoints;
-  };
-  useEffect(() => {
-    setTotalExchangePoints(calculateTotalExchangePoints(SelectedMenus));
-  }, [totalExchangePoints, SelectedMenus]);
+  const totalPoints = SelectedMenus.reduce((total, menuItem) => {
+    if (menuItem?.isExchangePointOrder) {
+      return total + menuItem.isExchangePointOrder * menuItem.quantity;
+    }
+    return total;
+  }, 0);
 
   return (
     <div>
@@ -1992,13 +1975,13 @@ function HomecafeEdit() {
                                         {t("point")}
                                       </>
                                     )}
-                                    {item?.exchangePointStoreId?.length > 0 && (
+                                    {item?.isExchangePointOrder && (
                                       <>
                                         <LuArrowRightLeft className="mx-2" />
                                         {t("can_be_exchanged")}{" "}
                                         {moneyCurrency(
-                                          item?.exchangePointStoreId[0]
-                                            ?.exchangePoint * item?.quantity
+                                          item?.isExchangePointOrder *
+                                            item?.quantity
                                         )}{" "}
                                         {t("point")}
                                       </>
@@ -2093,11 +2076,11 @@ function HomecafeEdit() {
                             {t("nameCurrency")}
                           </span>
                         </div>
-                        {totalExchangePoints > 0 && (
+                        {totalPoints > 0 && (
                           <div className="flex ml-5 flex-row gap-4 font-bold">
                             <span>{t("point")} :</span>
                             <span>
-                              {moneyCurrency(totalExchangePoints)} {t("point")}
+                              {moneyCurrency(totalPoints)} {t("point")}
                             </span>
                           </div>
                         )}

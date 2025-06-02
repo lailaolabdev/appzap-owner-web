@@ -534,7 +534,10 @@ export default function DashboardFinance({
       (dataModal?.discount ?? 0);
   } else if (dataModal?.paymentMethod === "TRANSFER_CASH") {
     TotalCalculate =
-      (dataModal?.transferAmount ?? 0) + (dataModal?.payAmount ?? 0);
+      (dataModal?.transferAmount ?? 0) +
+      (dataModal?.payAmount ?? 0) +
+      (dataModal?.discount ?? 0) +
+      (dataModal?.taxAmount ?? 0);
   } else if (dataModal?.paymentMethod === "CASH_TRANSFER_POINT") {
     TotalCalculate =
       (dataModal?.transferAmount ?? 0) +

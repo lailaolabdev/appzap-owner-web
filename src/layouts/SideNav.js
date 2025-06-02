@@ -141,7 +141,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
     },
     {
       title: `${t("CRM")}`,
-      key: "member/crm",
+      key: "crm",
       typeStore: "",
       icon: faUserAlt,
       hidden: !storeDetail?.isCRM,
@@ -168,7 +168,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
     },
     {
       title: `${t("open_second_screen")}`,
-      key: "setting-screen",
+      key: "settingScreen",
       typeStore: "",
       icon: faDesktop,
       hidden: "",
@@ -199,7 +199,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
         e.key === "cafe" ||
         e.key === "report" ||
         e.key === "shift" ||
-        e.key === "setting-screen" ||
+        e.key === "settingScreen" ||
         e.key === "DashboardPage"
       );
     }
@@ -460,6 +460,13 @@ export default function Sidenav({ location, navigate, onToggle }) {
           if (selected === "stock") {
             selected = selected;
           }
+          if (selected === "crm") {
+            selected = selected;
+          }
+          if (selected === "settingScreen") {
+            selected = selected;
+          }
+
           if (selected === "songlist") {
             window
               .open(

@@ -205,7 +205,7 @@ export default function SettingList() {
       id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
       title: t("setting_two_pages"),
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDesktop} />,
-      path: "/setting-screen",
+      path: "/settingScreen",
     },
     // {
     //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
