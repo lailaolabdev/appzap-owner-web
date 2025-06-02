@@ -591,13 +591,13 @@ export default function DashboardPage() {
           >
             <MdOutlineCloudDownload /> EXPORT
           </Button>
-          <Button
+          {/* <Button
             variant="outline-primary"
             style={{ display: "flex", gap: 10, alignItems: "center" }}
             onClick={() => window.open("/see-more/sales-report")}
           >
             <MdMenu /> SEE MORE
-          </Button>
+          </Button> */}
         </div>
         <Box
           sx={{
