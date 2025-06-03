@@ -41,6 +41,7 @@ export const useSocketState = ({ setRunSound }) => {
   // Track new transactions when disconnected
   const [runNT, setRunNT] = useState(false);
   const [settingData, setSettingData] = useState();
+  const [tokenKey, setTokenKey] = useState()
 
   const { storeDetail, fetchStoreDetail } = useStoreStore();
   const { setShiftList, setShiftListCurrent, setOpenShiftForCounter } =
@@ -57,6 +58,9 @@ export const useSocketState = ({ setRunSound }) => {
   useEffect(() => {
     if (!storeDetail?._id) return;
 
+    let localUser = JSON.parse(localStorage.getItem("@userKey"));
+    setTokenKey(localUser?.accessToken)
+
     const handleConnect = () => setSocketConneted(true);
     const handleDisconnect = () => setSocketConneted(false);
     const handleTableUpdate = () => setNewTableTransaction(true);
@@ -64,14 +68,11 @@ export const useSocketState = ({ setRunSound }) => {
       try {
         // Ensure data and orders are properly defined
         if (data && Array.isArray(data.orders)) {
-          console.log("Log sound socket V1: ", data);
-          console.log("Log sound socket V2: ", settingData);
           
           // Call handleNewOrderItems with the orders data
           handleNewOrderItems(data.orders);
           // Trigger sound or any other actions as needed
-          if(settingData?.isOrderSound) {
-            console.log("Log sound socket V3: ", settingData);
+          if(settingData?.isOrderSound && tokenKey) {
             setRunSound({ orderSound: settingData?.isOrderSound });
           }
           // setRunSound({ orderSound: true });
@@ -97,20 +98,20 @@ export const useSocketState = ({ setRunSound }) => {
     };
 
     const handleOrderStatusUpdate = () => {
-      if(settingData?.isOrderSound) {
+      if(settingData?.isOrderSound && tokenKey) {
         setRunSound({ orderSound: settingData?.isOrderSound });
         setNewOrderUpdateStatusTransaction(true);
       }
     };
     const handleReservationUpdate = () => {
-      if(settingData?.isOrderSound) {
+      if(settingData?.isOrderSound && tokenKey) {
         setRunSound({ orderSound: settingData?.isOrderSound });
         setNewOreservationTransaction(true);
       }
     };
     const handleCheckoutTable = (data) => {
       // console.log("data: ", data);
-      if(settingData?.isOrderSound) {
+      if(settingData?.isOrderSound && tokenKey) {
         setRunSound({ orderSound: settingData?.isOrderSound });
         setCheckoutTable(true);
       }
@@ -262,7 +263,6 @@ export const useSocketState = ({ setRunSound }) => {
       let _storeId = localData?.state?.storeDetail._id;
       const response = await getSettingByStore(_storeId)
       if (response) {
-        console.log("logsettingData: ", response)
         setSettingData(response)
       }
     } catch (error) {
