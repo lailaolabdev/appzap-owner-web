@@ -40,7 +40,7 @@ export const useSocketState = ({ setRunSound }) => {
 
   // Track new transactions when disconnected
   const [runNT, setRunNT] = useState(false);
-  const [settingData, setSettingData] = useState(false);
+  const [settingData, setSettingData] = useState();
 
   const { storeDetail, fetchStoreDetail } = useStoreStore();
   const { setShiftList, setShiftListCurrent, setOpenShiftForCounter } =
@@ -71,8 +71,8 @@ export const useSocketState = ({ setRunSound }) => {
           handleNewOrderItems(data.orders);
           // Trigger sound or any other actions as needed
           if(settingData?.isOrderSound) {
-            console.log("Log sound socket V2: ", settingData);
-            // setRunSound({ orderSound: settingData?.isOrderSound });
+            console.log("Log sound socket V3: ", settingData);
+            setRunSound({ orderSound: settingData?.isOrderSound });
           }
           // setRunSound({ orderSound: true });
 
@@ -262,6 +262,7 @@ export const useSocketState = ({ setRunSound }) => {
       let _storeId = localData?.state?.storeDetail._id;
       const response = await getSettingByStore(_storeId)
       if (response) {
+        console.log("logsettingData: ", response)
         setSettingData(response)
       }
     } catch (error) {
