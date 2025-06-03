@@ -840,7 +840,7 @@ function HomecafeEdit() {
       selectedItem?.exchangePointStoreId?.[0]?.status === "active";
 
     const mainMenuData = {
-      id: selectedItem._id,
+      _id: selectedItem._id,
       name: selectedItem.name,
       quantity:
         activePromotions?.length > 0 && activePromotions[0].buyQuantity !== null
@@ -862,6 +862,7 @@ function HomecafeEdit() {
       totalPrice: finalPrice + totalOptionPrice,
       isWeightMenu: selectedItem?.isWeightMenu,
       unitWeightMenu: selectedItem?.unitWeightMenu,
+      status: "SERVED",
       storeId: storeDetail?._id,
       exchangePointStoreId: isExchangeActive
         ? selectedItem?.exchangePointStoreId
@@ -926,7 +927,7 @@ function HomecafeEdit() {
                 promotion.getQuantity;
             } else {
               updatedMenu.push({
-                id: freeItemId,
+                _id: freeItemId,
                 name: freeItemName,
                 price: 0,
                 quantity:
@@ -939,6 +940,7 @@ function HomecafeEdit() {
                 isWeightMenu: selectedItem?.isWeightMenu,
                 unitWeightMenu: selectedItem?.unitWeightMenu,
                 isFree: true,
+                status: "SERVED",
                 mainMenuId: selectedItem._id,
                 storeId: storeDetail?._id,
                 exchangePointStoreId: isExchangeActive
