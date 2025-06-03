@@ -65,13 +65,14 @@ export const useSocketState = ({ setRunSound }) => {
         // Ensure data and orders are properly defined
         if (data && Array.isArray(data.orders)) {
           console.log("Log sound socket V1: ", data);
+          console.log("Log sound socket V2: ", settingData);
           
           // Call handleNewOrderItems with the orders data
           handleNewOrderItems(data.orders);
           // Trigger sound or any other actions as needed
           if(settingData?.isOrderSound) {
             console.log("Log sound socket V2: ", settingData);
-            setRunSound({ orderSound: settingData?.isOrderSound });
+            // setRunSound({ orderSound: settingData?.isOrderSound });
           }
           // setRunSound({ orderSound: true });
 
@@ -96,17 +97,23 @@ export const useSocketState = ({ setRunSound }) => {
     };
 
     const handleOrderStatusUpdate = () => {
-      setRunSound({ orderSound: settingData?.isOrderSound });
-      setNewOrderUpdateStatusTransaction(true);
+      if(settingData?.isOrderSound) {
+        setRunSound({ orderSound: settingData?.isOrderSound });
+        setNewOrderUpdateStatusTransaction(true);
+      }
     };
     const handleReservationUpdate = () => {
-      setRunSound({ orderSound: settingData?.isOrderSound });
-      setNewOreservationTransaction(true);
+      if(settingData?.isOrderSound) {
+        setRunSound({ orderSound: settingData?.isOrderSound });
+        setNewOreservationTransaction(true);
+      }
     };
     const handleCheckoutTable = (data) => {
       // console.log("data: ", data);
-      setRunSound({ orderSound: settingData?.isOrderSound });
-      setCheckoutTable(true);
+      if(settingData?.isOrderSound) {
+        setRunSound({ orderSound: settingData?.isOrderSound });
+        setCheckoutTable(true);
+      }
     };
     const handleNotifyCreated = (data) => {
       // console.log(`APP_NOTIFY_CREATED:${storeDetail._id}`, data);
