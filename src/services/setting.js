@@ -1,6 +1,7 @@
 import { END_POINT_APP } from "../constants/api";
 import axios from "axios";
 import { getHeaders } from "./auth";
+import axiosInstance from "../utils/axios";
 
 export const getSetting = async (storeId) => {
   try {
@@ -166,3 +167,28 @@ export const updateCounterFilterShift = async (settingId, dataUpdate) => {
     return error;
   }
 };
+
+export const updateSettingByStore = async ({ storeId, settings }) => {
+  try {
+    let body = {
+      storeId: storeId,
+      settings: settings,
+    }
+    const response = await axiosInstance.put(`/v4/setting-store/update-by-store`,
+      body
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating settings for store ${storeId}:`, error);
+    throw error; // Re-throw to let the caller handle it
+  }
+};
+
+export const getSettingByStore = async (storeId) => {
+  try {
+    const response = await axiosInstance.get(`/v4/setting-store/${storeId}`);
+    return response.data;
+  } catch (error) {
+    console.log("error: ", error)
+  }
+}

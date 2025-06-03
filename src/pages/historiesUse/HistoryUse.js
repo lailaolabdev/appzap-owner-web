@@ -101,33 +101,24 @@ export default function HistoryUse() {
       } else if (filtterModele === "billPayBefore") {
         apiUrl =
           END_POINT_SEVER +
-          `/v3/bills-split/skip/${
-            page * rowsPerPage
+          `/v3/bills-split/skip/${page * rowsPerPage
           }/limit/${rowsPerPage}?storeId=${params?.id}`;
       } else if (filtterModele === "bankTransfer") {
-        apiUrl = `${END_POINT_SEVER}/v4/pos/get-call-to-checkouts/skip/${
-          page * rowsPerPage
-        }/limit/${rowsPerPage}?storeId=${
-          params?.id
-        }&paymentMethod=BANK_TRANSFER`;
+        apiUrl = `${END_POINT_SEVER}/v4/pos/get-call-to-checkouts/skip/${page * rowsPerPage
+          }/limit/${rowsPerPage}?storeId=${params?.id
+          }&paymentMethod=BANK_TRANSFER`;
       } else if (filtterModele === "order_history") {
-        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${
-          page * rowsPerPage
-        }/limit/${rowsPerPage}?storeId=${
-          params?.id
-        }&status=${filtterModele}${findBy}`;
+        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${page * rowsPerPage
+          }/limit/${rowsPerPage}?storeId=${params?.id
+          }&status=${filtterModele}${findBy}`;
       } else if (filtterModele === "deleted") {
-        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${
-          page * rowsPerPage
-        }/limit/${rowsPerPage}?storeId=${
-          params?.id
-        }&modele=${filtterModele}${findBy}`;
+        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${page * rowsPerPage
+          }/limit/${rowsPerPage}?storeId=${params?.id
+          }&modele=${filtterModele}${findBy}`;
       } else {
-        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${
-          page * rowsPerPage
-        }/limit/${rowsPerPage}?storeId=${
-          params?.id
-        }&modele=${filtterModele}${findBy}`;
+        apiUrl = `${END_POINT_SEVER}/v3/logs/skip/${page * rowsPerPage
+          }/limit/${rowsPerPage}?storeId=${params?.id
+          }&modele=${filtterModele}${findBy}`;
       }
 
       const res = await axios.get(apiUrl, { headers });
@@ -547,15 +538,15 @@ export default function HistoryUse() {
                       <td>
                         {["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                           ? new Intl.NumberFormat("ja-JP", {
-                              currency: "JPY",
-                            }).format(_countAmount(item?.orderId))
+                            currency: "JPY",
+                          }).format(_countAmount(item?.orderId))
                           : new Intl.NumberFormat("ja-JP", {
-                              currency: "JPY",
-                            }).format(
-                              item?.payAmount +
-                                item?.taxAmount +
-                                item?.serviceChargeAmount
-                            )}{" "}
+                            currency: "JPY",
+                          }).format(
+                            item?.payAmount +
+                            item?.taxAmount +
+                            item?.serviceChargeAmount
+                          )}{" "}
                         {selectedCurrency}
                       </td>
                       <td
@@ -569,8 +560,8 @@ export default function HistoryUse() {
                         {item?.paymentMethod === "CASH"
                           ? t("payBycash")
                           : item?.paymentMethod === "TRANSFER"
-                          ? t("transferPayment")
-                          : t("transfercash")}
+                            ? t("transferPayment")
+                            : t("transfercash")}
                       </td>
                       <td>
                         {moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}
@@ -770,6 +761,11 @@ export default function HistoryUse() {
 
                 <tbody>
                   {(statusOderHis ? filteredData : data)?.map((item, index) => {
+                    let _dataCancels = []
+                    if (item?.dataCancels) {
+                      _dataCancels = JSON.parse(item?.dataCancels);
+                    }
+
                     return (
                       <tr key={index}>
                         <td className="text-nowarp">
@@ -793,11 +789,18 @@ export default function HistoryUse() {
                         ) : (
                           <td className="text-nowrap">{item.orderAmount}</td>
                         )}
-                        {filtterModele === "checkBill" ? (
-                          ""
-                        ) : (
-                          <td className="text-nowrap">{item.orderItem}</td>
-                        )}
+
+                        <td className="text-nowrap" style={{ marginBottom: 0, minWidth: 200 }}>
+                          {/* {item.orderItem} */}
+
+                          {(_dataCancels && _dataCancels?.length > 0) ? <div >
+                            {_dataCancels?.map((_item, _index) => (
+                              <p key={_index} style={{ marginTop: -4, marginBottom: 0 }}>- {_item?.name || "-"} / {_item?.quantity || 0}</p>
+                            ))}
+                          </div> : <p>{item?.orderItem}</p>}
+
+
+                        </td>
                         {/* <td
         style={{
           color: item?.event === "INFO" ? "green" : "red",
@@ -822,14 +825,14 @@ export default function HistoryUse() {
                             ? ` ${formatNumber(item.total)} ກີບ`
                             : filtterModele === "deleted" ||
                               filtterModele === "checkBill"
-                            ? item?.commentCancelOrder || "-"
-                            : item?.reason === null ||
-                              item?.reason === "" ||
-                              item?.reason === undefined ||
-                              item?.reason === "undefined" ||
-                              item?.reason === "null"
-                            ? "-"
-                            : item?.reason}
+                              ? item?.commentCancelOrder || "-"
+                              : item?.reason === null ||
+                                item?.reason === "" ||
+                                item?.reason === undefined ||
+                                item?.reason === "undefined" ||
+                                item?.reason === "null"
+                                ? "-"
+                                : item?.reason}
                         </td>
                         {filtterModele === "historyServiceChange" && (
                           <td>
@@ -888,8 +891,8 @@ export default function HistoryUse() {
                   <td>
                     {new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
                       item?.totalPrice ||
-                        (item?.price + (item?.totalOptionPrice || 0)) *
-                          item?.quantity
+                      (item?.price + (item?.totalOptionPrice || 0)) *
+                      item?.quantity
                     )}
                   </td>
                   <td>{moment(item?.createdAt).format("DD/MM/YYYY HH:mm")}</td>
@@ -948,16 +951,16 @@ export default function HistoryUse() {
                           item?.status === "WAITING"
                             ? "#2d00a8"
                             : item?.status === "DOING"
-                            ? "#c48a02"
-                            : item?.status === "SERVED"
-                            ? "green"
-                            : item?.status === "PAID"
-                            ? COLOR_APP
-                            : item?.status === "CART"
-                            ? "#00496e"
-                            : item?.status === "FEEDBACK"
-                            ? "#00496e"
-                            : "#bd0d00",
+                              ? "#c48a02"
+                              : item?.status === "SERVED"
+                                ? "green"
+                                : item?.status === "PAID"
+                                  ? COLOR_APP
+                                  : item?.status === "CART"
+                                    ? "#00496e"
+                                    : item?.status === "FEEDBACK"
+                                      ? "#00496e"
+                                      : "#bd0d00",
                       }}
                     >
                       {orderStatus(item?.status)}
@@ -970,8 +973,8 @@ export default function HistoryUse() {
                         currency: "JPY",
                       }).format(
                         item?.totalPrice ??
-                          (item?.price + (item?.totalOptionPrice ?? 0)) *
-                            item?.quantity
+                        (item?.price + (item?.totalOptionPrice ?? 0)) *
+                        item?.quantity
                       )}
                     </td>
                     <td>
