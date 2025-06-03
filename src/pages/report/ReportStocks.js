@@ -87,14 +87,14 @@ export default function ReportStocks() {
   const { profile } = useStore();
   const [hasManageStockEdit, setHasManageStockEdit] = useState(false);
 
-  const rowsPerPage = 15;
+  const rowsPerPage = 100;
   const [page, setPage] = useState(0);
   const pageAll = totalStock > 0 ? Math.ceil(totalStock / rowsPerPage) : 1;
 
   const handleChangePage = useCallback((newPage) => {
     setPage(newPage);
   }, []);
-  const rowsPerPageTotal = 10;
+  const rowsPerPageTotal = 25;
   const [pageTotal, setPageTotal] = useState(0);
   const pageAllTotal =
     totalStockGroups > 0 ? Math.ceil(totalStockGroups / rowsPerPage) : 1;
