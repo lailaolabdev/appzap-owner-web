@@ -16,6 +16,8 @@ import {
 import { data } from "browserslist";
 import { set } from "lodash";
 import Axios from "axios";
+import { getSettingByStore } from "../../services/setting";
+import { useCountStore } from "../../zustand/countState";
 const { sendToKitchenPrinter } = require("../../helpers/printerHelper");
 
 const socket = socketio.connect(END_POINT_SOCKET, {
@@ -38,6 +40,7 @@ export const useSocketState = ({ setRunSound }) => {
 
   // Track new transactions when disconnected
   const [runNT, setRunNT] = useState(false);
+  const [settingData, setSettingData] = useState(false);
 
   const { storeDetail, fetchStoreDetail } = useStoreStore();
   const { setShiftList, setShiftListCurrent, setOpenShiftForCounter } =
@@ -47,6 +50,9 @@ export const useSocketState = ({ setRunSound }) => {
     useCombinedToggleSlide();
   const { handleNewOrderItems } = useOrderStore();
   const { setTotalAmountClaim, TotalAmountClaim } = useClaimDataStore();
+
+  const { countNumber } = useCountStore()
+
 
   useEffect(() => {
     if (!storeDetail?._id) return;
@@ -58,12 +64,16 @@ export const useSocketState = ({ setRunSound }) => {
       try {
         // Ensure data and orders are properly defined
         if (data && Array.isArray(data.orders)) {
-          // console.log("ORDER_DATA: ", data);
-
+          console.log("Log sound socket V1: ", data);
+          
           // Call handleNewOrderItems with the orders data
           handleNewOrderItems(data.orders);
           // Trigger sound or any other actions as needed
-          setRunSound({ orderSound: true });
+          if(settingData?.isOrderSound) {
+            console.log("Log sound socket V2: ", settingData);
+            setRunSound({ orderSound: settingData?.isOrderSound });
+          }
+          // setRunSound({ orderSound: true });
 
           // Use the kitchen printer function if necessary
           if (storeDetail?.isStaffAutoPrint) {
@@ -86,16 +96,16 @@ export const useSocketState = ({ setRunSound }) => {
     };
 
     const handleOrderStatusUpdate = () => {
-      setRunSound({ orderSound: true });
+      setRunSound({ orderSound: settingData?.isOrderSound });
       setNewOrderUpdateStatusTransaction(true);
     };
     const handleReservationUpdate = () => {
-      setRunSound({ orderSound: true });
+      setRunSound({ orderSound: settingData?.isOrderSound });
       setNewOreservationTransaction(true);
     };
     const handleCheckoutTable = (data) => {
       // console.log("data: ", data);
-      setRunSound({ orderSound: true });
+      setRunSound({ orderSound: settingData?.isOrderSound });
       setCheckoutTable(true);
     };
     const handleNotifyCreated = (data) => {
@@ -232,6 +242,25 @@ export const useSocketState = ({ setRunSound }) => {
       );
     };
   }, [storeDetail, setRunSound]);
+
+  // Load initial settings
+  useEffect(() => {
+    loadSettingByStore()
+  }, [countNumber])
+
+  // get setting by store
+  const loadSettingByStore = async () => {
+    const localData = JSON.parse(localStorage.getItem("storeDetail"));
+    try {
+      let _storeId = localData?.state?.storeDetail._id;
+      const response = await getSettingByStore(_storeId)
+      if (response) {
+        setSettingData(response)
+      }
+    } catch (error) {
+      console.log("get setting by store error:", error);
+    }
+  }
 
   useEffect(() => {
     const interval = setInterval(() => {

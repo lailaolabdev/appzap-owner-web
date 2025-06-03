@@ -1743,9 +1743,12 @@ export default function TableList() {
           _id: i?._id,
           menuId: i?.menuId,
           name: i?.name,
-          // remark: seletedCancelOrderItem
+          quantity: i?.quantity,
+          price: i?.price,
         };
       });
+    console.log("logs body: --> ", isCheckedOrderItem);
+
     const _resOrderUpdate = await updateOrderItemV7(
       _updateItems,
       storeId,
@@ -2072,11 +2075,11 @@ export default function TableList() {
     if (zoneId === "ALL") {
       return "ALL";
     }
-    
+
     const selectedZone = zoneData?.find(zone => zone._id === zoneId);
     return selectedZone ? selectedZone.name : "ALL";
   };
-  
+
   return (
     <div className="bg-[#F9F9F9] h-[calc(100vh-66px)] overflow-hidden w-full">
       <PopUpQRToken
@@ -2197,8 +2200,8 @@ export default function TableList() {
               )}
             >
               <p> {t("show_by_zone")}: </p>
-              <DropdownButton 
-                id="zone-dropdown" 
+              <DropdownButton
+                id="zone-dropdown"
                 title={getSelectedZoneText()}
                 variant="outline-secondary"
                 style={{ marginLeft: "10px" }}
@@ -2207,9 +2210,9 @@ export default function TableList() {
                 <Dropdown.Item eventKey="ALL" active={zoneId === "ALL"}>
                   ALL
                 </Dropdown.Item>
-                
+
                 <Dropdown.Divider />
-                
+
                 {zoneData?.map((item, index) => (
                   <Dropdown.Item
                     key={item?._id || index}
@@ -3305,7 +3308,6 @@ export default function TableList() {
           </Button>
           <Button
             variant="success"
-            // onClick={() => handleUpdateOrderStatuscancel("CANCELED")}
             onClick={() => {
               if (workAfterPin == "cancle_order_and_print") {
                 handleUpdateOrderStatusAndCallback("CANCELED", async () => {

@@ -115,10 +115,12 @@ export const updateOrderItem = async (
 export const updateOrderItemV7 = async (
   updateItems,
   storeId,
-  seletedCancelOrderItem
+  menuId,
+  seletedCancelOrderItem,
+  selectedTable
 ) => {
   try {
-    const body = {
+    let body = {
       orders: updateItems,
       storeId,
       remark: seletedCancelOrderItem,
