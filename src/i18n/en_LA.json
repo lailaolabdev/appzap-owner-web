@@ -1374,5 +1374,8 @@
   "print_bill_and_sticker" :"ພິມບິນ ແລະ ສະຕິກເກີ້",
   "print_two_bill" : "ພິມບິນ 2 ບິນ",
   "all_bill" : "ບິນທັງໝົດ",
-  "counter_can_use_filter_shift" : "ສິດເຄົ້າເຕີສາມາດເບິ່ງແຍກຕາມກະໄດ້"
+  "counter_can_use_filter_shift" : "ສິດເຄົ້າເຕີສາມາດເບິ່ງແຍກຕາມກະໄດ້",
+  "item_canceled_successfully": "ລາຍການຖືກຍົກເລີກແລ້ວ",
+  "item_canceled_menu": "ລາຍການເມນູຖືກຍົກເລີກ",
+  "cancled_by": "ຖືກຍົກເລີກໂດຍ"
 }

@@ -60,6 +60,26 @@ export const getMenuReport = async (storeId, findBy, tableIds) => {
     return error;
   }
 };
+export const getMenuCancelReport = async (storeId, findBy, tableIds) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v7/menu-report-cancel/${storeId}${findBy}`;
+    const res = await axios.post(url, { tableIds }, { headers: _header });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+export const getBillCancelReport = async (storeId, findBy, tableIds) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v7/bill-report-cancel/${storeId}${findBy}`;
+    const res = await axios.post(url, { tableIds }, { headers: _header });
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
 
 export const getCategoryReport = async (storeId, findBy, tableIds) => {
   try {

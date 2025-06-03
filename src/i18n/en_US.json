@@ -1374,5 +1374,8 @@
   "print_bill_and_sticker" : "Print bill and Sticker",
   "print_two_bill" : "Print two bill",
   "all_bill" : "All Bill",
-  "counter_can_use_filter_shift" : "Counter can use filter shift"
+  "counter_can_use_filter_shift" : "Counter can use filter shift",
+  "item_canceled_successfully" : "Item canceled successfully",
+  "item_canceled_menu" : "Item canceled menu",
+  "cancled_by" : "Canceled by"
 }

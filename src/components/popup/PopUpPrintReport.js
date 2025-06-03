@@ -75,6 +75,12 @@ export default function PopUpPrintReport({ open, onClose, setPopup }) {
           >
             <span>{t("menu_and_type_list")}</span>
           </Button>
+          <Button
+            style={{ height: 100, padding: 20 }}
+            onClick={() => setPopup({ printReportMenuCancel: true })}
+          >
+            <span>{t("item_canceled_menu")}</span>
+          </Button>
         </div>
       </Modal.Body>
     </Modal>

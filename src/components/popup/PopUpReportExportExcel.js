@@ -36,6 +36,8 @@ export default function PopUpReportExportExcel({
   deliveryData,
   debtData,
   billData,
+  billCancelData,
+  menuCancelData,
 }) {
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const { menuCategories, getMenuCategories, setMenuCategories } =
@@ -1353,6 +1355,118 @@ export default function PopUpReportExportExcel({
     }
   };
 
+  const menuCancel = async () => {
+    setPopup({ ReportExport: false });
+    const header = [
+      t("no"),
+      t("name"),
+      t("type"),
+      t("cancled_by"),
+      t("qty"),
+      t("Reason_for_cancellation"),
+      t("price"),
+    ];
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("Menu Cancel Report");
+
+    // Set header row
+    sheet.getRow(2).values = header;
+
+    // Format header row
+    for (let i = 1; i <= header.length; i++) {
+      const cell = sheet.getRow(2).getCell(i);
+      cell.border = {
+        top: { style: "thin", color: { argb: "FFCC8400" } },
+        left: { style: "thin", color: { argb: "FFCC8400" } },
+        bottom: { style: "thin", color: { argb: "FFCC8400" } },
+        right: { style: "thin", color: { argb: "FFCC8400" } },
+      };
+
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: COLOR_APP,
+      };
+
+      cell.font = {
+        name: "Noto Sans Lao",
+        size: 14,
+        bold: true,
+        color: { argb: "FF000000" },
+      };
+
+      cell.alignment = {
+        horizontal: i === 1 ? "center" : "left",
+        vertical: "middle",
+        wrapText: true,
+      };
+    }
+
+    // Configure columns (remove keys since we're using array-based rows)
+    sheet.columns = [
+      { width: 8 }, // No
+      { width: 40 }, // Name
+      { width: 15 }, // Type
+      { width: 15 }, // Cancelled By
+      { width: 10 }, // Qty
+      { width: 25 }, // Reason for cancellation
+      { width: 15 }, // Price
+    ];
+
+    // Add data rows
+    menuCancelData?.data?.forEach((menu, index) => {
+      const row = sheet.addRow([
+        index + 1, // ລຳດັບ (No)
+        menu?.menuName || "--", // ຊື່ (Name)
+        menu?.categoryName || "--", // ປະເພດ (Type)
+        menu?.cancelBy || "--", // ຖືກຍົກເລີກໂດຍ (Cancelled By)
+        menu?.cancelCount || 0, // ຈຳນວນ (Quantity)
+        menu?.note || "--", // ເຫດຜົນ (Reason)
+        moneyCurrency(menu?.avgCancelAmount || 0), // ລາຄາ (Price)
+      ]);
+
+      // Format each cell in the row
+      row.eachCell((cell, colNumber) => {
+        cell.font = {
+          name: "Noto Sans Lao",
+          size: 14,
+        };
+
+        cell.alignment = {
+          horizontal: colNumber === 1 ? "center" : "left", // Center align the "No" column
+          vertical: "middle",
+          wrapText: true,
+        };
+
+        // Add borders to data cells
+        cell.border = {
+          top: { style: "thin", color: { argb: "FFD3D3D3" } },
+          left: { style: "thin", color: { argb: "FFD3D3D3" } },
+          bottom: { style: "thin", color: { argb: "FFD3D3D3" } },
+          right: { style: "thin", color: { argb: "FFD3D3D3" } },
+        };
+      });
+    });
+
+    // Set row heights
+    for (let i = 1; i <= (menuCancelData?.data?.length || 0) + 2; i++) {
+      sheet.getRow(i).height = 45;
+    }
+
+    // Generate and download the file
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = downloadUrl;
+    anchor.download = `${storeDetail?.name} - Menu Cancel Report.xlsx`;
+    anchor.click();
+    window.URL.revokeObjectURL(downloadUrl);
+  };
   const ex = async () => {
     setPopup({ ReportExport: false });
     try {
@@ -1373,43 +1487,9 @@ export default function PopUpReportExportExcel({
       const currencySheet = workbook.addWorksheet(t("all_curency"));
       const bankSheet = workbook.addWorksheet(t("bank_total"));
       const deliverySheet = workbook.addWorksheet("Delivery Report");
-
-      // Helper function to create headers with styling
-      // const createHeaders = (sheet, headers) => {
-      //   // Add a title row before headers
-      //   const titleRow = sheet.addRow([sheet.name]);
-      //   titleRow.font = { bold: true, size: 16 };
-      //   titleRow.height = 30;
-
-      //   // Add empty row for spacing
-      //   sheet.addRow([]);
-
-      //   const headerRow = sheet.addRow(headers);
-      //   headerRow.eachCell((cell) => {
-      //     cell.fill = {
-      //       type: "pattern",
-      //       pattern: "solid",
-      //       fgColor: { argb: "FFCC8400" }, // Orange color
-      //     };
-      //     cell.font = {
-      //       bold: true,
-      //       color: { argb: "FFFFFF" }, // White text
-      //     };
-      //     cell.alignment = {
-      //       horizontal: "center",
-      //       vertical: "middle",
-      //     };
-      //     cell.border = {
-      //       top: { style: "thin" },
-      //       left: { style: "thin" },
-      //       bottom: { style: "thin" },
-      //       right: { style: "thin" },
-      //     };
-      //   });
-
-      //   // Return the row index where data should start
-      //   return headerRow.number + 1;
-      // };
+      const itemCanceledMenuSheet = workbook.addWorksheet(
+        t("item_canceled_menu")
+      );
 
       // Helper function to create headers with styling
       const createHeaders = (sheet, headers) => {
@@ -1475,65 +1555,6 @@ export default function PopUpReportExportExcel({
         reportSellSheet,
         reportSellHeaders
       );
-
-      // if (billData) {
-      //   billData.forEach((item, index) => {
-      //     const formattedDate = moment(item?.createdAt).format("DD/MM/YYYY");
-      //     const orderDetails = item?.orderId
-      //       .map((order) => {
-      //         const categoryName = findCategoryName(
-      //           order?.categoryId,
-      //           menuCategories
-      //         );
-      //         return `(${categoryName})`;
-      //       })
-      //       .join(", ");
-      //     const row = reportSellSheet.addRow([
-      //       index + 1,
-      //       item?.paymentMethod || "",
-      //       item?.selectedBank || "",
-      //       item?.status || "",
-      //       moneyCurrency(item?.payAmount || 0),
-      //       moneyCurrency(item?.transferAmount || 0),
-      //       moneyCurrency(item?.deliveryAmount || 0),
-      //       moneyCurrency(item?.point || 0),
-      //       moneyCurrency(item?.discount || 0),
-      //       item?.discountType || "",
-      //       moneyCurrency(item?.change || 0),
-      //       moneyCurrency(item?.beforePaid || 0),
-      //       moneyCurrency(item?.billAmount || 0),
-      //       item?.orderId.length || "",
-      //       item?.orderId.map((order) => order?.name).join(", "),
-      //       item?.orderId.map((order) => order?.status).join(", "),
-      //       orderDetails,
-      //       formattedDate,
-      //       item?.fullnameStaffCheckOut || "",
-      //     ]);
-
-      //     // Style the data row
-      //     row.eachCell((cell) => {
-      //       cell.border = {
-      //         top: { style: "thin" },
-      //         left: { style: "thin" },
-      //         bottom: { style: "thin" },
-      //         right: { style: "thin" },
-      //       };
-      //       cell.font = {
-      //         name: "Noto Sans Lao",
-      //         size: 14,
-      //       };
-      //     });
-      //   });
-      // } else {
-      //   // Add empty row with message if no data
-      //   const noDataRow = reportSellSheet.addRow([t("no_data")]);
-      //   noDataRow.eachCell((cell) => {
-      //     cell.font = {
-      //       name: "Noto Sans Lao",
-      //       size: 12,
-      //     };
-      //   });
-      // }
 
       // Sales Information Sheet
 
@@ -2424,6 +2445,58 @@ export default function PopUpReportExportExcel({
       } else {
         // Add empty row with message if no data
         const noDataRow = deliverySheet.addRow([t("no_data")]);
+        noDataRow.eachCell((cell) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+        });
+      }
+
+      // menu cancel report
+      const menuCancelHeaders = [
+        t("no"),
+        t("name"),
+        t("type"),
+        t("cancled_by"),
+        t("qty"),
+        t("Reason_for_cancellation"),
+        t("price"),
+      ];
+      const menuCancelStartRow = createHeaders(
+        itemCanceledMenuSheet,
+        menuCancelHeaders
+      );
+
+      if (menuCancelData && menuCancelData?.data?.length > 0) {
+        menuCancelData?.data?.forEach((menu, index) => {
+          const row = itemCanceledMenuSheet.addRow([
+            index + 1,
+            menu?.menuName || "--",
+            menu?.categoryName || "--",
+            menu?.cancelBy || 0,
+            menu?.cancelCount || 0,
+            menu?.note || "--",
+            moneyCurrency(menu?.avgCancelAmount || 0),
+          ]);
+
+          // Style the data row
+          row.eachCell((cell) => {
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 14,
+            };
+          });
+        });
+      } else {
+        // Add empty row with message if no data
+        const noDataRow = itemCanceledMenuSheet.addRow([t("no_data")]);
         noDataRow.eachCell((cell) => {
           cell.font = {
             name: "Noto Sans Lao",
@@ -3491,6 +3564,12 @@ export default function PopUpReportExportExcel({
             onClick={currencyExport}
           >
             <span>{t("all_curency")}</span>
+          </Button>
+          <Button
+            style={{ height: 100, padding: 20, width: 200 }}
+            onClick={menuCancel}
+          >
+            <span>{t("ລາຍການເມນູຖືກຍົກເລີກ")}</span>
           </Button>
         </div>
       </Modal.Body>

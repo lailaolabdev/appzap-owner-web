@@ -607,7 +607,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
                     const finalltotal = totallBill ?? 0 - total ?? 0;
 
-                    console.log("finalltotal", finalltotal);
+                    // console.log("finalltotal", finalltotal);
                     return (
                       <tr>
                         <td style={{ textAlign: "left" }}>{i + 1}</td>

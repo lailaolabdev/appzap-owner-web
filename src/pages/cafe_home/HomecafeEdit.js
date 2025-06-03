@@ -90,6 +90,7 @@ import {
   CirclePlus,
   CircleMinus,
 } from "lucide-react";
+import PopUpCommentCancelOrder from "../../components/popup/PopUpCommentCancelOrder";
 
 function HomecafeEdit() {
   const { billId } = useParams();
@@ -136,6 +137,7 @@ function HomecafeEdit() {
   const [point, setPoint] = useState();
   const [paymentMethod, setPaymentMethod] = useState("");
   const [totalExchangePoints, setTotalExchangePoints] = useState();
+  const [isCommentCancelOrder, setIsCommentCancelOrder] = useState(false);
   const [totalQuantity, setTotalQuantity] = useState(0);
   const { shiftCurrent } = useShiftStore();
   const { setSelectedMenus, SelectedMenus, clearSelectedMenus } =
@@ -1063,14 +1065,69 @@ function HomecafeEdit() {
     } catch (error) {}
   };
 
-  const onConfirmRemoveItem = (item) => {
-    const updatedSelectedMenus = SelectedMenus.map((menu) =>
-      menu._id === item._id ? { ...menu, status: "CANCELED" } : menu
-    );
-    // updateOrderCafeItemV7(data, storeDetail?._id);
-    updateOrderCancel(updatedSelectedMenus);
-    setIsRemoveItem(true);
+  const onConfirmRemoveItem = async (item) => {
+    setIsCommentCancelOrder(true);
     setItemDeleting(item);
+  };
+
+  const onConfirmRemoveItemCancel = async (item, comment) => {
+    try {
+      setIsLoading(true);
+
+      // Create the updated menu item with CANCELED status and additional metadata
+      const updatedItem = {
+        ...item,
+        status: "CANCELED",
+        updatedBy: profile?.data?._id,
+        note: comment || "ລູກຄ້າຕ້ອງການລຶບ ຫຼື ຍົກເລິກລາຍການ", // Default comment if none provided
+        canceledAt: new Date().toISOString(), // Add timestamp when canceled
+      };
+
+      // console.log("updatedItem", updatedItem);
+
+      // Update the selected menus array
+      const updatedSelectedMenus = SelectedMenus.map((menu) =>
+        menu._id === item._id ? updatedItem : menu
+      );
+
+      // console.log("updatedSelectedMenus", updatedSelectedMenus);
+
+      // Call the API to update the order - pass only the updated data
+      await updateOrderCancel(updatedSelectedMenus);
+
+      // Alternative approach if you need to update individual item:
+      // await updateOrderCafeItemV7([updatedItem], storeDetail?._id);
+
+      // Refresh the data to reflect changes
+      await GetOneItemsCafe();
+
+      // Close the dialog and reset state
+      setIsCommentCancelOrder(false);
+      setItemDeleting(null);
+      setIsLoading(false);
+
+      // Show success message
+      await Swal.fire({
+        icon: "success",
+        title: t("item_canceled_successfully") || "Item canceled successfully",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } catch (error) {
+      console.error("Error canceling item:", error);
+      setIsLoading(false);
+      setIsCommentCancelOrder(false);
+      setItemDeleting(null);
+
+      // Show error message
+      await Swal.fire({
+        icon: "error",
+        title: t("error_canceling_item") || "Error canceling item",
+        text: error.message || "Please try again",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+    }
   };
 
   const onPrintDrawer = async () => {
@@ -2623,6 +2680,14 @@ function HomecafeEdit() {
           );
         });
       })}
+
+      <PopUpCommentCancelOrder
+        open={isCommentCancelOrder}
+        onClose={() => setIsCommentCancelOrder(false)}
+        onSaveComment={(comment) =>
+          onConfirmRemoveItemCancel(itemDeleting, comment)
+        }
+      />
     </div>
   );
 }

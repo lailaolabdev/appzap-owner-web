@@ -25,6 +25,8 @@ import {
   getDeliveryReport,
   getPromotionReportDisCountAndFree,
   getBillReport,
+  getMenuCancelReport,
+  getBillCancelReport,
 } from "../../services/report";
 import { getAllShift } from "../../services/shift";
 import fileDownload from "js-file-download";
@@ -59,6 +61,7 @@ import { useShiftStore } from "../../zustand/ShiftStore";
 import PopUpPrintPromotion from "../../components/popup/PopUpPrintPromotion";
 
 import matchRoundNumber from "../../helpers/matchRound";
+import PopUpPrintMenuCancelHistoryComponent from "../../components/popup/PopUpPrintMenuCancelHistoryComponent";
 
 export default function DashboardPage() {
   const { t } = useTranslation();
@@ -67,6 +70,8 @@ export default function DashboardPage() {
   const [salesInformationReport, setSalesInformationReport] = useState();
   const [userReport, setUserReport] = useState([]);
   const [menuReport, setMenuReport] = useState();
+  const [menuCancelReport, setMenuCancelReport] = useState();
+  const [billCancelReport, setBillCancelReport] = useState();
   const [categoryReport, setCategoryReport] = useState();
   const [moneyReport, setMoneyReport] = useState();
   const [promotionReport, setPromotionReport] = useState();
@@ -97,6 +102,9 @@ export default function DashboardPage() {
 
   const [shiftData, setShiftData] = useState([]);
   const [shiftId, setShiftId] = useState([]);
+
+  console.log("billCancelReport", billCancelReport);
+  // console.log("menuCancelReport", menuCancelReport);
 
   // provider
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
@@ -132,6 +140,8 @@ export default function DashboardPage() {
     getDeliveryReports();
     getPromotionDiscountAndFreeReportData();
     getBillReportData();
+    getMenuCancelReportData();
+    getBillCancelReportData();
   }, [endDate, startDate, endTime, startTime, selectedTableIds, shiftId]);
 
   // function
@@ -215,6 +225,28 @@ export default function DashboardPage() {
     setMenuReport(data);
     setLoading(false);
   };
+  const getMenuCancelReportData = async () => {
+    setLoading(true);
+    const data = await getMenuCancelReport(
+      storeDetail?._id,
+      findByData(),
+      selectedTableIds
+    );
+    setMenuCancelReport(data);
+    setLoading(false);
+  };
+
+  const getBillCancelReportData = async () => {
+    setLoading(true);
+    const data = await getBillCancelReport(
+      storeDetail?._id,
+      findByData(),
+      selectedTableIds
+    );
+    setBillCancelReport(data);
+    setLoading(false);
+  };
+
   const getCategoryReportData = async () => {
     setLoading(true);
     const data = await getCategoryReport(
@@ -1496,6 +1528,14 @@ export default function DashboardPage() {
         setPopup={setPopup}
         onClose={() => setPopup()}
       />
+
+      <PopUpPrintMenuCancelHistoryComponent
+        open={popup?.printReportMenuCancel}
+        onClose={() => setPopup()}
+      >
+        <BillForReport80 />
+      </PopUpPrintMenuCancelHistoryComponent>
+
       <PopUpReportExportExcel
         open={popup?.ReportExport}
         setPopup={setPopup}
@@ -1517,6 +1557,8 @@ export default function DashboardPage() {
         deliveryData={deliveryReports}
         billData={billReport}
         debtData={debtReport}
+        menuCancelData={menuCancelReport}
+        billCancelData={billCancelReport}
       />
 
       <PopUpSetStartAndEndDateFilterExport

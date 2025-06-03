@@ -88,15 +88,11 @@ const PopUpCommentCancelOrder = ({ open, onClose, onSaveComment }) => {
                   {cancelReasons?.map((reason) => (
                     <div
                       key={reason.id}
-                      className="border-bottom py-2"
-                      style={{
-                        cursor: "pointer",
-                        backgroundColor:
-                          selectedOption === reason.text
-                            ? "#f8f9fa"
-                            : "transparent",
-                        padding: "10px",
-                      }}
+                      className={`border-bottom py-2 cursor-pointer p-[10px] ${
+                        selectedOption === reason.text
+                          ? "bg-orange-500 text-white rounded-lg"
+                          : ""
+                      }`}
                       onClick={() => {
                         handleOptionSelect(reason.text);
                         setFieldValue("comment", "");
