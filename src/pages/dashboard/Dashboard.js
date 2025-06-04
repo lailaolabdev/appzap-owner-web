@@ -436,13 +436,7 @@ export default function Dashboard() {
                 </span>
               </div>
 
-              <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
-                <span style={{ fontWeight: 'bold' }}>{t("return")}</span>
-                <span style={{ margin: '0 8px' }}>:</span>
-                <span>
-                  {convertNumber(moneyReport?.successAmount?.changeAmount || 0)}
-                </span>
-              </div>
+              
 
               <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
                 <span style={{ fontWeight: 'bold' }}>{t("money_from_appzap")}</span>
