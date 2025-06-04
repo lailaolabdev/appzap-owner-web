@@ -417,6 +417,9 @@ export default function CheckOutPopup({
 
     const moneyChange = calculateReturnAmount();
 
+    const change = cash + transfer;
+    const completeChange = change > totalBill ? cash - moneyChange : 0;
+
     const orderItem =
       orderPayBefore && orderPayBefore.length > 0
         ? orderPayBefore?.map((e) => e?._id)
@@ -433,7 +436,7 @@ export default function CheckOutPopup({
       orderPayBefore: orderItem,
       isCheckout: checkStatus,
       status: checkStatusBill,
-      payAmount: cash,
+      payAmount: moneyChange > 0 ? completeChange  : cash,
       transferAmount: transfer,
       deliveryAmount: delivery,
       point: point,
@@ -469,6 +472,8 @@ export default function CheckOutPopup({
       body.currency = cashCurrency;
       body.currencyName = currencyName;
     }
+
+    console.log("body:", body);
 
     await axios
       .put(
