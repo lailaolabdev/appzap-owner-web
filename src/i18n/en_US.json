@@ -1377,5 +1377,6 @@
   "counter_can_use_filter_shift" : "Counter can use filter shift",
   "item_canceled_successfully" : "Item canceled successfully",
   "item_canceled_menu" : "Item canceled menu",
-  "cancled_by" : "Canceled by"
+  "cancled_by" : "Canceled by",
+  "name_is_haven" : "Name is haven, Please try again"
 }

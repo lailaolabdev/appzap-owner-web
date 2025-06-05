@@ -231,6 +231,9 @@ export const useMenuStore = create(
           return res;
         } catch (error) {
           set({ isMenuLoading: false });
+          console.error("Failed to create menu item:", {
+            error: error.message,
+          });
           throw new Error(`Error updating menu item: ${error.message}`);
         }
       },

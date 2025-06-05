@@ -356,6 +356,10 @@ export default function MenuList() {
         values.detail = "";
         values.unit = "";
       }
+      if (resData?.response?.data?.message === "NAME_IS_HAVEN") {
+        setShow(false);
+        errorAdd(`${t("name_is_haven")}`);
+      }
     } catch (error) {
       console.error("Create menu error:", error.message);
       errorAdd(`${t("add_fail")}`);
@@ -472,7 +476,7 @@ export default function MenuList() {
       },
       headers: headers,
     });
-    console.log("resData", resData);
+    console.log("resData", resData.data.response);
     if (resData?.data) {
       handleClose2();
       successAdd(`${t("edit_success")}`);
@@ -1135,22 +1139,7 @@ export default function MenuList() {
                       }}
                     />
                   </Box>
-                  {/* <div
-                    style={{ display: "flex", gap: 20, alignItems: "center" }}
-                  >
-                    <label>{t("close_open_status")}</label>
-                    <input
-                      type="checkbox"
-                      id="isOpened"
-                      checked={values?.isOpened}
-                      onChange={() =>
-                        setFieldValue("isOpened", !values.isOpened)
-                      }
-                    />
-                    <label for="isOpened">
-                      {values?.isOpened ? `${t("oppen")}` : `${t("close")}`}
-                    </label>
-                  </div> */}
+
                   <div
                     style={{ display: "flex", gap: 20, alignItems: "center" }}
                   >
@@ -1245,19 +1234,6 @@ export default function MenuList() {
                       })}
                     </Form.Control>
                   </Form.Group>
-
-                  {/* <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Label>{t("type")}</Form.Label>
-                    <Form.Control
-                      as="select"
-                      name="menuType"
-                      onChange={handleChangeMenuType}
-                      value={menuType}
-                    >
-                      <option value={"MENU"}>{t("menu")}</option>
-                      <option value={"MENUOPTION"}>{t("sub_menu")}</option>
-                    </Form.Control>
-                  </Form.Group> */}
 
                   {menuType === "MENUOPTION" && (
                     <Form.Group controlId="exampleForm.ControlSelect1">
@@ -1408,144 +1384,6 @@ export default function MenuList() {
                     />
                   </Form.Group>
 
-                  {/* <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>{t("order_add")}</Form.Label>
-                    {dataMenuOption?.length > 0 &&
-                      dataMenuOption?.map((item, index) => (
-                        <div key={index}>
-                          <div className="pl-4 row">
-                            <Col xs={11}>
-                              <Row>
-                                <Col>
-                                  <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>{t("food_name")}</Form.Label>
-                                    <Form.Control
-                                      type="text"
-                                      name="name"
-                                      onChange={(e) =>
-                                        _handleChangeMenuOption(
-                                          index,
-                                          "name",
-                                          e.target.value
-                                        )
-                                      }
-                                      value={item?.name}
-                                      placeholder={t("food_name")}
-                                      isInvalid={!item?.name}
-                                    />
-                                  </Form.Group>
-                                </Col>
-                                <Col>
-                                  <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>
-                                      {t("food_name")} (EN)
-                                    </Form.Label>
-                                    <Form.Control
-                                      type="text"
-                                      name="name_en"
-                                      onChange={(e) =>
-                                        _handleChangeMenuOption(
-                                          index,
-                                          "name_en",
-                                          e.target.value
-                                        )
-                                      }
-                                      value={item?.name_en}
-                                      placeholder={t("food_name")}
-                                    />
-                                  </Form.Group>
-                                </Col>
-                              </Row>
-                              <Row>
-                                <Col>
-                                  <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>
-                                      {t("food_name")} (CN)
-                                    </Form.Label>
-                                    <Form.Control
-                                      type="text"
-                                      name="name_cn"
-                                      onChange={(e) =>
-                                        _handleChangeMenuOption(
-                                          index,
-                                          "name_cn",
-                                          e.target.value
-                                        )
-                                      }
-                                      value={item?.name_cn}
-                                      placeholder={t("food_name")}
-                                    />
-                                  </Form.Group>
-                                </Col>
-                                <Col>
-                                  <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>
-                                      {t("food_name")} (KR)
-                                    </Form.Label>
-                                    <Form.Control
-                                      type="text"
-                                      name="name_kr"
-                                      onChange={(e) =>
-                                        _handleChangeMenuOption(
-                                          index,
-                                          "name_kr",
-                                          e.target.value
-                                        )
-                                      }
-                                      value={item?.name_kr}
-                                      placeholder={t("food_name")}
-                                    />
-                                  </Form.Group>
-                                </Col>
-                              </Row>
-                              <Row>
-                                <Col xs={6}>
-                                  <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>{t("price")}</Form.Label>
-                                    <Form.Control
-                                      type="number"
-                                      name="price"
-                                      onChange={(e) =>
-                                        _handleChangeMenuOption(
-                                          index,
-                                          "price",
-                                          e.target.value
-                                        )
-                                      }
-                                      value={item?.price}
-                                      placeholder={t("food_name")}
-                                      min="0"
-                                      isInvalid={!item?.price ? "required" : ""}
-                                    />
-                                  </Form.Group>
-                                </Col>
-                              </Row>
-                            </Col>
-                            <Col className="d-flex align-items-center justify-content-center">
-                              <FontAwesomeIcon
-                                icon={faTrashAlt}
-                                style={{ color: "red", cursor: "pointer" }}
-                                onClick={() => _removeItem(index)}
-                              />
-                            </Col>
-                          </div>
-                          <hr />
-                        </div>
-                      ))}
-                    <div>
-                      <Button
-                        style={{
-                          backgroundColor: COLOR_APP,
-                          color: "#ffff",
-                          border: 0,
-                          marginTop: 10,
-                        }}
-                        onClick={() => _addMenuOption()}
-                      >
-                        + {t("order_add")}
-                      </Button>
-                    </div>
-                  </Form.Group> */}
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>{t("note")}</Form.Label>
                     <Form.Control

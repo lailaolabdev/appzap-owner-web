@@ -128,6 +128,10 @@ export default function Categorylist() {
         categoryTypeId: values?.categoryTypeId,
       };
       const res = await createCategory(body);
+      if (res?.response?.data?.message === "NAME_IS_HAVEN") {
+        setShow(false);
+        errorAdd(`${t("name_is_haven")}`);
+      }
       if (res?.data) {
         // setCategorys(resData?.data);
         setCategorys(res?.data);

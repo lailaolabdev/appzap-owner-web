@@ -71,10 +71,18 @@ export default function CategoryType() {
   const createCategoryType = async (values) => {
     setIsLoading(true);
     try {
-      await axios.post(
+      const resData = await axios.post(
         `${END_POINT_SEVER_TABLE_MENU}/v3/category-type`,
         values
       );
+
+      console.log("resData: ", resData);
+
+      if (resData?.response?.data?.message === "NAME_IS_HAVEN") {
+        setPopup({ popUpAddCategoryType: false });
+        errorAdd(`${t("name_is_haven")}`);
+      }
+
       const _localData = await getLocalData();
       fetchCategoryTypes(_localData?.DATA?.storeId);
     } catch (error) {

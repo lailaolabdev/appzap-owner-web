@@ -673,9 +673,13 @@ function HomecafeEdit() {
     console.log("updatedSelectedMenus", updatedSelectedMenus);
     console.log("menu", menu);
 
-    const existingMenuIndex = updatedSelectedMenus.findIndex(
-      (item) => item.menuId === menu._id
-    );
+    const existingMenuIndex = updatedSelectedMenus.findIndex((item) => {
+      if (item.menuId) {
+        return item.menuId === menu._id;
+      } else {
+        return item._id === menu._id;
+      }
+    });
 
     console.log("existingMenuIndex", existingMenuIndex);
 
