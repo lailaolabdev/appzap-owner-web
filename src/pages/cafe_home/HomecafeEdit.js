@@ -681,7 +681,7 @@ function HomecafeEdit() {
       }
     });
 
-    console.log("existingMenuIndex", existingMenuIndex);
+    // console.log("existingMenuIndex", existingMenuIndex);
 
     if (existingMenuIndex !== -1) {
       updatedSelectedMenus[existingMenuIndex].quantity += 1;
