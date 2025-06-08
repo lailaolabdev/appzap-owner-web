@@ -773,7 +773,7 @@ export default function CheckOutPopupCafe({
           Number.parseInt(memberDataSearch?.point - point || 0)
         );
 
-        if (checkPoint === 0) {
+        if (checkPoint < 0) {
           Swal.fire({
             icon: "warning",
             title: `${t("error_point")}`,

@@ -32,7 +32,16 @@ export default function CreateMemberPage() {
       setDisabledButton(true);
       const { TOKEN } = await getLocalData();
       const _data = await addMember(formData, TOKEN);
-      if (_data.error) throw new Error("can not create member");
+
+      // if (_data.error) throw new Error("can not create member");
+      if (_data?.response?.data?.code === "MEMBER_ALREADY_EXISTS") {
+        setDisabledButton(false);
+        errorAdd(`${t("ມີເບີໂທນີ້ແລ້ວໃນລະບົບ")}`);
+        return;
+      } else {
+        errorAdd(`${t("add_fail")}`);
+        setDisabledButton(false);
+      }
       successAdd("ເພີ່ມສະມາຊີກສຳເລັດ");
       if (state?.key) {
         // navigate("/debt/create");

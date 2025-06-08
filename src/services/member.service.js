@@ -90,7 +90,7 @@ export const addMember = async (data, TOKEN) => {
     });
     return _category;
   } catch (error) {
-    return { error: true };
+    return error;
   }
 };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BODY } from "../../constants";
+import { BODY, COLOR_APP } from "../../constants";
 import NavList from "./components/NavList";
 import { Breadcrumb } from "react-bootstrap";
 import { t } from "i18next";
@@ -97,6 +97,17 @@ export default function StockCreate() {
 
   const createStock = async () => {
     try {
+      if (stock.length === 0) {
+        await Swal.fire({
+          icon: "warning",
+          title: "ແຈ້ງເຕືອນ",
+          text: "ກະລຸນາເພີ່ມສິນຄ້າລົງໃນລາຍການທາງລຸ່ມກ່ອນ",
+          showConfirmButton: false,
+          timer: 3500,
+        });
+        return; // Stop further execution if no stock items
+      }
+
       const res = await createStockeAll(stock);
       if (res.status === 200) {
         await Swal.fire({

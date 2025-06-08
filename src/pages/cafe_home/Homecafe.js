@@ -2591,46 +2591,47 @@ function Homecafe() {
           paymentMethod={paymentMethod}
         />
       </div>
-      {SelectedMenus?.map((val, i) => {
-        const totalPrice = () => {
-          const totalOptionPrice = val?.totalOptionPrice || 0;
-          const price = val?.price || 0;
-          const quantity = val?.quantity || 0;
-          if (val?.isWeightMenu) {
-            return val?.unitWeightMenu === "g"
-              ? (price + totalOptionPrice) *
-                  convertUnitgramAndKilogram(quantity)
-              : (price + totalOptionPrice) * quantity;
-          } else {
-            return (price + totalOptionPrice) * quantity;
-          }
-        };
+      {storeDetail?.optionPrintBill &&
+        SelectedMenus?.map((val, i) => {
+          const totalPrice = () => {
+            const totalOptionPrice = val?.totalOptionPrice || 0;
+            const price = val?.price || 0;
+            const quantity = val?.quantity || 0;
+            if (val?.isWeightMenu) {
+              return val?.unitWeightMenu === "g"
+                ? (price + totalOptionPrice) *
+                    convertUnitgramAndKilogram(quantity)
+                : (price + totalOptionPrice) * quantity;
+            } else {
+              return (price + totalOptionPrice) * quantity;
+            }
+          };
 
-        return Array.from({ length: val?.quantity }).map((_, index) => {
-          const key = `${index}`;
-          return (
-            <div
-              key={key}
-              className="w-[80mm] pr-[20px] pb-[10px]"
-              ref={(el) => {
-                if (el) {
-                  if (!billForCherCancel80.current[i]) {
-                    billForCherCancel80.current[i] = [];
+          return Array.from({ length: val?.quantity }).map((_, index) => {
+            const key = `${index}`;
+            return (
+              <div
+                key={key}
+                className="w-[80mm] pr-[20px] pb-[10px]"
+                ref={(el) => {
+                  if (el) {
+                    if (!billForCherCancel80.current[i]) {
+                      billForCherCancel80.current[i] = [];
+                    }
+                    billForCherCancel80.current[i][index] = el;
                   }
-                  billForCherCancel80.current[i][index] = el;
-                }
-              }}
-            >
-              <PrintLabel
-                isNo={true}
-                data={bill}
-                bill={{ ...val }}
-                totalPrice={totalPrice}
-              />
-            </div>
-          );
-        });
-      })}
+                }}
+              >
+                <PrintLabel
+                  isNo={true}
+                  data={bill}
+                  bill={{ ...val }}
+                  totalPrice={totalPrice}
+                />
+              </div>
+            );
+          });
+        })}
     </div>
   );
 }
