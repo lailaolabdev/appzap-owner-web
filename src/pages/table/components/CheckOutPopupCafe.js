@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Select from "react-select";
+import styled from "styled-components";
 import { Modal, Form, Button, InputGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Box from "../../../components/Box";
@@ -107,6 +108,7 @@ export default function CheckOutPopupCafe({
   const [banks, setBanks] = useState([]);
   const [platformList, setPlatformList] = useState([]);
   const [showTotalPointPrice, setShowTotalPointPrice] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState("USEPOINT");
 
   const {
     t,
@@ -291,8 +293,12 @@ export default function CheckOutPopupCafe({
   const DiscountMember = () => {
     let TotalDiscountFinal = 0;
     if (memberDataSearch?.discountPercentage > 0) {
-      TotalDiscountFinal =
-        totalBill - (totalBill * memberDataSearch?.discountPercentage) / 100;
+      if (selectedMethod !== "USEPOINT") {
+        TotalDiscountFinal =
+          totalBill - (totalBill * memberDataSearch?.discountPercentage) / 100;
+      } else {
+        TotalDiscountFinal = totalBill;
+      }
     } else if (dataBillEdit?.discount > 0) {
       TotalDiscountFinal =
         totalBill - (totalBill * dataBillEdit?.discount) / 100;
@@ -1025,6 +1031,10 @@ export default function CheckOutPopupCafe({
   const totalCashAndTransfer =
     (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
 
+  const handleMethodChange = (method) => {
+    setSelectedMethod(method);
+  };
+
   return (
     <Modal
       show={open}
@@ -1322,6 +1332,39 @@ export default function CheckOutPopupCafe({
                     </div>
                   </div>
 
+                  <div
+                    hidden={!memberDataSearch?.discountPercentage > 0}
+                    className="flex gap-2 items-center mt-3 p-2 border border-gray-300 shadow-md rounded-md"
+                  >
+                    <p className="text-orange-500 font-bold">
+                      ຮູບແບບການໃຫ້ສ່ວນຫຼຸດ
+                    </p>
+
+                    <Form>
+                      {["radio"].map((type) => (
+                        <div key={`inline-${type}`} className="mb-3">
+                          <CustomCheck
+                            inline
+                            defaultChecked
+                            label="ຄະແນນ"
+                            name="option"
+                            type={type}
+                            id={`inline-${type}-1`}
+                            onChange={() => handleMethodChange("USEPOINT")}
+                          />
+                          <CustomCheck
+                            inline
+                            label="ເປີເຊັນ"
+                            name="option"
+                            type={type}
+                            id={`inline-${type}-2`}
+                            onChange={() => handleMethodChange("USEPERCENT")}
+                          />
+                        </div>
+                      ))}
+                    </Form>
+                  </div>
+
                   {(!memberDataSearch?.point <= 0 ||
                     memberDataSearch?.name ||
                     memberDataSearch?.point ||
@@ -1521,6 +1564,7 @@ export default function CheckOutPopupCafe({
                 onClick={() => {
                   setCash();
                   setTransfer();
+                  setMemberDataSearch();
                   setTab("cash");
                   setSelectInput("inputCash");
                   setForcus("CASH");
@@ -1540,6 +1584,7 @@ export default function CheckOutPopupCafe({
                 }}
                 onClick={() => {
                   setCash();
+                  setMemberDataSearch();
                   setSelectCurrency({
                     id: "LAK",
                     name: "LAK",
@@ -1568,6 +1613,7 @@ export default function CheckOutPopupCafe({
                   });
                   setRateCurrency(1);
                   setTransfer();
+                  setMemberDataSearch();
                   setTab("cash_transfer");
                   setSelectInput("inputCash");
                   setForcus("TRANSFER_CASH");
@@ -1618,6 +1664,7 @@ export default function CheckOutPopupCafe({
                   });
                   setRateCurrency(1);
                   setTransfer(transferCal);
+                  setMemberDataSearch();
                   setTab("transfer");
                   setForcus("DELIVERY");
                   setIsDelivery(true);
@@ -1769,3 +1816,10 @@ export default function CheckOutPopupCafe({
     </Modal>
   );
 }
+
+const CustomCheck = styled(Form.Check)`
+  .form-check-input:checked {
+    background-color: red;
+    border-color: red;
+  }
+`;
