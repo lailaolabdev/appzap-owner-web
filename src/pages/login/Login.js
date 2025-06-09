@@ -16,7 +16,7 @@ import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
 import { useMenuStore } from "../../zustand/menuStore";
 import { redirectByPermission } from "../../helpers/redirectByPermission";
-
+import flutterCookie from "../../helpers/flutterCookie";
 // style
 import "./login.css";
 
@@ -65,6 +65,7 @@ function Login() {
       if (defaultPath) {
         clearMenus();
         console.log("4");
+        flutterCookie({ isCookie: true});
         // localStorage.setItem(USER_KEY, JSON.stringify(user?.data));
         setProfile(user?.data);
         // zustand store
