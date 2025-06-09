@@ -173,7 +173,6 @@ export default function CheckOutPopup({
     }
   };
 
-  // console.log({ dataBill });
   // useEffect(() => {
   //   setMemberData();
   //   if (textSearchMember.length > 0) {
@@ -472,8 +471,6 @@ export default function CheckOutPopup({
       body.currency = cashCurrency;
       body.currencyName = currencyName;
     }
-
-    console.log("body:", body);
 
     await axios
       .put(
@@ -946,7 +943,6 @@ export default function CheckOutPopup({
     });
   };
   const optionsData = membersData?.map((item) => {
-    // console.log(item);
     return {
       value: item.phone,
       label: `${item.name} (${item.phone})`,
