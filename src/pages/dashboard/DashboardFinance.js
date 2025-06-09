@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useLayoutEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import moment from "moment";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -111,12 +118,6 @@ export default function DashboardFinance({
   const onPrintBill = async (isPrintBill) => {
     try {
       setPrintBillLoading(true);
-      // let _dataBill = {
-      //   ...dataBill,
-      //   typePrint: "PRINT_BILL_CHECKOUT",
-      // };
-      // saveServiceChargeDetails();
-      // await _createHistoriesPrinter(_dataBill);
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
       const printerBillData = printers?.find(
@@ -177,7 +178,6 @@ export default function DashboardFinance({
         showConfirmButton: false,
         timer: 1800,
       });
-      // setMenuItemDetailModal(false);
       handleClose();
     } catch (err) {
       console.log("err printer", err);
@@ -451,7 +451,6 @@ export default function DashboardFinance({
 
     let finalPrice = menu.totalPrice;
 
-    // biome-ignore lint/complexity/noForEach: <explanation>
     menu.promotionId.forEach((promotion) => {
       if (
         !promotion ||
@@ -474,7 +473,6 @@ export default function DashboardFinance({
         discountAmount = promotion.discountValue;
       }
 
-      // Apply the discount
       finalPrice = Math.max(finalPrice - discountAmount, 0);
     });
 
@@ -487,7 +485,6 @@ export default function DashboardFinance({
       (dataModal?.point ?? 0) +
       (dataModal?.transferAmount ?? 0) +
       (dataModal?.payAmount ?? 0) -
-      // (dataModal?.change ?? 0) -
       (dataModal?.discount ?? 0);
   } else {
     TotalAmount =
@@ -507,7 +504,6 @@ export default function DashboardFinance({
     (dataModal?.transferAmount ?? 0) +
     (dataModal?.payAmount ?? 0) -
     (dataModal?.discount ?? 0);
-  // (dataModal?.change ?? 0);
 
   const totalAfter =
     dataModal?.paymentMethod === "CASH" ||
@@ -574,7 +570,6 @@ export default function DashboardFinance({
         isWeightMenu: item?.isWeightMenu,
         unitWeightMenu: item?.unitWeightMenu,
         totalPrice: (() => {
-          // if (isCanceled) return "CANCELED";
           try {
             const basePrice = item?.price || 0;
             const optionPrice = item?.totalOptionPrice || 0;
@@ -656,7 +651,6 @@ export default function DashboardFinance({
   const handleSaveComment = (comment) => {
     setCommentCancelOrder(comment);
 
-    // Process the cancellation with the comment
     const body = {
       storeId: dataModal?.storeId,
       order: dataModal?.orderId?.map((item) => ({ _id: item?._id })),
@@ -682,12 +676,10 @@ export default function DashboardFinance({
     }
 
     const total = dataModal.exchangePointStoreId.reduce((acc, item) => {
-      // Check if menuId exists and is an array
       if (!item.menuId || !Array.isArray(item.menuId)) {
         return acc;
       }
 
-      // Calculate the total price of all menu items in this exchange point
       const menuTotal = item.menuId.reduce((menuAcc, menuItem) => {
         const price = menuItem.price || 0;
         const quantity = menuItem.quantity || 1;
@@ -805,14 +797,7 @@ export default function DashboardFinance({
               >
                 {t("staffCheckBill")}
               </th>
-              {storeDetail?.isStatusCafe && (
-                <th
-                // className="border border-gray-300 w-full  "
-                //style={{ textAlign: "right" }}
-                >
-                  {t("ຍອດລວມທັງໝົດ")}
-                </th>
-              )}
+              {storeDetail?.isStatusCafe && <th>{t("ຍອດລວມທັງໝົດ")}</th>}
             </tr>
           </thead>
           <tbody>
@@ -926,7 +911,13 @@ export default function DashboardFinance({
                     }}
                   >
                     <p style={{ marginLeft: 5 }}>
-                      {_countOrder(item?.orderId)?._countOrderSuccess}{" "}
+                      {item?.orderId?.some(
+                        (orderItem) => orderItem?.isWeightMenu === true
+                      )
+                        ? _countOrder(
+                            item?.orderId
+                          )?._countOrderSuccess?.toFixed(3)
+                        : _countOrder(item?.orderId)?._countOrderSuccess}
                     </p>
                     <p style={{ marginLeft: 5 }}> / </p>
                     <p
@@ -938,8 +929,13 @@ export default function DashboardFinance({
                         marginLeft: 5,
                       }}
                     >
-                      {" "}
-                      {_countOrder(item?.orderId)?._countOrderCancel}
+                      {item?.orderId?.every(
+                        (orderItem) => orderItem?.isWeightMenu === true
+                      )
+                        ? _countOrder(
+                            item?.orderId
+                          )?._countOrderCancel?.toFixed(3)
+                        : _countOrder(item?.orderId)?._countOrderCancel}
                     </p>
                   </div>
                 </td>
@@ -985,15 +981,12 @@ export default function DashboardFinance({
                 {storeDetail?.isStatusCafe && (
                   <>
                     <td>
-                      {/* Calculate and display the total price sum */}
                       {new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
                       }).format(
-                        item?.orderId
-                          // ?.filter((f) => f.status !== "CANCELED")
-                          .reduce((sum, orderItem) => {
-                            return sum + (orderItem?.totalPrice || 0);
-                          }, 0)
+                        item?.orderId.reduce((sum, orderItem) => {
+                          return sum + (orderItem?.totalPrice || 0);
+                        }, 0)
                       )}{" "}
                       {storeDetail?.firstCurrency}
                     </td>
@@ -1024,13 +1017,13 @@ export default function DashboardFinance({
             }
             breakLabel={<Pagination.Item disabled>...</Pagination.Item>}
             breakClassName={"break-me"}
-            pageCount={totalPagination} // Replace with the actual number of pages
+            pageCount={totalPagination}
             marginPagesDisplayed={1}
             pageRangeDisplayed={3}
             onPageChange={(e) => {
               setPagination(e?.selected + 1);
             }}
-            containerClassName={"pagination justify-content-center"} // Bootstrap class for centering
+            containerClassName={"pagination justify-content-center"}
             pageClassName={"page-item"}
             pageLinkClassName={"page-link"}
             activeClassName={"active"}
@@ -1052,12 +1045,6 @@ export default function DashboardFinance({
                 <div className="flex flex-row items-center text-green-600 gap-2">
                   <FaCircleCheck className="text-green-700 text-5xl" />{" "}
                   <div className="flex flex-col gap-1">
-                    {/* <span>
-                      ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
-                      {`${new Intl.NumberFormat("ja-JP", {
-                        currency: "JPY",
-                      }).format(TotalBefore)} ${storeDetail?.firstCurrency}`}
-                    </span> */}
                     <span>
                       ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
                       {dataModal?.pointToMoney > 0
@@ -1139,7 +1126,6 @@ export default function DashboardFinance({
                 <th>{t("price")}</th>
                 {storeDetail?.isDelivery && <th>DC Code</th>}
                 <th>{t("time")}</th>
-                {/* <th>ເວລາອັບເດດ</th> */}
               </tr>
             </thead>
             <tbody>
@@ -1160,14 +1146,11 @@ export default function DashboardFinance({
                     {orderStatus(item.status)}
                   </td>
                   <td>{item.createdBy}</td>
-
                   <td>{calculateDiscount(item)}</td>
-
                   {storeDetail?.isDelivery && (
                     <td style={{ textAlign: "center" }}>{item.deliveryCode}</td>
                   )}
                   <td>{item.createdAt}</td>
-                  {/* <td>{item.updatedAt}</td> */}
                 </tr>
               ))}
             </tbody>
@@ -1193,7 +1176,6 @@ export default function DashboardFinance({
                     ) : (
                       <span>{t("totalPrice2")} :</span>
                     )}
-
                     <span>{t("change")} :</span>
                     <span>{t("total_Amount_of_Money")} :</span>
                   </div>
@@ -1261,15 +1243,6 @@ export default function DashboardFinance({
                               )}{" "}
                           {storeDetail?.firstCurrency})
                         </span>
-                        {/* <span>
-                          (
-                          {new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format((dataModal?.payAmount -
-                            dataModal?.taxAmount +
-                            dataModal?.change) + (dataModal?.transferAmount - dataModal?.taxAmount) + (dataModal?.point - dataModal?.taxAmount))}{" "}
-                          {storeDetail?.firstCurrency} )
-                        </span> */}
                       </>
                     ) : (
                       <span>
@@ -1373,13 +1346,6 @@ export default function DashboardFinance({
           {storeDetail?.isStatusCafe && (
             <Button
               className="text-white font-bold"
-              // disabled={
-              //   disabledEditBill ||
-              //   selectOrder?.status === "ACTIVE" ||
-              //   profile?.data?.role != "APPZAP_ADMIN" ||
-              //   dataModal?.isDebtPayment === true ||
-              //   dataModal?.isDebtAndPay === true
-              // }
               onClick={() => navigate(`/cafe/Edit/${dataModal?._id}`)}
             >
               {t("billEditing")}
@@ -1414,7 +1380,6 @@ export default function DashboardFinance({
             selectedTable={selectedTable}
             dataBill={dataModal}
             totalBillBillForCheckOut80={totalAfter}
-            // taxPercent={taxPercent}
             profile={profile}
           />
         </div>

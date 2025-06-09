@@ -330,6 +330,12 @@ export default function Categorylist() {
                     scope="col"
                     className={cn("whitespace-nowrap", fontMap[language])}
                   >
+                    {t("no_show")}
+                  </th>
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
                     {t("foodTypeName")}
                   </th>
                   <th
@@ -371,6 +377,7 @@ export default function Categorylist() {
                     return (
                       <tr>
                         <td>{index + 1}</td>
+                        <td>{data?.sort ?? ""}</td>
                         <td>{data?.name ?? ""}</td>
                         <td>{data?.name_en ?? ""}</td>
                         <td>{data?.name_cn ?? ""}</td>
