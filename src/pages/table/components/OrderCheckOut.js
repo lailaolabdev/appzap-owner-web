@@ -57,6 +57,11 @@ const OrderCheckOut = ({
     if (serviceCharge > 0) {
       serviceChargeRef.current = serviceCharge;
     }
+    if (storeDetail?.isServiceChange) {
+      setStoreDetail({
+        serviceChargePer: serviceCharge,
+      })
+    }
   }, [serviceCharge]);
   const TotalServiceChange = storeDetail?.isServiceChange
     ? serviceChargeRef.current
@@ -250,12 +255,13 @@ const OrderCheckOut = ({
             <Form.Check
               style={{ margin: 2 }}
               type="switch"
-              disabled={storeDetail?.isServiceChange}
+              disabled={storeDetail?.isServiceChange || storeDetail?.isServiceChange === false }
               checked={
                 storeDetail?.isServiceCharge || storeDetail?.isServiceChange
               }
               id={"switch-audio"}
               onChange={(e) => getToggleServiceCharge(e)}
+              
             />
           </Row>
           <div style={{ margin: 8 }} />

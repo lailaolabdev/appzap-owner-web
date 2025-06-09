@@ -488,13 +488,17 @@ export default function DashboardFinance({
       (dataModal?.transferAmount ?? 0) +
       (dataModal?.payAmount ?? 0) +
       (dataModal?.change ?? 0) -
-      (dataModal?.discount ?? 0);
+      (dataModal?.discount ?? 0) +
+      (dataModal?.serviceChargeAmount ?? 0) +
+      (dataModal?.taxAmount ?? 0);
   } else {
     TotalAmount =
       (dataModal?.point ?? 0) +
       (dataModal?.transferAmount ?? 0) +
       (dataModal?.payAmount ?? 0) -
-      (dataModal?.discount ?? 0);
+      (dataModal?.discount ?? 0) +
+      (dataModal?.serviceChargeAmount ?? 0) +
+      (dataModal?.taxAmount ?? 0);
   }
 
   const TotalBefore =
@@ -507,8 +511,9 @@ export default function DashboardFinance({
     (dataModal?.transferAmount ?? 0) +
     (dataModal?.change ?? 0) +
     (dataModal?.payAmount ?? 0) -
-    (dataModal?.discount ?? 0) -
-    (dataModal?.change ?? 0);
+    (dataModal?.discount ?? 0) +
+    (dataModal?.serviceChargeAmount ?? 0) +
+    (dataModal?.taxAmount ?? 0);
 
   const totalAfter =
     dataModal?.paymentMethod === "CASH" ||
@@ -698,8 +703,6 @@ export default function DashboardFinance({
   };
 
   const totalPriceOfPoint = TotalPriceOfPoint();
-
-  console.log("logs dataModal:--> ", dataModal)
 
   const displayResults = (payMethod) => {
     let paymentMethodText = "";
@@ -1240,6 +1243,7 @@ export default function DashboardFinance({
                   <div className="flex flex-col">
                     <span>{t("discount")} : </span>
                     <span>{t("vat")} : </span>
+                    <span>{t("service_charge")} : </span>
                     <span>{t("cash")} :</span>
                     <span>{t("transferAmount")} :</span>
                     <span>{t("point")}</span>
@@ -1256,6 +1260,10 @@ export default function DashboardFinance({
                     <span>{renderDiscount(dataModal?.discount)}</span>
                     <span>
                       {moneyCurrency(dataModal?.taxAmount)}{" "}
+                      {storeDetail?.firstCurrency}
+                    </span>
+                    <span>
+                      {moneyCurrency(dataModal?.serviceChargeAmount)}{" "}
                       {storeDetail?.firstCurrency}
                     </span>
                     <span>
@@ -1346,7 +1354,7 @@ export default function DashboardFinance({
                       {storeDetail?.firstCurrency}{" "}
                     </span>
                     <span>
-                      {moneyCurrency(dataModal?.billAmount || 0)}
+                      {moneyCurrency(dataModal?.billAmount + dataModal?.serviceChargeAmount + dataModal?.taxAmount || 0)}
                       {storeDetail?.firstCurrency}
                     </span>
                     {/* {dataModal?.paymentMethod === "CASH_TRANSFER_POINT" && dataModal?.point > 0 ? (
