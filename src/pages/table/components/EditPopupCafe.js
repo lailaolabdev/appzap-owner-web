@@ -657,6 +657,7 @@ export default function EditPopupCafe({
       billId: dataBill?._id,
       statusTable: statusTable,
       exchangePointStoreId: exchangePointStoreIds,
+      edit: true,
     };
     return await RedeemPoint(data);
   };

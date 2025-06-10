@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Select from "react-select";
+import styled from "styled-components";
 import { Modal, Form, Button, InputGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Box from "../../../components/Box";
@@ -8,11 +9,10 @@ import axios from "axios";
 import { COLOR_APP, END_POINT } from "../../../constants";
 import { getHeaders } from "../../../services/auth";
 import Swal from "sweetalert2";
-import { errorAdd, successAdd } from "../../../helpers/sweetalert";
+import { errorAdd } from "../../../helpers/sweetalert";
 import { BiSolidPrinter, BiRotateRight } from "react-icons/bi";
-import { FaSearch } from "react-icons/fa";
 
-import _ from "lodash";
+// import _ from "lodash";
 
 import { useStore } from "../../../store";
 import {
@@ -25,11 +25,10 @@ import NumberKeyboard from "../../../components/keyboard/NumberKeyboard";
 import convertNumber from "../../../helpers/convertNumber";
 
 import convertNumberReverse from "../../../helpers/convertNumberReverse";
-import { RedeemPoint, PointUser } from "../../../services/point";
+import { RedeemPoint } from "../../../services/point";
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
 import matchRoundNumber from "../../../helpers/matchRound";
-import Loading from "../../../components/Loading";
 import { getMemberAllCount } from "../../../services/member.service";
 import { useStoreStore } from "../../../zustand/storeStore";
 import { useShiftStore } from "../../../zustand/ShiftStore";
@@ -46,7 +45,6 @@ export default function CheckOutPopupCafe({
   bill,
   onQueue,
   onPrintBill,
-  onPrintBill2,
   onPrintForCher,
   billId,
   open,
@@ -67,13 +65,10 @@ export default function CheckOutPopupCafe({
   totalPointPrice,
   setPoint,
   point,
-  paymentMethod,
   setPaymentMethod,
-  setSelectedMenu,
 }) {
   // ref
-  const inputCashRef = useRef(null);
-  const inputTransferRef = useRef(null);
+
   const { profile } = useStore();
   const { storeDetail, setStoreDetail } = useStoreStore();
   const { shiftCurrent } = useShiftStore();
@@ -89,24 +84,23 @@ export default function CheckOutPopupCafe({
   const [forcus, setForcus] = useState("CASH");
   const [delivery, setDelivery] = useState();
   const [canCheckOut, setCanCheckOut] = useState(false);
-  const [total, setTotal] = useState();
+  // const [total, setTotal] = useState();
   const [totalBill, setTotalBill] = useState();
   const [selectCurrency, setSelectCurrency] = useState("LAK");
   const [rateCurrency, setRateCurrency] = useState(1);
   const [cashCurrency, setCashCurrency] = useState();
   const [hasCRM, setHasCRM] = useState(false);
-  const [memberData, setMemberData] = useState();
   const [memberDataSearch, setMemberDataSearch] = useState();
-  const [textSearchMember, setTextSearchMember] = useState("");
   const [membersData, setMembersData] = useState([]);
   const [currencyList, setCurrencyList] = useState([]);
   const { setSelectedTable, getTableDataStore } = useStore();
-  const { setSelectedMenus, clearSelectedMenus } = useMenuSelectStore();
+  const { setSelectedMenus } = useMenuSelectStore();
   const { SetChangeAmount, ClearChangeAmount } = useChangeMoney();
   const [selectedBank, setSelectedBank] = useState("");
   const [banks, setBanks] = useState([]);
   const [platformList, setPlatformList] = useState([]);
   const [showTotalPointPrice, setShowTotalPointPrice] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState("USEPOINT");
 
   const {
     t,
@@ -121,13 +115,6 @@ export default function CheckOutPopupCafe({
       setMembersData(_data?.data);
     } catch (err) {}
   };
-
-  const totalBillDefualt = _.sumBy(
-    dataBill?.filter((e) => e.status !== "CANCELED"),
-    (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
-  );
-
-  const taxAmount = (totalBillDefualt * taxPercent) / 100;
 
   useEffect(() => {
     setMemberDataSearch();
@@ -266,10 +253,10 @@ export default function CheckOutPopupCafe({
       }
     }
 
-    setTotal(_total);
+    // setTotal(_total);
     setTotalBill(_total);
-    const roundedNumber = _total;
-    setTotal(roundedNumber);
+    // const roundedNumber = _total;
+    // setTotal(roundedNumber);
   };
   // function
   const getDataCurrency = async () => {
@@ -291,8 +278,12 @@ export default function CheckOutPopupCafe({
   const DiscountMember = () => {
     let TotalDiscountFinal = 0;
     if (memberDataSearch?.discountPercentage > 0) {
-      TotalDiscountFinal =
-        totalBill - (totalBill * memberDataSearch?.discountPercentage) / 100;
+      if (selectedMethod !== "USEPOINT") {
+        TotalDiscountFinal =
+          totalBill - (totalBill * memberDataSearch?.discountPercentage) / 100;
+      } else {
+        TotalDiscountFinal = totalBill;
+      }
     } else if (dataBillEdit?.discount > 0) {
       TotalDiscountFinal =
         totalBill - (totalBill * dataBillEdit?.discount) / 100;
@@ -453,7 +444,6 @@ export default function CheckOutPopupCafe({
           setHasCRM(false);
           setPlatform("");
           setDeliveryCode("");
-          setTextSearchMember("");
           // setSelectedMenus([]);
           localStorage.removeItem("STAFFCONFIRM_DATA");
           // setIsLoading(false);
@@ -478,19 +468,64 @@ export default function CheckOutPopupCafe({
       });
   };
 
+  const RedeemPointUser = async () => {
+    const TotalPrices =
+      (Number(cash) || 0) + (Number(transfer) || 0) + (Number(point) || 0);
+
+    const statusTable =
+      storeDetail?.tableEdit === undefined
+        ? false
+        : !storeDetail?.tableEdit
+        ? false
+        : true;
+
+    const data = {
+      memberId: memberDataSearch?._id,
+      point: point,
+      storeId: storeDetail?._id,
+      moneyTotal: TotalPrices,
+      money: totalBill,
+      billId: dataBill?._id,
+      statusTable: statusTable,
+      exchangePointStoreId: exchangePointStoreIds,
+      edit: false,
+    };
+    return await RedeemPoint(data);
+  };
+
   const _checkBillNotPrint = async () => {
     onClose();
     setIsLoading(true);
     const moneyChange = calculateReturnAmount();
     const Orders = dataBill?.map((itemOrder) => itemOrder);
-
+    const showAlert = (icon, title, text, timer = 1800) => {
+      Swal.fire({
+        icon,
+        title,
+        text,
+        showConfirmButton: false,
+        timer,
+      });
+    };
     let statusPoint = "";
 
     if (storeDetail?.isCRM && tab === "cash_transfer_point") {
       statusPoint = "REDEEM";
-    }
-    if (storeDetail?.isCRM && hasCRM) {
-      statusPoint = "EARN";
+      if (totalPoints < memberDataSearch?.point) {
+        try {
+          await RedeemPointUser();
+        } catch {
+          showAlert(
+            "error",
+            "ເກີດຂໍ້ຜິດພາດ",
+            "ການຊຳລະດ້ວຍພ໋ອຍບໍ່ສຳເລັດ ກະລຸນາເລຶອກສະມາຊິກດ້ວຍ"
+          );
+          return; // Stop further execution if RedeemPointUser fails
+        }
+      }
+      if (storeDetail?.isCRM && hasCRM) {
+        statusPoint = "EARN";
+      }
     }
 
     const datas = {
@@ -575,7 +610,6 @@ export default function CheckOutPopupCafe({
           setHasCRM(false);
           setPlatform("");
           setDeliveryCode("");
-          setTextSearchMember("");
           setSelectedMenus([]);
           localStorage.removeItem("STAFFCONFIRM_DATA");
           setIsLoading(false);
@@ -604,30 +638,6 @@ export default function CheckOutPopupCafe({
         setIsLoading(false);
         onClose();
       });
-  };
-
-  const RedeemPointUser = async () => {
-    const TotalPrices =
-      (Number(cash) || 0) + (Number(transfer) || 0) + (Number(point) || 0);
-
-    const statusTable =
-      storeDetail?.tableEdit === undefined
-        ? false
-        : !storeDetail?.tableEdit
-        ? false
-        : true;
-
-    const data = {
-      memberId: memberDataSearch?._id,
-      point: point,
-      storeId: storeDetail?._id,
-      moneyTotal: TotalPrices,
-      money: totalBill,
-      billId: dataBill?._id,
-      statusTable: statusTable,
-      exchangePointStoreId: exchangePointStoreIds,
-    };
-    return await RedeemPoint(data);
   };
 
   const handleSubmit = async () => {
@@ -850,7 +860,7 @@ export default function CheckOutPopupCafe({
     platform,
     memberDataSearch?.discountPercentage,
   ]);
-  console.log("cancelCheckOut out", canCheckOut);
+
   let transferCal =
     dataBill || dataBillEdit
       ? DiscountMember() > 0
@@ -867,7 +877,7 @@ export default function CheckOutPopupCafe({
   const onChangeCurrencyInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setCashCurrency(value);
-      if (selectCurrency?.name != "LAK") {
+      if (selectCurrency?.name !== "LAK") {
         if (!value) {
           setCash();
         } else {
@@ -880,7 +890,7 @@ export default function CheckOutPopupCafe({
   const onChangeCashInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
       setCash(value);
-      if (selectCurrency?.name != "LAK") {
+      if (selectCurrency?.name !== "LAK") {
         if (!value) {
           setCashCurrency();
         } else {
@@ -917,7 +927,6 @@ export default function CheckOutPopupCafe({
     }
 
     const phoneNumber = option.value;
-    // setTextSearchMember(phoneNumber);
 
     try {
       // Construct API URL
@@ -1025,6 +1034,10 @@ export default function CheckOutPopupCafe({
   const totalCashAndTransfer =
     (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
 
+  const handleMethodChange = (method) => {
+    setSelectedMethod(method);
+  };
+
   return (
     <Modal
       show={open}
@@ -1117,7 +1130,7 @@ export default function CheckOutPopupCafe({
                 marginBottom: 10,
               }}
             >
-              <InputGroup hidden={selectCurrency?.name == "LAK"}>
+              <InputGroup hidden={selectCurrency?.name === "LAK"}>
                 <InputGroup.Text>{selectCurrency?.name}</InputGroup.Text>
                 <Form.Control
                   type="text"
@@ -1257,7 +1270,10 @@ export default function CheckOutPopupCafe({
                 </div>
               </div>
               {tab === "point" || tab === "cash_transfer_point" ? (
-                <div hidden={hasCRM} style={{ marginBottom: 10 }}>
+                <div
+                  hidden={hasCRM}
+                  className="p-2 border border-gray-300 shadow-md rounded-md"
+                >
                   <div className="w-full flex flex-col dmd:flex-row justify-between gap-2">
                     <div className="whitespace-nowrap flex-1 flex gap-1.5">
                       <div className="flex-1">
@@ -1307,7 +1323,7 @@ export default function CheckOutPopupCafe({
                         <div className="box-name">
                           <InputGroup.Text>
                             {t("discount")}:{" "}
-                            {memberDataSearch?.discountPercentage != null &&
+                            {memberDataSearch?.discountPercentage !== null &&
                             memberDataSearch?.discountPercentage > 0
                               ? memberDataSearch.discountPercentage ===
                                 undefined
@@ -1322,11 +1338,44 @@ export default function CheckOutPopupCafe({
                     </div>
                   </div>
 
+                  <div
+                    hidden={!memberDataSearch?.discountPercentage > 0}
+                    className="flex gap-2 items-center mt-3 mb-[-40px]"
+                  >
+                    <p className="text-orange-500 font-bold">
+                      ຮູບແບບການໃຫ້ສ່ວນຫຼຸດ
+                    </p>
+
+                    <Form>
+                      {["radio"].map((type) => (
+                        <div key={`inline-${type}`} className="mb-3">
+                          <CustomCheck
+                            inline
+                            defaultChecked
+                            label="ຄະແນນ"
+                            name="option"
+                            type={type}
+                            id={`inline-${type}-1`}
+                            onChange={() => handleMethodChange("USEPOINT")}
+                          />
+                          <CustomCheck
+                            inline
+                            label="ເປີເຊັນ"
+                            name="option"
+                            type={type}
+                            id={`inline-${type}-2`}
+                            onChange={() => handleMethodChange("USEPERCENT")}
+                          />
+                        </div>
+                      ))}
+                    </Form>
+                  </div>
+
                   {(!memberDataSearch?.point <= 0 ||
                     memberDataSearch?.name ||
                     memberDataSearch?.point ||
                     !memberDataSearch?.point <= point) && (
-                    <div className="flex gap-2 items-center my-3">
+                    <div className="flex gap-2 items-center mt-4 mb-3 ">
                       {pointsData?.length > 0 && (
                         <div>{t("menu_change_point")} : </div>
                       )}
@@ -1405,7 +1454,7 @@ export default function CheckOutPopupCafe({
                     </div>
                   )}
 
-                  <InputGroup style={{ marginTop: 10 }}>
+                  <InputGroup className="mt-2">
                     <InputGroup.Text>{t("point")}</InputGroup.Text>
                     <Form.Control
                       disabled={
@@ -1481,7 +1530,7 @@ export default function CheckOutPopupCafe({
                       <div className="box-name">
                         <InputGroup.Text>
                           {t("discount")}:{" "}
-                          {memberDataSearch?.discountPercentage != null &&
+                          {memberDataSearch?.discountPercentage !== null &&
                           memberDataSearch?.discountPercentage > 0
                             ? memberDataSearch.discountPercentage === undefined
                               ? 0
@@ -1521,6 +1570,7 @@ export default function CheckOutPopupCafe({
                 onClick={() => {
                   setCash();
                   setTransfer();
+                  setMemberDataSearch();
                   setTab("cash");
                   setSelectInput("inputCash");
                   setForcus("CASH");
@@ -1540,6 +1590,7 @@ export default function CheckOutPopupCafe({
                 }}
                 onClick={() => {
                   setCash();
+                  setMemberDataSearch();
                   setSelectCurrency({
                     id: "LAK",
                     name: "LAK",
@@ -1568,6 +1619,7 @@ export default function CheckOutPopupCafe({
                   });
                   setRateCurrency(1);
                   setTransfer();
+                  setMemberDataSearch();
                   setTab("cash_transfer");
                   setSelectInput("inputCash");
                   setForcus("TRANSFER_CASH");
@@ -1618,6 +1670,7 @@ export default function CheckOutPopupCafe({
                   });
                   setRateCurrency(1);
                   setTransfer(transferCal);
+                  setMemberDataSearch();
                   setTab("transfer");
                   setForcus("DELIVERY");
                   setIsDelivery(true);
@@ -1769,3 +1822,10 @@ export default function CheckOutPopupCafe({
     </Modal>
   );
 }
+
+const CustomCheck = styled(Form.Check)`
+  .form-check-input:checked {
+    background-color: red;
+    border-color: red;
+  }
+`;
