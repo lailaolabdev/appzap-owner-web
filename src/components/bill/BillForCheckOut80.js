@@ -96,6 +96,8 @@ export default function BillForCheckOut80({
     return 0;
   })();
 
+  console.log("TotalServiceChange", TotalServiceChange);
+
   useEffect(() => {
     getDataCurrency();
   }, []);
@@ -124,19 +126,20 @@ export default function BillForCheckOut80({
     const totalAmountAll =
       orderPayBefore && orderPayBefore.length > 0
         ? _total
-        : totalBillBillForCheckOut80 || _total;
+        : _total;
 
+    
     // Handle discount logic
     if (dataBill?.discount > 0) {
       if (
         dataBill?.discountType === "LAK" ||
         dataBill?.discountType === "MONEY"
       ) {
-        setTotalAfterDiscount(totalAmountAll - dataBill?.discount);
+        setTotalAfterDiscount(_total - dataBill?.discount);
       } else {
-        const ddiscount = parseInt((totalAmountAll * dataBill?.discount) / 100);
-        setTotalAfterDiscount(totalAmountAll - ddiscount);
-      }
+        const ddiscount = Math.floor((_total * dataBill?.discount) / 100);
+        setTotalAfterDiscount(_total - ddiscount);
+      } 
     } else {
       setTotalAfterDiscount(totalAmountAll);
     }
@@ -451,7 +454,7 @@ export default function BillForCheckOut80({
         </Col>
         <Col>
           <div style={{ textAlign: "right" }}>
-            {moneyCurrency(serviceChargeAmount)}
+            {moneyCurrency(serviceChargeAmount || dataBill?.serviceChargeAmount)}
           </div>
         </Col>
       </Row>
@@ -475,13 +478,13 @@ export default function BillForCheckOut80({
                 Math.floor(
                   totalAfterDiscount +
                     taxAmount +
-                    serviceChargeAmount -
-                    SelectedDataBill?.pointToMoney
+                    (serviceChargeAmount || dataBill?.serviceChargeAmount) -
+                    (SelectedDataBill?.pointToMoney || 0)
                 )
               )}
             </div>
           </Col>
-        </Row>
+        </Row>  
 
         {currencyData?.map((item, index) => (
           <Row key={index}>
@@ -491,7 +494,7 @@ export default function BillForCheckOut80({
             <Col>
               <div style={{ textAlign: "right" }}>
                 {moneyCurrency(
-                  (total + taxAmount + serviceChargeAmount) / item?.sell
+                  (total + taxAmount + (serviceChargeAmount || dataBill?.serviceChargeAmount)) / item?.sell
                 )}
               </div>
             </Col>
