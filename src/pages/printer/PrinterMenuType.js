@@ -33,7 +33,8 @@ export default function PrinterMenuType() {
     const storeId = storeDetail?._id;
     const idPinter = event?.target?.value;
     const data = await updateCategory({ printer: idPinter }, _id);
-    getMenuCategories(storeId);
+    // getMenuCategories(storeId);
+    fetchCategory();
     return;
   };
 
