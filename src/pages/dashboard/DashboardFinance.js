@@ -488,17 +488,13 @@ export default function DashboardFinance({
       (dataModal?.transferAmount ?? 0) +
       (dataModal?.payAmount ?? 0) +
       (dataModal?.change ?? 0) -
-      (dataModal?.discount ?? 0) +
-      (dataModal?.serviceChargeAmount ?? 0) +
-      (dataModal?.taxAmount ?? 0);
+      (dataModal?.discount ?? 0);
   } else {
     TotalAmount =
       (dataModal?.point ?? 0) +
       (dataModal?.transferAmount ?? 0) +
       (dataModal?.payAmount ?? 0) -
-      (dataModal?.discount ?? 0) +
-      (dataModal?.serviceChargeAmount ?? 0) +
-      (dataModal?.taxAmount ?? 0);
+      (dataModal?.discount ?? 0);
   }
 
   const TotalBefore =
@@ -511,9 +507,8 @@ export default function DashboardFinance({
     (dataModal?.transferAmount ?? 0) +
     (dataModal?.change ?? 0) +
     (dataModal?.payAmount ?? 0) -
-    (dataModal?.discount ?? 0) +
-    (dataModal?.serviceChargeAmount ?? 0) +
-    (dataModal?.taxAmount ?? 0);
+    (dataModal?.discount ?? 0) -
+    (dataModal?.change ?? 0);
 
   const totalAfter =
     dataModal?.paymentMethod === "CASH" ||
@@ -703,6 +698,7 @@ export default function DashboardFinance({
   };
 
   const totalPriceOfPoint = TotalPriceOfPoint();
+
 
   const displayResults = (payMethod) => {
     let paymentMethodText = "";
@@ -1341,8 +1337,8 @@ export default function DashboardFinance({
                     ) : (
                       <span>
                         {moneyCurrency(
-                          dataModal?.discount > 0
-                            ? (dataModal?.discount ?? 0) + TotalAmount
+                          dataModal?.discount  || dataModal?.serviceChargeAmount > 0
+                            ? (dataModal?.discount ?? 0) + TotalAmount + dataModal?.serviceChargeAmount
                             : TotalAmount
                         )}{" "}
                         {storeDetail?.firstCurrency}
@@ -1354,7 +1350,7 @@ export default function DashboardFinance({
                       {storeDetail?.firstCurrency}{" "}
                     </span>
                     <span>
-                      {moneyCurrency(dataModal?.billAmount + dataModal?.serviceChargeAmount + dataModal?.taxAmount || 0)}
+                      {moneyCurrency(dataModal?.billAmount + dataModal?.serviceChargeAmount || 0)}
                       {storeDetail?.firstCurrency}
                     </span>
                     {/* {dataModal?.paymentMethod === "CASH_TRANSFER_POINT" && dataModal?.point > 0 ? (
@@ -1481,6 +1477,7 @@ export default function DashboardFinance({
               orderPayBefore={0}
               storeDetail={storeDetail}
               selectedTable={selectedTable}
+              serviceCharge={dataModal?.serviceChargePercent}
               dataBill={dataModal}
               totalBillBillForCheckOut80={totalAfter}
               // taxPercent={taxPercent}
