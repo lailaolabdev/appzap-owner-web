@@ -1,34 +1,21 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { FaCogs, FaCoins } from "react-icons/fa";
+import { FaCogs } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import {
   Card,
   Breadcrumb,
   Button,
-  ButtonGroup,
   Form,
   Alert,
   Pagination,
   Nav,
-  InputGroup,
   Spinner,
 } from "react-bootstrap";
-import {
-  faCertificate,
-  faCoins,
-  faPeopleArrows,
-  faTable,
-  faList,
-  faBirthdayCake,
-} from "@fortawesome/free-solid-svg-icons";
+import { faList, faBirthdayCake } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  BsArrowCounterclockwise,
-  BsFillCalendarWeekFill,
-  BsInfoCircle,
-} from "react-icons/bs";
+import { BsFillCalendarWeekFill } from "react-icons/bs";
 import {
   MdAssignmentAdd,
   MdOutlineCloudDownload,
@@ -36,12 +23,9 @@ import {
 } from "react-icons/md";
 import styled from "styled-components";
 import { FaSearch, FaUser } from "react-icons/fa";
-import { AiFillPrinter } from "react-icons/ai";
 import moment from "moment";
 import Box from "../../components/Box";
-import ReportChartWeek from "../../components/report_chart/ReportChartWeek";
 import { COLOR_APP } from "../../constants";
-import ButtonDropdown from "../../components/button/ButtonDropdown";
 import {
   getMemberAllCount,
   getMemberCount,
@@ -56,6 +40,7 @@ import {
   getMembersListTop,
   getMembersListBirthday,
   deleteMember,
+  getAllMembersIds,
 } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 import PopUpExportExcel from "../../components/popup/PopUpExportExcel";
@@ -161,6 +146,12 @@ export default function MemberPage() {
 
   const [isRemoveItem, setIsRemoveItem] = useState(false);
   const [itemDeleting, setItemDeleting] = useState();
+  const [selectAll, setSelectAll] = useState(false);
+  const [selectedMembers, setSelectedMembers] = useState([]);
+
+  const [isSelectingAllPages, setIsSelectingAllPages] = useState(false);
+  const [allMemberIds, setAllMemberIds] = useState([]);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
 
@@ -558,6 +549,53 @@ export default function MemberPage() {
     }
   };
 
+  // เพิ่มฟังก์ชันเหล่านี้
+  const handleSelectMembers = (memberId) => {
+    if (selectedMembers.includes(memberId)) {
+      setSelectedMembers(selectedMembers.filter((id) => id !== memberId));
+    } else {
+      setSelectedMembers([...selectedMembers, memberId]);
+    }
+  };
+
+  const handleSelectAll = async () => {
+    if (selectAll) {
+      // ถ้าเคยเลือกอยู่แล้ว ให้ยกเลิกการเลือกทั้งหมด
+      setSelectedMembers([]);
+      setSelectAll(false);
+      setIsSelectingAllPages(false);
+    } else {
+      // ถ้ายังไม่ได้เลือก ให้ดึงข้อมูล ID ทั้งหมดและเลือก
+      setIsLoadingAllMembers(true);
+      try {
+        const { TOKEN, DATA } = await getLocalData();
+        let findby = "?";
+        findby += `storeId=${DATA?.storeId}&`;
+        const data = await getAllMembersIds(findby, TOKEN);
+        const MemberIds = data?.data?.data?.map((member) => member._id);
+        setAllMemberIds(MemberIds);
+        setSelectedMembers(MemberIds);
+        setSelectAll(true);
+        setIsSelectingAllPages(true);
+      } catch (error) {
+        console.error("Error fetching all member MemberIds:", error);
+        // ถ้าไม่สามารถดึงข้อมูลทั้งหมดได้ ให้เลือกเฉพาะในหน้าปัจจุบัน
+        setSelectedMembers(membersData.map((member) => member._id));
+        setSelectAll(true);
+        setIsSelectingAllPages(false);
+      } finally {
+        setIsLoadingAllMembers(false);
+      }
+    }
+  };
+
+  const updateSelectedMembers = () => {
+    setIsUpdating(true);
+    setTimeout(() => {
+      setIsUpdating(false);
+    }, 2000);
+  };
+
   return (
     <>
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
@@ -882,23 +920,47 @@ export default function MemberPage() {
               }}
             >
               <span>{t("member_list")}</span>
-              <Button
-                variant="dark"
-                bg="dark"
-                onClick={() =>
-                  navigate("/reports/members-report/create-member")
-                }
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "8px 12px",
-                }}
-              >
-                <span className="flex gap-1 items-center">
-                  <MdAssignmentAdd /> {t("add_member")}
-                </span>
-              </Button>
+              <div className="d-flex gap-2">
+                {selectedMembers.length > 0 && (
+                  <Button
+                    variant="dark"
+                    onClick={() =>
+                      setPopup({ updateSelectedPointsExpiry: true })
+                    }
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      padding: "8px 12px",
+                    }}
+                  >
+                    <span className="flex gap-1 items-center">
+                      <BsCalendarCheck /> {t("update_selected_expiry_date")} (
+                      {isSelectingAllPages
+                        ? `${selectedMembers.length}`
+                        : selectedMembers.length}
+                      )
+                    </span>
+                  </Button>
+                )}
+                <Button
+                  variant="dark"
+                  bg="dark"
+                  onClick={() =>
+                    navigate("/reports/members-report/create-member")
+                  }
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    padding: "8px 12px",
+                  }}
+                >
+                  <span className="flex gap-1 items-center">
+                    <MdAssignmentAdd /> {t("add_member")}
+                  </span>
+                </Button>
+              </div>
             </Card.Header>
             <Card.Body>
               <CardHeader>
@@ -940,6 +1002,13 @@ export default function MemberPage() {
 
               <table style={{ width: "100%" }}>
                 <tr>
+                  <th style={{ textAlign: "center", width: "40px" }}>
+                    <Form.Check
+                      type="checkbox"
+                      checked={selectAll}
+                      onChange={handleSelectAll}
+                    />
+                  </th>
                   <th style={{ textAlign: "left" }}>{t("member_name")}</th>
                   <th style={{ textAlign: "center" }}>{t("phone")}</th>
                   <th style={{ textAlign: "center" }}>{"ພ໋ອຍທັງໝົດ"}</th>
@@ -964,6 +1033,13 @@ export default function MemberPage() {
                 ) : membersData?.length > 0 ? (
                   membersData?.map((e) => (
                     <tr key={e?._id}>
+                      <td style={{ textAlign: "center" }}>
+                        <Form.Check
+                          type="checkbox"
+                          checked={selectedMembers.includes(e?._id)}
+                          onChange={() => handleSelectMembers(e?._id)}
+                        />
+                      </td>
                       <td style={{ textAlign: "left" }}>{e?.name}</td>
                       <td style={{ textAlign: "center" }}>{e?.phone}</td>
                       <td className="text-center font-bold">
@@ -1878,6 +1954,59 @@ export default function MemberPage() {
           {/* <ReportCard title={"ກຣາຟ"} chart={<ReportChartWeek />} /> */}
         </div>
       </Box>
+
+      <Modal show={popup?.updateSelectedPointsExpiry} onHide={() => setPopup()}>
+        <Modal.Header closeButton>
+          <Modal.Title>{t("update_selected_expiry_date")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {isSelectingAllPages ? (
+            <Alert variant="info">
+              {t("you_selected_all")} {selectedMembers.length} {t("members")}
+            </Alert>
+          ) : (
+            <Alert variant="info">
+              {t("you_selected")} {selectedMembers.length} {t("members")}
+            </Alert>
+          )}
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>{t("new_expiry_date")}</Form.Label>
+              <Form.Control
+                type="date"
+                value={newExpiryDate}
+                onChange={(e) => setNewExpiryDate(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setPopup()}>
+            {t("cancel")}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={updateSelectedMembers}
+            disabled={isUpdating}
+          >
+            {isUpdating ? (
+              <>
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  role="status"
+                  aria-hidden="true"
+                />{" "}
+                {t("updating")}...
+              </>
+            ) : (
+              t("update")
+            )}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       {/* popup */}
       <PopUpSetStartAndEndDate
         open={popup?.popupfiltter}

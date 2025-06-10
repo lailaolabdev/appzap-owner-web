@@ -247,4 +247,8 @@ export const deleteMember = async (id, TOKEN) => {
   }
 };
 
+export const getAllMembersIds = async (findBy, Token) => {
+  console.log("fff");
+};
+
 // report
