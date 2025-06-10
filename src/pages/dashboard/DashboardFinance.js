@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import moment from "moment";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import ReactPaginate from "react-paginate";
-import { Table, Modal, Pagination, Spinner } from "react-bootstrap";
+import { Table, Modal, Pagination } from "react-bootstrap";
 import * as _ from "lodash";
-import { FaCheckDouble, FaCircleCheck } from "react-icons/fa6";
+import { FaCircleCheck } from "react-icons/fa6";
 import { BsFillExclamationTriangleFill } from "react-icons/bs";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import {
@@ -15,16 +15,11 @@ import {
   moneyCurrency,
 } from "./../../helpers";
 import { useTranslation } from "react-i18next";
-import { stringify } from "query-string";
-import AnimationLoading from "../../constants/loading";
-import Box from "../../components/Box";
 import { getHeaders } from "../../services/auth";
 import { useStore } from "../../store";
 import useQuery from "../../helpers/useQuery";
-import ButtonDownloadCSV from "../../components/button/ButtonDownloadCSV";
-import ButtonDownloadExcel from "../../components/button/ButtonDownloadExcel";
 import Loading from "../../components/Loading";
-import { billCancelCafe, getCountBills } from "../../services/bill";
+import { getCountBills } from "../../services/bill";
 import matchRoundNumber from "../../helpers/matchRound";
 import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
@@ -56,47 +51,32 @@ export default function DashboardFinance({
   setCountIsDebtTrue,
   shiftId,
 }) {
-  const [currency, setCurrency] = useState();
   const navigate = useNavigate();
   const { accessToken } = useQuery();
   const params = useParams();
   const [data, setData] = useState();
   const [index, setIndex] = useState(0);
-  const [disCountDataKib, setDisCountDataKib] = useState(0);
-  const [disCountDataPercent, setDisCountDataPercent] = useState(0);
-  const [dataNotCheckBill, setDataNotCheckBill] = useState({});
-  const [dataCheckBill, setDataCheckBill] = useState({});
+
   const [selectOrder, setSelectOrder] = useState();
-  const [moneyCash, setMoneyCash] = useState(0);
-  const [moneyAon, setMoneyAon] = useState(0);
   const [show, setShow] = useState(false);
   const [dataModal, setDataModal] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [disabledEditBill, setDisabledEditBill] = useState(false);
-  const [printBillLoading, setPrintBillLoading] = useState(false);
 
   const [pagination, setPagination] = useState(1);
   const [totalPagination, setTotalPagination] = useState();
   const [getDataDashboardFinance, setGetDataDashboardFinance] = useState([]);
   const [totalTranferAndPayLast, setTotalTranferAndPayLast] = useState(0);
-  const [commentCancelOrder, setCommentCancelOrder] = useState("");
   const [showCancelPopup, setShowCancelPopup] = useState(false);
 
   const handleClose = () => setShow(false);
-  const {
-    profile,
-    dataBill,
-    selectedTable,
-    printers,
-    printerCounter,
-    dataPrint,
-  } = useStore();
+  const { profile, selectedTable, printers, printerCounter } = useStore();
   const { shiftCurrent } = useShiftStore();
   const { storeDetail } = useStoreStore();
 
   const getPaginationCountData = async () => {
     try {
-      const { TOKEN, DATA } = await getLocalData();
+      const { TOKEN } = await getLocalData();
       const query = `?storeId=${params?.storeId}&dateFrom=${startDate}&dateTo=${endDate}&timeFrom=${startTime}&timeTo=${endTime}`;
       const _data = await getCountBills(query, TOKEN);
       if (_data.error) throw new Error("error");
@@ -110,7 +90,6 @@ export default function DashboardFinance({
 
   const onPrintBill = async (isPrintBill) => {
     try {
-      setPrintBillLoading(true);
       // let _dataBill = {
       //   ...dataBill,
       //   typePrint: "PRINT_BILL_CHECKOUT",
@@ -170,7 +149,6 @@ export default function DashboardFinance({
         }
       );
 
-      setPrintBillLoading(false);
       await Swal.fire({
         icon: "success",
         title: `${t("re_print_bill")}`,
@@ -181,7 +159,6 @@ export default function DashboardFinance({
       handleClose();
     } catch (err) {
       console.log("err printer", err);
-      setPrintBillLoading(false);
       await Swal.fire({
         icon: "error",
         title: `${t("print_fial")}`,
@@ -217,49 +194,7 @@ export default function DashboardFinance({
     setDataModal(item);
   };
 
-  const getCurrency = async () => {
-    try {
-      const x = await fetch(
-        END_POINT_SEVER + `/v4/currencies?storeId=${storeDetail?._id}`,
-        {
-          method: "GET",
-        }
-      )
-        .then((response) => response.json())
-        .then((json) => setCurrency(json));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const exportJsonToExceltyty = () => {
-    const _export = data?.checkOut.map((item, index) => ({
-      ລຳດັບ: index + 1,
-      ເລກບິນ: item?.code,
-      ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
-      ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
-        ? new Intl.NumberFormat("ja-JP", {
-            currency: "JPY",
-          }).format(_countAmount(item?.orderId))
-        : new Intl.NumberFormat("ja-JP", {
-            currency: "JPY",
-          }).format(item?.billAmount),
-      ຈ່າຍເງິນສົດ: item?.payAmount,
-      ຈ່າຍເງິນໂອນ: item?.transferAmount,
-      ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
-      ກ່ອນຫັກສ່ວນຫຼຸດ: item?.billAmountBefore,
-      ຍອດລວມທັງໝົດ:
-        data?.checkOut?.length === index + 1
-          ? new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-              data?.amount + dataNotCheckBill?.amount
-            )
-          : "",
-    }));
-    return _export;
-  };
-
   useEffect(() => {
-    getCurrency();
     _fetchFinanceData();
   }, []);
 
@@ -386,12 +321,6 @@ export default function DashboardFinance({
           _aon += data?.checkOut[i]?.billAmount;
       }
     }
-    setDataCheckBill(_checkBill);
-    setDataNotCheckBill(_notCheckBill);
-    setMoneyAon(_aon);
-    setMoneyCash(_cash);
-    setDisCountDataKib(_disCountDataKib);
-    setDisCountDataPercent(_disCountDataAon);
   }, [data]);
 
   const { t } = useTranslation();
@@ -560,7 +489,7 @@ export default function DashboardFinance({
     if (!orderId || !Array.isArray(orderId)) return [];
 
     return orderId.map((item, index) => {
-      const isCanceled = item?.status === "CANCELED";
+      // const isCanceled = item?.status === "CANCELED";
 
       return {
         index: index + 1,
@@ -654,8 +583,6 @@ export default function DashboardFinance({
   };
 
   const handleSaveComment = (comment) => {
-    setCommentCancelOrder(comment);
-
     // Process the cancellation with the comment
     const body = {
       storeId: dataModal?.storeId,
