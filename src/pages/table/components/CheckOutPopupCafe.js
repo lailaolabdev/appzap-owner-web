@@ -66,6 +66,8 @@ export default function CheckOutPopupCafe({
   setPoint,
   point,
   setPaymentMethod,
+  discountType,
+  discountValue,
 }) {
   // ref
 
@@ -276,24 +278,38 @@ export default function CheckOutPopupCafe({
   };
 
   const DiscountMember = () => {
-    let TotalDiscountFinal = 0;
-    if (memberDataSearch?.discountPercentage > 0) {
-      if (selectedMethod !== "USEPOINT") {
-        TotalDiscountFinal =
-          totalBill - (totalBill * memberDataSearch?.discountPercentage) / 100;
-      } else {
-        TotalDiscountFinal = totalBill;
-      }
-    } else if (dataBillEdit?.discount > 0) {
+    let TotalDiscountFinal = totalBill;
+
+    // Apply member discount if available and not using points
+    if (
+      memberDataSearch?.discountPercentage !== undefined &&
+      memberDataSearch.discountPercentage > 0 &&
+      selectedMethod !== "USEPOINT"
+    ) {
       TotalDiscountFinal =
-        totalBill - (totalBill * dataBillEdit?.discount) / 100;
-    } else {
-      TotalDiscountFinal = totalBill;
+        totalBill - (totalBill * memberDataSearch.discountPercentage) / 100;
     }
+    // If no member discount, but bill edit discount exists
+    else if (dataBillEdit?.discount > 0) {
+      TotalDiscountFinal =
+        totalBill - (totalBill * dataBillEdit.discount) / 100;
+    }
+
+    // Apply additional discount if provided
+    if (discountType && discountValue > 0) {
+      if (discountType === "PERCENT") {
+        TotalDiscountFinal =
+          TotalDiscountFinal - (TotalDiscountFinal * discountValue) / 100;
+      } else if (discountType === "LAK") {
+        TotalDiscountFinal = TotalDiscountFinal - discountValue;
+      }
+    }
+
+    // Prevent negative total
+    if (TotalDiscountFinal < 0) TotalDiscountFinal = 0;
 
     return TotalDiscountFinal;
   };
-
   const DataExchangePointStore = () => {
     const pointsData =
       // biome-ignore lint/complexity/useFlatMap: <explanation>
@@ -345,6 +361,14 @@ export default function CheckOutPopupCafe({
 
   const exchangePointStoreIds = pointsData?.map((i) => i?.Id);
 
+  const getDiscount = () => {
+    if (discountValue > 0) return discountValue;
+    if (memberDataSearch?.discountPercentage > 0)
+      return memberDataSearch.discountPercentage;
+    if (dataBillEdit?.discount > 0) return dataBillEdit.discount;
+    return 0;
+  };
+
   const _checkBill = async (currencyId, currencyName) => {
     setIsLoading(true);
     onClose();
@@ -395,13 +419,15 @@ export default function CheckOutPopupCafe({
       memberName: memberDataSearch?.name,
       memberPhone: memberDataSearch?.phone,
       memberDiscount: memberDataSearch?.discountPercentage,
-      discount:
-        memberDataSearch?.discountPercentage > 0
-          ? memberDataSearch?.discountPercentage
-          : dataBillEdit?.discount > 0
-          ? dataBillEdit?.discount
-          : 0,
-      discountType: "PERCENT",
+      // discount:
+      //   memberDataSearch?.discountPercentage > 0
+      //     ? memberDataSearch?.discountPercentage
+      //     : dataBillEdit?.discount > 0
+      //     ? dataBillEdit?.discount
+      //     : 0,
+      // discountType: "PERCENT",
+      discount: getDiscount(),
+      discountType: discountType || "PERCENT",
       statusPoint: statusPoint,
       fullnameStaffCheckOut:
         `${profile.data.firstname ? profile.data.firstname : "--"} ${
@@ -563,13 +589,8 @@ export default function CheckOutPopupCafe({
       memberName: memberDataSearch?.name,
       memberPhone: memberDataSearch?.phone,
       memberDiscount: memberDataSearch?.discountPercentage,
-      discount:
-        memberDataSearch?.discountPercentage > 0
-          ? memberDataSearch?.discountPercentage
-          : dataBillEdit?.discount > 0
-          ? dataBillEdit?.discount
-          : 0,
-      discountType: "PERCENT",
+      discount: getDiscount(),
+      discountType: discountType || "PERCENT",
       statusPoint: statusPoint,
       fullnameStaffCheckOut:
         `${profile.data.firstname ? profile.data.firstname : "--"} ${
@@ -630,7 +651,6 @@ export default function CheckOutPopupCafe({
           showConfirmButton: false,
           timer: 1500,
         });
-
         navigate("/cafe");
       })
       .catch((error) => {
@@ -694,7 +714,8 @@ export default function CheckOutPopupCafe({
     let memberDiscount = memberDataSearch?.discountPercentage || 0; // Get member discount, default to 0 if not available
 
     if (forcus === "CASH") {
-      let discountedTotal = totalBill - (totalBill * memberDiscount) / 100; // Apply member discount to the total bill
+      let discountedTotal =
+        DiscountMember() - (DiscountMember() * memberDiscount) / 100; // Apply member discount to the total bill
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           discountedTotal -= (discountedTotal * dataBill?.discount) / 100;
@@ -708,7 +729,8 @@ export default function CheckOutPopupCafe({
         setCanCheckOut(false);
       }
     } else if (forcus === "TRANSFER") {
-      let discountedTotal = totalBill - (totalBill * memberDiscount) / 100; // Apply member discount to the total bill
+      let discountedTotal =
+        DiscountMember() - (DiscountMember() * memberDiscount) / 100; // Apply member discount to the total bill
 
       if (dataBill?.discount > 0) {
         // Apply additional discount based on dataBill
@@ -733,7 +755,8 @@ export default function CheckOutPopupCafe({
     } else if (forcus === "TRANSFER_CASH") {
       let _sum =
         (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
-      let discountedTotal = totalBill - (totalBill * memberDiscount) / 100; // Apply member discount to the total bill
+      let discountedTotal =
+        DiscountMember() - (DiscountMember() * memberDiscount) / 100; // Apply member discount to the total bill
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           discountedTotal -= (discountedTotal * dataBill?.discount) / 100;
@@ -742,31 +765,6 @@ export default function CheckOutPopupCafe({
         }
       }
       if (_sum >= discountedTotal) {
-        setCanCheckOut(true);
-      } else {
-        setCanCheckOut(false);
-      }
-    } else if (forcus === "POINT") {
-      const checkPoint = Math.max(0, Number.parseInt(dataBill?.Point - point));
-      if (checkPoint === 0) {
-        Swal.fire({
-          icon: "warning",
-          title: `${t("error_point")}`,
-          text: `${t("error_point_enough")}`,
-          showConfirmButton: false,
-          timer: 1800,
-        });
-        return;
-      }
-      let discountedTotal = totalBill - (totalBill * memberDiscount) / 100; // Apply member discount to the total bill
-      if (dataBill?.discount) {
-        if (dataBill?.discountType === "PERCENT") {
-          discountedTotal -= (discountedTotal * dataBill?.discount) / 100;
-        } else {
-          discountedTotal -= dataBill?.discount;
-        }
-      }
-      if (dataBill?.Point < discountedTotal) {
         setCanCheckOut(true);
       } else {
         setCanCheckOut(false);
@@ -816,12 +814,6 @@ export default function CheckOutPopupCafe({
         } else {
           setCanCheckOut(false);
         }
-      }
-    } else if (forcus === "POINT") {
-      if (point <= 0) {
-        setCanCheckOut(false);
-      } else {
-        setCanCheckOut(true);
       }
     } else if (forcus === "DELIVERY") {
       if (dataBill?.discount) {

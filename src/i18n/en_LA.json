@@ -1280,7 +1280,7 @@
   "percent": "ເປີເຊັນ",
   "fixed_amount": "ຈຳນວນເງິນ",
   "discount_amount": "ຈຳນວນສ່ວນຫຼຸດ",
-  "dis_fixed_amount": "ສ່ວນຫຼຸດຈຳເປັນເງິນ",
+  "dis_fixed_amount": "ສ່ວນຫຼຸດເປັນເງິນ",
   "dis_discount_amount": "ສ່ວນຫຼຸດເປັນເປີເຊັນ",
   "validFrom": "ເລີ່ມຕົ້ນວັນທີ",
   "validUntil": "ສິ້ນສຸດວັນທີ",
@@ -1381,5 +1381,7 @@
   "name_is_haven" : "ຊື່ລາຍການນີ້ມີແລ້ວ່າຢູ່ໃນລະບົບແລ້ວ, ກະລຸນາປ້ອນຊື່ໃໝ່",
   "update_setected_point_discount" : "ອັບເດດ ພ໋ອຍ ແລະ ສ່ວນຫຼຸດ",
   "you_selected_all" : "ທ່ານເລຶອກທັງໝົດ",
-  "you_selected" : "ທ່ານເລຶອກ"
+  "you_selected" : "ທ່ານເລຶອກ",
+  "enter_percentage_between_0_100" : "ປ້ອນຈຳນວນເປັນເປີເຊັນ 0 - 100",
+  "enter_amount_less_than_total" : "ປ້ອນຈຳນວນທີ່ນ້ອຍກວ່າຍອດທັງໝົດ"
 }

@@ -1,17 +1,11 @@
 import styled from "styled-components";
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { convertImageToBase64, moneyCurrency } from "../../helpers/index";
 import moment from "moment";
-import {
-  QUERY_CURRENCIES,
-  getLocalData,
-  getLocalDataCustomer,
-} from "../../constants/api";
+import { QUERY_CURRENCIES, getLocalData } from "../../constants/api";
 import Axios from "axios";
-import QRCode from "react-qr-code";
-import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
-import { Image, Row, Col } from "react-bootstrap";
-import axios from "axios";
+import { URL_PHOTO_AW3 } from "../../constants";
+import { Image } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 // import emptyLogo from "/public/images/emptyLogo.jpeg";
 import matchRoundNumber from "./../../helpers/matchRound";
@@ -30,12 +24,11 @@ export default function BillForCheckOutCafe80({
   point,
   paymentMethod,
   isModalData,
-  index,
+  discountValue,
+  discountType,
 }) {
   // state
   const [total, setTotal] = useState();
-  const [taxAmount, setTaxAmount] = useState(0);
-  const [totalAfterDiscount, setTotalAfterDiscount] = useState();
   const [currencyData, setCurrencyData] = useState([]);
   const [rateCurrency, setRateCurrency] = useState();
   const { t } = useTranslation();
@@ -77,8 +70,6 @@ export default function BillForCheckOutCafe80({
       TotalDiscountFinal = _total;
     }
     setTotal(_total);
-    setTotalAfterDiscount(matchRoundNumber(TotalDiscountFinal));
-    setTaxAmount((_total * taxPercent) / 100);
   };
 
   const getDataCurrency = async () => {
@@ -362,7 +353,7 @@ export default function BillForCheckOutCafe80({
 
                 <div
                   style={{
-                    width: "60%",
+                    width: point > 0 ? "90%" : "60%",
                     display: "flex",
                     justifyContent: "end",
                     alignItems: "center",
@@ -375,7 +366,7 @@ export default function BillForCheckOutCafe80({
               <div className="w-full flex justify-between text-[14px] font-thin">
                 <div
                   style={{
-                    width: "100%",
+                    width: point > 0 ? "90%" : "60%",
                     display: "flex",
                     justifyContent: "end",
                     alignItems: "center",
@@ -386,7 +377,7 @@ export default function BillForCheckOutCafe80({
 
                 <div
                   style={{
-                    width: "60%",
+                    width: point > 0 ? "90%" : "60%",
                     display: "flex",
                     justifyContent: "end",
                     alignItems: "center",
@@ -400,7 +391,7 @@ export default function BillForCheckOutCafe80({
           <div className="w-full flex justify-between text-[14px] font-thin">
             <div
               style={{
-                width: "100%",
+                width: point > 0 ? "90%" : "60%",
                 display: "flex",
                 justifyContent: "end",
                 alignItems: "center",
@@ -424,7 +415,7 @@ export default function BillForCheckOutCafe80({
           <div className="w-full flex justify-between text-[14px] font-thin">
             <div
               style={{
-                width: "100%",
+                width: point > 0 ? "90%" : "60%",
                 display: "flex",
                 justifyContent: "end",
                 alignItems: "center",
@@ -732,6 +723,30 @@ export default function BillForCheckOutCafe80({
                 alignItems: "center",
               }}
             >
+              {t("discount")} :{" "}
+            </div>
+
+            <div
+              style={{
+                width: point > 0 ? "90%" : "60%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
+              {moneyCurrency(discountValue)}{" "}
+              {discountType === "PERCENT" ? "%" : storeDetail?.firstCurrency}
+            </div>
+          </div>
+          <div className="w-full flex justify-between text-[14px] font-thin">
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "end",
+                alignItems: "center",
+              }}
+            >
               {t("change")} :{" "}
             </div>
 
@@ -827,7 +842,7 @@ export default function BillForCheckOutCafe80({
                 {moneyCurrency(
                   paymentMethod === "CASH_TRANSFER_POINT"
                     ? total - totalPointPrice
-                    : total
+                    : total - (total * discountValue) / 100 || 0
                 )}{" "}
                 {storeDetail?.firstCurrency}
               </div>

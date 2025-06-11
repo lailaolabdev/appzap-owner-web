@@ -1381,6 +1381,9 @@
   "name_is_haven" : "Name is haven, Please try again",
   "update_setected_point_discount" : "Update setected point and discount",
   "you_selected_all" : "You selected all",
-  "you_selected" : "You selected"
+  "you_selected" : "You selected",
+  "enter_percentage_between_0_100": "Enter percentage between 0 and 100",
+  "enter_amount_less_than_total": "Enter amount less than total"
+
 
 }
