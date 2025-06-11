@@ -545,6 +545,7 @@ export default function DashboardFinance({
   }, [data]);
 
   useEffect(() => {
+    console.log("logs data?.checkOut:--> ", data?.checkOut)
     setCountIsDebtTrue(
       data?.checkOut?.filter((item) => item?.isDebt === true).length
     );
@@ -714,9 +715,9 @@ export default function DashboardFinance({
         paymentMethodText = "ເງິນສົດ + ເງິນໂອນ";
         _amount = dataModal?.payAmount + dataModal?.transferAmount;
         break;
-        case "CASH_TRANSFER_POINT":
-          paymentMethodText = "ເງິນໂອນ + ເງິນສົດ + ພ໋ອຍ";
-          _amount = dataModal?.payAmount + dataModal?.transferAmount + dataModal?.pointToMoney ?? 0;
+      case "CASH_TRANSFER_POINT":
+        paymentMethodText = "ເງິນໂອນ + ເງິນສົດ + ພ໋ອຍ";
+        _amount = dataModal?.payAmount + dataModal?.transferAmount + dataModal?.pointToMoney ?? 0;
         break;
       case "POINT":
         paymentMethodText = "ພ໋ອຍ";
@@ -724,7 +725,7 @@ export default function DashboardFinance({
         break;
       case "DELIVERY":
         paymentMethodText = "ການຈັດສົ່ງ";
-        _amount = dataModal?.deliveryAmount        ;
+        _amount = dataModal?.deliveryAmount;
         break;
       default:
         paymentMethodText = "ບໍ່ມີຂໍ້ມູນ";
@@ -936,29 +937,31 @@ export default function DashboardFinance({
                           : new Intl.NumberFormat("ja-JP", {
                             currency: "JPY",
                           }).format(
-                            item?.isDebtAndPay
-                              ? item?.payAmount + item?.transferAmount
-                              : item?.isDebtPayment
-                                ? item?.payAmount +
-                                item?.transferAmount -
-                                item?.totalTranferAndPayLast
-                                : isNaN(
-                                  item?.billAmount +
-                                  item?.taxAmount +
-                                  item?.serviceChargeAmount -
-                                  item?.point
-                                )
-                                  ? item?.billAmount
-                                  : item?.billAmount +
-                                  item?.taxAmount +
-                                  item?.serviceChargeAmount -
-                                  item?.point
+                            item?.billAmount ?? 0
+                            // item?.isDebtAndPay
+                            //   ? item?.payAmount + item?.transferAmount
+                            //   : item?.isDebtPayment
+                            //     ? item?.payAmount +
+                            //     item?.transferAmount -
+                            //     item?.totalTranferAndPayLast
+                            //     : isNaN(
+                            //       item?.billAmount +
+                            //       item?.taxAmount +
+                            //       item?.serviceChargeAmount -
+                            //       item?.point
+                            //     )
+                            //       ? item?.billAmount
+                            //       : item?.billAmount +
+                            //       item?.taxAmount +
+                            //       item?.serviceChargeAmount -
+                            //       item?.point
                           )}{" "}
-                        {item?.isDebtPayment && (
+                        {/* {item?.isDebtPayment && (
                           <span className=" text-blue-500">
                             ( + {moneyCurrency(item?.totalTranferAndPayLast)}){" "}
                           </span>
-                        )} {storeDetail?.firstCurrency}</p>
+                        )}  */}
+                        {storeDetail?.firstCurrency}</p>
                     </div>
 
                   </td>
@@ -1399,6 +1402,7 @@ export default function DashboardFinance({
               </div>
             </div>
           )}
+         
         </Modal.Body>
         <Modal.Footer>
           {storeDetail?.isStatusCafe && (
@@ -1453,8 +1457,11 @@ export default function DashboardFinance({
             {t("print_bill")}
           </Button>
         </Modal.Footer>
+
       </Modal>
+
       {
+<<<<<<< HEAD
         dataModal?.isCafe ? (
           <div style={{ width: "80mm", padding: 12, margin: 5 }} ref={bill80Ref}>
             <BillForCheckOutCafe80
@@ -1483,6 +1490,35 @@ export default function DashboardFinance({
           </div>
         )
       }
+=======
+              dataModal?.isCafe ? (
+                <div style={{ width: "80mm", padding: 12, margin: 5 }} ref={bill80Ref}>
+                  <BillForCheckOutCafe80
+                    storeDetail={storeDetail}
+                    profile={profile}
+                    dataBill={dataModal?.orderId}
+                    data={dataModal?.length}
+                    memberData={""}
+                    dataModal={dataModal}
+                    isModalData={true}
+                    index={index}
+                  />
+                </div>
+              ) : (
+                <div style={{ width: "80mm", padding: 12, margin: 5 }} ref={bill80Ref}>
+                  <BillForCheckOut80
+                    orderPayBefore={0}
+                    storeDetail={storeDetail}
+                    selectedTable={selectedTable}
+                    dataBill={dataModal}
+                    totalBillBillForCheckOut80={totalAfter}
+                    // taxPercent={taxPercent}
+                    profile={profile}
+                  />
+                </div>
+              )
+            }
+>>>>>>> 63f057d1 (Fix zone in table manager)
       <PopUpCommentCancelOrder
         open={showCancelPopup}
         onClose={handleCancleCommentClose}
