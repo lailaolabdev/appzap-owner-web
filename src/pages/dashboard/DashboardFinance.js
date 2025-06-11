@@ -1461,7 +1461,6 @@ export default function DashboardFinance({
       </Modal>
 
       {
-<<<<<<< HEAD
         dataModal?.isCafe ? (
           <div style={{ width: "80mm", padding: 12, margin: 5 }} ref={bill80Ref}>
             <BillForCheckOutCafe80
@@ -1490,35 +1489,6 @@ export default function DashboardFinance({
           </div>
         )
       }
-=======
-              dataModal?.isCafe ? (
-                <div style={{ width: "80mm", padding: 12, margin: 5 }} ref={bill80Ref}>
-                  <BillForCheckOutCafe80
-                    storeDetail={storeDetail}
-                    profile={profile}
-                    dataBill={dataModal?.orderId}
-                    data={dataModal?.length}
-                    memberData={""}
-                    dataModal={dataModal}
-                    isModalData={true}
-                    index={index}
-                  />
-                </div>
-              ) : (
-                <div style={{ width: "80mm", padding: 12, margin: 5 }} ref={bill80Ref}>
-                  <BillForCheckOut80
-                    orderPayBefore={0}
-                    storeDetail={storeDetail}
-                    selectedTable={selectedTable}
-                    dataBill={dataModal}
-                    totalBillBillForCheckOut80={totalAfter}
-                    // taxPercent={taxPercent}
-                    profile={profile}
-                  />
-                </div>
-              )
-            }
->>>>>>> 63f057d1 (Fix zone in table manager)
       <PopUpCommentCancelOrder
         open={showCancelPopup}
         onClose={handleCancleCommentClose}
