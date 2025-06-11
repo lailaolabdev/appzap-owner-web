@@ -367,17 +367,18 @@ export default function Dashboard() {
               <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
                 <span style={{ fontWeight: 'bold' }}>{t("numberOfBill")}</span>
                 <span style={{ margin: '0 8px' }}>:</span>
-                <span>{countAllBillReport?.count - countIsDebtTrue || 0} {t("bill")}</span>
+                <span>{countAllBillReport?.count - countIsDebtTrue || 0} {t("bill")} </span>
               </div>
 
               <div className={fontMap[language]} style={{ marginBottom: '8px' }}>
                 <span style={{ fontWeight: 'bold' }}>{t("total_will_get")}</span>
                 <span style={{ margin: '0 8px' }}>:</span>
                 <span>
-                  {convertNumber(
+                  {/* {convertNumber(
                     (totalBillActiveReport?.total || 0) +
                     salesInformationReport?.totalSales || 0
-                  )}
+                  )} */}
+                  {convertNumber(salesInformationReport?.totalSales || 0)}
                 </span>
               </div>
 

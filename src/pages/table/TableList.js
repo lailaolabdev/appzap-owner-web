@@ -273,17 +273,7 @@ export default function TableList() {
 
     getUserData();
   }, [pinStatus]);
-
-  // useEffect(() => {
-  //   const localZone = localStorage.getItem("selectedZone");
-  //   console.log("logs localZone------->", localZone)
-  //   if (localZone) {
-  //     setZoneId(localZone);
-  //     setZoneSelected(localZone)
-  //     // getTableDataStore({ zone: localZone });
-  //   }
-
-  // },[])
+ 
 
   useEffect(() => {
     const getDataTax = async () => {
@@ -450,33 +440,25 @@ export default function TableList() {
   }, [tableOrderItems]);
 
   useEffect(() => {
-    let localZone = localStorage.getItem("selectedZone");
+    console.log("test v1=======>", zoneId)
+    const localZone = localStorage.getItem("selectedZone");
     setZoneId(localZone)
     if (zoneId) {
-      console.log("log tb store 1 : ", zoneId)
       getTableDataStore({ zone: zoneId });
+    console.log("test v2=======>", zoneId)
+
     } else {
-      console.log("log tb store 2: ", localZone)
       getTableDataStore({ zone: localZone });
+    console.log("test v3=======>", zoneId)
+
     }
   }, [zoneId]);
 
-  // useEffect(() => {
-  //   if (state?.zoneId) {
-  //     getTableDataStore({ zone: state?.zoneId });
-  //   } else {
-  //     getTableDataStore();
-  //   }
-  // }, [state?.zoneId]);
-
   useEffect(() => {
-    if (storeDetail?.zoneCheckBill) {
+    console.log("test v4=======>", state?.zoneId)
 
-      console.log("log tb store  3: ", state)
+    if (storeDetail?.zoneCheckBill) {
       getTableDataStore({ zone: state?.zoneId });
-    } else {
-      console.log("log tb store 4: ")
-      // getTableDataStore();
     }
   }, [storeDetail?.zoneCheckBill]);
 
@@ -484,7 +466,7 @@ export default function TableList() {
     localStorage.setItem("selectedZone", value);
     if (value === "ALL") {
       getTableDataStore();
-      setZoneId(value);
+      // setZoneId(value);
     } else {
       setZoneId(value);
     }
@@ -2001,6 +1983,11 @@ export default function TableList() {
         headers: headers,
       });
       if (data?.status === 200) {
+        // const localZone = localStorage.getItem("selectedZone");
+        // if (localZone) {
+        //   setZoneData(localZone);
+        // } else {
+        // }
         setZoneData(data?.data?.data);
       }
     } catch (err) {
@@ -2223,32 +2210,7 @@ export default function TableList() {
                   </Dropdown.Item>
                 ))}
               </DropdownButton>
-              {/* <Button className="d-flex justify-content-center align-items-center " variant={zoneId === "ALL" ? "success" : "light"} onClick={() => onSelectedZone("ALL")} >
-                All
-              </Button>
-              {zoneData?.map((item, index) => (
-                <Button key={index} className="d-flex gap-2 justify-content-center align-items-center " variant={item?._id === zoneId ? "success" : "light"} onClick={() => onSelectedZone(item?._id)} >
-                  <MapPin size={18} /> {item?.name}
-                </Button>
-              ))} */}
-              {/* <Form.Label>
-                <span className={cn(fontMap[language])}>
-                  {t("show_by_zone")}
-                </span>
-              </Form.Label>
-              <Form.Control
-                as="select"
-                value={zoneId}
-                onChange={(e) => onSelectedZone(e?.target?.value)}
-                style={{ width: "150px", marginLeft: "10px" }}
-              >
-                <option value="ALL">{t("show_all_zone")}</option>
-                {zoneData?.map((item, index) => (
-                  <option key={index} value={item?._id}>
-                    {item?.name}
-                  </option>
-                ))}
-              </Form.Control> */}
+
             </div>
           )}
 
