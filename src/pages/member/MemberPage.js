@@ -41,6 +41,7 @@ import {
   getMembersListTop,
   getMembersListBirthday,
   deleteMember,
+  updateSelectdPointAndDiscount,
   getAllMembersIds,
 } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
@@ -594,11 +595,29 @@ export default function MemberPage() {
     }
   };
 
-  const updateSelectedMembers = () => {
+  const updateSelectedMembers = async () => {
     setIsUpdating(true);
-    setTimeout(() => {
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      let findBy = "?";
+      findBy += `storeId=${DATA?.storeId}`;
+      const data = {
+        memberIds: selectedMembers,
+        point: formValue?.point,
+        discount: formValue?.discount,
+      };
+      await updateSelectdPointAndDiscount(findBy, data, TOKEN);
+      setFormValue();
+      getMembersData();
+      setPopup();
+      setSelectedMembers([]);
+      setSelectAll(false);
       setIsUpdating(false);
-    }, 2000);
+    } catch (error) {
+      console.error("Error updating expiry dates:", error);
+      setIsUpdating(false);
+      setFormValue();
+    }
   };
 
   const handleChange = (e) => {

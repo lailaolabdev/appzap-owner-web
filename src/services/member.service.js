@@ -257,9 +257,9 @@ export const getAllMembersIds = async (findBy, TOKEN) => {
   }
 };
 
-export const updateSelectdPoint = async (id, data, TOKEN) => {
+export const updateSelectdPointAndDiscount = async (findby, data, TOKEN) => {
   try {
-    const url = `${END_POINT_SEVER}/v7/member/update-point-discount${id}`;
+    const url = `${END_POINT_SEVER}/v7/member/update-point-discount${findby}`;
     const res = await axios.put(url, data, { headers: TOKEN });
     return res?.data;
   } catch (error) {
