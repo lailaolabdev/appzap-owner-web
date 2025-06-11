@@ -8,7 +8,7 @@ import Box from "../Box";
 export default function PopUpMemberOrderAll({
   open,
   onClose,
-  setSelectedMenu
+  setSelectedMenu,
 }) {
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [allMenu, setAllMenu] = useState([]);
@@ -62,8 +62,8 @@ export default function PopUpMemberOrderAll({
                 gridTemplateColumns: {
                   md: "1fr 1fr 1fr 1fr 1fr",
                   sm: "1fr 1fr 1fr",
-                  xs: "1fr 1fr"
-                }
+                  xs: "1fr 1fr",
+                },
               }}
             >
               {allMenu &&
@@ -71,7 +71,7 @@ export default function PopUpMemberOrderAll({
                   <div key={"table" + index}>
                     <Box
                       sx={{
-                        display: { md: "block", xs: "none" }
+                        display: { md: "block", xs: "none" },
                       }}
                     >
                       <div
@@ -87,7 +87,7 @@ export default function PopUpMemberOrderAll({
                           alignItems: "center",
                           textAlign: "center",
                           padding: 10,
-                          cursor: "pointer"
+                          cursor: "pointer",
                         }}
                         onClick={() => {
                           toggleSelection(menu?._id);
@@ -98,13 +98,13 @@ export default function PopUpMemberOrderAll({
                             position: "absolute",
                             float: "right",
                             right: 10,
-                            top: 10
+                            top: 10,
                           }}
                         ></div>
                         <div>
                           <span
                             style={{
-                              fontSize: 16
+                              fontSize: 16,
                             }}
                           >
                             <div>{menu?.name}</div>
@@ -114,7 +114,7 @@ export default function PopUpMemberOrderAll({
                     </Box>
                     <Box
                       sx={{
-                        display: { md: "none", xs: "block" }
+                        display: { md: "none", xs: "block" },
                       }}
                     >
                       <div
@@ -127,7 +127,7 @@ export default function PopUpMemberOrderAll({
                           flexDirection: "column",
                           alignItems: "center",
                           textAlign: "center",
-                          padding: 10
+                          padding: 10,
                         }}
                       >
                         <div
@@ -135,7 +135,7 @@ export default function PopUpMemberOrderAll({
                             position: "absolute",
                             float: "right",
                             right: 10,
-                            top: 10
+                            top: 10,
                           }}
                         ></div>
                         <div>
@@ -150,19 +150,6 @@ export default function PopUpMemberOrderAll({
                 ))}
             </Box>
           </div>
-          {/* <Row className="p-2">
-            {allMenu.map((e) => (
-              <div key={e.id} className="m-2">
-                <Button
-                  variant="outline-primary"
-                  style={{ borderRadius: 6 }}
-                  onClick={() => toggleSelection(e)}
-                >
-                  {e.name}
-                </Button>
-              </div>
-            ))}
-          </Row> */}
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={onClose}>ຍົກເລີກ</Button>
@@ -170,7 +157,6 @@ export default function PopUpMemberOrderAll({
             disabled={buttonDisabled}
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={() => {
-              
               setSelectedMenu(selectedItems);
               onClose();
             }}

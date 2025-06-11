@@ -12,10 +12,11 @@ import {
   Pagination,
   Nav,
   Spinner,
+  Modal,
 } from "react-bootstrap";
 import { faList, faBirthdayCake } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { BsFillCalendarWeekFill } from "react-icons/bs";
+import { BsFillCalendarWeekFill, BsCalendarCheck } from "react-icons/bs";
 import {
   MdAssignmentAdd,
   MdOutlineCloudDownload,
@@ -65,6 +66,7 @@ import { useStoreStore } from "../../zustand/storeStore";
 import theme from "../../theme";
 
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
+import Swal from "sweetalert2";
 
 export default function MemberPage() {
   const limitData = 10;
@@ -152,6 +154,9 @@ export default function MemberPage() {
   const [isSelectingAllPages, setIsSelectingAllPages] = useState(false);
   const [allMemberIds, setAllMemberIds] = useState([]);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isLoadingAllMembers, setIsLoadingAllMembers] = useState(false);
+  const [newExpiryDate, setNewExpiryDate] = useState(false);
+  const [formValue, setFormValue] = useState({});
 
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
 
@@ -551,8 +556,8 @@ export default function MemberPage() {
 
   // เพิ่มฟังก์ชันเหล่านี้
   const handleSelectMembers = (memberId) => {
-    if (selectedMembers.includes(memberId)) {
-      setSelectedMembers(selectedMembers.filter((id) => id !== memberId));
+    if (selectedMembers?.includes(memberId)) {
+      setSelectedMembers(selectedMembers?.filter((id) => id !== memberId));
     } else {
       setSelectedMembers([...selectedMembers, memberId]);
     }
@@ -570,7 +575,7 @@ export default function MemberPage() {
       try {
         const { TOKEN, DATA } = await getLocalData();
         let findby = "?";
-        findby += `storeId=${DATA?.storeId}&`;
+        findby += `storeId=${DATA?.storeId}`;
         const data = await getAllMembersIds(findby, TOKEN);
         const MemberIds = data?.data?.data?.map((member) => member._id);
         setAllMemberIds(MemberIds);
@@ -595,6 +600,22 @@ export default function MemberPage() {
       setIsUpdating(false);
     }, 2000);
   };
+
+  const handleChange = (e) => {
+    if (e?.target.name === "discount" && e.target.value > 100) {
+      Swal.fire({
+        icon: "warning",
+        title: "Waring!",
+        text: "ສ່ວນຫຼຸດຕ້ອງບໍ່ເກີນ 100%",
+        timer: 3000,
+        showConfirmButton: false,
+      });
+      setFormValue({ ...formValue, discount: 0 });
+    }
+    setFormValue({ ...formValue, [e.target.name]: e.target.value });
+  };
+
+  console.log("formValue", formValue);
 
   return (
     <>
@@ -921,12 +942,10 @@ export default function MemberPage() {
             >
               <span>{t("member_list")}</span>
               <div className="d-flex gap-2">
-                {selectedMembers.length > 0 && (
+                {selectedMembers?.length > 0 && (
                   <Button
                     variant="dark"
-                    onClick={() =>
-                      setPopup({ updateSelectedPointsExpiry: true })
-                    }
+                    onClick={() => setPopup({ updateSelected: true })}
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -935,10 +954,11 @@ export default function MemberPage() {
                     }}
                   >
                     <span className="flex gap-1 items-center">
-                      <BsCalendarCheck /> {t("update_selected_expiry_date")} (
+                      <BsCalendarCheck /> {t("update_setected_point_discount")}{" "}
+                      (
                       {isSelectingAllPages
-                        ? `${selectedMembers.length}`
-                        : selectedMembers.length}
+                        ? `${selectedMembers?.length}`
+                        : selectedMembers?.length}
                       )
                     </span>
                   </Button>
@@ -1036,7 +1056,7 @@ export default function MemberPage() {
                       <td style={{ textAlign: "center" }}>
                         <Form.Check
                           type="checkbox"
-                          checked={selectedMembers.includes(e?._id)}
+                          checked={selectedMembers?.includes(e?._id)}
                           onChange={() => handleSelectMembers(e?._id)}
                         />
                       </td>
@@ -1955,27 +1975,40 @@ export default function MemberPage() {
         </div>
       </Box>
 
-      <Modal show={popup?.updateSelectedPointsExpiry} onHide={() => setPopup()}>
+      <Modal show={popup?.updateSelected} onHide={() => setPopup()}>
         <Modal.Header closeButton>
-          <Modal.Title>{t("update_selected_expiry_date")}</Modal.Title>
+          <Modal.Title>{t("update_setected_point_discount")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {isSelectingAllPages ? (
             <Alert variant="info">
-              {t("you_selected_all")} {selectedMembers.length} {t("members")}
+              {t("you_selected_all")} {selectedMembers?.length} {t("member")}
             </Alert>
           ) : (
             <Alert variant="info">
-              {t("you_selected")} {selectedMembers.length} {t("members")}
+              {t("you_selected")} {selectedMembers?.length} {t("member")}
             </Alert>
           )}
           <Form>
             <Form.Group className="mb-3">
-              <Form.Label>{t("new_expiry_date")}</Form.Label>
+              <Form.Label>{t("point")}</Form.Label>
               <Form.Control
-                type="date"
-                value={newExpiryDate}
-                onChange={(e) => setNewExpiryDate(e.target.value)}
+                type="text"
+                name="point"
+                value={formValue?.point}
+                onChange={(e) => handleChange(e)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>
+                {t("discount")} {"(%)"}
+              </Form.Label>
+              <Form.Control
+                type="text"
+                name="discount"
+                min={0}
+                value={formValue?.discount}
+                onChange={(e) => handleChange(e)}
               />
             </Form.Group>
           </Form>

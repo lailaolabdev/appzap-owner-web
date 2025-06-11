@@ -1378,5 +1378,8 @@
   "item_canceled_successfully": "ລາຍການຖືກຍົກເລີກແລ້ວ",
   "item_canceled_menu": "ລາຍການເມນູຖືກຍົກເລີກ",
   "cancled_by": "ຖືກຍົກເລີກໂດຍ",
-  "name_is_haven" : "ຊື່ລາຍການນີ້ມີແລ້ວ່າຢູ່ໃນລະບົບແລ້ວ, ກະລຸນາປ້ອນຊື່ໃໝ່"
+  "name_is_haven" : "ຊື່ລາຍການນີ້ມີແລ້ວ່າຢູ່ໃນລະບົບແລ້ວ, ກະລຸນາປ້ອນຊື່ໃໝ່",
+  "update_setected_point_discount" : "ອັບເດດ ພ໋ອຍ ແລະ ສ່ວນຫຼຸດ",
+  "you_selected_all" : "ທ່ານເລຶອກທັງໝົດ",
+  "you_selected" : "ທ່ານເລຶອກ"
 }

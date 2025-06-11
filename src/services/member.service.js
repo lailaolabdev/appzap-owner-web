@@ -247,8 +247,24 @@ export const deleteMember = async (id, TOKEN) => {
   }
 };
 
-export const getAllMembersIds = async (findBy, Token) => {
-  console.log("fff");
+export const getAllMembersIds = async (findBy, TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v7/all-members-Id${findBy}`;
+    const res = await axios.get(url, { headers: TOKEN });
+    return res?.data;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const updateSelectdPoint = async (id, data, TOKEN) => {
+  try {
+    const url = `${END_POINT_SEVER}/v7/member/update-point-discount${id}`;
+    const res = await axios.put(url, data, { headers: TOKEN });
+    return res?.data;
+  } catch (error) {
+    return error;
+  }
 };
 
 // report

@@ -1378,5 +1378,9 @@
   "item_canceled_successfully" : "Item canceled successfully",
   "item_canceled_menu" : "Item canceled menu",
   "cancled_by" : "Canceled by",
-  "name_is_haven" : "Name is haven, Please try again"
+  "name_is_haven" : "Name is haven, Please try again",
+  "update_setected_point_discount" : "Update setected point and discount",
+  "you_selected_all" : "You selected all",
+  "you_selected" : "You selected"
+
 }
