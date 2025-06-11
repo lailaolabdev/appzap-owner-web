@@ -7,6 +7,10 @@ import {
   getLocalData,
   getLocalDataCustomer,
 } from "../../constants/api";
+import { usePaymentStore } from "../../zustand/paymentStore";
+import { usePointStore } from "../../zustand/pointStore";
+import { useUserStore } from "../../zustand/userStore";
+import { convertRole } from "../../helpers/convertRole";
 import Axios from "axios";
 import QRCode from "react-qr-code";
 import { EMPTY_LOGO, URL_PHOTO_AW3 } from "../../constants";
@@ -14,8 +18,9 @@ import { Image, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import _ from "lodash";
+import { data } from "autoprefixer";
 
-export default function BillForCheckOut80({
+export default function BillForCheckOut80Transection({
   storeDetail,
   orderPayBefore,
   selectedTable,
@@ -40,15 +45,16 @@ export default function BillForCheckOut80({
     storeDetail?.isShowExchangeRate || false
   );
 
+  const { SelectedDataBill } = usePaymentStore();
+  const { PointStore } = usePointStore();
+
+  const { selectUserEmployee } = useUserStore();
+
   // Replace the current useRef and console.log
   const serviceChargeRef = useRef(serviceCharge);
-  const moneyReciveRef = useRef(dataBill?.moneyReceived);
-  const moneyChangeRef = useRef(dataBill?.moneyChange);
-  const paymentMethodRef = useRef(dataBill?.paymentMethod);
   const enableServiceChangeRef = useRef(enableServiceChange);
 
-  // Remove this console log that runs on every render
-  // console.log("enableServiceChange", enableServiceChangeRef.current);
+  console.log("dataBill", dataBill);
 
   const orders =
     orderPayBefore && orderPayBefore.length > 0
@@ -61,27 +67,9 @@ export default function BillForCheckOut80({
     if (serviceCharge > 0) {
       serviceChargeRef.current = serviceCharge;
     }
-    if (dataBill?.moneyReceived > 0) {
-      moneyReciveRef.current = dataBill?.moneyReceived;
-    }
-    if (dataBill?.moneyChange > 0) {
-      moneyChangeRef.current = dataBill?.moneyChange;
-    }
-    // if (dataBill?.paymentMethod !== undefined) {
-    //   paymentMethodRef.current = dataBill?.paymentMethod;
-    // }
-    if (paymentMethod) {
-      paymentMethodRef.current = paymentMethod;
-    } else if (dataBill?.paymentMethod !== undefined) {
-      paymentMethodRef.current = dataBill?.paymentMethod;
-    }
     // Always update enableServiceChangeRef with the latest value
     enableServiceChangeRef.current = enableServiceChange;
   }, [
-    dataBill?.moneyReceived,
-    dataBill?.moneyChange,
-    dataBill?.paymentMethod,
-    paymentMethod,
     taxPercent,
     serviceCharge,
     totalBillBillForCheckOut80,
@@ -138,7 +126,7 @@ export default function BillForCheckOut80({
     const totalAmountAll =
       orderPayBefore && orderPayBefore.length > 0
         ? _total
-        : totalBillBillForCheckOut80 || _total;
+        : _total;
 
     // Handle discount logic
     if (dataBill?.discount > 0) {
@@ -165,11 +153,9 @@ export default function BillForCheckOut80({
     setTotal(totalAmountAll);
   };
 
-  // Remove console logs for production
-  // console.log("serviceChargeRef.current", serviceChargeRef.current);
-  // console.log("storeDetail?.serviceChargePer 1", storeDetail?.serviceChargePer);
-  // console.log("serviceChargeAmount", serviceChargeAmount);
-  // console.log("TotalServiceChange", TotalServiceChange);
+  useEffect(() => {
+    _calculateTotal();
+  }, [dataBill?.discount]);
 
   const getDataCurrency = async () => {
     try {
@@ -201,7 +187,7 @@ export default function BillForCheckOut80({
   }, [imageUrl2]);
 
   const paymentMethodText = useMemo(() => {
-    switch (paymentMethodRef.current) {
+    switch (SelectedDataBill?.paymentMethod) {
       case "CASH":
         return "(ເງີນສົດ)";
       case "TRANSFER":
@@ -210,10 +196,12 @@ export default function BillForCheckOut80({
         return "(ເງີນສົດແລະໂອນ)";
       case "CASH_TRANSFER_POINT":
         return "(ເງີນສົດ + ໂອນ + ພ໋ອຍ)";
+      case "OTHER":
+        return "";
       default:
         return "";
     }
-  }, [paymentMethodRef.current]);
+  }, [SelectedDataBill?.paymentMethod]);
 
   const paymentDisplay = useMemo(
     () => (
@@ -226,19 +214,23 @@ export default function BillForCheckOut80({
         }}
       >
         <div>
-          {t("getMoney")} {moneyCurrency(moneyReciveRef.current) || 0}{" "}
+          {t("getMoney")}{" "}
+          {moneyCurrency(
+            SelectedDataBill?.moneyReceived - SelectedDataBill?.pointRecived
+          ) || 0}{" "}
           {storeDetail?.firstCurrency} <span>{paymentMethodText}</span>
         </div>
         {","}
         <div>
-          {t("moneyWithdrawn")} {moneyCurrency(moneyChangeRef.current) || 0}{" "}
+          {t("moneyWithdrawn")}{" "}
+          {moneyCurrency(SelectedDataBill?.moneyChange) || 0}{" "}
           {storeDetail?.firstCurrency}
         </div>
       </div>
     ),
     [
-      dataBill?.moneyReceived,
-      dataBill?.moneyChange,
+      SelectedDataBill?.moneyReceived,
+      SelectedDataBill?.moneyChange,
       paymentMethodText,
       storeDetail?.firstCurrency,
       t,
@@ -291,7 +283,13 @@ export default function BillForCheckOut80({
           <div>
             {t("staffCheckBill")}:{" "}
             <span style={{ fontWeight: "bold" }}>
-              {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
+              {selectUserEmployee
+                ? `${selectUserEmployee?.firstname ?? "-"} - ${convertRole(
+                    selectUserEmployee?.role
+                  )}`
+                : `${profile?.data?.firstname ?? "-"} - ${convertRole(
+                    profile?.data?.role
+                  )}`}
             </span>
           </div>
 
@@ -304,8 +302,8 @@ export default function BillForCheckOut80({
                     ? `${dataBill?.memberPhone} (${t(
                         "point"
                       )} : ${moneyCurrency(
-                        Number(dataBill?.Point || 0) -
-                          Number(storeDetail?.point || 0)
+                        Number(SelectedDataBill?.Point || 0) -
+                          Number(SelectedDataBill?.pointRecived || 0)
                       )})`
                     : ""}
                 </span>
@@ -400,7 +398,13 @@ export default function BillForCheckOut80({
             </div>
           </Col>
           <Col>
-            <div style={{ textAlign: "right" }}>{moneyCurrency(total)}</div>
+            {SelectedDataBill?.pointRecived > 0 ? (
+              <div style={{ textAlign: "right" }}>
+                {moneyCurrency(total - SelectedDataBill?.pointToMoney)}
+              </div>
+            ) : (
+              <div style={{ textAlign: "right" }}>{moneyCurrency(total)}</div>
+            )}
           </Col>
         </Row>
         <Row>
@@ -415,28 +419,28 @@ export default function BillForCheckOut80({
             </div>
           </Col>
           <Col>
-            <div style={{ textAlign: "right" }}>{dataBill?.discount}</div>
+            <div style={{ textAlign: "right" }}>
+              {moneyCurrency(dataBill?.discount)}
+            </div>
           </Col>
         </Row>
-        {dataBill?.memberPhone
-          ? storeDetail?.point > 0 && (
+        {SelectedDataBill?.memberPhone
+          ? SelectedDataBill?.Point > 0 && (
               <Row>
                 <Col xs={7}>
-                  <div style={{ textAlign: "right" }}>{t("point")}: </div>
+                  <div style={{ textAlign: "right" }}>{t("point_use")}: </div>
                 </Col>
                 <Col>
                   <div style={{ textAlign: "right" }}>
-                    {storeDetail?.point ? storeDetail?.point : 0}
+                    {SelectedDataBill?.pointRecived
+                      ? `${moneyCurrency(
+                          SelectedDataBill?.pointRecived
+                        )} => ${moneyCurrency(
+                          SelectedDataBill?.pointToMoney || 0
+                        )}`
+                      : 0}
                   </div>
                 </Col>
-                {/* <Col xs={7}>
-              <div style={{ textAlign: "right" }}>
-                ໄດ້ພ໋ອຍຈາກການຊື້ຄັ້ງນີ້:{" "}
-              </div>
-            </Col>
-            <Col>
-              <div style={{ textAlign: "right" }}>150</div>
-            </Col> */}
               </Row>
             )
           : ""}
@@ -449,7 +453,7 @@ export default function BillForCheckOut80({
         </Col>
         <Col>
           <div style={{ textAlign: "right" }}>
-            {moneyCurrency(serviceChargeAmount)}
+            {moneyCurrency(serviceChargeAmount || dataBill?.serviceChargeAmount)}
           </div>
         </Col>
       </Row>
@@ -470,7 +474,12 @@ export default function BillForCheckOut80({
               style={{ textAlign: "right", fontSize: 16, fontWeight: "bold" }}
             >
               {moneyCurrency(
-                Math.floor(totalAfterDiscount + taxAmount + serviceChargeAmount)
+                Math.floor(
+                  totalAfterDiscount +
+                    taxAmount +
+                    serviceChargeAmount -
+                    SelectedDataBill?.pointToMoney
+                )
               )}
             </div>
           </Col>
@@ -490,14 +499,31 @@ export default function BillForCheckOut80({
             </Col>
           </Row>
         ))}
+        {storeDetail?.isCRM && dataBill?.memberPhone && (
+          <Row>
+            <Col xs={7}>
+              <div style={{ textAlign: "right" }}>{t("point_remain")}:</div>
+            </Col>
+            <Col>
+              <div style={{ textAlign: "right" }}>
+                {moneyCurrency(
+                  SelectedDataBill?.Point - SelectedDataBill?.pointRecived
+                )}
+              </div>
+            </Col>
+          </Row>
+        )}
       </div>
 
       {isShowExchangeRate && (
         <>
           <div style={{ height: 10 }} />
           <hr style={{ border: "1px dashed #000", margin: 0 }} />
+          {storeDetail?.isCRM && (
+            <span className="text-[12px] ml-[10px]">{t("exchangeRate")} :</span>
+          )}
           <div style={{ fontSize: 12, textAlign: "center" }}>
-            <span>{t("exchangeRate")}&nbsp;</span>
+            {!storeDetail?.isCRM && <span>{t("exchangeRate")}&nbsp;</span>}
             {currencyData?.map((item, index) => (
               <span key={index}>
                 {item?.currencyCode}: {moneyCurrency(item?.sell)}
@@ -508,13 +534,16 @@ export default function BillForCheckOut80({
                 )}
               </span>
             ))}
-            {","}
-            &nbsp;
-            {storeDetail?.isCRM && dataBill?.memberPhone && (
-              <span>
-                1 {t("point")} = 1 {storeDetail?.firstCurrency}
-              </span>
-            )}
+            <span className="mx-2">{"|"}</span>
+            {storeDetail?.isCRM &&
+              PointStore?.data &&
+              PointStore.data.length > 0 && (
+                <span>
+                  {PointStore.data[0]?.piontUse || 0} {t("point")} :{" "}
+                  {moneyCurrency(PointStore.data[0]?.moneyUse || 0)}{" "}
+                  {storeDetail?.firstCurrency}
+                </span>
+              )}
           </div>
         </>
       )}
