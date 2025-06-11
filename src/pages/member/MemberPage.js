@@ -46,18 +46,15 @@ import {
 } from "../../services/member.service";
 import { getLocalData } from "../../constants/api";
 import PopUpExportExcel from "../../components/popup/PopUpExportExcel";
-import { useStore } from "../../store";
 import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 
 import { moneyCurrency } from "../../helpers/index";
 import PopUpMemberEdit from "../../components/popup/PopUpMemberEdit";
 import PopUpMemberOrder from "../../components/popup/PopUpMemberOrder";
 import PopUpMemberOrderAll from "../../components/popup/PopUpMemberOrderAll";
-import { use } from "i18next";
 import PopUpSetStartAndEndDateBirthDay from "../../components/popup/PopUpSetStartAndEndDateBirthDay";
 import PopUpSetStartAndEndDateFilterPoint from "../../components/popup/PopUpSetStartAndEndDateFilterPoint";
 import PopUpSetStartAndEndDateTop from "../../components/popup/PopUpSetStartAndEndDateTop";
-import { set } from "lodash";
 
 import EmptyImage from "../../image/empty-removebg.png";
 import PopUpSetStartAndEndDateMember from "../../components/popup/PopUpSetStartAndEndDateMember";
@@ -136,7 +133,6 @@ export default function MemberPage() {
   const [memberName, setMemberName] = useState("");
   const [selectedMenuIds, setSelectedMenuIds] = useState([]);
   const [selectedMemberOrders, setSelectedMemberOrders] = useState("");
-  const [changeUi, setChangeUi] = useState("LIST_MEMBER");
   const [loading, setLoading] = useState([]);
 
   const [memberListTop, setMemberListTop] = useState();
@@ -153,13 +149,13 @@ export default function MemberPage() {
   const [selectedMembers, setSelectedMembers] = useState([]);
 
   const [isSelectingAllPages, setIsSelectingAllPages] = useState(false);
-  const [allMemberIds, setAllMemberIds] = useState([]);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [isLoadingAllMembers, setIsLoadingAllMembers] = useState(false);
-  const [newExpiryDate, setNewExpiryDate] = useState(false);
-  const [formValue, setFormValue] = useState({});
+  const [formValue, setFormValue] = useState({
+    point: 0,
+    discount: 0,
+  });
 
-  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
+  const { storeDetail, setStoreDetail } = useStoreStore();
 
   // useEffect
   useEffect(() => {
@@ -477,7 +473,7 @@ export default function MemberPage() {
     findby += `endDay=${endDatePoint}&`;
     findby += `startTime=${startTimePoint}&`;
     findby += `endTime=${endTimePoint}&`;
-    const data = await GetRedeemPoint(findby)
+    await GetRedeemPoint(findby)
       .then((res) => {
         setRedeemCount(Math.ceil(res?.data?.count / limitData));
         setRedeemList(res?.data?.data);
@@ -500,7 +496,7 @@ export default function MemberPage() {
     findby += `endDate=${endDatePoint}&`;
     findby += `startTime=${startTimePoint}&`;
     findby += `endTime=${endTimePoint}&`;
-    const data = await GetEarnPoint(findby)
+    await GetEarnPoint(findby)
       .then((res) => {
         setEarnCount(Math.ceil(res?.data?.count / limitData));
         setEarnList(res?.data?.data);
@@ -572,25 +568,19 @@ export default function MemberPage() {
       setIsSelectingAllPages(false);
     } else {
       // ถ้ายังไม่ได้เลือก ให้ดึงข้อมูล ID ทั้งหมดและเลือก
-      setIsLoadingAllMembers(true);
       try {
         const { TOKEN, DATA } = await getLocalData();
         let findby = "?";
         findby += `storeId=${DATA?.storeId}`;
         const data = await getAllMembersIds(findby, TOKEN);
         const MemberIds = data?.data?.data?.map((member) => member._id);
-        setAllMemberIds(MemberIds);
         setSelectedMembers(MemberIds);
         setSelectAll(true);
-        setIsSelectingAllPages(true);
       } catch (error) {
         console.error("Error fetching all member MemberIds:", error);
         // ถ้าไม่สามารถดึงข้อมูลทั้งหมดได้ ให้เลือกเฉพาะในหน้าปัจจุบัน
         setSelectedMembers(membersData.map((member) => member._id));
         setSelectAll(true);
-        setIsSelectingAllPages(false);
-      } finally {
-        setIsLoadingAllMembers(false);
       }
     }
   };
@@ -630,8 +620,9 @@ export default function MemberPage() {
         showConfirmButton: false,
       });
       setFormValue({ ...formValue, discount: 0 });
+    } else {
+      setFormValue({ ...formValue, [e.target.name]: e.target.value });
     }
-    setFormValue({ ...formValue, [e.target.name]: e.target.value });
   };
 
   console.log("formValue", formValue);
@@ -819,7 +810,6 @@ export default function MemberPage() {
                 alignItems: "center",
               }}
               onClick={() => {
-                setChangeUi("LIST_MEMBER");
                 getMembersData();
                 setStoreDetail({
                   changeUi: "LIST_MEMBER",
@@ -2033,13 +2023,16 @@ export default function MemberPage() {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setPopup()}>
+          <Button variant="secondary" onClick={() =>{
+            setPopup()
+            setFormValue()
+          } }>
             {t("cancel")}
           </Button>
           <Button
             variant="primary"
             onClick={updateSelectedMembers}
-            disabled={isUpdating}
+            disabled={isUpdating || !formValue?.point || !formValue?.discount}
           >
             {isUpdating ? (
               <>
