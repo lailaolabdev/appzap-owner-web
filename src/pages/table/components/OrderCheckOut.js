@@ -311,12 +311,7 @@ const OrderCheckOut = ({
                 <div className="w-60 text-end">{`${serviceCharge} %`}</div>
               </div>
             )}
-            {(storeDetail?.serviceChargePer || isServiceChargeEnabled) && (
-              <div className="w-full flex justify-end items-center">
-                <div className="text-end">{t("service_charge")}:</div>
-                <div className="w-60 text-end">{`${serviceCharge} %`}</div>
-              </div>
-            )}
+            
             <div className="w-full flex justify-end items-center">
               <div className="text-end">{t("total_price")}:</div>
               <div className="w-60 text-end">

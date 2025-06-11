@@ -38,7 +38,7 @@ import {
 import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
 import printFlutter from "../../helpers/printFlutter";
-import BillForCheckOut80 from "../../components/bill/BillForCheckOut80";
+import BillForCheckOut80Transection from "../../components/bill/BillForCheckOut80Transection";
 import BillForCheckOutCafe80 from "../../components/bill/BillForCheckOutCafe80";
 import { convertUnitgramAndKilogram } from "../../helpers/convertUnitgramAndKilogram";
 import { Button } from "react-bootstrap";
@@ -1338,7 +1338,7 @@ export default function DashboardFinance({
                       <span>
                         {moneyCurrency(
                           dataModal?.discount  || dataModal?.serviceChargeAmount > 0
-                            ? (dataModal?.discount ?? 0) + TotalAmount + dataModal?.serviceChargeAmount
+                            ? (dataModal?.discount ?? 0) + TotalAmount + dataModal?.serviceChargeAmount + dataModal?.taxAmount
                             : TotalAmount
                         )}{" "}
                         {storeDetail?.firstCurrency}
@@ -1350,7 +1350,7 @@ export default function DashboardFinance({
                       {storeDetail?.firstCurrency}{" "}
                     </span>
                     <span>
-                      {moneyCurrency(dataModal?.billAmount + dataModal?.serviceChargeAmount || 0)}
+                      {moneyCurrency(dataModal?.billAmount + dataModal?.serviceChargeAmount + dataModal?.taxAmount || 0)}
                       {storeDetail?.firstCurrency}
                     </span>
                     {/* {dataModal?.paymentMethod === "CASH_TRANSFER_POINT" && dataModal?.point > 0 ? (
@@ -1473,14 +1473,14 @@ export default function DashboardFinance({
           </div>
         ) : (
           <div style={{ width: "80mm", padding: 12, margin: 5 }} ref={bill80Ref}>
-            <BillForCheckOut80
+            <BillForCheckOut80Transection
               orderPayBefore={0}
               storeDetail={storeDetail}
               selectedTable={selectedTable}
               serviceCharge={dataModal?.serviceChargePercent}
               dataBill={dataModal}
               totalBillBillForCheckOut80={totalAfter}
-              // taxPercent={taxPercent}
+              taxPercent={dataModal?.taxPercent}
               profile={profile}
             />
           </div>
