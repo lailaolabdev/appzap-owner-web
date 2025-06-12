@@ -96,7 +96,7 @@ export default function MenuList() {
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState([]);
-  const { updateMenuItem, createMenuItem, deleteMenuItem } = useMenuStore();
+  const { updateMenuItem, createMenuItem, deleteMenuItem, getMenus } = useMenuStore();
   const { storeDetail } = useStoreStore();
 
   const location = useLocation();
@@ -346,6 +346,7 @@ export default function MenuList() {
         setMenuType("MENU");
         setConnectMenuId("");
         successAdd(`${t("add_success")}`);
+        getMenus(_localData?.DATA?.storeId);
         values.name = "";
         values.name_en = "";
         values.name_cn = "";
@@ -388,6 +389,7 @@ export default function MenuList() {
         getMenu(_localData?.DATA?.storeId);
         handleClose3();
         successAdd(`${t("delete_success")}`);
+        getMenus(_localData?.DATA?.storeId);
       }
     } catch (err) {
       errorAdd(`${t("delete_fail")}`);
@@ -431,6 +433,7 @@ export default function MenuList() {
       if (updatedMenu?.data) {
         handleClose2();
         successAdd(`${t("edit_success")}`);
+        getMenus(getTokken?.DATA?.storeId);
       }
     } catch (error) {
       console.error("Update menu item error:", error.message);
