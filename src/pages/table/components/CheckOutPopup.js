@@ -108,7 +108,7 @@ export default function CheckOutPopup({
   const serviceChargeRef = useRef(serviceCharge);
 
   useEffect(() => {
-    if (serviceCharge > 0) {
+    if (storeDetail?.isServiceChange === true) {
       serviceChargeRef.current = serviceCharge;
     }
   }, [serviceCharge]);
@@ -404,19 +404,21 @@ export default function CheckOutPopup({
     }
   };
 
+  
+
   const _checkBill = async (currencyId, currencyName) => {
     const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
 
-    const serviceChargePer = storeDetail?.serviceChargePer;
+    const serviceChargePer = serviceChargeRef.current;
     const serviceChargeAmount = Math.floor(
-      (totalBillCheckOutPopup * storeDetail?.serviceChargePer) / 100
+      (totalBillCheckOutPopup * serviceChargeRef.current) / 100
     );
 
     const localZone = localStorage.getItem("selectedZone");
 
     const moneyChange = calculateReturnAmount();
 
-    const change = cash + transfer;
+    const change = cash + transfer + serviceChargeAmount + taxAmount;
     const completeChange = change > totalBill ? cash - moneyChange : 0;
 
     const orderItem =
@@ -448,8 +450,8 @@ export default function CheckOutPopup({
       isOrderingPaid: false,
       taxAmount: taxAmount,
       taxPercent: taxPercent,
-      serviceChargePercent: serviceChargePer,
-      serviceChargeAmount: serviceChargeAmount,
+      serviceChargePercent: serviceChangTotal,
+      serviceChargeAmount: serviceAmount,
       deliveryName: dataBill?.orderId[0]?.platform,
       customerId: selectDataOpption?._id,
       userNanme: selectDataOpption?.username,
@@ -471,6 +473,8 @@ export default function CheckOutPopup({
       body.currency = cashCurrency;
       body.currencyName = currencyName;
     }
+
+    console.log("body", body);
 
     await axios
       .put(
