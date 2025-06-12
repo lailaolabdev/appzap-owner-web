@@ -27,7 +27,7 @@ export default function EditMenu() {
     t,
     i18n: { language },
   } = useTranslation();
-  const { updateMenuItem } = useMenuStore();
+  const { updateMenuItem, getMenus } = useMenuStore();
   const { storeDetail } = useStoreStore();
   const [getTokken, setgetTokken] = useState();
 
@@ -131,6 +131,7 @@ export default function EditMenu() {
       if (updatedMenu?.status === 200) {
         successAdd(`${t("edit_success")}`);
         navigate("/menu");
+        getMenus(storeDetail?._id);
       }
     } catch (error) {
       console.error("Update failed:", error);
