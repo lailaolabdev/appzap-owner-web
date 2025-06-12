@@ -54,7 +54,7 @@ export default function BillForCheckOut80Transection({
   const serviceChargeRef = useRef(serviceCharge);
   const enableServiceChangeRef = useRef(enableServiceChange);
 
-  console.log("dataBill", dataBill);
+  
 
   const orders =
     orderPayBefore && orderPayBefore.length > 0
@@ -83,7 +83,7 @@ export default function BillForCheckOut80Transection({
 
     // If store has service charge enabled by default
     if (storeDetail?.isServiceChange === true) {
-      return serviceChargeRef.current || 0;
+      return serviceChargeRef.current || dataBill.serviceChargePercent;
     }
 
     // If service charge is explicitly enabled via prop (even if it was undefined before)
@@ -91,7 +91,7 @@ export default function BillForCheckOut80Transection({
       enableServiceChange === true ||
       enableServiceChangeRef.current === true
     ) {
-      return serviceChargeRef.current || 0;
+      return serviceChargeRef.current || dataBill.serviceChargePercent;
     }
 
     // Default case: no service charge
@@ -143,12 +143,15 @@ export default function BillForCheckOut80Transection({
       setTotalAfterDiscount(totalAmountAll);
     }
 
+    
+
     setTaxAmount((totalAmountAll * taxPercent) / 100);
 
     // Service charge calculation using the improved TotalServiceChange
     const serviceChargeTotal = Math.floor(
       (totalAmountAll * TotalServiceChange) / 100
     );
+    
     setServiceChargeAmount(serviceChargeTotal);
     setTotal(totalAmountAll);
   };

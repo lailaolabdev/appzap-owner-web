@@ -1266,15 +1266,7 @@ export default function DashboardFinance({
                       {storeDetail?.firstCurrency}
                     </span>
                     <span>
-                      {moneyCurrency(
-                        dataModal?.payAmount > 0
-                          ? dataModal?.paymentMethod === "CASH"
-                            ? dataModal?.payAmount -
-                            dataModal?.taxAmount +
-                            dataModal?.change
-                            : dataModal?.payAmount - dataModal?.taxAmount
-                          : 0
-                      )}{" "}
+                      {moneyCurrency(dataModal?.payAmount)}{" "}
                       {storeDetail?.firstCurrency}
                     </span>
                     <span>
