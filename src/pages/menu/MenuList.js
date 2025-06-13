@@ -39,6 +39,7 @@ import { cn } from "../../utils/cn";
 import { useMenuStore } from "../../zustand/menuStore";
 import { useStoreStore } from "../../zustand/storeStore";
 import { createMenu } from "../../services/menu";
+import PopUpAddMenuOptionCategory from "./components/popup/PopUpAddMenuOptionCategory";
 
 export default function MenuList() {
   const {
@@ -87,7 +88,6 @@ export default function MenuList() {
   //update show menu
   const [detailMenu, setDetailMenu] = useState();
   const [detailMenuOption, setDetailMenuOption] = useState();
-  console.log("detailMenuOption", detailMenuOption);
   const [menuOptionsCount, setMenuOptionsCount] = useState({});
 
   const [allMenuOptions, setAllMenuOptions] = useState([]);
@@ -143,6 +143,7 @@ export default function MenuList() {
               setMenus(json);
             });
           setIsLoading(false);
+
         } catch (err) {
           console.log(err);
           setIsLoading(false);
@@ -171,6 +172,7 @@ export default function MenuList() {
   const handleUpdateMenuOptionsCount = (menuId, count) => {
     setMenuOptionsCount((prev) => ({ ...prev, [menuId]: count }));
   };
+ 
 
   const getMenu = async (id, categoryId) => {
     try {
@@ -472,7 +474,6 @@ export default function MenuList() {
       },
       headers: headers,
     });
-    console.log("resData", resData);
     if (resData?.data) {
       handleClose2();
       successAdd(`${t("edit_success")}`);
@@ -658,6 +659,9 @@ export default function MenuList() {
   const _menuOptionList = () => {
     navigate(`/settingStore/menu-option/limit/40/page/1/${params?.id}`);
   };
+   const _menuOptionListCategory = () => {
+    navigate(`/settingStore/menu-option-category/limit/40/page/1/${params?.id}`);
+  };
   const _category = () => {
     navigate(`/settingStore/menu/category/limit/40/page/1/${params?.id}`);
   };
@@ -679,6 +683,7 @@ export default function MenuList() {
   //     console.log(err);
   //   }
   // };
+
 
   return (
     <div style={BODY}>
@@ -709,6 +714,14 @@ export default function MenuList() {
                 <span className={fontMap[language]}> {t("option_menu")}</span>
               </Nav.Link>
             </Nav.Item>
+            <Nav.Item>
+               <Nav.Link
+                 eventKey="/settingStore/menu-option-category"
+                 onClick={() => _menuOptionListCategory()}
+               >
+                 <span className={fontMap[language]}>{t("ປະເພດອ໋ອບຊັນ")}</span>
+               </Nav.Link>
+             </Nav.Item>
             <Nav.Item>
               <Nav.Link
                 eventKey="/settingStore/category"
@@ -977,14 +990,12 @@ export default function MenuList() {
                             )}
                             onClick={() => {
                               setShowOptionSetting(true);
-                              console.log("data", data);
-                              console.log("index", index);
                               setDetailMenuOption({ data, index });
                             }}
                           >
                             + {t("addition_options")} (
                             {menuOptionsCount[data._id] ||
-                              data?.menuOptions?.length ||
+                              data?.optionCategoryMenu?.length ||
                               0}
                             )
                           </button>
@@ -2156,7 +2167,7 @@ export default function MenuList() {
           }
         />
 
-        <PopUpAddMenuOption
+        <PopUpAddMenuOptionCategory
           showSetting={showOptionSetting}
           detailMenu={detailMenuOption || dataUpdate}
           handleClose={() => {

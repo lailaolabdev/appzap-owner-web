@@ -185,7 +185,7 @@ function AddOrder() {
       if (
         data?.id === i?.id &&
         JSON.stringify(sortedDataOptionsForComparison) ===
-          JSON.stringify(sortedItemOptionsForComparison)
+        JSON.stringify(sortedItemOptionsForComparison)
       ) {
         _data = { ..._data, quantity: (_data?.quantity || 0) + int };
       }
@@ -488,9 +488,8 @@ function AddOrder() {
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
               : "";
-            const optionText = `- ${option?.name}${optionPriceText} x ${
-              option?.quantity || 1
-            }`;
+            const optionText = `- ${option?.name}${optionPriceText} x ${option?.quantity || 1
+              }`;
             yPosition = wrapText(
               context,
               optionText,
@@ -610,16 +609,17 @@ function AddOrder() {
     }, {});
   };
 
-  const handleAddOption = (menuId, option) => {
+
+  const handleAddSubOption = (menuId, subOption) => {
     setSelectedOptionsArray((prevOptions) => {
       const menuOptions = prevOptions[menuId] || [];
-      const existingOption = menuOptions.find((opt) => opt._id === option._id);
+      const existingOption = menuOptions.find((opt) => opt._id === subOption._id);
 
       if (existingOption) {
         return {
           ...prevOptions,
           [menuId]: menuOptions.map((opt) =>
-            opt._id === option._id
+            opt._id === subOption._id
               ? { ...opt, quantity: opt.quantity + 1 }
               : opt
           ),
@@ -628,21 +628,22 @@ function AddOrder() {
 
       return {
         ...prevOptions,
-        [menuId]: [...menuOptions, { ...option, quantity: 1 }],
+        [menuId]: [...menuOptions, { ...subOption, quantity: 1 }],
       };
     });
   };
 
-  const handleRemoveOption = (menuId, option) => {
+
+  const handleRemoveSubOption = (menuId, subOption) => {
     setSelectedOptionsArray((prevOptions) => {
       const menuOptions = prevOptions[menuId] || [];
-      const existingOption = menuOptions.find((opt) => opt._id === option._id);
+      const existingOption = menuOptions.find((opt) => opt._id === subOption._id);
 
       if (existingOption && existingOption.quantity > 1) {
         return {
           ...prevOptions,
           [menuId]: menuOptions.map((opt) =>
-            opt._id === option._id
+            opt._id === subOption._id
               ? { ...opt, quantity: opt.quantity - 1 }
               : opt
           ),
@@ -651,7 +652,28 @@ function AddOrder() {
 
       return {
         ...prevOptions,
-        [menuId]: menuOptions.filter((opt) => opt._id !== option._id),
+        [menuId]: menuOptions.filter((opt) => opt._id !== subOption._id),
+      };
+    });
+  };
+
+ 
+  const handleSelectSingleOption = (menuId, parentOption, selectedSubOption) => {
+    setSelectedOptionsArray((prevOptions) => {
+      const menuOptions = prevOptions[menuId] || [];
+
+      const filteredOptions = menuOptions.filter((opt) => {
+
+        const isSubOptionOfSameParent = parentOption.selectedOptions.some(
+          (subOpt) => subOpt._id === opt._id
+        );
+        return !isSubOptionOfSameParent;
+      });
+
+
+      return {
+        ...prevOptions,
+        [menuId]: [...filteredOptions, { ...selectedSubOption, quantity: 1 }],
       };
     });
   };
@@ -663,11 +685,71 @@ function AddOrder() {
 
     const menuOptions = selectedOptionsArray[menu._id] || [];
     const optionsTotalPrice = menuOptions.reduce(
-      (sum, option) => sum + option.price * option.quantity,
+      (sum, option) => sum + (option.price || 0) * option.quantity,
       0
     );
     return calculateDiscount(menu) + optionsTotalPrice;
   };
+
+
+  // const handleAddOption = (menuId, option) => {
+  //   setSelectedOptionsArray((prevOptions) => {
+  //     const menuOptions = prevOptions[menuId] || [];
+  //     const existingOption = menuOptions.find((opt) => opt._id === option._id);
+
+  //     if (existingOption) {
+  //       return {
+  //         ...prevOptions,
+  //         [menuId]: menuOptions.map((opt) =>
+  //           opt._id === option._id
+  //             ? { ...opt, quantity: opt.quantity + 1 }
+  //             : opt
+  //         ),
+  //       };
+  //     }
+
+  //     return {
+  //       ...prevOptions,
+  //       [menuId]: [...menuOptions, { ...option, quantity: 1 }],
+  //     };
+  //   });
+  // };
+
+  // const handleRemoveOption = (menuId, option) => {
+  //   setSelectedOptionsArray((prevOptions) => {
+  //     const menuOptions = prevOptions[menuId] || [];
+  //     const existingOption = menuOptions.find((opt) => opt._id === option._id);
+
+  //     if (existingOption && existingOption.quantity > 1) {
+  //       return {
+  //         ...prevOptions,
+  //         [menuId]: menuOptions.map((opt) =>
+  //           opt._id === option._id
+  //             ? { ...opt, quantity: opt.quantity - 1 }
+  //             : opt
+  //         ),
+  //       };
+  //     }
+
+  //     return {
+  //       ...prevOptions,
+  //       [menuId]: menuOptions.filter((opt) => opt._id !== option._id),
+  //     };
+  //   });
+  // };
+
+  // const calculateTotalPrice = (menu, selectedOptionsArray) => {
+  //   if (!menu || !menu._id) {
+  //     return 0;
+  //   }
+
+  //   const menuOptions = selectedOptionsArray[menu._id] || [];
+  //   const optionsTotalPrice = menuOptions.reduce(
+  //     (sum, option) => sum + option.price * option.quantity,
+  //     0
+  //   );
+  //   return calculateDiscount(menu) + optionsTotalPrice;
+  // };
 
   const handleConfirmOptions = () => {
     const filteredOptions =
@@ -721,7 +803,7 @@ function AddOrder() {
         return (
           item.id === selectedItem._id &&
           JSON.stringify(sortedItemOptionsForComparison) ===
-            JSON.stringify(sortedFilteredOptionsForComparison)
+          JSON.stringify(sortedFilteredOptionsForComparison)
         );
       });
 
@@ -731,7 +813,7 @@ function AddOrder() {
         updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
         updatedMenu[existingMenuIndex].totalPrice =
           updatedMenu[existingMenuIndex].price *
-            updatedMenu[existingMenuIndex].quantity +
+          updatedMenu[existingMenuIndex].quantity +
           totalOptionPrice;
 
         console.log(
@@ -799,13 +881,22 @@ function AddOrder() {
 
   const _checkMenuOption = (menu) => {
     try {
-      return menu.menuOptions && menu.menuOptions.length > 0
-        ? menu.menuOptions
+      return menu.optionCategoryMenu && menu.optionCategoryMenu.length > 0
+        ? menu.optionCategoryMenu
         : [];
     } catch (error) {
       return [];
     }
   };
+  // const _checkMenuOption = (menu) => {
+  //   try {
+  //     return menu.menuOptions && menu.menuOptions.length > 0
+  //       ? menu.menuOptions
+  //       : [];
+  //   } catch (error) {
+  //     return [];
+  //   }
+  // };
 
   const _checkSelectedMenuOption = (menu) => {
     try {
@@ -1321,6 +1412,8 @@ function AddOrder() {
 
     return finalPrice;
   };
+
+
   return (
     <div className="w-full h-screen">
       <div className="flex overflow-hidden mb-4">
@@ -1462,9 +1555,9 @@ function AddOrder() {
                         </span>
                       )} */}
                       {data?.promotionId?.length > 0 &&
-                      data.promotionId.some(
-                        (promotion) => promotion?.status === "ACTIVE"
-                      ) ? (
+                        data.promotionId.some(
+                          (promotion) => promotion?.status === "ACTIVE"
+                        ) ? (
                         data.promotionId
                           .filter((promotion) => promotion?.status === "ACTIVE")
                           .map((promotion, index) => {
@@ -1500,7 +1593,7 @@ function AddOrder() {
                                               promotion?.discountValue
                                             )}{" "}
                                             {promotion?.discountType ===
-                                            "PERCENTAGE"
+                                              "PERCENTAGE"
                                               ? "%"
                                               : storeDetail?.firstCurrency}
                                           </span>
@@ -1559,9 +1652,9 @@ function AddOrder() {
                       <br />
 
                       {data?.promotionId?.length > 0 &&
-                      data.promotionId.some(
-                        (promotion) => promotion?.status === "ACTIVE"
-                      ) ? (
+                        data.promotionId.some(
+                          (promotion) => promotion?.status === "ACTIVE"
+                        ) ? (
                         data.promotionId
                           .filter((promotion) => promotion?.status === "ACTIVE")
                           .map((promotion, index) => {
@@ -1597,7 +1690,7 @@ function AddOrder() {
                                               promotion?.discountValue
                                             )}{" "}
                                             {promotion?.discountType ===
-                                            "PERCENTAGE"
+                                              "PERCENTAGE"
                                               ? "%"
                                               : storeDetail?.firstCurrency}
                                           </span>
@@ -1653,9 +1746,9 @@ function AddOrder() {
                     <span className="text-sm">{data?.name}</span>
                     <br />
                     {data?.promotionId?.length > 0 &&
-                    data.promotionId.some(
-                      (promotion) => promotion?.status === "ACTIVE"
-                    ) ? (
+                      data.promotionId.some(
+                        (promotion) => promotion?.status === "ACTIVE"
+                      ) ? (
                       data.promotionId
                         .filter((promotion) => promotion?.status === "ACTIVE")
                         .map((promotion, index) => {
@@ -1688,7 +1781,7 @@ function AddOrder() {
                                             promotion?.discountValue
                                           )}{" "}
                                           {promotion?.discountType ===
-                                          "PERCENTAGE"
+                                            "PERCENTAGE"
                                             ? "%"
                                             : storeDetail?.firstCurrency}
                                         </span>
@@ -1770,12 +1863,12 @@ function AddOrder() {
                         const optionsString =
                           data.options && data.options.length > 0
                             ? data.options
-                                .map((option) =>
-                                  option.quantity > 1
-                                    ? `[${option.quantity} x ${option.name}]`
-                                    : `[${option.name}]`
-                                )
-                                .join(" ")
+                              .map((option) =>
+                                option.quantity > 1
+                                  ? `[${option.quantity} x ${option.name}]`
+                                  : `[${option.name}]`
+                              )
+                              .join(" ")
                             : "";
 
                         return (
@@ -2107,7 +2200,200 @@ function AddOrder() {
           </div>
         ))}
       </div>
+
       <Modal show={show} onHide={handleClose} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <div style={{ fontSize: 24 }}>
+              {selectedItem?.name} (
+              {moneyCurrency(calculateDiscount(selectedItem))} LAK)
+            </div>
+            <div style={{ fontSize: 18 }}>
+              {t("menu_option")}:
+              {selectedOptionsArray[selectedItem?._id]?.map(
+                (option) =>
+                  option.quantity > 0 && (
+                    <span key={option._id} style={{ marginRight: "5px" }}>
+                      {option.quantity > 1
+                        ? `[${option.quantity} x ${option.name}]`
+                        : `[${option.name}]`}
+                    </span>
+                  )
+              )}
+            </div>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group>
+            {menuOptions.map((option, index) => (
+              <div key={index} className="mb-3">
+                {/* Main Option */}
+                <div
+                  className="d-flex justify-content-between align-items-center mb-2 border-t border-gray-300 pt-2"
+                  style={
+                    selectedOptionsArray[selectedItem?._id]?.find(
+                      (selectedOption) => selectedOption._id === option._id
+                    )?.quantity >= 1
+                      ? {
+                        backgroundColor: "#fd8b66",
+                        borderRadius: "5px",
+                        padding: 5,
+                      }
+                      : {}
+                  }
+                >
+                  <div>
+                    <strong>{option.name}:</strong>
+                  </div>
+                </div>
+
+                {/* Sub Options */}
+                {option?.selectedOptions?.length > 0 && (
+                  <div style={{ marginLeft: "20px", marginTop: "10px" }}>
+                    {option.selectedOptions.map((opt, idx) => (
+                      <div
+                        key={idx}
+                        className="d-flex justify-content-between align-items-center mb-2 "
+                        style={
+                          selectedOptionsArray[selectedItem?._id]?.find(
+                            (selectedOption) => selectedOption._id === opt._id
+                          )?.quantity >= 1
+                            ? {
+                              backgroundColor: "#e8f4fd",
+                              borderRadius: "3px",
+                              padding: 3,
+                            }
+                            : {}
+                        }
+                      >
+                        <div className="d-flex align-items-center">
+                          <span>- {opt?.name}</span>
+                          {opt?.price > 0 && (
+                            <span style={{ marginLeft: "5px" }}>
+                              : {moneyCurrency(opt?.price)} LAK
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="d-flex align-items-center">
+                          {option.isChooseOnlyOne ? (
+                            // Checkbox with +/- buttons for single selection
+                            <div className="d-flex align-items-center">
+                              <Form.Check
+                                type="checkbox"
+                                checked={
+                                  selectedOptionsArray[selectedItem?._id]?.find(
+                                    (selectedOption) => selectedOption._id === opt._id
+                                  )?.quantity >= 1 || false
+                                }
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    handleSelectSingleOption(selectedItem?._id, option, opt);
+                                  } else {
+                                    handleRemoveSubOption(selectedItem?._id, opt);
+                                  }
+                                }}
+                              />
+                              {/* Show +/- buttons when checkbox is selected */}
+                              {selectedOptionsArray[selectedItem?._id]?.find(
+                                (selectedOption) => selectedOption._id === opt._id
+                              )?.quantity >= 1 && (
+                                  <div className="d-flex align-items-center ml-2" style={{ marginLeft: "10px" }}>
+                                    <Button
+                                      variant="outline-secondary"
+                                      size="sm"
+                                      onClick={() =>
+                                        handleRemoveSubOption(selectedItem?._id, opt)
+                                      }
+                                    >
+                                      -
+                                    </Button>
+                                    <span className="mx-2">
+                                      {selectedOptionsArray[selectedItem?._id]?.find(
+                                        (selectedOption) => selectedOption._id === opt._id
+                                      )?.quantity || 0}
+                                    </span>
+                                    <Button
+                                      variant="outline-secondary"
+                                      size="sm"
+                                      onClick={() => handleAddSubOption(selectedItem?._id, opt)}
+                                    >
+                                      +
+                                    </Button>
+                                  </div>
+                                )}
+                            </div>
+                          ) : (
+                            // Plus/Minus buttons for multiple selection
+                            <>
+                              <Button
+                                variant="outline-secondary"
+                                size="sm"
+                                onClick={() =>
+                                  handleRemoveSubOption(selectedItem?._id, opt)
+                                }
+                              >
+                                -
+                              </Button>
+                              <span className="mx-2">
+                                {selectedOptionsArray[selectedItem?._id]?.find(
+                                  (selectedOption) => selectedOption._id === opt._id
+                                )?.quantity || 0}
+                              </span>
+                              <Button
+                                variant="outline-secondary"
+                                size="sm"
+                                onClick={() => handleAddSubOption(selectedItem?._id, opt)}
+                              >
+                                +
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </Form.Group>
+          <div className="mt-3">
+            <strong>
+              {t("total_price_with_options")}:{" "}
+              {moneyCurrency(
+                calculateTotalPrice(selectedItem, selectedOptionsArray)
+              )}{" "}
+              LAK
+            </strong>
+          </div>
+          <Form.Group className="mt-3">
+            <Form.Label>
+              {selectedItem?.note === ""
+                ? t("comment_taste")
+                : t("edit_comment")}
+            </Form.Label>
+            <Form.Control
+              ref={selectedItem?.note === "" ? inputRef : null}
+              as="textarea"
+              rows={3}
+              value={addComments}
+              onChange={(e) => setAddComments(e.target.value)}
+              placeholder={t("fill_desc")}
+              className="w-100"
+            />
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleConfirmOptions}>
+            Confirm
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
           <Modal.Title>
             <div style={{ fontSize: 24 }}>
@@ -2140,16 +2426,31 @@ function AddOrder() {
                     (selectedOption) => selectedOption._id === option._id
                   )?.quantity >= 1
                     ? {
-                        backgroundColor: "#fd8b66",
-                        borderRadius: "5px",
-                        padding: 5,
-                      }
+                      backgroundColor: "#fd8b66",
+                      borderRadius: "5px",
+                      padding: 5,
+                    }
                     : {}
                 }
               >
                 <div>
-                  <strong>{option.name}</strong> - {moneyCurrency(option.price)}{" "}
-                  LAK
+                  <strong>{option.name}:</strong>
+                  {option?.selectedOptions?.length > 0 && (
+                      <span style={{ margin:"0px 5px" }}>
+                        
+                        {option.selectedOptions.map((opt, idx) => (
+                          <div 
+                           className=" flex"
+                           key={idx}>
+                            - {opt?.name}{" "}
+                            {opt?.price ? ":" : ""}
+                            {opt?.price ? moneyCurrency(opt?.price) : ""}
+                            {idx < option.selectedOptions.length - 1 ? ", " : ""}
+                          </div>
+                        ))}
+                        
+                      </span>
+                    )}
                 </div>
                 <div className="d-flex align-items-center">
                   <Button
@@ -2211,7 +2512,7 @@ function AddOrder() {
             Confirm
           </Button>
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
 
       {/* modal comment of items   */}
       <Modal centered show={isPopup} onHide={() => setIsPupup(false)}>

@@ -41,6 +41,9 @@ export default function CategoryType() {
   const _menuOptionList = () => {
     navigate(`/settingStore/menu-option/limit/40/page/1/${params?.id}`);
   };
+   const _menuOptionListCategory = () => {
+    navigate(`/settingStore/menu-option-category/limit/40/page/1/${params?.id}`);
+  };
   const _category = () => {
     navigate(`/settingStore/menu/category/limit/40/page/1/${params?.id}`);
   };
@@ -190,6 +193,14 @@ export default function CategoryType() {
               <span className={fontMap[language]}>{t("option_menu")}</span>
             </Nav.Link>
           </Nav.Item>
+          <Nav.Item>
+           <Nav.Link
+             eventKey="/settingStore/menu-option-category"
+             onClick={() => _menuOptionListCategory()}
+           >
+             <span className={fontMap[language]}>{t("ປະເພດອ໋ອບຊັນ")}</span>
+           </Nav.Link>
+         </Nav.Item>
           <Nav.Item>
             <Nav.Link
               eventKey="/settingStore/category"

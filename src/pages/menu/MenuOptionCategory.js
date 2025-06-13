@@ -35,7 +35,7 @@ const OPTION_PRICE_CURRENCY = {
   CNY: "CNY",
 };
 
-export default function MenuListOption() {
+export default function MenuOptionCategory() {
   const {
     t,
     i18n: { language },
@@ -66,8 +66,10 @@ export default function MenuListOption() {
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState();
   const [menuOptions, setMenuOptions] = useState([]);
+  const [menuOptionCategory, setMenuOptionCategory] = useState([]);
   const [dataUpdate, setdataUpdate] = useState("");
   const [dateDelete, setdateDelete] = useState("");
+  const [chooseOnlyOne, setChooseOnlyOne] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,6 +79,7 @@ export default function MenuListOption() {
           setgetTokken(_localData);
           getcategory(_localData?.DATA?.storeId);
           getMenuOptions(_localData?.DATA?.storeId);
+          getMenuOptionCategory(_localData?.DATA?.storeId);
         }
       } catch (err) {
         console.log(err);
@@ -93,9 +96,8 @@ export default function MenuListOption() {
           setIsLoading(true);
           await fetch(
             MENUS +
-              `/?storeId=${_localData?.DATA?.storeId}${
-                filterCategory === "All" ? "" : `&categoryId=${filterCategory}`
-              }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
+            `/?storeId=${_localData?.DATA?.storeId}${filterCategory === "All" ? "" : `&categoryId=${filterCategory}`
+            }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
             {
               method: "GET",
             }
@@ -118,7 +120,7 @@ export default function MenuListOption() {
     try {
       await fetch(
         END_POINT_SEVER_TABLE_MENU +
-          `/v3/categories?storeId=${id}&isDeleted=false`,
+        `/v3/categories?storeId=${id}&isDeleted=false`,
         {
           method: "GET",
         }
@@ -130,19 +132,7 @@ export default function MenuListOption() {
     }
   };
 
-  const getMenuOptions = async (storeId) => {
-    try {
-      setIsLoading(true);
-      const res = await axios.get(
-        END_POINT_SEVER_TABLE_MENU + `/v3/restaurant/${storeId}/menu-options`
-      );
-      setMenuOptions(res.data);
-      setIsLoading(false);
-    } catch (err) {
-      console.log(err);
-      setIsLoading(false);
-    }
-  };
+
 
   const handleClose = () => setShow(false);
   const handleShow = () => {
@@ -163,7 +153,84 @@ export default function MenuListOption() {
   };
   const handleClose2 = () => setShow2(false);
 
-  const _createMenuOption = async (values) => {
+  const getMenuOptions = async (storeId) => {
+    try {
+      setIsLoading(true);
+      const res = await axios.get(
+        END_POINT_SEVER_TABLE_MENU + `/v3/restaurant/${storeId}/menu-options`
+      );
+      setMenuOptions(res.data);
+      setIsLoading(false);
+    } catch (err) {
+      console.log(err);
+      setIsLoading(false);
+    }
+  };
+
+  const getMenuOptionCategory = async (storeId) => {
+    try {
+      setIsLoading(true);
+      const res = await axios.get(
+        END_POINT_SEVER_TABLE_MENU + `/v7/restaurant/${storeId}/menu-option-category`
+      );
+      setMenuOptionCategory(res.data);
+      setIsLoading(false);
+    } catch (err) {
+      console.log(err);
+      setIsLoading(false);
+    }
+  };
+
+  const _createMenuOptionCategory = async (values) => {
+    try {
+      const _localData = await getLocalData();
+      const header = await getHeaders();
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: header.authorization,
+      };
+      const selectedOptions = values?.selectedOptions || [];
+      if (selectedOptions.length === 0) {
+        console.warn("No options selected");
+      }
+      // ແປ່ງ selectedOptions ຈາກ array ຂອງ string ເປັນ array ຂອງ objects
+      const selectedOptionsWithPrice = selectedOptions.map(optionName => {
+        const option = menuOptions.find(opt => opt.name === optionName);
+        return {
+          name: optionName,
+          price: option ? option.price : 0
+        };
+      });
+      const totalPrice = selectedOptionsWithPrice.reduce((total, option) => {
+        return total + option.price;
+      }, 0);
+
+      const createData = {
+        name: values?.name,
+        selectedOptions: selectedOptionsWithPrice,
+        price: totalPrice,
+        isChooseOnlyOne: chooseOnlyOne,
+        storeId: _localData?.DATA?.storeId,
+      };
+
+      const resData = await axios.post(`${END_POINT_SEVER_TABLE_MENU}/v7/restaurant/${_localData?.DATA?.storeId}/menu-option-category/create`,
+        createData,
+        { headers: headers }
+      );
+
+      if (resData?.data) {
+        getMenuOptions(_localData?.DATA?.storeId);
+        getMenuOptionCategory(_localData?.DATA?.storeId);
+        handleClose();
+        successAdd(t("add_success"));
+      }
+    } catch (err) {
+      console.error("Error creating menu option category:", err);
+      errorAdd(t("add_fail"));
+    }
+  };
+
+  const _updateMenuOption = async (values) => {
     try {
       const _localData = await getLocalData();
       const header = await getHeaders();
@@ -172,60 +239,50 @@ export default function MenuListOption() {
         Authorization: header.authorization,
       };
 
-      const createData = {
-        name: values?.name,
-        price: values?.price,
-        storeId: _localData?.DATA?.storeId,
-        currency: optionPriceCurrency,
-      };
+      const selectedOptions = values?.selectedOptions || [];
 
-      const resData = await axios.post(
-        END_POINT_SEVER_TABLE_MENU +
-          `/v3/restaurant/${_localData?.DATA?.storeId}/menu-option/create`,
-        createData,
-        { headers: headers }
-      );
-
-      if (resData?.data) {
-        getMenuOptions(_localData?.DATA?.storeId);
-        handleClose();
-        successAdd(t("add_success"));
+      if (selectedOptions.length === 0) {
+        console.warn("No options selected");
       }
-    } catch (err) {
-      errorAdd(t("add_fail"));
-    }
-  };
 
-  const _updateMenuOption = async (values) => {
-    try {
-      const header = await getHeaders();
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: header.authorization,
+      const selectedOptionsWithPrice = selectedOptions.map(optionName => {
+        const option = menuOptions.find(opt => opt.name === optionName);
+        return {
+          name: optionName,
+          price: option ? option.price : 0
+        };
+      });
+
+      const totalPrice = selectedOptionsWithPrice.reduce((total, option) => {
+        return total + option.price;
+      }, 0);
+
+      const requestData = {
+        data: {
+          name: values?.name,
+          selectedOptions: selectedOptionsWithPrice, 
+          price: totalPrice,
+          isChooseOnlyOne: values?.isChooseOnlyOne || false,
+        }
       };
 
-      const updateData = {
-        name: values?.name,
-        price: values?.price,
-        currency: optionPriceCurrency,
-      };
-
-      const resData = await axios.put(
-        END_POINT_SEVER_TABLE_MENU +
-          `/v3/restaurant/${getTokken?.DATA?.storeId}/menu-option/${dataUpdate._id}/update`,
-        updateData,
+      const resData = await axios.put(`${END_POINT_SEVER_TABLE_MENU}/v7/restaurant/menu-option-category/${dataUpdate._id}/update`,
+        requestData,
         { headers: headers }
       );
 
       if (resData?.data) {
         handleClose2();
-        getMenuOptions(getTokken?.DATA?.storeId);
+        getMenuOptions(_localData?.DATA?.storeId);
+        getMenuOptionCategory(_localData?.DATA?.storeId);
         successAdd(t("edit_success"));
       }
     } catch (err) {
+      console.error("Error updating menu option category:", err);
       errorAdd(t("edit_failed"));
     }
   };
+
 
   const _confirmeDelete = async () => {
     try {
@@ -234,14 +291,13 @@ export default function MenuListOption() {
         "Content-Type": "application/json",
         Authorization: header.authorization,
       };
-
-      const resData = await axios.delete(
-        END_POINT_SEVER_TABLE_MENU + `/v3/menu-option/${dateDelete?.id}/delete`,
+      const resData = await axios.delete(`${END_POINT_SEVER_TABLE_MENU}/v7/menu-option-category/${dateDelete?.id}/delete`,
         { headers: headers }
       );
 
       if (resData?.data) {
         getMenuOptions(getTokken?.DATA?.storeId);
+        getMenuOptionCategory(getTokken?.DATA?.storeId);
         handleClose3();
         successAdd(t("delete_success"));
       }
@@ -278,7 +334,7 @@ export default function MenuListOption() {
             <span className={fontMap[language]}>{t("restaurant_setting")}</span>
           </Breadcrumb.Item>
           <Breadcrumb.Item active>
-            <span className={fontMap[language]}>{t("option_menu")}</span>
+            <span className={fontMap[language]}>{t("ປະເພດອ໋ອບຊັນ")}</span>
           </Breadcrumb.Item>
         </Breadcrumb>
         <div>
@@ -300,13 +356,13 @@ export default function MenuListOption() {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-               <Nav.Link
-                 eventKey="/settingStore/menu-option-category"
-                 onClick={() => _menuOptionListCategory()}
-               >
-                 <span className={fontMap[language]}>{t("ປະເພດອ໋ອບຊັນ")}</span>
-               </Nav.Link>
-             </Nav.Item>
+              <Nav.Link
+                eventKey="/settingStore/menu-option-category"
+                onClick={() => _menuOptionListCategory()}
+              >
+                <span className={fontMap[language]}>{t("ປະເພດອ໋ອບຊັນ")}</span>
+              </Nav.Link>
+            </Nav.Item>
             <Nav.Item>
               <Nav.Link
                 eventKey="/settingStore/category"
@@ -335,17 +391,7 @@ export default function MenuListOption() {
                 justifyContent: "flex-end",
               }}
             >
-              <Col
-                md="10"
-                style={{
-                  marginTop: 32,
-                  display: "flex",
-                  justifyContent: "end",
-                }}
-                className={fontMap[language]}
-              >
-                {t("example")}
-              </Col>
+
 
               <Col
                 md="2"
@@ -364,7 +410,7 @@ export default function MenuListOption() {
                   onClick={handleShow}
                   className={fontMap[language]}
                 >
-                  + {t("add_new_options")}
+                  + {t("ເພີ່ມປະເພດອ໋ອບຊັນ")}
                 </Button>
               </Col>
             </Row>
@@ -378,13 +424,13 @@ export default function MenuListOption() {
                     #
                   </th>
                   <th scope="col" className={fontMap[language]}>
-                    {t("options_name")}
+                    {t("ຊື່ປະເພດອ໋ອບຊັນ")}
                   </th>
-                  <th scope="col" className={fontMap[language]}>
+                  {/* <th scope="col" className={fontMap[language]}>
                     {t("price_addjust")}
-                  </th>
+                  </th> */}
                   <th scope="col" className={fontMap[language]}>
-                    {t("manage_options")}
+                    {t("ຈັດການປະເພດອ໋ອບຊັນ")}
                   </th>
                 </tr>
               </thead>
@@ -394,14 +440,28 @@ export default function MenuListOption() {
                     <Spinner animation="border" variant="warning" />
                   </td>
                 ) : (
-                  menuOptions?.map((data, index) => {
+                  menuOptionCategory?.map((data, index) => {
                     return (
                       <tr key={index}>
                         <td>{index + 1}</td>
-                        <td style={{ textAlign: "left" }}>
-                          {data?.name ?? ""}
+                        <td style={{ textAlign: "left", display: "flex", alignItems: "center" }}>
+                          <div>
+                            {data?.name ?? ""}:
+                            {data?.selectedOptions?.length > 0 && (
+                              <span style={{ marginLeft: 5 }}>
+                                (
+                                {data.selectedOptions.map((option, idx) => (
+                                  <span key={idx}>
+                                    {option.name} 
+                                    {idx < data.selectedOptions.length - 1 ? ", " : ""}
+                                  </span>
+                                ))}
+                                )
+                              </span>
+                            )}
+                          </div>
                         </td>
-                        <td>{moneyCurrency(data?.price)}</td>
+
                         <td>
                           <FontAwesomeIcon
                             icon={faEdit}
@@ -437,13 +497,14 @@ export default function MenuListOption() {
         {/* add menu */}
         <Modal show={show} onHide={handleClose} size="lg" keyboard={false}>
           <Modal.Header closeButton>
-            <Modal.Title>{t("add_options")}</Modal.Title>
+            <Modal.Title>{t("ເພີ່ມປະເພດອ໋ອບຊັນ")}</Modal.Title>
           </Modal.Header>
           <Formik
             initialValues={{
               name: "",
               price: 0,
               currency: OPTION_PRICE_CURRENCY.LAK,
+              selectedOptions: [],
             }}
             validate={(values) => {
               const errors = {};
@@ -456,7 +517,7 @@ export default function MenuListOption() {
               return errors;
             }}
             onSubmit={(values, { setSubmitting }) => {
-              _createMenuOption(values);
+              _createMenuOptionCategory(values);
             }}
           >
             {({
@@ -466,11 +527,12 @@ export default function MenuListOption() {
               handleChange,
               handleBlur,
               handleSubmit,
+              setFieldValue,
             }) => (
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>{t("options_name")}</Form.Label>
+                    <Form.Label>{t("options_name5555")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="name"
@@ -487,37 +549,65 @@ export default function MenuListOption() {
                     />
                   </Form.Group>
 
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>{t("price_addjust")}</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="price"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values?.price}
-                      placeholder="Enter Price Adjustment..."
-                      style={{
-                        border:
-                          errors.price && touched.price && errors.price
-                            ? "solid 1px red"
-                            : "",
+                  <Form.Group controlId="allowMultipleSelection" style={{ marginBottom: "20px" }}>
+                    <Form.Check
+                      type="checkbox"
+                      id="allowMultipleSelection"
+                      label="ສາມາດເລືອກໄດ້ອັນດຽວ"
+                      checked={values.allowMultipleSelection}
+                      onChange={(e) => {
+                        const isChecked = e.target.checked;
+                        setChooseOnlyOne(isChecked);
                       }}
+                      style={{ fontSize: "16px", fontWeight: "500" }}
                     />
                   </Form.Group>
 
-                  <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Control
-                      as="select"
-                      name="optionPriceCurrency"
-                      onChange={handleChangeOptionPriceCurrency}
-                      value={optionPriceCurrency}
-                    >
-                      <option value={OPTION_PRICE_CURRENCY.LAK}>LAK</option>
-                      <option value={OPTION_PRICE_CURRENCY.THB}>THB</option>
-                      <option value={OPTION_PRICE_CURRENCY.USD}>USD</option>
-                      <option value={OPTION_PRICE_CURRENCY.CNY}>CNY</option>
-                    </Form.Control>
+                  {/* ສະແດງ Menu Options */}
+                  <Form.Group controlId="menuOptionsSelect">
+                    <Form.Label>ເລືອກລາຍການອ໋ອບຊັນ</Form.Label>
+                    <div style={{ maxHeight: "200px", overflowY: "auto", border: "1px solid #dee2e6", borderRadius: "4px", padding: "10px" }}>
+                      {menuOptions && menuOptions.length > 0 ? (
+                        menuOptions.map((option, index) => (
+                          <Form.Check
+                            key={option._id}
+                            type="checkbox"
+                            id={`option-${option._id}`}
+                            label={
+                              <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+                                <span>{option?.name}</span>
+                                {/* <span style={{ color: "#888", marginLeft: "10px" }}>
+                                  {option?.price > 0
+                                    ? `${moneyCurrency(option?.price)} ${option?.currency}`
+                                    : ""}
+                                </span> */}
+
+                              </div>
+                            }
+                            checked={values.selectedOptions.includes(option.name)}
+                            onChange={(e) => {
+                              const optionName = option.name;
+                              const currentSelected = values.selectedOptions;
+
+                              if (e.target.checked) {
+
+                                setFieldValue("selectedOptions", [...currentSelected, optionName]);
+                              } else {
+
+                                setFieldValue("selectedOptions", currentSelected.filter(name => name !== optionName));
+                              }
+                            }}
+                            style={{ marginBottom: "8px" }}
+                          />
+                        ))
+                      ) : (
+                        <div style={{ textAlign: "center", color: "#666", padding: "20px" }}>
+                          ບໍ່ມີລາຍການອ໋ອບຊັນໃນລາຍການນີ້
+                        </div>
+                      )}
+                    </div>
                   </Form.Group>
+
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="danger" onClick={handleClose}>
@@ -546,17 +636,14 @@ export default function MenuListOption() {
           </Modal.Header>
           <Formik
             initialValues={{
-              name: dataUpdate?.name,
-              price: dataUpdate?.price,
-              currency: dataUpdate?.currency,
+              name: dataUpdate?.name || "",
+              selectedOptions: dataUpdate?.selectedOptions?.map(option => option.name) || [],
+              isChooseOnlyOne: dataUpdate?.isChooseOnlyOne || false,
             }}
             validate={(values) => {
               const errors = {};
               if (!values.name) {
                 errors.name = "ກະລຸນາປ້ອນຊື່ອ໋ອບຊັນ...";
-              }
-              if (parseInt(values.price) < 0 || isNaN(parseInt(values.price))) {
-                errors.price = "ກະລຸນາປ້ອນລາຄາ...";
               }
               return errors;
             }}
@@ -571,6 +658,7 @@ export default function MenuListOption() {
               handleChange,
               handleBlur,
               handleSubmit,
+              setFieldValue,
             }) => (
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
@@ -592,37 +680,63 @@ export default function MenuListOption() {
                     />
                   </Form.Group>
 
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>{t("price_addjust")}</Form.Label>
-                    <Form.Control
-                      type="number"
-                      name="price"
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values?.price}
-                      placeholder={t("enter_price_adjust")}
-                      style={{
-                        border:
-                          errors.price && touched.price && errors.price
-                            ? "solid 1px red"
-                            : "",
+                  <Form.Group controlId="allowMultipleSelection" style={{ marginBottom: "20px" }}>
+                    <Form.Check
+                      type="checkbox"
+                      id="allowMultipleSelection"
+                      label="ສາມາດເລືອກໄດ້ອັນດຽວ"
+                      checked={values.isChooseOnlyOne} // เปลี่ยนจาก values.allowMultipleSelection เป็น values.isChooseOnlyOne
+                      onChange={(e) => {
+                        const isChecked = e.target.checked;
+                        setChooseOnlyOne(isChecked);
+                        setFieldValue("isChooseOnlyOne", isChecked); // อัปเดต form value
                       }}
+                      style={{ fontSize: "16px", fontWeight: "500" }}
                     />
                   </Form.Group>
 
-                  <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Control
-                      as="select"
-                      name="optionPriceCurrency"
-                      onChange={handleChangeOptionPriceCurrency}
-                      value={optionPriceCurrency}
-                    >
-                      <option value={OPTION_PRICE_CURRENCY.LAK}>LAK</option>
-                      <option value={OPTION_PRICE_CURRENCY.THB}>THB</option>
-                      <option value={OPTION_PRICE_CURRENCY.USD}>USD</option>
-                      <option value={OPTION_PRICE_CURRENCY.CNY}>CNY</option>
-                    </Form.Control>
+                  {/* ສະແດງ Menu Options */}
+                  <Form.Group controlId="menuOptionsSelectUpdate">
+                    <Form.Label>ເລືອກລາຍການອ໋ອບຊັນ</Form.Label>
+                    <div style={{ maxHeight: "200px", overflowY: "auto", border: "1px solid #dee2e6", borderRadius: "4px", padding: "10px" }}>
+                      {menuOptions && menuOptions.length > 0 ? (
+                        menuOptions.map((option, index) => (
+                          <Form.Check
+                            key={option._id}
+                            type="checkbox"
+                            id={`update-option-${option._id}`}
+                            label={
+                              <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+                                <span>{option?.name}</span>
+                                {/* <span style={{ color: "#888", marginLeft: "10px" }}>
+                                  {option?.price > 0
+                                    ? `${moneyCurrency(option?.price)} ${option?.currency}`
+                                    : ""}
+                                </span> */}
+                              </div>
+                            }
+                            checked={values.selectedOptions.includes(option.name)}
+                            onChange={(e) => {
+                              const optionName = option.name;
+                              const currentSelected = values.selectedOptions;
+
+                              if (e.target.checked) {
+                                setFieldValue("selectedOptions", [...currentSelected, optionName]);
+                              } else {
+                                setFieldValue("selectedOptions", currentSelected.filter(name => name !== optionName));
+                              }
+                            }}
+                            style={{ marginBottom: "8px" }}
+                          />
+                        ))
+                      ) : (
+                        <div style={{ textAlign: "center", color: "#666", padding: "20px" }}>
+                          ບໍ່ມີລາຍການອ໋ອບຊັນໃນລາຍການນີ້
+                        </div>
+                      )}
+                    </div>
                   </Form.Group>
+
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="danger" onClick={handleClose2}>
