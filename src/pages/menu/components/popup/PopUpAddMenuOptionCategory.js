@@ -141,15 +141,15 @@ function PopUpAddMenuOptionCategory({
         try {
             for (const option of menuOptionCategory) {
                 if (!isSpecificOption(option._id)) {
-                    await addMunuOption(detailMenu.data._id, option._id);
+                    await addMunuOption(detailMenu?.data._id, option._id);
                 }
             }
             const updatedOptions = await axios.get(
                 END_POINT_SEVER_TABLE_MENU +
-                `/v3/menu/${detailMenu.data._id}/menu-options`
+                `/v3/menu/${detailMenu?.data._id}/menu-options`
             );
             setSpecificMenuOptions(updatedOptions?.data);
-            updateMenuOptionsCount(detailMenu.data._id, updatedOptions.data.length);
+            updateMenuOptionsCount(detailMenu?.data._id, updatedOptions.data.length);
         } catch (error) {
             console.error("Error adding all menu options:", error);
             Swal.fire({
@@ -166,14 +166,14 @@ function PopUpAddMenuOptionCategory({
         setIsRemovingAll(true);
         try {
             for (const option of specificMenuOptions) {
-                await deleteMenuOption(detailMenu.data._id, option._id);
+                await deleteMenuOption(detailMenu?.data._id, option._id);
             }
             const updatedOptions = await axios.get(
                 END_POINT_SEVER_TABLE_MENU +
-                `/v3/menu/${detailMenu.data._id}/menu-options`
+                `/v3/menu/${detailMenu?.data._id}/menu-options`
             );
             setSpecificMenuOptions(updatedOptions?.data);
-            updateMenuOptionsCount(detailMenu.data._id, updatedOptions.data.length);
+            updateMenuOptionsCount(detailMenu?.data._id, updatedOptions.data.length);
         } catch (error) {
             console.error("Error removing all menu options:", error);
             Swal.fire({
@@ -191,13 +191,13 @@ function PopUpAddMenuOptionCategory({
     );
 
     const isSpecificOption = (optionId) => {
-        return specificMenuOptions.some((option) => option._id === optionId);
+        return specificMenuOptions.some((option) => option?._id === optionId);
     };
 
     const sortedMenuOptions = filteredMenuOptions.sort((a, b) => {
-        if (isSpecificOption(a._id) && !isSpecificOption(b._id)) {
+        if (isSpecificOption(a?._id) && !isSpecificOption(b._id)) {
             return -1;
-        } else if (!isSpecificOption(a._id) && isSpecificOption(b._id)) {
+        } else if (!isSpecificOption(a?._id) && isSpecificOption(b?._id)) {
             return 1;
         } else {
             return 0;
@@ -257,23 +257,23 @@ function PopUpAddMenuOptionCategory({
                         {menuOptionCategory.map((option, index) => (
                             <ListGroup.Item
                                 key={index}
-                                className={`d-flex justify-content-between align-items-center ${isSpecificOption(option._id) ? "list-group-item-primary" : ""
+                                className={`d-flex justify-content-between align-items-center ${isSpecificOption(option?._id) ? "list-group-item-primary" : ""
                                     }`}
                                 style={
-                                    isSpecificOption(option._id)
+                                    isSpecificOption(option?._id)
                                         ? { backgroundColor: "lightgrey" }
                                         : {}
                                 }
                             >
                                 <div>
-                                    <strong>{option.name}</strong> -{" "}
+                                    <strong>{option?.name}</strong> -{" "}
                                     {option?.selectedOptions?.length > 0 && (
                                         <span style={{ marginLeft: 5 }}>
                                             (
                                             {option.selectedOptions.map((opt, idx) => (
                                                 <span key={idx}>
                                                     {opt?.name}
-                                                    {idx < option.selectedOptions.length - 1 ? ", " : ""}
+                                                    {idx < option?.selectedOptions.length - 1 ? ", " : ""}
                                                 </span>
                                             ))}
                                             )
@@ -283,16 +283,16 @@ function PopUpAddMenuOptionCategory({
                                         style: "currency",
                                         currency: "LAK",
                                         minimumFractionDigits: 0,
-                                    }).format(option.price)}
+                                    }).format(option?.price)}
                                 </div>
-                                {isSpecificOption(option._id) ? (
+                                {isSpecificOption(option?._id) ? (
                                     <Button
                                         variant="danger"
                                         size="sm"
-                                        onClick={() => handleDeleteOption(option._id)}
-                                        disabled={loadingOptionId === option._id}
+                                        onClick={() => handleDeleteOption(option?._id)}
+                                        disabled={loadingOptionId === option?._id}
                                     >
-                                        {loadingOptionId === option._id ? (
+                                        {loadingOptionId === option?._id ? (
                                             <Spinner animation="border" size="sm" />
                                         ) : (
                                             t("delete")
@@ -302,10 +302,10 @@ function PopUpAddMenuOptionCategory({
                                     <Button
                                         variant="success"
                                         size="sm"
-                                        onClick={() => handleAddOption(option._id)}
-                                        disabled={loadingOptionId === option._id}
+                                        onClick={() => handleAddOption(option?._id)}
+                                        disabled={loadingOptionId === option?._id}
                                     >
-                                        {loadingOptionId === option._id ? (
+                                        {loadingOptionId === option?._id ? (
                                             <Spinner animation="border" size="sm" />
                                         ) : (
                                             t("add")

@@ -603,8 +603,8 @@ function HomecafeEdit() {
 
   const _checkMenuOption = (menu) => {
     try {
-      return menu.optionCategoryMenu && menu.optionCategoryMenu.length > 0
-        ? menu.optionCategoryMenu
+      return menu?.optionCategoryMenu && menu?.optionCategoryMenu.length > 0
+        ? menu?.optionCategoryMenu
         : [];
     } catch (error) {
       return [];
@@ -822,7 +822,7 @@ function HomecafeEdit() {
 
     const menuOptions = selectedOptionsArray[menu._id] || [];
     const optionsTotalPrice = menuOptions.reduce(
-      (sum, option) => sum + (option.price || 0) * option.quantity,
+      (sum, option) => sum + (option?.price || 0) * option?.quantity,
       0
     );
     return calculateDiscount(menu) + optionsTotalPrice;
@@ -2407,7 +2407,7 @@ function HomecafeEdit() {
         </Modal.Header>
         <Modal.Body>
           <Form.Group>
-            {menuOptions.map((option, index) => (
+            {menuOptions?.map((option, index) => (
               <div key={index} className="mb-3">
                 {/* Main Option */}
                 <div
@@ -2425,14 +2425,14 @@ function HomecafeEdit() {
                   }
                 >
                   <div>
-                    <strong>{option.name}:</strong>
+                    <strong>{option?.name}:</strong>
                   </div>
                 </div>
 
                 {/* Sub Options */}
                 {option?.selectedOptions?.length > 0 && (
                   <div style={{ marginLeft: "20px", marginTop: "10px" }}>
-                    {option.selectedOptions.map((opt, idx) => (
+                    {option?.selectedOptions.map((opt, idx) => (
                       <div
                         key={idx}
                         className="d-flex justify-content-between align-items-center mb-2 "
@@ -2458,7 +2458,7 @@ function HomecafeEdit() {
                         </div>
 
                         <div className="d-flex align-items-center">
-                          {option.isChooseOnlyOne ? (
+                          {option?.isChooseOnlyOne ? (
                             // Checkbox with +/- buttons for single selection
                             <div className="d-flex align-items-center">
                               <Form.Check
@@ -2477,7 +2477,7 @@ function HomecafeEdit() {
                                 }}
                               />
                               {/* Show +/- buttons when checkbox is selected */}
-                              {selectedOptionsArray[selectedItem?._id]?.find(
+                              {/* {selectedOptionsArray[selectedItem?._id]?.find(
                                 (selectedOption) => selectedOption._id === opt._id
                               )?.quantity >= 1 && (
                                   <div className="d-flex align-items-center ml-2" style={{ marginLeft: "10px" }}>
@@ -2503,7 +2503,7 @@ function HomecafeEdit() {
                                       +
                                     </Button>
                                   </div>
-                                )}
+                                )} */}
                             </div>
                           ) : (
                             // Plus/Minus buttons for multiple selection

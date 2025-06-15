@@ -450,10 +450,10 @@ export default function MenuOptionCategory() {
                             {data?.selectedOptions?.length > 0 && (
                               <span style={{ marginLeft: 5 }}>
                                 (
-                                {data.selectedOptions.map((option, idx) => (
+                                {data?.selectedOptions.map((option, idx) => (
                                   <span key={idx}>
-                                    {option.name} 
-                                    {idx < data.selectedOptions.length - 1 ? ", " : ""}
+                                    {option?.name} 
+                                    {idx < data?.selectedOptions.length - 1 ? ", " : ""}
                                   </span>
                                 ))}
                                 )

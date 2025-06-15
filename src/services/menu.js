@@ -141,7 +141,7 @@ export const deleteMenuData = async (menuId) => {
 
 export const addMenuOption = async (id, optionId) => {
   try {
-    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu/${id}/menu-option/${optionId}/add`;
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v7/menu/${id}/menu-option/${optionId}/add`;
     const res = await axios.post(url, {
       headers: await getHeaders(),
     });
