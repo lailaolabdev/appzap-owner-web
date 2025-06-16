@@ -145,13 +145,12 @@ const useDiscountStore = create(
               TotalDiscountFinal =
                 totalBill -
                 (totalBill * memberDataSearch?.discountPercentage) / 100;
+            } else {
+              console.log("log 4.4");
+              TotalDiscountFinal =
+                totalBill -
+                (totalBill * memberDataSearch?.discountPercentage) / 100;
             }
-            // else {
-            //   console.log("log 4.4");
-            //   TotalDiscountFinal =
-            //     totalBill -
-            //     (totalBill * memberDataSearch?.discountPercentage) / 100;
-            // }
           }
         } else if (discountType === "LAK") {
           console.log("log 5");
