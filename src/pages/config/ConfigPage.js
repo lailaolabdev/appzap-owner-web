@@ -175,8 +175,6 @@ export default function ConfigPage() {
 
   const changeBooking = async (e) => {
     const isChecked = e.target.checked;
-
-    // zustand store
     await updateStoreDetail({ isReservable: isChecked }, storeDetail?._id);
     await fetchStoreDetail(storeDetail?._id);
   };
