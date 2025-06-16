@@ -1383,5 +1383,6 @@
   "you_selected_all" : "ທ່ານເລຶອກທັງໝົດ",
   "you_selected" : "ທ່ານເລຶອກ",
   "enter_percentage_between_0_100" : "ປ້ອນຈຳນວນເປັນເປີເຊັນ 0 - 100",
-  "enter_amount_less_than_total" : "ປ້ອນຈຳນວນທີ່ນ້ອຍກວ່າຍອດທັງໝົດ"
+  "enter_amount_less_than_total" : "ປ້ອນຈຳນວນທີ່ນ້ອຍກວ່າຍອດທັງໝົດ",
+  "discount_of_bill" : "ສ່ວນຫຼຸດໃບບິນ"
 }

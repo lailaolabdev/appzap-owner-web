@@ -23,6 +23,7 @@ import {
   updateSettingShowAmountCafe,
   updateOptionPrintBill,
   updatePrintBillTwo,
+  updateShowDiscountButton,
 } from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
 import PopUpEditServiceCharge from "../../components/popup/PopUpEditServiceCharge";
@@ -177,6 +178,12 @@ export default function ConfigPage() {
 
     // zustand store
     await updateStoreDetail({ isReservable: isChecked }, storeDetail?._id);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+
+  const changeShowDiscountButton = async (e) => {
+    const isType = e.target.checked;
+    await updateShowDiscountButton(profile?.data.storeId, { data: isType });
     await fetchStoreDetail(storeDetail?._id);
   };
 
@@ -945,6 +952,52 @@ export default function ConfigPage() {
               </Card.Body>
             </Card>
           )}
+          {/* show discount button */}
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("discount_of_bill")}
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>{t("discount_of_bill")}</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Form.Label htmlFor={`discount_of_bill`}>
+                    {storeDetail?.optionPrintBill
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.isShowDiscountButton}
+                    id={`discount_of_bill`}
+                    onChange={changeShowDiscountButton}
+                  />
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
         </Box>
       </Box>
       {/* popup */}

@@ -1383,7 +1383,7 @@
   "you_selected_all" : "You selected all",
   "you_selected" : "You selected",
   "enter_percentage_between_0_100": "Enter percentage between 0 and 100",
-  "enter_amount_less_than_total": "Enter amount less than total"
-
+  "enter_amount_less_than_total": "Enter amount less than total",
+  "discount_of_bill" : " Discount Of bill"
 
 }

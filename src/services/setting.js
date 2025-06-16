@@ -180,3 +180,17 @@ export const updatePrintBillTwo = async (settingId, dataUpdate) => {
     return error;
   }
 };
+export const updateShowDiscountButton = async (settingId, dataUpdate) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v7/show-discount-button/update`;
+    const res = await axios.put(
+      url,
+      { id: settingId, data: dataUpdate },
+      { headers: _header }
+    );
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};

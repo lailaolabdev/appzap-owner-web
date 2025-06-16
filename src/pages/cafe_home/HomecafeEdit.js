@@ -1,7 +1,6 @@
 /* eslint-disable no-loop-func */
 import React, { useState, useEffect, useRef, useLayoutEffect } from "react";
 import styled from "styled-components";
-import Table from "react-bootstrap/Table";
 import axios from "axios";
 import BillForCheckOutCafe80 from "../../components/bill/BillForCheckOutCafe80";
 import PrintLabel from "./components/PrintLabel";
@@ -9,7 +8,7 @@ import _ from "lodash";
 import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
 import { useTranslation } from "react-i18next";
-import { Modal, Form, Nav, Image } from "react-bootstrap";
+import { Modal, Form, Image } from "react-bootstrap";
 import { base64ToBlob } from "../../helpers";
 import { RiListOrdered2 } from "react-icons/ri";
 import { BsCartXFill } from "react-icons/bs";
@@ -20,10 +19,6 @@ import { LuArrowRightLeft } from "react-icons/lu";
  **/
 
 import {
-  TITLE_HEADER,
-  BODY,
-  DIV_NAV,
-  USER_KEY,
   URL_PHOTO_AW3,
   USB_PRINTER_PORT,
   BLUETOOTH_PRINTER_PORT,
@@ -32,11 +27,8 @@ import {
 } from "../../constants/index";
 
 import {
-  CATEGORY,
   END_POINT_SEVER,
   getLocalData,
-  MENUS,
-  USERS,
   END_POINT_APP,
 } from "../../constants/api";
 import { moneyCurrency } from "../../helpers";
@@ -63,6 +55,7 @@ import { useStoreStore } from "../../zustand/storeStore";
 import { useMenuStore } from "../../zustand/menuStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
 import { useMenuSelectStore } from "../../zustand/menuSelectStore";
+import useDiscountStore from "../../zustand/DiscountMember";
 
 import theme from "../../theme";
 import moment from "moment";
@@ -79,17 +72,7 @@ import { Input } from "../../components/ui/Input";
 
 import { convertUnitgramAndKilogram } from "../../helpers/convertUnitgramAndKilogram";
 
-import {
-  Minus,
-  Plus,
-  Trash2,
-  User,
-  MapPin,
-  CreditCard,
-  Clock,
-  CirclePlus,
-  CircleMinus,
-} from "lucide-react";
+import { Minus, Plus, Trash2, CirclePlus, CircleMinus } from "lucide-react";
 import PopUpCommentCancelOrder from "../../components/popup/PopUpCommentCancelOrder";
 
 function HomecafeEdit() {
@@ -136,12 +119,28 @@ function HomecafeEdit() {
   const [totalPointPrice, setTotalPointPrice] = useState();
   const [point, setPoint] = useState();
   const [paymentMethod, setPaymentMethod] = useState("");
-  const [totalExchangePoints, setTotalExchangePoints] = useState();
   const [isCommentCancelOrder, setIsCommentCancelOrder] = useState(false);
   const [totalQuantity, setTotalQuantity] = useState(0);
+  const [showDiscountModal, setShowDiscountModal] = useState(false);
+  const [modalDiscountType, setModalDiscountType] = useState("PERCENT");
+  const [modalDiscountValue, setModalDiscountValue] = useState(0);
+  const [isModalDiscountActive, setIsModalDiscountActive] = useState(false);
+
   const { shiftCurrent } = useShiftStore();
   const { setSelectedMenus, SelectedMenus, clearSelectedMenus } =
     useMenuSelectStore();
+
+  const {
+    // State selectors
+    discountType,
+    discountValue,
+    useTwoDiscount,
+    setDiscountType,
+    setDiscountValue,
+    setUseTwoDiscount,
+    setMemberDataSearch,
+    resetDiscount,
+  } = useDiscountStore();
 
   useEffect(() => {
     billData();
@@ -165,6 +164,8 @@ function HomecafeEdit() {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       console.log("Leaving HomecafeEdit, clearing Zustand state...");
       clearSelectedMenus();
+      resetDiscounts();
+      resetDiscount();
     };
   }, []);
 
@@ -545,27 +546,6 @@ function HomecafeEdit() {
   useEffect(() => {
     _calculateTotal();
   }, [SelectedMenus]);
-
-  // const _calculateTotal = () => {
-  //   let _total = 0;
-  //   for (const _data of SelectedMenus || []) {
-  //     if (_data.status !== "CANCELED") {
-  //       const totalOptionPrice = _data?.totalOptionPrice || 0;
-  //       const itemPrice = _data?.price + totalOptionPrice;
-  //       if (storeDetail?.isStatusCafe && _data?.isWeightMenu) {
-  //         _total +=
-  //           _data?.unitWeightMenu === "g"
-  //             ? convertUnitgramAndKilogram(_data?.quantity) * itemPrice
-  //             : _data?.quantity * itemPrice;
-  //       } else {
-  //         _total += _data?.quantity * itemPrice;
-  //       }
-  //     }
-  //   }
-
-  //   const roundedNumber = _total;
-  //   setTotal(roundedNumber);
-  // };
 
   const _calculateTotal = () => {
     let _total = 0;
@@ -1015,13 +995,6 @@ function HomecafeEdit() {
     // fetchDataProduction();
   }, []);
 
-  // const fetchDataProduction = async () => {
-  //   setIsLoading(true);
-  //   const { data } = await GetAllPromotion();
-  //   setPromotion(data);
-  //   setIsLoading(false);
-  // };
-
   const handleAddCommentInCart = () => {
     const dataArray = [];
     for (const i of SelectedMenus) {
@@ -1154,13 +1127,6 @@ function HomecafeEdit() {
       var bodyFormData = new FormData();
       bodyFormData.append("ip", printerBillData?.ip);
       bodyFormData.append("port", "9100");
-
-      // await axios({
-      //   method: "post",
-      //   url: urlForPrinter,
-      //   data: bodyFormData,
-      //   headers: { "Content-Type": "multipart/form-data" },
-      // });
 
       await axios.post(urlForPrinter, {
         ip: printerBillData?.ip,
@@ -1748,6 +1714,132 @@ function HomecafeEdit() {
     return total;
   }, 0);
 
+  // // แก้ไข handleChangeDiscount
+  const handleChangeDiscount = (e) => {
+    const onlyNums = e.target.value.replace(/[^0-9]/g, "");
+
+    if (onlyNums > 100 && modalDiscountType === "PERCENT") {
+      Swal.fire({
+        icon: "warning",
+        title: "ແຈ້ງເຕືອນ",
+        text: "ຈຳນວນເປີເຊັນຕ້ອງບໍ່ເກີນ 100",
+        showConfirmButton: false,
+        timer: 3500,
+      });
+      setModalDiscountValue(0);
+    } else {
+      setModalDiscountValue(Number(onlyNums));
+      setIsModalDiscountActive(true);
+    }
+  };
+
+  // เพิ่ม state เพื่อเก็บค่า discount ที่ apply แล้ว
+  const [appliedDiscount, setAppliedDiscount] = useState({
+    type: null,
+    value: 0,
+    isApplied: false,
+  });
+
+  // แก้ไข handleApplyDiscount
+  const handleApplyDiscount = () => {
+    // บันทึกค่าลงใน state หลัก
+    setDiscountType(modalDiscountType);
+    setDiscountValue(modalDiscountValue);
+
+    // บันทึกค่าที่ apply แล้ว
+    setAppliedDiscount({
+      type: modalDiscountType,
+      value: modalDiscountValue,
+      isApplied: true,
+    });
+
+    let newTotal = total;
+
+    if (modalDiscountType === "PERCENT") {
+      if (modalDiscountValue > 0) {
+        newTotal = total - (total * modalDiscountValue) / 100;
+      }
+    } else if (modalDiscountType === "LAK") {
+      if (modalDiscountValue > 0) {
+        newTotal = total - modalDiscountValue;
+      }
+    }
+
+    setShowDiscountModal(false);
+    setIsModalDiscountActive(false);
+
+    console.log("Applied discount:", {
+      type: modalDiscountType,
+      value: modalDiscountValue,
+      newTotal,
+      appliedDiscount,
+    });
+  };
+
+  // แก้ไขการแสดงผล
+  const getDisplayDiscount = () => {
+    // ให้ priority กับค่าที่ apply ล่าสุด
+    if (appliedDiscount.isApplied) {
+      return {
+        type: appliedDiscount.type,
+        value: appliedDiscount.value,
+      };
+    }
+
+    // ถ้าไม่มีการ apply ใหม่ ใช้ค่าจาก zustand
+    if (discountValue > 0) {
+      return {
+        type: discountType,
+        value: discountValue,
+      };
+    }
+
+    // สุดท้ายใช้ค่าจาก backend
+    if (dataBillEdit?.discount > 0) {
+      return {
+        type: dataBillEdit?.discountType,
+        value: dataBillEdit?.discount,
+      };
+    }
+
+    return { type: null, value: 0 };
+  };
+
+  // แก้ไขการแสดงผลใน JSX
+
+  // เพิ่ม useEffect เพื่อ debug
+  useEffect(() => {
+    console.log("Discount states updated:", {
+      discountType,
+      discountValue,
+      appliedDiscount,
+      dataBillEdit: dataBillEdit?.discount,
+    });
+  }, [discountType, discountValue, appliedDiscount, dataBillEdit?.discount]);
+
+  // แก้ไขการเปิด modal เพื่อใช้ค่าล่าสุด
+  useEffect(() => {
+    if (showDiscountModal && !isModalDiscountActive) {
+      const currentDiscount = getDisplayDiscount();
+
+      setModalDiscountType(currentDiscount.type || "PERCENT");
+      setModalDiscountValue(currentDiscount.value || 0);
+    }
+  }, [showDiscountModal]);
+
+  // เพิ่ม function สำหรับ reset discount
+  const resetDiscounts = () => {
+    setDiscountType("PERCENT");
+    setDiscountValue(0);
+    setAppliedDiscount({
+      type: null,
+      value: 0,
+      isApplied: false,
+    });
+    setModalDiscountType("PERCENT");
+    setModalDiscountValue(0);
+    setIsModalDiscountActive(false);
+  };
   return (
     <div>
       <CafeContent
@@ -2035,7 +2127,7 @@ function HomecafeEdit() {
                                         {t("point")}
                                       </>
                                     )}
-                                    {item?.isExchangePointOrder && (
+                                    {item?.isExchangePointOrder > 0 ? (
                                       <>
                                         <LuArrowRightLeft className="mx-2" />
                                         {t("can_be_exchanged")}{" "}
@@ -2045,7 +2137,7 @@ function HomecafeEdit() {
                                         )}{" "}
                                         {t("point")}
                                       </>
-                                    )}
+                                    ) : null}
                                   </span>
                                 </div>
                               </div>
@@ -2121,41 +2213,59 @@ function HomecafeEdit() {
                     )}
                   </div>
                   <hr />
-                  {SelectedMenus?.length > 0 ? (
-                    <>
-                      <div className="mb-3 flex">
-                        <div className="flex flex-row gap-4 font-bold">
-                          <span>{t("pricesTotal")} :</span>
 
+                  {(() => {
+                    const currentDiscount = getDisplayDiscount();
+                    const hasDiscount = currentDiscount.value > 0;
+
+                    if (!hasDiscount) return null;
+
+                    return (
+                      <>
+                        <div className="flex mb-3 flex-row gap-4 font-bold">
+                          <span>{t("pricesTotal")} :</span>
+                          <span>{moneyCurrency(total)}</span>
+                        </div>
+                        <div className="flex mb-3 flex-row gap-4 font-bold">
+                          <span>{t("discount")} :</span>
                           <span>
-                            {dataBillEdit?.discount > 0
-                              ? moneyCurrency(
-                                  total - (total * dataBillEdit?.discount) / 100
-                                )
-                              : moneyCurrency(total)}{" "}
-                            {t("nameCurrency")}
+                            {currentDiscount.type === "PERCENT"
+                              ? `${currentDiscount.value}%`
+                              : `${moneyCurrency(currentDiscount.value)} ${
+                                  storeDetail?.firstCurrency
+                                }`}
                           </span>
                         </div>
-                        {totalPoints > 0 && (
-                          <div className="flex ml-5 flex-row gap-4 font-bold">
-                            <span>{t("point")} :</span>
-                            <span>
-                              {moneyCurrency(totalPoints)} {t("point")}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      {storeDetail?.isShowAmountCafe && (
-                        <div className="flex flex-row gap-4 font-bold mb-4">
-                          <span>{t("amount")} :</span>
-                          <span>{moneyCurrency(totalQuantity)}</span>
+                        <div className="flex mb-3 flex-row gap-4 font-bold">
+                          <span>{t("last_paid")} :</span>
+                          <span>
+                            {(() => {
+                              let finalTotal = total;
+
+                              if (currentDiscount.type === "PERCENT") {
+                                finalTotal =
+                                  total - (total * currentDiscount.value) / 100;
+                              } else {
+                                finalTotal = total - currentDiscount.value;
+                              }
+
+                              return `${moneyCurrency(
+                                Math.max(0, finalTotal)
+                              )} ${storeDetail?.firstCurrency}`;
+                            })()}
+                          </span>
                         </div>
-                      )}
-                    </>
-                  ) : (
-                    ""
-                  )}
-                  <div className="w-full">
+                      </>
+                    );
+                  })()}
+
+                  <div
+                    className={`grid ${
+                      storeDetail?.isShowDiscountButton
+                        ? "grid-cols-3"
+                        : "grid-cols-2"
+                    } gap-2 place-content-center w-full`}
+                  >
                     <button
                       type="button"
                       className="w-full rounded-lg h-[40px] bg-color-app hover:bg-orange-300 text-md font-bold text-white"
@@ -2168,6 +2278,16 @@ function HomecafeEdit() {
                     >
                       {t("order_checkout")}
                     </button>
+                    {storeDetail?.isShowDiscountButton && (
+                      <button
+                        type="button"
+                        className="w-full rounded-lg h-[40px] bg-color-app hover:bg-orange-300 text-md font-bold text-white"
+                        onClick={() => setShowDiscountModal(true)}
+                        disabled={SelectedMenus.length === 0}
+                      >
+                        {t("discount")}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -2530,6 +2650,132 @@ function HomecafeEdit() {
           >
             {t("confirm")}
           </button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Add this modal component near your other modals */}
+      {/* Fixed Discount Modal */}
+      <Modal
+        show={showDiscountModal}
+        onHide={() => {
+          setShowDiscountModal(false);
+          setIsModalDiscountActive(false);
+        }}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>{t("discount")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>{t("discount_type")}</Form.Label>
+              <div className="d-flex gap-3">
+                <Form.Check
+                  type="radio"
+                  label={t("percent")}
+                  name="discountType"
+                  id="percent"
+                  checked={modalDiscountType === "PERCENT"}
+                  onChange={() => {
+                    setModalDiscountType("PERCENT");
+                    setIsModalDiscountActive(true);
+                  }}
+                />
+                <Form.Check
+                  type="radio"
+                  label={t("fixed_amount")}
+                  name="discountType"
+                  id="fixedAmount"
+                  checked={modalDiscountType === "LAK"}
+                  onChange={() => {
+                    setModalDiscountType("LAK");
+                    setIsModalDiscountActive(true);
+                  }}
+                />
+              </div>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>
+                {modalDiscountType === "PERCENT"
+                  ? t("dis_discount_amount")
+                  : t("discount_amount")}
+              </Form.Label>
+              <Form.Control
+                type="text"
+                min="0"
+                max={modalDiscountType === "PERCENT" ? "100" : ""}
+                value={modalDiscountValue}
+                onChange={(e) => handleChangeDiscount(e)}
+                inputMode="numeric"
+                placeholder="0"
+              />
+              {modalDiscountType === "PERCENT" && (
+                <Form.Text className="text-muted">
+                  {t("enter_percentage_between_0_100")}
+                </Form.Text>
+              )}
+              {modalDiscountType === "LAK" && (
+                <Form.Text className="text-muted">
+                  {t("enter_amount_less_than_total")}
+                </Form.Text>
+              )}
+            </Form.Group>
+
+            <div className="mt-4">
+              <div className="d-flex justify-content-between">
+                <strong>{t("price_basic")}:</strong>
+                <span>
+                  {moneyCurrency(total)} {storeDetail?.firstCurrency}
+                </span>
+              </div>
+              <div className="d-flex justify-content-between">
+                <strong>{t("discount")}:</strong>
+                <span>
+                  {modalDiscountType === "PERCENT"
+                    ? `${modalDiscountValue}%`
+                    : `${moneyCurrency(modalDiscountValue)} ${
+                        storeDetail?.firstCurrency
+                      }`}
+                </span>
+              </div>
+              <div className="d-flex justify-content-between mt-2">
+                <strong>{t("discount_amounts")}:</strong>
+                <span className="text-color-app font-bold">
+                  {moneyCurrency(
+                    modalDiscountType === "PERCENT"
+                      ? total - (total * modalDiscountValue) / 100
+                      : total - modalDiscountValue
+                  )}{" "}
+                  {storeDetail?.firstCurrency}
+                </span>
+              </div>
+            </div>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setShowDiscountModal(false);
+              setIsModalDiscountActive(false);
+            }}
+          >
+            {t("cancel")}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleApplyDiscount}
+            disabled={
+              (modalDiscountType === "PERCENT" &&
+                (modalDiscountValue <= 0 || modalDiscountValue > 100)) ||
+              (modalDiscountType === "LAK" &&
+                (modalDiscountValue <= 0 || modalDiscountValue > total))
+            }
+          >
+            {t("confirm")}
+          </Button>
         </Modal.Footer>
       </Modal>
 

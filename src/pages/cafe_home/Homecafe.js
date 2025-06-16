@@ -50,6 +50,7 @@ import { useStoreStore } from "../../zustand/storeStore";
 import { useMenuStore } from "../../zustand/menuStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
 import { useMenuSelectStore } from "../../zustand/menuSelectStore";
+import useDiscountStore from "../../zustand/DiscountMember";
 
 import theme from "../../theme";
 import moment from "moment";
@@ -87,7 +88,7 @@ function Homecafe() {
   const [isDelivery, setIsDelivery] = useState(false);
   const [platform, setPlatform] = useState("");
   const [deliveryCode, setDeliveryCode] = useState("");
-  const [totalPointPrice, setTotalPointPrice] = useState();
+  const [totalPointPrice, setTotalPointPrice] = useState(0);
   const [point, setPoint] = useState();
   const [paymentMethod, setPaymentMethod] = useState("");
 
@@ -100,13 +101,27 @@ function Homecafe() {
   const [totalQuantity, setTotalQuantity] = useState(0);
 
   const [showDiscountModal, setShowDiscountModal] = useState(false);
-  const [discountType, setDiscountType] = useState("PERCENT"); // "PERCENT" or "LAK"
-  const [discountValue, setDiscountValue] = useState(0);
+  // const [discountType, setDiscountType] = useState("PERCENT"); // "PERCENT" or "LAK"
+  // const [discountValue, setDiscountValue] = useState(0);
   const [discountedTotal, setDiscountedTotal] = useState(0);
-
+  // const [useTwoDiscount, setUseTwoDiscount] = useState(false);
   const { shiftCurrent } = useShiftStore();
   const { setSelectedMenus, SelectedMenus, clearSelectedMenus } =
     useMenuSelectStore();
+
+  const {
+    // State selectors
+    discountType,
+    discountValue,
+    useTwoDiscount,
+    resetDiscount,
+    setDiscountType,
+    setDiscountValue,
+    setUseTwoDiscount,
+    setMemberDataSearch,
+  } = useDiscountStore();
+
+  // console.log("discountedTotal", discountedTotal);
 
   const sliderRef = useRef();
   useEffect(() => {
@@ -407,27 +422,6 @@ function Homecafe() {
   useEffect(() => {
     _calculateTotal();
   }, [SelectedMenus]);
-
-  // const _calculateTotal = () => {
-  //   let _total = 0;
-  //   for (const _data of SelectedMenus || []) {
-  //     if (_data.status !== "CANCELED") {
-  //       const totalOptionPrice = _data?.totalOptionPrice || 0;
-  //       const itemPrice = _data?.price + totalOptionPrice;
-  //       if (storeDetail?.isStatusCafe && _data?.isWeightMenu) {
-  //         _total +=
-  //           _data?.unitWeightMenu === "g"
-  //             ? convertUnitgramAndKilogram(_data?.quantity) * itemPrice
-  //             : _data?.quantity * itemPrice;
-  //       } else {
-  //         _total += _data?.quantity * itemPrice;
-  //       }
-  //     }
-  //   }
-  //   d;
-  //   const roundedNumber = matchRoundNumber(_total);
-  //   setTotal(roundedNumber);
-  // };
 
   const _calculateTotal = () => {
     let _total = 0;
@@ -1513,6 +1507,12 @@ function Homecafe() {
                   setSelectedMenu([]);
                   setSelectedMenus([]);
                   clearSelectedMenus();
+                  setDiscountType("PERCENT");
+                  setDiscountValue(0);
+                  setUseTwoDiscount(false);
+                  setDataBill();
+                  setMemberDataSearch();
+                  resetDiscount();
                   billCountCafe();
                 }, 3500);
               } else {
@@ -1522,6 +1522,12 @@ function Homecafe() {
                 setSelectedMenu([]);
                 setSelectedMenus([]);
                 clearSelectedMenus();
+                setDiscountType("PERCENT");
+                setDiscountValue(0);
+                setUseTwoDiscount(false);
+                setMemberDataSearch();
+                setDataBill();
+                resetDiscount();
                 billCountCafe();
               }
 
@@ -1551,8 +1557,8 @@ function Homecafe() {
       setSelectedMenus([]);
       clearSelectedMenus();
       billCountCafe();
-      setDiscountType();
-      setDiscountValue();
+      setDiscountType("PERCENT");
+      setDiscountValue(0);
       return err;
     }
   };
@@ -1678,7 +1684,7 @@ function Homecafe() {
       }
     }
 
-    setDiscountedTotal(newTotal);
+    // setDiscountedTotal(newTotal);
     setShowDiscountModal(false);
 
     // You might want to save this discount to your order state
@@ -1689,7 +1695,7 @@ function Homecafe() {
     {
       const onlyNums = e.target.value.replace(/[^0-9]/g, "");
       // Only parse to float if the input is not empty
-      if (onlyNums > 100) {
+      if (onlyNums > 100 && discountType === "PERCENT") {
         Swal.fire({
           icon: "warning",
           title: "ແຈ້ງເຕືອນ",
@@ -1703,8 +1709,6 @@ function Homecafe() {
       }
     }
   };
-
-  console.log("dicountValue", discountValue);
 
   return (
     <div>
@@ -2121,7 +2125,13 @@ function Homecafe() {
                     ""
                   )}
                   {SelectedMenus?.length > 0 && (
-                    <div className="grid grid-cols-3 gap-2 place-content-center w-full">
+                    <div
+                      className={`grid ${
+                        storeDetail?.isShowDiscountButton
+                          ? "grid-cols-3"
+                          : "grid-cols-2"
+                      } gap-2 place-content-center w-full`}
+                    >
                       <button
                         type="button"
                         className="w-full rounded-lg h-[40px] bg-red-500 hover:bg-red-400 text-white text-md font-bold"
@@ -2130,6 +2140,9 @@ function Homecafe() {
                           setSelectedMenu([]);
                           setPoint();
                           setTotalPointPrice();
+                          setDiscountType("PERCENT");
+                          setDiscountValue(0);
+                          setUseTwoDiscount(false);
                         }}
                       >
                         {t("cancel_order")}
@@ -2147,14 +2160,16 @@ function Homecafe() {
                       >
                         {t("order_checkout")}
                       </button>
-                      <button
-                        type="button"
-                        className="w-full rounded-lg h-[40px] bg-color-app hover:bg-orange-300 text-md font-bold text-white"
-                        onClick={() => setShowDiscountModal(true)}
-                        disabled={SelectedMenus.length === 0}
-                      >
-                        {t("discount")}
-                      </button>
+                      {storeDetail?.isShowDiscountButton && (
+                        <button
+                          type="button"
+                          className="w-full rounded-lg h-[40px] bg-color-app hover:bg-orange-300 text-md font-bold text-white"
+                          onClick={() => setShowDiscountModal(true)}
+                          disabled={SelectedMenus.length === 0}
+                        >
+                          {t("discount")}
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -2707,6 +2722,12 @@ function Homecafe() {
         setPaymentMethod={setPaymentMethod}
         discountValue={discountValue}
         discountType={discountType}
+        setDiscountValue={setDiscountValue}
+        setDiscountType={setDiscountType}
+        useTwoDiscount={useTwoDiscount}
+        setUseTwoDiscount={setUseTwoDiscount}
+        discountedTotal={discountedTotal}
+        setDiscountedTotal={setDiscountedTotal}
       />
 
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
@@ -2725,6 +2746,10 @@ function Homecafe() {
           paymentMethod={paymentMethod}
           discountValue={discountValue}
           discountType={discountType}
+          useTwoDiscount={useTwoDiscount}
+          setUseTwoDiscount={setUseTwoDiscount}
+          discountedTotal={discountedTotal}
+          setDiscountedTotal={setDiscountedTotal}
         />
       </div>
       {storeDetail?.optionPrintBill &&

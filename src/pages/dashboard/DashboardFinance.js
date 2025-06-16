@@ -446,27 +446,45 @@ export default function DashboardFinance({
 
   if (dataModal?.paymentMethod === "CASH") {
     TotalCalculate =
-      (dataModal?.payAmount ?? 0) +
-      (dataModal?.taxAmount ?? 0) +
-      (dataModal?.serviceChargeAmount ?? 0) +
-      (dataModal?.discount ?? 0);
+      dataModal?.discountType === "LAK"
+        ? (dataModal?.payAmount ?? 0) +
+          (dataModal?.taxAmount ?? 0) +
+          (dataModal?.serviceChargeAmount ?? 0) +
+          (dataModal?.discount ?? 0)
+        : (dataModal?.payAmount ?? 0) +
+          (dataModal?.taxAmount ?? 0) +
+          (dataModal?.serviceChargeAmount ?? 0);
   } else if (dataModal?.paymentMethod === "TRANSFER") {
     TotalCalculate =
-      (dataModal?.transferAmount ?? 0) +
-      (dataModal?.taxAmount ?? 0) +
-      (dataModal?.serviceChargeAmount ?? 0) +
-      (dataModal?.discount ?? 0);
+      dataModal?.discountType === "LAK"
+        ? (dataModal?.transferAmount ?? 0) +
+          (dataModal?.taxAmount ?? 0) +
+          (dataModal?.serviceChargeAmount ?? 0) +
+          (dataModal?.discount ?? 0)
+        : (dataModal?.transferAmount ?? 0) +
+          (dataModal?.taxAmount ?? 0) +
+          (dataModal?.serviceChargeAmount ?? 0);
   } else if (dataModal?.paymentMethod === "TRANSFER_CASH") {
     TotalCalculate =
-      (dataModal?.transferAmount ?? 0) +
-      (dataModal?.payAmount ?? 0) +
-      (dataModal?.discount ?? 0) +
-      (dataModal?.taxAmount ?? 0);
+      dataModal?.discountType === "LAK"
+        ? (dataModal?.transferAmount ?? 0) +
+          (dataModal?.payAmount ?? 0) +
+          (dataModal?.serviceChargeAmount ?? 0) +
+          (dataModal?.discount ?? 0)
+        : (dataModal?.transferAmount ?? 0) +
+          (dataModal?.payAmount ?? 0) +
+          (dataModal?.serviceChargeAmount ?? 0) +
+          (dataModal?.taxAmount ?? 0);
   } else if (dataModal?.paymentMethod === "CASH_TRANSFER_POINT") {
     TotalCalculate =
-      (dataModal?.transferAmount ?? 0) +
-      (dataModal?.payAmount ?? 0) +
-      (dataModal?.point ?? 0);
+      dataModal?.discountType === "LAK"
+        ? (dataModal?.transferAmount ?? 0) +
+          (dataModal?.payAmount ?? 0) +
+          (dataModal?.point ?? 0) +
+          (dataModal?.discount ?? 0)
+        : (dataModal?.transferAmount ?? 0) +
+          (dataModal?.payAmount ?? 0) +
+          (dataModal?.point ?? 0);
   }
 
   useEffect(() => {
@@ -912,7 +930,10 @@ export default function DashboardFinance({
                         currency: "JPY",
                       }).format(
                         item?.orderId.reduce((sum, orderItem) => {
-                          return sum + (orderItem?.totalPrice || 0);
+                          return (
+                            sum +
+                            (orderItem?.totalPrice * orderItem?.quantity || 0)
+                          );
                         }, 0)
                       )}{" "}
                       {storeDetail?.firstCurrency}

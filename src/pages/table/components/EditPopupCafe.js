@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
 import Select from "react-select";
 import { Modal, Form, Button, InputGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
@@ -8,9 +9,8 @@ import axios from "axios";
 import { COLOR_APP, END_POINT } from "../../../constants";
 import { getHeaders } from "../../../services/auth";
 import Swal from "sweetalert2";
-import { errorAdd, successAdd } from "../../../helpers/sweetalert";
+import { errorAdd } from "../../../helpers/sweetalert";
 import { BiSolidPrinter, BiRotateRight } from "react-icons/bi";
-import { FaSearch } from "react-icons/fa";
 
 import _ from "lodash";
 
@@ -25,11 +25,10 @@ import NumberKeyboard from "../../../components/keyboard/NumberKeyboard";
 import convertNumber from "../../../helpers/convertNumber";
 
 import convertNumberReverse from "../../../helpers/convertNumberReverse";
-import { RedeemPoint, PointUser } from "../../../services/point";
+import { RedeemPoint } from "../../../services/point";
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
 import matchRoundNumber from "../../../helpers/matchRound";
-import Loading from "../../../components/Loading";
 import { getMemberAllCount } from "../../../services/member.service";
 import { useStoreStore } from "../../../zustand/storeStore";
 import { useShiftStore } from "../../../zustand/ShiftStore";
@@ -40,6 +39,7 @@ import { useChangeMoney } from "../../../zustand/slideImageStore";
 import { convertUnitgramAndKilogram } from "../../../helpers/convertUnitgramAndKilogram";
 import { getAllDelivery } from "../../../services/delivery";
 import { subStringText } from "./../../../helpers/subStringText";
+import useDiscountStore from "../../../zustand/DiscountMember";
 
 export default function EditPopupCafe({
   onPrintDrawer,
@@ -66,12 +66,8 @@ export default function EditPopupCafe({
   totalPointPrice,
   setPoint,
   point,
-  paymentMethod,
   setPaymentMethod,
 }) {
-  // ref
-  const inputCashRef = useRef(null);
-  const inputTransferRef = useRef(null);
   const { profile } = useStore();
   const { storeDetail, setStoreDetail } = useStoreStore();
   const { shiftCurrent } = useShiftStore();
@@ -88,13 +84,13 @@ export default function EditPopupCafe({
   const [delivery, setDelivery] = useState();
   const [canCheckOut, setCanCheckOut] = useState(false);
   const [total, setTotal] = useState();
-  const [totalBill, setTotalBill] = useState();
+  // const [totalBill, setTotalBill] = useState();
   const [selectCurrency, setSelectCurrency] = useState("LAK");
   const [rateCurrency, setRateCurrency] = useState(1);
   const [cashCurrency, setCashCurrency] = useState();
   const [hasCRM, setHasCRM] = useState(false);
   const [memberData, setMemberData] = useState();
-  const [memberDataSearch, setMemberDataSearch] = useState();
+  // const [memberDataSearch, setMemberDataSearch] = useState();
   const [textSearchMember, setTextSearchMember] = useState("");
   const [membersData, setMembersData] = useState([]);
   const [currencyList, setCurrencyList] = useState([]);
@@ -111,9 +107,33 @@ export default function EditPopupCafe({
     i18n: { language },
   } = useTranslation();
 
-  // console.log("dataBill exchangePointStoreId", dataBill);
+  const {
+    // State selectors
+    totalBill,
+    discountType,
+    discountValue,
+    selectedMethod,
+    useTwoDiscount,
 
-  // console.log("dataBillEdit", dataBillEdit);
+    // Actions
+    setTotalBill,
+    setDiscountType,
+    setDiscountValue,
+    setSelectedMethod,
+    setMemberDataSearch,
+    memberDataSearch,
+    setUseTwoDiscount,
+
+    // Calculation function
+    calculateDiscountedTotal,
+    applyDiscount,
+    resetDiscount,
+  } = useDiscountStore();
+
+  console.log("dataBill", dataBill);
+  console.log("dataBillEdit", dataBillEdit);
+
+  console.log("applyDiscount", applyDiscount());
 
   useEffect(() => {
     setMemberData();
@@ -161,7 +181,7 @@ export default function EditPopupCafe({
   const taxAmount = (totalBillDefualt * taxPercent) / 100;
 
   useEffect(() => {
-    setMemberDataSearch();
+    // setMemberDataSearch();
     setTotalPointPrice();
     setCash();
     setTransfer();
@@ -319,21 +339,6 @@ export default function EditPopupCafe({
     }
   };
 
-  const DiscountMember = () => {
-    let TotalDiscountFinal = 0;
-    if (memberDataSearch?.discountPercentage > 0) {
-      TotalDiscountFinal =
-        totalBill - (totalBill * memberDataSearch?.discountPercentage) / 100;
-    } else if (dataBillEdit?.discount > 0) {
-      TotalDiscountFinal =
-        totalBill - (totalBill * dataBillEdit?.discount) / 100;
-    } else {
-      TotalDiscountFinal = totalBill;
-    }
-
-    return TotalDiscountFinal;
-  };
-
   const DataExchangePointStore = () => {
     const pointsData =
       // biome-ignore lint/complexity/useFlatMap: <explanation>
@@ -385,6 +390,122 @@ export default function EditPopupCafe({
 
   const exchangePointStoreIds = pointsData?.map((i) => i?.Id);
 
+  // เพิ่ม useEffect เพื่อ sync discount state เมื่อเปิด modal
+  useEffect(() => {
+    if (open) {
+      // ตรวจสอบและตั้งค่า discount จาก dataBillEdit
+      if (dataBillEdit?.discount > 0) {
+        setDiscountType(dataBillEdit.discountType || "PERCENT");
+        setDiscountValue(dataBillEdit.discount);
+      } else {
+        // ถ้าไม่มีข้อมูลจาก backend ใช้ค่าเริ่มต้น
+        setDiscountType("PERCENT");
+        setDiscountValue(0);
+      }
+    }
+  }, [open, dataBillEdit?.discount, dataBillEdit?.discountType]);
+
+  // แก้ไข getDiscount function
+  const getDiscount = () => {
+    // Priority: discountValue (จาก modal) > dataBillEdit (จาก backend) > memberDiscount
+    if (discountValue > 0) {
+      return discountValue;
+    }
+
+    if (dataBillEdit?.discount > 0) {
+      return dataBillEdit.discount;
+    }
+
+    if (memberDataSearch?.discountPercentage > 0) {
+      return memberDataSearch.discountPercentage;
+    }
+
+    return 0;
+  };
+
+  // แก้ไข getDiscountType function (เพิ่มใหม่)
+  const getDiscountType = () => {
+    // Priority: discountType (จาก modal) > dataBillEdit (จาก backend) > default
+    if (discountValue > 0) {
+      return discountType;
+    }
+
+    if (dataBillEdit?.discount > 0) {
+      return dataBillEdit.discountType || "PERCENT";
+    }
+
+    return "PERCENT";
+  };
+
+  // แก้ไข getBillAmount function
+  const getBillAmount = () => {
+    let baseAmount = totalBill || applyDiscount();
+    let finalAmount = baseAmount;
+
+    // Apply point discount first if applicable
+    if (totalPoints < memberDataSearch?.point && totalPointPrice > 0) {
+      finalAmount -= totalPointPrice;
+    }
+
+    // Apply member discount
+    if (memberDataSearch?.discountPercentage > 0) {
+      if (useTwoDiscount && discountValue > 0) {
+        // Apply both discounts
+        const memberDiscount =
+          (finalAmount * memberDataSearch.discountPercentage) / 100;
+        finalAmount -= memberDiscount;
+
+        if (getDiscountType() === "PERCENT") {
+          const additionalDiscount = (finalAmount * discountValue) / 100;
+          finalAmount -= additionalDiscount;
+        } else {
+          finalAmount -= discountValue;
+        }
+      } else if (!discountValue || discountValue === 0) {
+        // Apply only member discount
+        const memberDiscount =
+          (finalAmount * memberDataSearch.discountPercentage) / 100;
+        finalAmount -= memberDiscount;
+      }
+    }
+
+    // Apply manual discount (from modal or backend)
+    const manualDiscount = getDiscount();
+    const manualDiscountType = getDiscountType();
+
+    if (
+      manualDiscount > 0 &&
+      (!memberDataSearch?.discountPercentage || !useTwoDiscount)
+    ) {
+      if (manualDiscountType === "PERCENT") {
+        const discountAmount = (finalAmount * manualDiscount) / 100;
+        finalAmount -= discountAmount;
+      } else {
+        finalAmount -= manualDiscount;
+      }
+    }
+
+    return Math.max(0, finalAmount);
+  };
+
+  // แก้ไข _checkBill และ _checkBillNotPrint functions
+  const updateCheckBillData = (datas) => {
+    // ใช้ค่า discount ที่ถูกต้อง
+    datas.discount = getDiscount();
+    datas.discountType = getDiscountType();
+
+    // Debug log
+    console.log("Final discount data:", {
+      discount: datas.discount,
+      discountType: datas.discountType,
+      billAmount: datas.billAmount,
+      memberDiscount: memberDataSearch?.discountPercentage,
+      useTwoDiscount,
+    });
+
+    return datas;
+  };
+
   const _checkBill = async (currencyId, currencyName) => {
     setIsLoading(true);
     onClose();
@@ -410,10 +531,7 @@ export default function EditPopupCafe({
       isCheckout: "true",
       status: "CHECKOUT",
       payAmount: cash,
-      billAmount:
-        totalPoints < memberDataSearch?.point && !hasCRM
-          ? DiscountMember() - totalPointPrice
-          : DiscountMember(),
+      billAmount: getBillAmount(),
       transferAmount: isDelivery ? 0 : transfer,
       deliveryAmount: isDelivery ? matchRoundNumber(transfer) : 0,
       deliveryName: platform,
@@ -427,21 +545,16 @@ export default function EditPopupCafe({
       userNanme: null,
       saveCafe: true,
       phone: null,
-      no: dataBillEdit?.no ? dataBillEdit?.no : bill + 1,
+      no: dataBillEdit?.no,
       point: point,
       change: moneyChange,
       isCafe: true,
       memberId: memberDataSearch?._id,
       memberName: memberDataSearch?.name,
       memberPhone: memberDataSearch?.phone,
-      memberDiscount: memberDataSearch?.discountPercentage,
-      discount:
-        memberDataSearch?.discountPercentage > 0
-          ? memberDataSearch?.discountPercentage
-          : dataBillEdit?.discount > 0
-          ? dataBillEdit?.discount
-          : 0,
-      discountType: "PERCENT",
+      discountMember: memberDataSearch?.discountPercentage,
+      discount: getDiscount(),
+      discountType: discountType || "PERCENT",
       statusPoint: statusPoint,
       fullnameStaffCheckOut:
         `${profile.data.firstname ? profile.data.firstname : "--"} ${
@@ -456,6 +569,8 @@ export default function EditPopupCafe({
       datas.currency = cashCurrency;
       datas.currencyName = currencyName;
     }
+
+    datas = updateCheckBillData(datas);
 
     await axios
       .post(
@@ -534,10 +649,7 @@ export default function EditPopupCafe({
       isCheckout: "true",
       status: "CHECKOUT",
       payAmount: cash,
-      billAmount:
-        totalPoints < memberDataSearch?.point && !hasCRM
-          ? DiscountMember() - totalPointPrice
-          : DiscountMember(),
+      billAmount: getBillAmount(),
       transferAmount: isDelivery ? 0 : transfer,
       deliveryAmount: isDelivery ? matchRoundNumber(transfer) : 0,
       deliveryName: platform,
@@ -551,21 +663,16 @@ export default function EditPopupCafe({
       userNanme: null,
       saveCafe: true,
       phone: null,
-      no: dataBillEdit?.no ? dataBillEdit?.no : bill + 1,
+      no: dataBillEdit?.no,
       point: point,
       change: moneyChange,
       isCafe: true,
       memberId: memberDataSearch?._id,
       memberName: memberDataSearch?.name,
       memberPhone: memberDataSearch?.phone,
-      memberDiscount: memberDataSearch?.discountPercentage,
-      discount:
-        memberDataSearch?.discountPercentage > 0
-          ? memberDataSearch?.discountPercentage
-          : dataBillEdit?.discount > 0
-          ? dataBillEdit?.discount
-          : 0,
-      discountType: "PERCENT",
+      discountMember: memberDataSearch?.discountPercentage,
+      discount: getDiscount(),
+      discountType: discountType || "PERCENT",
       statusPoint: statusPoint,
       fullnameStaffCheckOut:
         `${profile.data.firstname ? profile.data.firstname : "--"} ${
@@ -580,7 +687,7 @@ export default function EditPopupCafe({
       datas.currency = cashCurrency;
       datas.currencyName = selectCurrency?.name;
     }
-
+    datas = updateCheckBillData(datas);
     await axios
       .post(
         `${END_POINT}/v7/admin/bill-cafe-edit`,
@@ -614,10 +721,12 @@ export default function EditPopupCafe({
           // onClose();
           onQueue();
           setTotalPointPrice();
+
           if (!storeDetail?.isStatusCafe) {
             await onPrintForCher();
           }
-
+          setDiscountType("PERCENT");
+          setDiscountValue(0);
           // await onPrintForCherLaBel();
           ClearChangeAmount();
         }
@@ -716,7 +825,8 @@ export default function EditPopupCafe({
     let memberDiscount = memberDataSearch?.discountPercentage || 0; // Get member discount, default to 0 if not available
 
     if (forcus === "CASH") {
-      let discountedTotal = totalBill - (totalBill * memberDiscount) / 100; // Apply member discount to the total bill
+      let discountedTotal =
+        applyDiscount() - (applyDiscount() * memberDiscount) / 100; // Apply member discount to the total bill
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           discountedTotal -= (discountedTotal * dataBill?.discount) / 100;
@@ -730,7 +840,8 @@ export default function EditPopupCafe({
         setCanCheckOut(false);
       }
     } else if (forcus === "TRANSFER") {
-      let discountedTotal = totalBill - (totalBill * memberDiscount) / 100; // Apply member discount to the total bill
+      let discountedTotal =
+        applyDiscount() - (applyDiscount() * memberDiscount) / 100; // Apply member discount to the total bill
 
       if (dataBill?.discount > 0) {
         // Apply additional discount based on dataBill
@@ -755,7 +866,8 @@ export default function EditPopupCafe({
     } else if (forcus === "TRANSFER_CASH") {
       let _sum =
         (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
-      let discountedTotal = totalBill - (totalBill * memberDiscount) / 100; // Apply member discount to the total bill
+      let discountedTotal =
+        applyDiscount() - (applyDiscount() * memberDiscount) / 100; // Apply member discount to the total bill
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           discountedTotal -= (discountedTotal * dataBill?.discount) / 100;
@@ -780,7 +892,8 @@ export default function EditPopupCafe({
         });
         return;
       }
-      let discountedTotal = totalBill - (totalBill * memberDiscount) / 100; // Apply member discount to the total bill
+      let discountedTotal =
+        applyDiscount() - (applyDiscount() * memberDiscount) / 100; // Apply member discount to the total bill
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           discountedTotal -= (discountedTotal * dataBill?.discount) / 100;
@@ -810,7 +923,8 @@ export default function EditPopupCafe({
         (Number.parseInt(cash) || 0) +
         (Number.parseInt(transfer) || 0) +
         (Number.parseInt(point) || 0);
-      let discountedTotal = totalBill - (totalBill * memberDiscount) / 100; // Apply member discount to the total bill
+      let discountedTotal =
+        applyDiscount() - (applyDiscount() * memberDiscount) / 100; // Apply member discount to the total bill
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
           discountedTotal -= (discountedTotal * dataBill?.discount) / 100;
@@ -836,20 +950,23 @@ export default function EditPopupCafe({
     } else if (forcus === "DELIVERY") {
       if (dataBill?.discount) {
         if (dataBill?.discountType === "PERCENT") {
-          if (delivery >= totalBill - (totalBill * dataBill?.discount) / 100) {
+          if (
+            delivery >=
+            applyDiscount() - (applyDiscount() * dataBill?.discount) / 100
+          ) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
           }
         } else {
-          if (delivery >= totalBill - dataBill?.discount) {
+          if (delivery >= applyDiscount() - dataBill?.discount) {
             setCanCheckOut(true);
           } else {
             setCanCheckOut(false);
           }
         }
       } else {
-        if (delivery >= totalBill) {
+        if (delivery >= applyDiscount()) {
           setCanCheckOut(true);
         } else {
           setCanCheckOut(false);
@@ -870,16 +987,16 @@ export default function EditPopupCafe({
 
   let transferCal =
     dataBill || dataBillEdit
-      ? DiscountMember() > 0
-        ? DiscountMember()
+      ? applyDiscount() > 0
+        ? applyDiscount()
         : 0
-      : DiscountMember() > 0
-      ? DiscountMember()
+      : applyDiscount() > 0
+      ? applyDiscount()
       : 0;
 
   let totalBillMoney = dataBill
-    ? Number.parseFloat(DiscountMember() > 0 ? DiscountMember() : 0)
-    : Number.parseFloat(DiscountMember() > 0 ? DiscountMember() : 0);
+    ? Number.parseFloat(applyDiscount() > 0 ? applyDiscount() : 0)
+    : Number.parseFloat(applyDiscount() > 0 ? applyDiscount() : 0);
 
   const onChangeCurrencyInput = (inputData) => {
     convertNumberReverse(inputData, (value) => {
@@ -989,6 +1106,42 @@ export default function EditPopupCafe({
   const totalCashAndTransfer =
     (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
 
+  const handleMethodChange = (method) => {
+    if (
+      method === "USEPERCENT" &&
+      discountType === "PERCENT" &&
+      discountValue
+    ) {
+      Swal.fire({
+        icon: "warning",
+        title: t("noti"),
+        text: `ມີການໃຊ້ສ່ວນຫຼຸດບິນແລ້ວ ${discountValue} ${
+          discountType === "PERCENT" ? "%" : storeDetail?.firstCurrency
+        } ທ່ານຕ້ອງການໃຊ້ທັງສອງເລີຍບໍ່`,
+        showDenyButton: true,
+        // showCancelButton: true,
+        confirmButtonText: "ຢືນຢັນ",
+        denyButtonText: "ຍົກເລິກ",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Swal.fire("Saved!", "", "success");
+          setUseTwoDiscount(true);
+        } else if (result.isDenied) {
+          // Swal.fire("Changes are not saved", "", "info");
+          setUseTwoDiscount(false);
+          // setDiscountType("PERCENT");
+          // setDiscountValue(0);
+        }
+      });
+
+      setSelectedMethod("USEPOINT");
+    } else {
+      setSelectedMethod(method);
+    }
+    setSelectedMethod(method);
+  };
   return (
     <Modal
       show={open}
@@ -1028,19 +1181,17 @@ export default function EditPopupCafe({
                 {totalPointPrice > 0
                   ? dataBill
                     ? moneyCurrency(
-                        DiscountMember()
-                          ? DiscountMember() - totalPointPrice
-                          : 0
+                        applyDiscount() ? applyDiscount() - totalPointPrice : 0
                       )
                     : moneyCurrency(
-                        DiscountMember() > 0
-                          ? DiscountMember() - totalPointPrice
+                        applyDiscount() > 0
+                          ? applyDiscount() - totalPointPrice
                           : 0
                       )
                   : dataBill
-                  ? moneyCurrency(DiscountMember() ? DiscountMember() : 0)
+                  ? moneyCurrency(applyDiscount() ? applyDiscount() : 0)
                   : moneyCurrency(
-                      DiscountMember() > 0 ? DiscountMember() : 0
+                      applyDiscount() > 0 ? applyDiscount() : 0
                     )}{" "}
                 {storeDetail?.firstCurrency}
               </span>
@@ -1061,11 +1212,11 @@ export default function EditPopupCafe({
               >
                 {moneyCurrency(
                   (dataBill
-                    ? DiscountMember() > 0
-                      ? DiscountMember()
+                    ? applyDiscount() > 0
+                      ? applyDiscount()
                       : 0
-                    : DiscountMember() > 0
-                    ? DiscountMember()
+                    : applyDiscount() > 0
+                    ? applyDiscount()
                     : 0) / rateCurrency
                 )}{" "}
                 {selectCurrency?.name}
@@ -1077,29 +1228,6 @@ export default function EditPopupCafe({
                 {" "}
                 (ອັດຕາແລກປ່ຽນ: {convertNumber(rateCurrency)})
               </span>
-
-              {/* {showTotalPointPrice && (
-                <div className="flex items-center text-[18px] gap-3">
-                  <span>
-                    ( {moneyCurrency(point)} {t("point")} ={" "}
-                    {moneyCurrency(totalPointPrice)}{" "}
-                    {storeDetail?.firstCurrency})
-                  </span>
-                  <span className="ml-1">{t("debt_pay_remaining")}: </span>
-                  <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
-                    {dataBill
-                      ? moneyCurrency(
-                          DiscountMember()
-                            ? DiscountMember() - totalPointPrice
-                            : 0
-                        )
-                      : moneyCurrency(
-                          DiscountMember() > 0 ? DiscountMember() : 0
-                        )}{" "}
-                    {storeDetail?.firstCurrency}
-                  </span>
-                </div>
-              )} */}
             </div>
 
             <div
@@ -1313,6 +1441,39 @@ export default function EditPopupCafe({
                         ""
                       )}
                     </div>
+                  </div>
+
+                  <div
+                    hidden={!memberDataSearch?.discountPercentage > 0}
+                    className="flex gap-2 items-center mt-3 mb-[-40px]"
+                  >
+                    <p className="text-orange-500 font-bold">
+                      ຮູບແບບການໃຫ້ສ່ວນຫຼຸດ
+                    </p>
+
+                    <Form>
+                      {["radio"].map((type) => (
+                        <div key={`inline-${type}`} className="mb-3">
+                          <CustomCheck
+                            inline
+                            defaultChecked
+                            label="ຄະແນນ"
+                            name="option"
+                            type={type}
+                            id={`inline-${type}-1`}
+                            onChange={() => handleMethodChange("USEPOINT")}
+                          />
+                          <CustomCheck
+                            inline
+                            label="ເປີເຊັນ"
+                            name="option"
+                            type={type}
+                            id={`inline-${type}-2`}
+                            onChange={() => handleMethodChange("USEPERCENT")}
+                          />
+                        </div>
+                      ))}
+                    </Form>
                   </div>
 
                   {(!memberDataSearch?.point <= 0 ||
@@ -1748,7 +1909,7 @@ export default function EditPopupCafe({
                 (isDelivery && platform.length <= 0) ||
                 (isDelivery && transfer < totalBill) ||
                 (storeDetail?.isStatusCafe &&
-                  totalCashAndTransfer < DiscountMember() - totalPointPrice)
+                  totalCashAndTransfer < applyDiscount() - totalPointPrice)
               }
             >
               <BiSolidPrinter />
@@ -1762,7 +1923,7 @@ export default function EditPopupCafe({
                 (isDelivery && platform.length <= 0) ||
                 (isDelivery && transfer < totalBill) ||
                 (storeDetail?.isStatusCafe &&
-                  totalCashAndTransfer < DiscountMember() - totalPointPrice)
+                  totalCashAndTransfer < applyDiscount() - totalPointPrice)
               }
             >
               {t("calculate")}
@@ -1773,3 +1934,10 @@ export default function EditPopupCafe({
     </Modal>
   );
 }
+
+const CustomCheck = styled(Form.Check)`
+  .form-check-input:checked {
+    background-color: red;
+    border-color: red;
+  }
+`;
