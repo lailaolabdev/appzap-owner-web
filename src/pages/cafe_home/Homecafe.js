@@ -119,6 +119,7 @@ function Homecafe() {
     setDiscountValue,
     setUseTwoDiscount,
     setMemberDataSearch,
+    setSelectedMethod,
   } = useDiscountStore();
 
   // console.log("discountedTotal", discountedTotal);
@@ -1508,6 +1509,7 @@ function Homecafe() {
                   setSelectedMenus([]);
                   clearSelectedMenus();
                   setDiscountType("PERCENT");
+                  setSelectedMethod("USEPOINT");
                   setDiscountValue(0);
                   setUseTwoDiscount(false);
                   setDataBill();
@@ -1523,6 +1525,7 @@ function Homecafe() {
                 setSelectedMenus([]);
                 clearSelectedMenus();
                 setDiscountType("PERCENT");
+                setSelectedMethod("USEPOINT");
                 setDiscountValue(0);
                 setUseTwoDiscount(false);
                 setMemberDataSearch();
@@ -2143,6 +2146,7 @@ function Homecafe() {
                           setDiscountType("PERCENT");
                           setDiscountValue(0);
                           setUseTwoDiscount(false);
+                          setMemberDataSearch();
                         }}
                       >
                         {t("cancel_order")}
@@ -2152,9 +2156,8 @@ function Homecafe() {
                         type="button"
                         className="w-full rounded-lg h-[40px] bg-color-app hover:bg-orange-300 text-md font-bold text-white"
                         onClick={() => {
-                          SelectedMenus.length === 0
-                            ? AlertMessage()
-                            : setPopup({ CheckOutType: true });
+                          setPopup({ CheckOutType: true });
+                          setMemberDataSearch();
                         }}
                         disabled={SelectedMenus.length === 0}
                       >

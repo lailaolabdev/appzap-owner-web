@@ -10,7 +10,7 @@ const useDiscountStore = create(
       totalBill: 0,
       discountType: "PERCENT", // "PERCENT" or "LAK"
       discountValue: 0,
-      selectedMethod: "USEPERCENT", // "USEPERCENT", "USEPOINT"
+      selectedMethod: "USEPOINT", // "USEPERCENT", "USEPOINT"
       useTwoDiscount: false,
       memberDataSearch: null,
       dataBillEdit: null,
@@ -107,6 +107,7 @@ const useDiscountStore = create(
           ) {
             console.log("log 4");
             if (discountType === "PERCENT" && discountValue > 0) {
+              console.log("log 4.1");
               Swal.fire({
                 icon: "warning",
                 title: t("noti"),
@@ -130,6 +131,7 @@ const useDiscountStore = create(
               discountType === "PERCENT" &&
               discountValue > 0
             ) {
+              console.log("log 4.2");
               TotalDiscountFinal =
                 totalBill -
                 (totalBill * memberDataSearch?.discountPercentage) / 100;
@@ -139,13 +141,17 @@ const useDiscountStore = create(
               discountValue === 0 &&
               totalBill * memberDataSearch?.discountPercentage > 0
             ) {
+              console.log("log 4.3");
               TotalDiscountFinal =
                 totalBill -
                 (totalBill * memberDataSearch?.discountPercentage) / 100;
-            } else {
-              TotalDiscountFinal =
-                totalBill - (totalBill * parseInt(discountValue)) / 100;
             }
+            // else {
+            //   console.log("log 4.4");
+            //   TotalDiscountFinal =
+            //     totalBill -
+            //     (totalBill * memberDataSearch?.discountPercentage) / 100;
+            // }
           }
         } else if (discountType === "LAK") {
           console.log("log 5");

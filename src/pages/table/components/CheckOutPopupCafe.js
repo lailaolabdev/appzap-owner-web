@@ -157,6 +157,7 @@ export default function CheckOutPopupCafe({
 
   useEffect(() => {
     // setMemberDataSearch();
+    setSelectedMethod("USEPOINT");
     setTotalPointPrice();
     setCash();
     setTransfer();
@@ -358,6 +359,32 @@ export default function CheckOutPopupCafe({
   const { pointsData, totalPoints, totalPointsPrice } =
     DataExchangePointStore();
 
+  const totalPointPriceDiscount = () => {
+    if (
+      memberDataSearch?.discountPercentage > 0 &&
+      selectedMethod === "USEPERCENT" &&
+      totalPointsPrice > 0
+    ) {
+      if (showTotalPointPrice) {
+        return (
+          totalPointsPrice -
+          (totalPointsPrice * memberDataSearch?.discountPercentage) / 100
+        );
+      }
+    } else if (
+      memberDataSearch?.discountPercentage > 0 &&
+      selectedMethod === "USEPOINT" &&
+      totalPointsPrice > 0
+    ) {
+      if (showTotalPointPrice) {
+        return totalPointsPrice;
+      }
+    }
+    if (showTotalPointPrice) {
+      return totalPointsPrice;
+    }
+  };
+
   const handleSelectedPoint = (data) => {
     setSelectPoint(data);
     setPoint(data?.point || data);
@@ -366,27 +393,64 @@ export default function CheckOutPopupCafe({
   const exchangePointStoreIds = pointsData?.map((i) => i?.Id);
 
   const getDiscount = () => {
+    // 1. Two discount scenario (highest priority)
     if (
       useTwoDiscount &&
       discountType === "PERCENT" &&
       discountValue > 0 &&
-      memberDataSearch?.discountPercentage
-    )
+      memberDataSearch?.discountPercentage > 0
+    ) {
+      console.log("Case 1: Using two discounts combined");
       return (
-        parseInt(discountValue) + parseInt(memberDataSearch?.discountPercentage)
+        parseInt(discountValue) + parseInt(memberDataSearch.discountPercentage)
       );
-    if (discountValue > 0) return discountValue;
-    if (memberDataSearch?.discountPercentage > 0)
+    }
+
+    // 2. Member percentage discount method
+    if (
+      selectedMethod === "USEPERCENT" &&
+      memberDataSearch?.discountPercentage > 0
+    ) {
+      console.log("Case 2: Using member percentage discount");
       return memberDataSearch.discountPercentage;
-    if (dataBillEdit?.discount > 0) return dataBillEdit.discount;
+    }
+
+    // 3. Point method with member discount
+    if (
+      selectedMethod === "USEPOINT" &&
+      memberDataSearch?.discountPercentage > 0
+    ) {
+      console.log("Case 3: Using point method with member discount");
+      return memberDataSearch.discountPercentage;
+    }
+
+    // 4. Regular discount (from discount form/input)
+    if (discountType === "PERCENT" && discountValue > 0) {
+      console.log("Case 4: Using regular discount value");
+      return discountValue;
+    }
+
+    if (discountType === "LAK" && discountValue > 0) {
+      console.log("Case 4: Using regular discount value");
+      return discountValue;
+    }
+
+    // 5. Edit bill discount (fallback)
+    if (dataBillEdit?.discount > 0) {
+      console.log("Case 5: Using edit bill discount");
+      return dataBillEdit.discount;
+    }
+
+    // 6. No discount
+    console.log("Case 6: No discount applied");
     return 0;
   };
 
   const getBillAmount = () => {
     // If member does not have enough points, subtract point price from discount
     if (totalPoints < memberDataSearch?.point) {
-      if (totalPointPrice !== undefined) {
-        return applyDiscount() - totalPointPrice;
+      if (totalPointPriceDiscount() !== undefined) {
+        return applyDiscount() - totalPointPriceDiscount();
       } else {
         return applyDiscount();
       }
@@ -678,6 +742,7 @@ export default function CheckOutPopupCafe({
           setDataBill();
           // await onPrintForCherLaBel();
           ClearChangeAmount();
+          setShowTotalPointPrice(false);
         }
         await Swal.fire({
           icon: "success",
@@ -836,13 +901,17 @@ export default function CheckOutPopupCafe({
         }
       }
 
-      if (_sum < discountedTotal) {
-        setCanCheckOut(false);
+      if (showTotalPointPrice) {
+        setCanCheckOut(true);
       } else {
-        if (_sum >= discountedTotal) {
-          setCanCheckOut(true);
-        } else {
+        if (_sum <= discountedTotal) {
           setCanCheckOut(false);
+        } else {
+          if (_sum >= discountedTotal) {
+            setCanCheckOut(true);
+          } else {
+            setCanCheckOut(false);
+          }
         }
       }
     } else if (forcus === "DELIVERY") {
@@ -1090,6 +1159,42 @@ export default function CheckOutPopupCafe({
     setSelectedMethod(method);
   };
 
+  const getButtonDisabledState = () => {
+    // Define validation rules clearly
+    const validationRules = {
+      // Basic checkout state
+      canCheckout: canCheckOut,
+
+      // Delivery specific validations
+      deliveryPlatform: !isDelivery || (platform && platform.length > 0),
+      deliveryAmount: !isDelivery || transfer >= (totalBill || 0),
+
+      // Payment amount validation
+      sufficientPayment: (() => {
+        const totalPayment =
+          (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
+        const baseAmount = applyDiscount() || 0;
+        const pointDiscount = totalPointPriceDiscount() || 0;
+        const requiredAmount = Math.max(0, baseAmount - pointDiscount);
+        return totalPayment >= requiredAmount;
+      })(),
+
+      // Point selection validation (if applicable)
+      pointSelection: !showTotalPointPrice || (point && point > 0),
+    };
+
+    // Check if all validations pass
+    const allValidationsPassed = Object.values(validationRules).every(
+      (rule) => rule === true
+    );
+
+    // Log validation results for debugging
+    // console.log("Validation Rules:", validationRules);
+    // console.log("All validations passed:", allValidationsPassed);
+
+    return !allValidationsPassed;
+  };
+
   return (
     <Modal
       show={open}
@@ -1103,6 +1208,7 @@ export default function CheckOutPopupCafe({
         setIsDelivery(false);
         setDelivery();
         setShowTotalPointPrice(false);
+        setSelectedMethod("USEPOINT");
       }}
       keyboard={false}
       size="lg"
@@ -1120,16 +1226,16 @@ export default function CheckOutPopupCafe({
             <div className="mb-[10px] text-[22px] flex gap-3 items-center ">
               <span>{t("bill_total")}: </span>
               <span style={{ color: COLOR_APP, fontWeight: "bold" }}>
-                {totalPointPrice > 0
+                {totalPointPriceDiscount() > 0
                   ? dataBill
                     ? moneyCurrency(
                         applyDiscount() > 0
-                          ? applyDiscount() - totalPointPrice
+                          ? applyDiscount() - totalPointPriceDiscount()
                           : 0
                       )
                     : moneyCurrency(
                         applyDiscount() > 0
-                          ? applyDiscount() - totalPointPrice
+                          ? applyDiscount() - totalPointPriceDiscount()
                           : 0
                       )
                   : dataBill
@@ -1204,9 +1310,10 @@ export default function CheckOutPopupCafe({
                     <InputGroup.Text>{t("cash")}</InputGroup.Text>
                     <Form.Control
                       disabled={
-                        tab !== "cash" &&
-                        tab !== "cash_transfer" &&
-                        tab !== "cash_transfer_point"
+                        (tab !== "cash" &&
+                          tab !== "cash_transfer" &&
+                          tab !== "cash_transfer_point") ||
+                        showTotalPointPrice
                       }
                       type="text"
                       placeholder="0"
@@ -1229,9 +1336,10 @@ export default function CheckOutPopupCafe({
                     <InputGroup.Text>{t("transfer")}</InputGroup.Text>
                     <Form.Control
                       disabled={
-                        tab !== "cash_transfer" &&
-                        tab !== "cash_transfer_point" &&
-                        !isDelivery
+                        (tab !== "cash_transfer" &&
+                          tab !== "cash_transfer_point" &&
+                          !isDelivery) ||
+                        showTotalPointPrice
                       }
                       type="text"
                       placeholder="0"
@@ -1446,7 +1554,7 @@ export default function CheckOutPopupCafe({
                             onClick={() => {
                               handleSelectedPoint(totalPoints);
                               setShowTotalPointPrice(true);
-                              setTotalPointPrice(totalPointsPrice);
+                              setTotalPointPrice(totalPointPriceDiscount());
                             }}
                           >
                             {t("all")} ({moneyCurrency(totalPoints)})
@@ -1496,11 +1604,11 @@ export default function CheckOutPopupCafe({
                     </div>
                   )}
 
-                  {showTotalPointPrice && totalPointPrice > 0 && (
+                  {showTotalPointPrice && totalPointPriceDiscount() > 0 && (
                     <div className="flex items-center text-[18px] gap-3">
                       <span>
                         ( {moneyCurrency(point)} {t("point")} ={" "}
-                        {moneyCurrency(totalPointPrice)}{" "}
+                        {moneyCurrency(totalPointPriceDiscount())}{" "}
                         {storeDetail?.firstCurrency})
                       </span>
                     </div>
@@ -1514,7 +1622,8 @@ export default function CheckOutPopupCafe({
                         !memberDataSearch?.name ||
                         !memberDataSearch?.point ||
                         memberDataSearch?.point <= point ||
-                        memberDataSearch?.point < totalPoints
+                        memberDataSearch?.point < totalPoints ||
+                        showTotalPointPrice
                       }
                       type="text"
                       placeholder="0"
@@ -1627,6 +1736,7 @@ export default function CheckOutPopupCafe({
                   setSelectInput("inputCash");
                   setForcus("CASH");
                   setIsDelivery(false);
+                  setShowTotalPointPrice(false);
                 }}
               >
                 {t("cash")}
@@ -1652,6 +1762,7 @@ export default function CheckOutPopupCafe({
                   setTab("transfer");
                   setForcus("TRANSFER");
                   setIsDelivery(false);
+                  setShowTotalPointPrice(false);
                 }}
               >
                 {t("transfer")}
@@ -1676,6 +1787,7 @@ export default function CheckOutPopupCafe({
                   setSelectInput("inputCash");
                   setForcus("TRANSFER_CASH");
                   setIsDelivery(false);
+                  setShowTotalPointPrice(false);
                 }}
               >
                 {t("cash_transfer")}
@@ -1726,6 +1838,7 @@ export default function CheckOutPopupCafe({
                   setTab("transfer");
                   setForcus("DELIVERY");
                   setIsDelivery(true);
+                  setShowTotalPointPrice(false);
                 }}
               >
                 {t("Delivery")}
@@ -1771,6 +1884,8 @@ export default function CheckOutPopupCafe({
               onClickMember={() => {
                 if (storeDetail?.isCRM) {
                   setHasCRM((prev) => !prev);
+                  setMemberDataSearch();
+                  setShowTotalPointPrice(false);
                 } else {
                   Swal.fire({
                     title: "ແຈ້ງເຕືອນ?",
@@ -1842,14 +1957,7 @@ export default function CheckOutPopupCafe({
                 // await onPrintForCher();
               }}
               style={{ display: "flex", gap: "10px", alignItems: "center" }}
-              disabled={
-                !canCheckOut ||
-                (isDelivery && platform.length <= 0) ||
-                (isDelivery && transfer < totalBill) ||
-                (storeDetail?.isStatusCafe &&
-                  totalCashAndTransfer < applyDiscount() - totalPointPrice)
-                // point < DiscountMember()
-              }
+              disabled={getButtonDisabledState()}
             >
               <BiSolidPrinter />
               {t("print_checkbill")}
@@ -1857,14 +1965,7 @@ export default function CheckOutPopupCafe({
             <Button
               className="dmd:w-fit w-full"
               onClick={() => _checkBillNotPrint()}
-              disabled={
-                !canCheckOut ||
-                (isDelivery && platform.length <= 0) ||
-                (isDelivery && transfer < totalBill) ||
-                (storeDetail?.isStatusCafe &&
-                  totalCashAndTransfer < applyDiscount() - totalPointPrice)
-                // point < DiscountMember()
-              }
+              disabled={getButtonDisabledState()}
             >
               {t("calculate")}
             </Button>
