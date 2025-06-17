@@ -374,11 +374,11 @@ export default function Dashboard() {
                 <span style={{ fontWeight: 'bold' }}>{t("total_will_get")}</span>
                 <span style={{ margin: '0 8px' }}>:</span>
                 <span>
-                  {/* {convertNumber(
+                  {convertNumber(
                     (totalBillActiveReport?.total || 0) +
                     salesInformationReport?.totalSales || 0
-                  )} */}
-                  {convertNumber(salesInformationReport?.totalSales || 0)}
+                  )}
+                  {/* {convertNumber(salesInformationReport?.totalSales || 0)} */}
                 </span>
               </div>
 
