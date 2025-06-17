@@ -1,15 +1,16 @@
+// src/helpers/orderHelpers.js
+
+import { base64ToBlob, moneyCurrency } from "../../helpers"; // assuming moneyCurrency and base64ToBlob are helpers you already have
+import moment from "moment";
+import printFlutter from "../../helpers/printFlutter";
 import axios from "axios";
-import html2canvas from "html2canvas";
-import { base64ToBlob, moneyCurrency } from "../../helpers"; // Adjust the import path based on your project structure
 import {
   ETHERNET_PRINTER_PORT,
   BLUETOOTH_PRINTER_PORT,
   USB_PRINTER_PORT,
-} from "../../constants/index"; // Adjust the import path based on your project structure
-import printFlutter from "../../helpers/printFlutter";
-import moment from "moment";
+} from "../../constants/index";
 
-export const printItems = async (
+export const printItemsGroup = async (
   groupedItems,
   combinedBillRefs,
   printers,
@@ -28,7 +29,7 @@ export const printItems = async (
     console.log("items", items);
 
     try {
-      const base64ArrayAndPrinter = convertHtmlToBase64(
+      const base64ArrayAndPrinter = convertHtmlToBase64Group(
         items,
         _printer,
         selectedTable
@@ -39,7 +40,7 @@ export const printItems = async (
       if (base64ArrayAndPrinter.length > 0) {
         const { dataUrl, printer } = base64ArrayAndPrinter[0]; // Use the first (and only) base64 image
 
-        await runPrint(dataUrl, printer);
+        await runPrintGroup(dataUrl, printer);
       }
     } catch (err) {
       console.error(`Failed to print items for printer ${printerIp}:`, err);
@@ -48,52 +49,9 @@ export const printItems = async (
   }
 };
 
-// Run the actual print process for each printer
-const runPrint = async (dataUrl, printer) => {
-  try {
-    const printFile = await base64ToBlob(dataUrl);
-    const bodyFormData = new FormData();
 
-    bodyFormData.append("ip", printer?.ip);
-    bodyFormData.append("isdrawer", false);
-    bodyFormData.append("port", "9100");
-    bodyFormData.append("image", printFile);
-    bodyFormData.append("paper", printer?.width === "58mm" ? 58 : 80);
-
-    let urlForPrinter = "";
-    if (printer?.type === "ETHERNET") {
-      urlForPrinter = ETHERNET_PRINTER_PORT;
-    } else if (printer?.type === "BLUETOOTH") {
-      urlForPrinter = BLUETOOTH_PRINTER_PORT;
-    } else if (printer?.type === "USB") {
-      urlForPrinter = USB_PRINTER_PORT;
-    }
-
-    await printFlutter(
-      {
-        imageBuffer: dataUrl,
-        ip: printer?.ip,
-        type: printer?.type,
-        port: "9100",
-        width: printer?.width === "58mm" ? 400 : 580,
-      },
-      async () => {
-        await axios({
-          method: "post",
-          url: urlForPrinter,
-          data: bodyFormData,
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-      }
-    );
-  } catch (error) {
-    console.error(`Failed to print to ${printer?.ip}:`, error);
-    throw error;
-  }
-};
-
-// Convert HTML element to base64 for printing
-const convertHtmlToBase64 = (items, printer, selectedTable) => {
+export const convertHtmlToBase64Group = (items, printer, selectedTable) => {
+  console.log("items", items);
   const base64ArrayAndPrinter = [];
   let totalPrice = 0; // Variable to hold the total price
 
@@ -136,7 +94,7 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
       context.fillStyle = "#fff";
       context.font = "bold  36px NotoSansLao, Arial, sans-serif";
       context.fillText(
-        selectedTable?.tableName || "Table",
+        selectedTable?.tableName || data?.tableName,
         titleMarginLeft,
         45
       );
@@ -232,3 +190,53 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
 
   return base64ArrayAndPrinter;
 };
+
+
+
+export const runPrintGroup = async (dataUrl, printer) => {
+    try {
+      const printFile = await base64ToBlob(dataUrl);
+      const bodyFormData = new FormData();
+  
+      bodyFormData.append("ip", printer?.ip);
+      bodyFormData.append("isdrawer", false);
+      bodyFormData.append("port", "9100");
+      bodyFormData.append("image", printFile);
+      bodyFormData.append("paper", printer?.width === "58mm" ? 58 : 80);
+  
+      let urlForPrinter = "";
+      let res = "";
+      if (printer?.type === "ETHERNET") {
+        urlForPrinter = ETHERNET_PRINTER_PORT;
+      } else if (printer?.type === "BLUETOOTH") {
+        urlForPrinter = BLUETOOTH_PRINTER_PORT;
+      } else if (printer?.type === "USB") {
+        urlForPrinter = USB_PRINTER_PORT;
+      }
+  
+      await printFlutter(
+        {
+          imageBuffer: dataUrl,
+          ip: printer?.ip,
+          type: printer?.type,
+          port: "9100",
+          width: printer?.width === "58mm" ? 400 : 580,
+        },
+        async () => {
+         const response = await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          
+          res = response;
+        }
+      );
+      return res;
+    } catch (error) {
+      console.error(`Failed to print to ${printer?.ip}:`, error);
+      throw error;
+    }
+   
+  };

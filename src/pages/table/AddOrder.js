@@ -2067,7 +2067,7 @@ function AddOrder() {
                       onSubmit(true);
                     }}
                   >
-                    {t("order_and_send_to_kitchen")} +{" "}
+                    {t("order_and_send_to_kitchen ຟ")} +{" "}
                     <FontAwesomeIcon
                       icon={faCashRegister}
                       style={{ color: "#fff" }}
@@ -2092,7 +2092,7 @@ function AddOrder() {
                       onSubmit(true);
                     }}
                   >
-                    {t("order_and_send_to_kitchen")} +{" "}
+                    {t("order_and_send_to_kitchen ໂ")} +{" "}
                     <FontAwesomeIcon
                       icon={faCashRegister}
                       style={{ color: "#fff" }}
