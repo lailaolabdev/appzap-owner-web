@@ -278,12 +278,11 @@ function PopUpAddMenuOptionCategory({
                                             ))}
                                             )
                                         </span>
-                                    )}
+                                    )} : 
                                     {new Intl.NumberFormat("lo-LA", {
-                                        style: "currency",
-                                        currency: "LAK",
-                                        minimumFractionDigits: 0,
-                                    }).format(option?.price)}
+                                      minimumFractionDigits: 0,
+                                    }).format(option?.price)} LAK
+
                                 </div>
                                 {isSpecificOption(option?._id) ? (
                                     <Button

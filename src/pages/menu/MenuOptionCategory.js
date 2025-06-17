@@ -532,7 +532,7 @@ export default function MenuOptionCategory() {
               <form onSubmit={handleSubmit}>
                 <Modal.Body>
                   <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>{t("options_name5555")}</Form.Label>
+                    <Form.Label>{t("ຊື່ປະເພດອ໋ອບຊັນ")}</Form.Label>
                     <Form.Control
                       type="text"
                       name="name"
