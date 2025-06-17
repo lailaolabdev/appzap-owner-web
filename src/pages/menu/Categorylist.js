@@ -19,6 +19,7 @@ import { fontMap } from "../../utils/font-map";
 import { cn } from "../../utils/cn";
 import { updateCategoryMenu } from "../../services/menu";
 import { useMenuStore } from "../../zustand/menuStore";
+import { useCounterRoleStore } from "../../zustand/counterRole";
 import { addCategory, getCategories } from "../../services/menuCategory";
 
 export default function Categorylist() {
@@ -50,6 +51,8 @@ export default function Categorylist() {
   const [dataUpdate, setdataUpdate] = useState("");
   const [Categorys, setCategorys] = useState([]);
   const [categorysType, setCategorysType] = useState([]);
+
+  const { counterRoleEditMenu } = useCounterRoleStore();
 
   const handleShow2 = async (item) => {
     // console.log("ITEM: ", item.categoryTypeId.name);
@@ -296,8 +299,9 @@ export default function Categorylist() {
       </div>
 
       <div>
-        <div className="col-sm-12 text-right">
+        <div className="col-sm-12 text-right mt-3">
           <Button
+            disabled={!counterRoleEditMenu}
             className={cn("col-sm-2", fontMap[language])}
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={handleShow}
@@ -353,12 +357,14 @@ export default function Categorylist() {
                   >
                     {t("manage")}
                   </th>
-                  <th
-                    scope="col"
-                    className={cn("whitespace-nowrap", fontMap[language])}
-                  >
-                    {t("status")}
-                  </th>
+                  {counterRoleEditMenu && (
+                    <th
+                      scope="col"
+                      className={cn("whitespace-nowrap", fontMap[language])}
+                    >
+                      {t("status")}
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -373,38 +379,63 @@ export default function Categorylist() {
                         <td>{data?.name_kr ?? ""}</td>
                         {/* <td>{data?.categoryTypeId?.name ?? ""}</td> */}
                         <td>
-                          <FontAwesomeIcon
-                            icon={faEdit}
-                            style={{ color: COLOR_APP }}
-                            onClick={() => handleShow2(data)}
-                          />
-                          <FontAwesomeIcon
-                            icon={faTrashAlt}
-                            style={{ marginLeft: 20, color: "red" }}
-                            onClick={() => handleShow3(data?._id, data?.name)}
-                          />
+                          <button
+                            className={`${
+                              !counterRoleEditMenu ? "cursor-not-allowed" : ""
+                            }`}
+                            disabled={!counterRoleEditMenu}
+                          >
+                            <FontAwesomeIcon
+                              icon={faEdit}
+                              className={`${
+                                !counterRoleEditMenu
+                                  ? "text-orange-300 ml-[20px]"
+                                  : " text-orange-500 ml-[20px]"
+                              }`}
+                              onClick={() => handleShow2(data)}
+                            />
+                          </button>
+                          <button
+                            className={`${
+                              !counterRoleEditMenu ? "cursor-not-allowed" : ""
+                            }`}
+                            disabled={!counterRoleEditMenu}
+                          >
+                            <FontAwesomeIcon
+                              icon={faTrashAlt}
+                              className={`${
+                                !counterRoleEditMenu
+                                  ? "text-red-300 ml-[20px]"
+                                  : " text-red-500 ml-[20px]"
+                              }`}
+                              onClick={() => handleShow3(data?._id, data?.name)}
+                            />
+                          </button>
                         </td>
                         {/*adamHere*/}
-                        <td
-                          style={{
-                            color: data?.showForCustomer ? "green" : "red",
-                          }}
-                        >
-                          <label className="switch">
-                            <input
-                              type="checkbox"
-                              checked={data?.showForCustomer}
-                              onClick={() =>
-                                _changeStatusCate(
-                                  data?._id,
-                                  data?.showForCustomer,
-                                  index
-                                )
-                              }
-                            />
-                            <span className="slider round"></span>
-                          </label>
-                        </td>
+                        {counterRoleEditMenu && (
+                          <td
+                            style={{
+                              color: data?.showForCustomer ? "green" : "red",
+                            }}
+                          >
+                            <label className="switch">
+                              <input
+                                disabled={!counterRoleEditMenu}
+                                type="checkbox"
+                                checked={data?.showForCustomer}
+                                onClick={() =>
+                                  _changeStatusCate(
+                                    data?._id,
+                                    data?.showForCustomer,
+                                    index
+                                  )
+                                }
+                              />
+                              <span className="slider round"></span>
+                            </label>
+                          </td>
+                        )}
                       </tr>
                     );
                   })}

@@ -486,10 +486,12 @@ export default function BillForCheckOut80({
         {currencyData?.map((item, index) => (
           <Row key={index}>
             <Col xs={7}>
-              <div style={{ textAlign: "right" }}>{item?.currencyCode}:</div>
+              <div className="text-right text-[12px] text-gray-400">
+                {item?.currencyCode}:
+              </div>
             </Col>
             <Col>
-              <div style={{ textAlign: "right" }}>
+              <div className="text-right text-[12px] text-gray-400">
                 {moneyCurrency(
                   (total + taxAmount + serviceChargeAmount) / item?.sell
                 )}
@@ -500,10 +502,12 @@ export default function BillForCheckOut80({
         {storeDetail?.isCRM && dataBill?.memberPhone && (
           <Row>
             <Col xs={7}>
-              <div style={{ textAlign: "right" }}>{t("point_remain")}:</div>
+              <div className="text-right text-[12px] text-gray-400">
+                {t("point_remain")}:
+              </div>
             </Col>
             <Col>
-              <div style={{ textAlign: "right" }}>
+              <div className="text-right text-[12px] text-gray-400">
                 {moneyCurrency(
                   SelectedDataBill?.Point - SelectedDataBill?.pointRecived
                 )}

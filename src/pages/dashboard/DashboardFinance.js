@@ -44,12 +44,14 @@ import { convertUnitgramAndKilogram } from "../../helpers/convertUnitgramAndKilo
 import { Button } from "react-bootstrap";
 import PopUpCommentCancelOrder from "../../components/popup/PopUpCommentCancelOrder";
 
+import { useCounterRoleStore } from "../../zustand/counterRole";
+
 const limitData = 50;
 
 export default function DashboardFinance({
   startDate,
   endDate,
-  confrimCancelBill = () => { },
+  confrimCancelBill = () => {},
   startTime,
   endTime,
   selectedCurrency,
@@ -93,6 +95,7 @@ export default function DashboardFinance({
   } = useStore();
   const { shiftCurrent } = useShiftStore();
   const { storeDetail } = useStoreStore();
+  const { counterRoleEditBill } = useCounterRoleStore();
 
   const getPaginationCountData = async () => {
     try {
@@ -239,11 +242,11 @@ export default function DashboardFinance({
       ວັນທີ: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
       ຈຳນວນເງິນ: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
         ? new Intl.NumberFormat("ja-JP", {
-          currency: "JPY",
-        }).format(_countAmount(item?.orderId))
+            currency: "JPY",
+          }).format(_countAmount(item?.orderId))
         : new Intl.NumberFormat("ja-JP", {
-          currency: "JPY",
-        }).format(item?.billAmount),
+            currency: "JPY",
+          }).format(item?.billAmount),
       ຈ່າຍເງິນສົດ: item?.payAmount,
       ຈ່າຍເງິນໂອນ: item?.transferAmount,
       ສ່ວນຫຼຸດ: item?.discount + " " + item?.discountType,
@@ -251,8 +254,8 @@ export default function DashboardFinance({
       ຍອດລວມທັງໝົດ:
         data?.checkOut?.length === index + 1
           ? new Intl.NumberFormat("ja-JP", { currency: "JPY" }).format(
-            data?.amount + dataNotCheckBill?.amount
-          )
+              data?.amount + dataNotCheckBill?.amount
+            )
           : "",
     }));
     return _export;
@@ -512,11 +515,11 @@ export default function DashboardFinance({
 
   const totalAfter =
     dataModal?.paymentMethod === "CASH" ||
-      dataModal?.paymentMethod === "TRANSFER" ||
-      dataModal?.paymentMethod === "APPZAP_TRANSFER"
+    dataModal?.paymentMethod === "TRANSFER" ||
+    dataModal?.paymentMethod === "APPZAP_TRANSFER"
       ? baseTotal +
-      (dataModal?.taxAmount ?? 0) +
-      (dataModal?.serviceChargeAmount ?? 0)
+        (dataModal?.taxAmount ?? 0) +
+        (dataModal?.serviceChargeAmount ?? 0)
       : baseTotal - dataModal?.change;
 
   let TotalCalculate = 0;
@@ -545,7 +548,7 @@ export default function DashboardFinance({
   }, [data]);
 
   useEffect(() => {
-    console.log("logs data?.checkOut:--> ", data?.checkOut)
+    // console.log("logs data?.checkOut:--> ", data?.checkOut);
     setCountIsDebtTrue(
       data?.checkOut?.filter((item) => item?.isDebt === true).length
     );
@@ -697,7 +700,6 @@ export default function DashboardFinance({
 
   const totalPriceOfPoint = TotalPriceOfPoint();
 
-
   const displayResults = (payMethod) => {
     let paymentMethodText = "";
     let _amount = 0;
@@ -711,13 +713,20 @@ export default function DashboardFinance({
         paymentMethodText = "ເງິນໂອນ";
         _amount = dataModal?.transferAmount;
         break;
+      case "APPZAP_TRANSFER":
+        paymentMethodText = "ເງິນໂອນ (AppZap)";
+        _amount = dataModal?.transferAmount;
+        break;
       case "TRANSFER_CASH":
         paymentMethodText = "ເງິນສົດ + ເງິນໂອນ";
         _amount = dataModal?.payAmount + dataModal?.transferAmount;
         break;
       case "CASH_TRANSFER_POINT":
         paymentMethodText = "ເງິນໂອນ + ເງິນສົດ + ພ໋ອຍ";
-        _amount = dataModal?.payAmount + dataModal?.transferAmount + dataModal?.pointToMoney ?? 0;
+        _amount =
+          dataModal?.payAmount +
+            dataModal?.transferAmount +
+            dataModal?.pointToMoney ?? 0;
         break;
       case "POINT":
         paymentMethodText = "ພ໋ອຍ";
@@ -735,10 +744,9 @@ export default function DashboardFinance({
 
     return {
       paymentMethod: paymentMethodText,
-      amount: _amount
+      amount: _amount,
     };
-
-  }
+  };
 
   return (
     <div style={{ padding: 0 }}>
@@ -878,7 +886,7 @@ export default function DashboardFinance({
                   color: ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                     ? "#ffffff"
                     : "#616161",
-                  cursor: "pointer"
+                  cursor: "pointer",
                 }}
               >
                 <td>{(pagination - 1) * limitData + index + 1}</td>
@@ -887,8 +895,8 @@ export default function DashboardFinance({
                 <td>
                   {item?.discountType === "LAK"
                     ? new Intl.NumberFormat("ja-JP", {
-                      currency: "JPY",
-                    }).format(item?.discount) + t("lak")
+                        currency: "JPY",
+                      }).format(item?.discount) + t("lak")
                     : `${item?.discount}%`}
                 </td>
                 <td>{item?.point ? moneyCurrency(item?.point) : 0}</td>
@@ -896,14 +904,14 @@ export default function DashboardFinance({
                 <>
                   <td>
                     {item?.orderId[0]?.deliveryCode ||
-                      item?.orderId[0]?.platform
+                    item?.orderId[0]?.platform
                       ? ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                         ? new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(_countAmount(item?.orderId))
+                            currency: "JPY",
+                          }).format(_countAmount(item?.orderId))
                         : new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(item?.deliveryAmount)
+                            currency: "JPY",
+                          }).format(item?.deliveryAmount)
                       : 0}{" "}
                     {storeDetail?.firstCurrency}
                   </td>
@@ -911,8 +919,8 @@ export default function DashboardFinance({
                     {item?.deliveryName
                       ? item?.deliveryName
                       : item?.orderId[0]?.platform
-                        ? item?.orderId[0]?.platform
-                        : "-"}
+                      ? item?.orderId[0]?.platform
+                      : "-"}
                   </td>
                 </>
 
@@ -924,49 +932,53 @@ export default function DashboardFinance({
                 ) : (
                   <td>
                     <div style={{ paddingBottom: 0 }}>
-                      <p style={{ fontWeight: 'bold', color: 'green' }}>{item?.orderId[0]?.platform
-                        ? 0
-                        : ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
+                      <p style={{ fontWeight: "bold", color: "green" }}>
+                        {item?.orderId[0]?.platform
+                          ? 0
+                          : ["CALLTOCHECKOUT", "ACTIVE"].includes(item?.status)
                           ? new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(
-                            isNaN(_countAmount(item?.orderId))
-                              ? 0
-                              : _countAmount(item?.orderId)
-                          )
+                              currency: "JPY",
+                            }).format(
+                              isNaN(_countAmount(item?.orderId))
+                                ? 0
+                                : _countAmount(item?.orderId)
+                            )
                           : new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(
-                            item?.billAmount ?? 0
-                            // item?.isDebtAndPay
-                            //   ? item?.payAmount + item?.transferAmount
-                            //   : item?.isDebtPayment
-                            //     ? item?.payAmount +
-                            //     item?.transferAmount -
-                            //     item?.totalTranferAndPayLast
-                            //     : isNaN(
-                            //       item?.billAmount +
-                            //       item?.taxAmount +
-                            //       item?.serviceChargeAmount -
-                            //       item?.point
-                            //     )
-                            //       ? item?.billAmount
-                            //       : item?.billAmount +
-                            //       item?.taxAmount +
-                            //       item?.serviceChargeAmount -
-                            //       item?.point
-                          )}{" "}
+                              currency: "JPY",
+                            }).format(
+                              item?.billAmount ?? 0
+                              // item?.isDebtAndPay
+                              //   ? item?.payAmount + item?.transferAmount
+                              //   : item?.isDebtPayment
+                              //     ? item?.payAmount +
+                              //     item?.transferAmount -
+                              //     item?.totalTranferAndPayLast
+                              //     : isNaN(
+                              //       item?.billAmount +
+                              //       item?.taxAmount +
+                              //       item?.serviceChargeAmount -
+                              //       item?.point
+                              //     )
+                              //       ? item?.billAmount
+                              //       : item?.billAmount +
+                              //       item?.taxAmount +
+                              //       item?.serviceChargeAmount -
+                              //       item?.point
+                            )}{" "}
                         {/* {item?.isDebtPayment && (
                           <span className=" text-blue-500">
                             ( + {moneyCurrency(item?.totalTranferAndPayLast)}){" "}
                           </span>
                         )}  */}
-                        {storeDetail?.firstCurrency}</p>
+                        {storeDetail?.firstCurrency}
+                      </p>
                     </div>
-
                   </td>
                 )}
-                <td>{moneyCurrency(item?.change ?? 0)} {storeDetail?.firstCurrency}</td>
+                <td>
+                  {moneyCurrency(item?.change ?? 0)}{" "}
+                  {storeDetail?.firstCurrency}
+                </td>
 
                 <td>
                   <div
@@ -1000,12 +1012,12 @@ export default function DashboardFinance({
                       item?.status === "CHECKOUT"
                         ? "green"
                         : item?.status === "CALLTOCHECKOUT"
-                          ? "red"
-                          : item?.status === "ACTIVE"
-                            ? "#00496e"
-                            : item?.status === "CANCELED"
-                              ? "red"
-                              : "",
+                        ? "red"
+                        : item?.status === "ACTIVE"
+                        ? "#00496e"
+                        : item?.status === "CANCELED"
+                        ? "red"
+                        : "",
                   }}
                 >
                   {_statusCheckBill(item?.status)}
@@ -1112,15 +1124,17 @@ export default function DashboardFinance({
                       ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
                       {dataModal?.pointToMoney > 0
                         ? new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(totalPriceAmount - dataModal?.pointToMoney)
+                            currency: "JPY",
+                          }).format(totalPriceAmount - dataModal?.pointToMoney)
                         : new Intl.NumberFormat("ja-JP", {
-                          currency: "JPY",
-                        }).format(totalPriceAmount - totalPriceOfPoint)}{" "}
+                            currency: "JPY",
+                          }).format(totalPriceAmount - totalPriceOfPoint)}{" "}
                       {storeDetail?.firstCurrency}
                     </span>
                     <span>
-                      ເງິນທີ່ໄດ້ຮັບມາຈານການປ້ອນ ({displayResults(dataModal?.paymentMethod).paymentMethod}) =
+                      ເງິນທີ່ໄດ້ຮັບມາຈານການປ້ອນ (
+                      {displayResults(dataModal?.paymentMethod).paymentMethod})
+                      =
                       {/* (
                       {dataModal?.paymentMethod === "CASH" ? "ເງິນສົດ " : ""}{" "}
                       {dataModal?.paymentMethod === "TRANSFER" ? "ເງິນໂອນ" : ""}{" "}
@@ -1138,9 +1152,9 @@ export default function DashboardFinance({
                           ? totalTranferAndPayLast
                           : TotalCalculate
                       )}  */}
-
-                      {moneyCurrency(displayResults(dataModal?.paymentMethod).amount)}
-
+                      {moneyCurrency(
+                        displayResults(dataModal?.paymentMethod).amount
+                      )}
                       {storeDetail?.firstCurrency}{" "}
                     </span>
                     {dataModal?.isDebtPayment === true && (
@@ -1230,10 +1244,11 @@ export default function DashboardFinance({
           {!dataModal?.deliveryAmount ? (
             <div className="flex justify-end items-center mt-3">
               <div
-                className={`${dataModal?.paymentMethod === "CASH_TRANSFER_POINT"
-                  ? "w-[400px]"
-                  : "w-[260px]"
-                  }`}
+                className={`${
+                  dataModal?.paymentMethod === "CASH_TRANSFER_POINT"
+                    ? "w-[400px]"
+                    : "w-[260px]"
+                }`}
               >
                 <div className="flex justify-between ">
                   <div className="flex flex-col">
@@ -1283,15 +1298,15 @@ export default function DashboardFinance({
                       <span>
                         {dataModal?.point > 0
                           ? moneyCurrency(
-                            dataModal?.point - dataModal?.taxAmount
-                          )
+                              dataModal?.point - dataModal?.taxAmount
+                            )
                           : 0}{" "}
                         {t("point")}
                       </span>
                     )}
 
                     {dataModal?.paymentMethod === "CASH_TRANSFER_POINT" &&
-                      dataModal?.point > 0 ? (
+                    dataModal?.point > 0 ? (
                       <>
                         <span>
                           (
@@ -1304,16 +1319,16 @@ export default function DashboardFinance({
                           {dataModal?.pointToMoney > 0
                             ? moneyCurrency(dataModal?.pointToMoney)
                             : moneyCurrency(
-                              dataModal.exchangePointStoreId.reduce(
-                                (sum, item) => {
-                                  const itemPrice =
-                                    item.menuId[0].price *
-                                    item.menuId[0].quantity;
-                                  return sum + itemPrice;
-                                },
-                                0
-                              )
-                            )}{" "}
+                                dataModal.exchangePointStoreId.reduce(
+                                  (sum, item) => {
+                                    const itemPrice =
+                                      item.menuId[0].price *
+                                      item.menuId[0].quantity;
+                                    return sum + itemPrice;
+                                  },
+                                  0
+                                )
+                              )}{" "}
                           {storeDetail?.firstCurrency})
                         </span>
                         {/* <span>
@@ -1329,8 +1344,12 @@ export default function DashboardFinance({
                     ) : (
                       <span>
                         {moneyCurrency(
-                          dataModal?.discount  || dataModal?.serviceChargeAmount > 0
-                            ? (dataModal?.discount ?? 0) + TotalAmount + dataModal?.serviceChargeAmount + dataModal?.taxAmount
+                          dataModal?.discount ||
+                            dataModal?.serviceChargeAmount > 0
+                            ? (dataModal?.discount ?? 0) +
+                                TotalAmount +
+                                dataModal?.serviceChargeAmount +
+                                dataModal?.taxAmount
                             : TotalAmount
                         )}{" "}
                         {storeDetail?.firstCurrency}
@@ -1342,7 +1361,11 @@ export default function DashboardFinance({
                       {storeDetail?.firstCurrency}{" "}
                     </span>
                     <span>
-                      {moneyCurrency(dataModal?.billAmount + dataModal?.serviceChargeAmount + dataModal?.taxAmount || 0)}
+                      {moneyCurrency(
+                        dataModal?.billAmount +
+                          dataModal?.serviceChargeAmount +
+                          dataModal?.taxAmount || 0
+                      )}
                       {storeDetail?.firstCurrency}
                     </span>
                     {/* {dataModal?.paymentMethod === "CASH_TRANSFER_POINT" && dataModal?.point > 0 ? (
@@ -1381,10 +1404,11 @@ export default function DashboardFinance({
                   </div>
                   <div className="flex flex-col">
                     <span
-                      className={`${dataModal?.deliveryAmount <= 0
-                        ? "text-red-500"
-                        : "text-green-500"
-                        }`}
+                      className={`${
+                        dataModal?.deliveryAmount <= 0
+                          ? "text-red-500"
+                          : "text-green-500"
+                      }`}
                     >
                       {moneyCurrency(dataModal?.deliveryAmount)}{" "}
                       {storeDetail?.firstCurrency}
@@ -1394,7 +1418,6 @@ export default function DashboardFinance({
               </div>
             </div>
           )}
-         
         </Modal.Body>
         <Modal.Footer>
           {storeDetail?.isStatusCafe && (
@@ -1410,23 +1433,42 @@ export default function DashboardFinance({
             </Button>
           )}
 
-          {!storeDetail?.isStatusCafe && (
-            <Button
-              className="text-white font-bold"
-              disabled={
-                disabledEditBill ||
-                selectOrder?.status === "ACTIVE" ||
-                profile?.data?.role !== "APPZAP_ADMIN" ||
-                dataModal?.isDebtPayment === true ||
-                dataModal?.isDebtAndPay === true
-              }
-              onClick={handleEditBill}
-            >
-              {selectOrder?.status === "ACTIVE"
-                ? t("editingTheBill")
-                : t("billEditing")}
-            </Button>
-          )}
+          {!storeDetail?.isStatusCafe &&
+            (counterRoleEditBill ? (
+              <Button
+                className="text-white font-bold"
+                disabled={
+                  disabledEditBill ||
+                  selectOrder?.status === "ACTIVE" ||
+                  // profile?.data?.role !== "APPZAP_ADMIN" ||
+                  dataModal?.isDebtPayment === true ||
+                  dataModal?.isDebtAndPay === true ||
+                  !counterRoleEditBill
+                }
+                onClick={handleEditBill}
+              >
+                {selectOrder?.status === "ACTIVE"
+                  ? t("editingTheBill")
+                  : t("billEditing")}
+              </Button>
+            ) : (
+              <Button
+                className="text-white font-bold"
+                disabled={
+                  disabledEditBill ||
+                  selectOrder?.status === "ACTIVE" ||
+                  profile?.data?.role !== "APPZAP_ADMIN" ||
+                  dataModal?.isDebtPayment === true ||
+                  dataModal?.isDebtAndPay === true ||
+                  !counterRoleEditBill
+                }
+                onClick={handleEditBill}
+              >
+                {selectOrder?.status === "ACTIVE"
+                  ? t("editingTheBill")
+                  : t("billEditing")}
+              </Button>
+            ))}
           {storeDetail?.isStatusCafe && (
             <Button
               className="text-white font-bold"
@@ -1449,43 +1491,40 @@ export default function DashboardFinance({
             {t("print_bill")}
           </Button>
         </Modal.Footer>
-
       </Modal>
 
-      {
-        dataModal?.isCafe ? (
-          <div style={{ width: "80mm", padding: 12, margin: 5 }} ref={bill80Ref}>
-            <BillForCheckOutCafe80
-              storeDetail={storeDetail}
-              profile={profile}
-              dataBill={dataModal?.orderId}
-              data={dataModal?.length}
-              memberData={""}
-              dataModal={dataModal}
-              isModalData={true}
-              index={index}
-            />
-          </div>
-        ) : (
-          <div style={{ width: "80mm", padding: 12, margin: 5 }} ref={bill80Ref}>
-            <BillForCheckOut80Transection
-              orderPayBefore={0}
-              storeDetail={storeDetail}
-              selectedTable={selectedTable}
-              serviceCharge={dataModal?.serviceChargePercent}
-              dataBill={dataModal}
-              totalBillBillForCheckOut80={totalAfter}
-              taxPercent={dataModal?.taxPercent}
-              profile={profile}
-            />
-          </div>
-        )
-      }
+      {dataModal?.isCafe ? (
+        <div style={{ width: "80mm", padding: 12, margin: 5 }} ref={bill80Ref}>
+          <BillForCheckOutCafe80
+            storeDetail={storeDetail}
+            profile={profile}
+            dataBill={dataModal?.orderId}
+            data={dataModal?.length}
+            memberData={""}
+            dataModal={dataModal}
+            isModalData={true}
+            index={index}
+          />
+        </div>
+      ) : (
+        <div style={{ width: "80mm", padding: 12, margin: 5 }} ref={bill80Ref}>
+          <BillForCheckOut80Transection
+            orderPayBefore={0}
+            storeDetail={storeDetail}
+            selectedTable={selectedTable}
+            serviceCharge={dataModal?.serviceChargePercent}
+            dataBill={dataModal}
+            totalBillBillForCheckOut80={totalAfter}
+            taxPercent={dataModal?.taxPercent}
+            profile={profile}
+          />
+        </div>
+      )}
       <PopUpCommentCancelOrder
         open={showCancelPopup}
         onClose={handleCancleCommentClose}
         onSaveComment={handleSaveComment}
       />
-    </div >
+    </div>
   );
 }

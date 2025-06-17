@@ -22,6 +22,8 @@ import {
   updateSettingServiceChange,
   updateSettingShowAmountCafe,
   updateCounterFilterShift,
+  updateCounterBill,
+  updateCounterMenu,
 } from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
 import PopUpEditServiceCharge from "../../components/popup/PopUpEditServiceCharge";
@@ -171,6 +173,20 @@ export default function ConfigPage() {
 
     // zustand store
     await updateStoreDetail({ isReservable: isChecked }, storeDetail?._id);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+
+  const changeCounterMenu = async (e) => {
+    const isType = e.target.checked;
+    await updateCounterMenu(profile?.data.storeId, { data: isType });
+    // console.log("changeSericeChange", isType);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+
+  const changeCounterBill = async (e) => {
+    const isType = e.target.checked;
+    await updateCounterBill(profile?.data.storeId, { data: isType });
+    // console.log("changeSericeChange", isType);
     await fetchStoreDetail(storeDetail?._id);
   };
 
@@ -893,6 +909,82 @@ export default function ConfigPage() {
                   </div>
                 </div>
               ))}
+            </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("counter")}
+            </Card.Header>
+            <Card.Body>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>ແກ້ໄຂເມນູ</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Form.Label htmlFor={`counter-edit-menu`}>
+                    {storeDetail?.isEditMenu
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.isEditMenu}
+                    id={`counter-edit-menu`}
+                    onChange={changeCounterMenu}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>ແກ້ໄຂບິນ</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Form.Label htmlFor={`counter-edit-bill`}>
+                    {storeDetail?.isEditBill
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.isEditBill}
+                    id={`counter-edit-bill`}
+                    onChange={changeCounterBill}
+                  />
+                </div>
+              </div>
             </Card.Body>
           </Card>
         </Box>

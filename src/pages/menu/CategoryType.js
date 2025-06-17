@@ -18,6 +18,8 @@ import { successAdd, errorAdd } from "./../../helpers/sweetalert";
 import { fontMap } from "../../utils/font-map";
 import { cn } from "../../utils/cn";
 
+import { useCounterRoleStore } from "../../zustand/counterRole";
+
 export default function CategoryType() {
   const {
     t,
@@ -35,6 +37,9 @@ export default function CategoryType() {
   const [show3, setShow3] = useState(false);
   const [dateDelete, setdateDelete] = useState("");
   const [dataUpdate, setdataUpdate] = useState("");
+
+  const { counterRoleEditMenu } = useCounterRoleStore();
+
   const _menuList = () => {
     navigate(`/settingStore/menu/limit/40/page/1/${params?.id}`);
   };
@@ -207,14 +212,15 @@ export default function CategoryType() {
             </Nav.Link>
           </Nav.Item>
         </Nav>
-        <div className="col-sm-12 text-right">
+        <div className="col-sm-12 text-right mt-3">
           <Button
+            disabled={!counterRoleEditMenu}
             className={cn("col-sm-2", fontMap[language])}
             style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
             onClick={() => setPopup({ popUpAddCategoryType: true })}
           >
             + {t("create_category")}
-          </Button>{" "}
+          </Button>
         </div>
         <div style={{ height: 20 }}></div>
         <div>
@@ -255,22 +261,41 @@ export default function CategoryType() {
                         alignItems: "center",
                       }}
                     >
-                      <FontAwesomeIcon
-                        icon={faEdit}
-                        onClick={() => handleShow2(categoryType)}
-                        style={{ color: COLOR_APP, cursor: "pointer" }}
-                      />
-                      <FontAwesomeIcon
-                        icon={faTrashAlt}
-                        style={{
-                          marginLeft: 20,
-                          color: "red",
-                          cursor: "pointer",
-                        }}
-                        onClick={() =>
-                          handleShow3(categoryType?._id, categoryType?.name)
-                        }
-                      />
+                      <button
+                        className={`${
+                          !counterRoleEditMenu ? "cursor-not-allowed" : ""
+                        }`}
+                        disabled={!counterRoleEditMenu}
+                      >
+                        <FontAwesomeIcon
+                          icon={faEdit}
+                          onClick={() => handleShow2(categoryType)}
+                          className={`${
+                            !counterRoleEditMenu
+                              ? "text-orange-300 ml-[20px]"
+                              : " text-orange-500 ml-[20px]"
+                          }`}
+                        />
+                      </button>
+
+                      <button
+                        className={`${
+                          !counterRoleEditMenu ? "cursor-not-allowed" : ""
+                        }`}
+                        disabled={!counterRoleEditMenu}
+                      >
+                        <FontAwesomeIcon
+                          icon={faTrashAlt}
+                          className={`${
+                            !counterRoleEditMenu
+                              ? "text-red-300 ml-[20px]"
+                              : " text-red-500 ml-[20px]"
+                          }`}
+                          onClick={() =>
+                            handleShow3(categoryType?._id, categoryType?.name)
+                          }
+                        />
+                      </button>
                     </td>
                   </tr>
                 ))}

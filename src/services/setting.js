@@ -173,8 +173,9 @@ export const updateSettingByStore = async ({ storeId, settings }) => {
     let body = {
       storeId: storeId,
       settings: settings,
-    }
-    const response = await axiosInstance.put(`/v4/setting-store/update-by-store`,
+    };
+    const response = await axiosInstance.put(
+      `/v4/setting-store/update-by-store`,
       body
     );
     return response.data;
@@ -189,6 +190,35 @@ export const getSettingByStore = async (storeId) => {
     const response = await axiosInstance.get(`/v4/setting-store/${storeId}`);
     return response.data;
   } catch (error) {
-    console.log("error: ", error)
+    console.log("error: ", error);
   }
-}
+};
+
+export const updateCounterMenu = async (settingId, dataUpdate) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v7/counter-edit-menu/update`;
+    const res = await axios.put(
+      url,
+      { id: settingId, data: dataUpdate },
+      { headers: _header }
+    );
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
+export const updateCounterBill = async (settingId, dataUpdate) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v7/counter-edit-bill/update`;
+    const res = await axios.put(
+      url,
+      { id: settingId, data: dataUpdate },
+      { headers: _header }
+    );
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
