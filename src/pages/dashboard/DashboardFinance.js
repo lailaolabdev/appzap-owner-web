@@ -996,12 +996,12 @@ export default function DashboardFinance({
                     <span>
                       ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
                       {dataModal?.pointToMoney > 0
-                        ? new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(totalPriceAmount - dataModal?.pointToMoney)
-                        : new Intl.NumberFormat("ja-JP", {
-                            currency: "JPY",
-                          }).format(totalPriceAmount - totalPriceOfPoint)}{" "}
+                        ? moneyCurrency(
+                            totalPriceAmount - dataModal?.pointToMoney
+                          )
+                        : moneyCurrency(
+                            totalPriceAmount - totalPriceOfPoint
+                          )}{" "}
                       {storeDetail?.firstCurrency}
                     </span>
                     <span>
@@ -1015,13 +1015,12 @@ export default function DashboardFinance({
                         ? "ເງິນໂອນ + ເງິນສົດ + ພ໋ອຍ"
                         : ""}
                       ) ={" "}
-                      {`${new Intl.NumberFormat("ja-JP", {
-                        currency: "JPY",
-                      }).format(
+                      {moneyCurrency(
                         dataModal?.isDebtPayment
                           ? totalTranferAndPayLast
                           : TotalCalculate
-                      )} ${storeDetail?.firstCurrency}`}{" "}
+                      )}{" "}
+                      {storeDetail?.firstCurrency}{" "}
                     </span>
                     {dataModal?.isDebtPayment === true && (
                       <span>

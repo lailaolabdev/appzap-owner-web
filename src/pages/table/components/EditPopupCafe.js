@@ -130,10 +130,10 @@ export default function EditPopupCafe({
     resetDiscount,
   } = useDiscountStore();
 
-  console.log("dataBill", dataBill);
-  console.log("dataBillEdit", dataBillEdit);
+  // console.log("dataBill", dataBill);
+  // console.log("dataBillEdit", dataBillEdit);
 
-  console.log("applyDiscount", applyDiscount());
+  // console.log("applyDiscount", applyDiscount());
 
   useEffect(() => {
     setMemberData();
@@ -521,7 +521,7 @@ export default function EditPopupCafe({
       statusPoint = "EARN";
     }
 
-    const datas = {
+    let datas = {
       billId: billId,
       selectedBank: selectedBank.name,
       bankId: selectedBank.id,
@@ -639,7 +639,7 @@ export default function EditPopupCafe({
       statusPoint = "EARN";
     }
 
-    const datas = {
+    let datas = {
       billId: billId,
       selectedBank: selectedBank.name,
       bankId: selectedBank.id,
