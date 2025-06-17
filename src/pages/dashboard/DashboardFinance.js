@@ -449,9 +449,9 @@ export default function DashboardFinance({
       dataModal?.discountType === "LAK"
         ? (dataModal?.payAmount ?? 0) +
           (dataModal?.taxAmount ?? 0) +
-          (dataModal?.serviceChargeAmount ?? 0) +
-          (dataModal?.discount ?? 0)
-        : (dataModal?.payAmount ?? 0) +
+          (dataModal?.serviceChargeAmount ?? 0)
+        : // (dataModal?.discount ?? 0)
+          (dataModal?.payAmount ?? 0) +
           (dataModal?.taxAmount ?? 0) +
           (dataModal?.serviceChargeAmount ?? 0);
   } else if (dataModal?.paymentMethod === "TRANSFER") {
@@ -459,9 +459,9 @@ export default function DashboardFinance({
       dataModal?.discountType === "LAK"
         ? (dataModal?.transferAmount ?? 0) +
           (dataModal?.taxAmount ?? 0) +
-          (dataModal?.serviceChargeAmount ?? 0) +
-          (dataModal?.discount ?? 0)
-        : (dataModal?.transferAmount ?? 0) +
+          (dataModal?.serviceChargeAmount ?? 0)
+        : // (dataModal?.discount ?? 0)
+          (dataModal?.transferAmount ?? 0) +
           (dataModal?.taxAmount ?? 0) +
           (dataModal?.serviceChargeAmount ?? 0);
   } else if (dataModal?.paymentMethod === "TRANSFER_CASH") {
@@ -469,9 +469,9 @@ export default function DashboardFinance({
       dataModal?.discountType === "LAK"
         ? (dataModal?.transferAmount ?? 0) +
           (dataModal?.payAmount ?? 0) +
-          (dataModal?.serviceChargeAmount ?? 0) +
-          (dataModal?.discount ?? 0)
-        : (dataModal?.transferAmount ?? 0) +
+          (dataModal?.serviceChargeAmount ?? 0)
+        : // (dataModal?.discount ?? 0)
+          (dataModal?.transferAmount ?? 0) +
           (dataModal?.payAmount ?? 0) +
           (dataModal?.serviceChargeAmount ?? 0) +
           (dataModal?.taxAmount ?? 0);
@@ -480,9 +480,9 @@ export default function DashboardFinance({
       dataModal?.discountType === "LAK"
         ? (dataModal?.transferAmount ?? 0) +
           (dataModal?.payAmount ?? 0) +
-          (dataModal?.point ?? 0) +
-          (dataModal?.discount ?? 0)
-        : (dataModal?.transferAmount ?? 0) +
+          (dataModal?.point ?? 0)
+        : // (dataModal?.discount ?? 0)
+          (dataModal?.transferAmount ?? 0) +
           (dataModal?.payAmount ?? 0) +
           (dataModal?.point ?? 0);
   }
@@ -585,6 +585,21 @@ export default function DashboardFinance({
     orderStatus
   );
   const totalPriceAmount = calculateTotalAmount(orderData);
+
+  const totalPriceAferDiscount = () => {
+    if (dataModal?.discount) {
+      if (dataModal?.discountType === "LAK") {
+        return totalPriceAmount - dataModal?.discount;
+      } else {
+        return (
+          totalPriceAmount - (totalPriceAmount * dataModal?.discount) / 100
+        );
+      }
+    }
+    return totalPriceAmount;
+  };
+
+  console.log(totalPriceAferDiscount());
 
   useEffect(() => {
     setTotalTranferAndPayLast(dataModal?.totalTranferAndPayLast);
@@ -997,10 +1012,10 @@ export default function DashboardFinance({
                       ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
                       {dataModal?.pointToMoney > 0
                         ? moneyCurrency(
-                            totalPriceAmount - dataModal?.pointToMoney
+                            totalPriceAferDiscount() - dataModal?.pointToMoney
                           )
                         : moneyCurrency(
-                            totalPriceAmount - totalPriceOfPoint
+                            totalPriceAferDiscount() - totalPriceOfPoint
                           )}{" "}
                       {storeDetail?.firstCurrency}
                     </span>
@@ -1212,12 +1227,12 @@ export default function DashboardFinance({
                         (
                         {dataModal?.pointToMoney > 0
                           ? moneyCurrency(
-                              totalPriceAmount - dataModal?.pointToMoney
+                              totalPriceAferDiscount() - dataModal?.pointToMoney
                             )
                           : new Intl.NumberFormat("ja-JP", {
                               currency: "JPY",
                             }).format(
-                              totalPriceAmount - totalPriceOfPoint
+                              totalPriceAferDiscount() - totalPriceOfPoint
                             )}{" "}
                         {storeDetail?.firstCurrency})
                       </span>

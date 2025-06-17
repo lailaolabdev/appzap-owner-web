@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import Swal from "sweetalert2";
 import { useStoreStore } from "./storeStore"; // Adjust path as needed
+import matchRoundNumber from "../helpers/matchRound";
 
 const useDiscountStore = create(
   persist(
@@ -17,7 +18,7 @@ const useDiscountStore = create(
       t: (key) => key, // Translation function placeholder
 
       // Actions to update state
-      setTotalBill: (amount) => set({ totalBill: amount }),
+      setTotalBill: (amount) => set({ totalBill: matchRoundNumber(amount) }),
       setDiscountType: (type) => set({ discountType: type }),
       setDiscountValue: (value) => set({ discountValue: value }),
       setSelectedMethod: (method) => set({ selectedMethod: method }),
@@ -212,7 +213,7 @@ const useDiscountStore = create(
       applyDiscount: () => {
         const discountedTotal = get().calculateDiscountedTotal();
         // You can add additional logic here if needed
-        return discountedTotal;
+        return matchRoundNumber(discountedTotal);
       },
     }),
     {
