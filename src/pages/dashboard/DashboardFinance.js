@@ -713,7 +713,7 @@ export default function DashboardFinance({
         paymentMethodText = "ເງິນໂອນ";
         _amount = dataModal?.transferAmount;
         break;
-      case "APPZAP_TRANSFER":
+      case "BANK_TRANSFER":
         paymentMethodText = "ເງິນໂອນ (AppZap)";
         _amount = dataModal?.transferAmount;
         break;
