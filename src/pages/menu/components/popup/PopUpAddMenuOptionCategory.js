@@ -16,8 +16,12 @@ import {
     END_POINT_SEVER_TABLE_MENU,
     master_menu_api_dev,
 } from "../../../../constants/api";
+import { COLOR_APP } from "../../../../constants";
+import { getHeaders } from '../../../../services/auth';
+import { successAdd, errorAdd } from "../../../../helpers/sweetalert";
 
 import { useMenuStore } from "../../../../zustand/menuStore";
+import PopUpUpdateMenuOptionCategory from "./PopUpUpdateMenuOptionCategory";
 
 function PopUpAddMenuOptionCategory({
     showSetting,
@@ -26,13 +30,15 @@ function PopUpAddMenuOptionCategory({
     getTokken,
     updateMenuOptionsCount,
 }) {
-    const [searchTerm, setSearchTerm] = useState("");
     const [allMenuOptions, setAllMenuOptions] = useState([]);
     const [specificMenuOptions, setSpecificMenuOptions] = useState([]);
     const [loadingOptionId, setLoadingOptionId] = useState(null);
     const [isAddingAll, setIsAddingAll] = useState(false);
     const [isRemovingAll, setIsRemovingAll] = useState(false);
     const [menuOptionCategory, setMenuOptionCategory] = useState([]);
+    const [show2, setShow2] = useState(false);
+    const [dataUpdate, setDataUpdate] = useState(null); 
+    
     const { t } = useTranslation();
     const {
         addMunuOption,
@@ -72,7 +78,6 @@ function PopUpAddMenuOptionCategory({
 
             const getMenuOptionCategory = async (storeId) => {
                 try {
-
                     const res = await axios.get(
                         END_POINT_SEVER_TABLE_MENU + `/v7/restaurant/${storeId}/menu-option-category`
                     );
@@ -88,11 +93,54 @@ function PopUpAddMenuOptionCategory({
         }
     }, [showSetting, detailMenu, getTokken]);
 
-    const handleSearchChange = (e) => {
-        setSearchTerm(e.target.value);
+    const handleEditOption = (option) => {
+        setDataUpdate(option);
+        setShow2(true);
     };
 
-    const handleAddOption = async (optionId) => {
+    const handleClose2 = () => {
+        setShow2(false);
+        setDataUpdate(null);
+    };
+
+
+
+    const refreshMenuOptionCategory = async () => {
+        const storeId = getTokken?.DATA?.storeId;
+        if (storeId) {
+            try {
+                const res = await axios.get(
+                    END_POINT_SEVER_TABLE_MENU + `/v7/restaurant/${storeId}/menu-option-category`
+                );
+                setMenuOptionCategory(res.data);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    };
+    
+
+    // add refresh option that was updated
+    const refreshUpdatedOption = async (optionId) => {
+        const isSelected = isSpecificOption(optionId);
+        if (isSelected) {
+            try {
+                await deleteMenuOption(detailMenu.data._id, optionId);
+                await addMunuOption(detailMenu.data._id, optionId);
+                const updatedOptions = await axios.get(
+                    END_POINT_SEVER_TABLE_MENU +
+                    `/v3/menu/${detailMenu.data._id}/menu-options`
+                );
+                setSpecificMenuOptions(updatedOptions?.data);
+                updateMenuOptionsCount(detailMenu.data._id, updatedOptions.data.length);
+                
+            } catch (error) {
+                console.error("Error refreshing updated option:", error);
+            }
+        }
+    };
+
+    const handleUseOption = async (optionId) => {
         setLoadingOptionId(optionId);
         try {
             await addMunuOption(detailMenu.data._id, optionId);
@@ -114,7 +162,7 @@ function PopUpAddMenuOptionCategory({
         }
     };
 
-    const handleDeleteOption = async (optionId) => {
+    const handleDontUseOption = async (optionId) => {
         setLoadingOptionId(optionId);
         try {
             await deleteMenuOption(detailMenu.data._id, optionId);
@@ -186,24 +234,48 @@ function PopUpAddMenuOptionCategory({
         }
     };
 
-    const filteredMenuOptions = allMenuOptions.filter((option) =>
-        option.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const handleDeleteClick = (option) => {
+        Swal.fire({
+            title: t("ຍືນຍັນການລົບ"),
+            text: `${t("ຍືນຍັນການລົບ")} "${option.name}"?`,
+            icon: "warning",
+            showCancelButton: true,
+            reverseButtons:true,
+            confirmButtonColor: COLOR_APP,
+            cancelButtonText: t("cancel"),
+            confirmButtonText: t("delete"),
+            cancelButtonColor: "secondary",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                _confirmeDeleteOptionCategory(option);
+            }
+        });
+    };
+
+     const _confirmeDeleteOptionCategory = async (option) => {
+        try {
+            const header = await getHeaders();
+            const headers = {
+                "Content-Type": "application/json",
+                Authorization: header.authorization,
+            };
+            const resData = await axios.delete(
+                `${END_POINT_SEVER_TABLE_MENU}/v7/menu-option-category/${option._id}/delete`,
+                { headers: headers }
+            );
+            if (resData?.data) {
+                await refreshMenuOptionCategory();
+                await deleteMenuOption(detailMenu.data._id, option._id);
+                successAdd(t("delete_success"));
+            }
+        } catch (err) {
+            errorAdd(t("delete_failed"));
+        }
+    };
 
     const isSpecificOption = (optionId) => {
         return specificMenuOptions.some((option) => option?._id === optionId);
     };
-
-    const sortedMenuOptions = filteredMenuOptions.sort((a, b) => {
-        if (isSpecificOption(a?._id) && !isSpecificOption(b._id)) {
-            return -1;
-        } else if (!isSpecificOption(a?._id) && isSpecificOption(b?._id)) {
-            return 1;
-        } else {
-            return 0;
-        }
-    });
-    
 
     return (
         <div>
@@ -236,7 +308,7 @@ function PopUpAddMenuOptionCategory({
                                 {isAddingAll ? (
                                     <Spinner animation="border" size="sm" />
                                 ) : (
-                                    t("add_all")
+                                    t("ໃຊ້ອ໋ອບຊັນທັງໝົດ")
                                 )}
                             </button>
                             <button
@@ -248,7 +320,7 @@ function PopUpAddMenuOptionCategory({
                                 {isRemovingAll ? (
                                     <Spinner animation="border" size="sm" />
                                 ) : (
-                                    t("remove_all")
+                                    t("ຍົກເລີກໃຊ້ອ໋ອບຊັນທັງໝົດ")
                                 )}
                             </button>
                         </div>
@@ -282,35 +354,60 @@ function PopUpAddMenuOptionCategory({
                                     {new Intl.NumberFormat("lo-LA", {
                                       minimumFractionDigits: 0,
                                     }).format(option?.price)} LAK
-
                                 </div>
-                                {isSpecificOption(option?._id) ? (
+                                <div className="d-flex gap-2">
                                     <Button
-                                        variant="danger"
+                                        style={{
+                                            margin:"0px"
+                                        }}
+                                        variant="warning" 
                                         size="sm"
-                                        onClick={() => handleDeleteOption(option?._id)}
-                                        disabled={loadingOptionId === option?._id}
+                                        className=""
+                                        onClick={() => handleEditOption(option)}
                                     >
-                                        {loadingOptionId === option?._id ? (
-                                            <Spinner animation="border" size="sm" />
-                                        ) : (
-                                            t("delete")
-                                        )}
+                                        {t("edit")}
                                     </Button>
-                                ) : (
+
+                                    {isSpecificOption(option?._id) ? (
+                                        <Button
+                                            //variant="orange"
+                                            size="sm"
+                                            className=" bg-orange"
+                                            onClick={() => handleDontUseOption(option?._id)}
+                                            disabled={loadingOptionId === option?._id}
+                                        >
+                                            {loadingOptionId === option?._id ? (
+                                                <Spinner animation="border" size="sm" />
+                                            ) : (
+                                                t("ຍົກເລີກໃຊ້ອ໋ອບຊັນ")
+                                            )}
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            variant="success"
+                                            size="sm"
+                                            onClick={() => handleUseOption(option?._id)}
+                                            disabled={loadingOptionId === option?._id}
+                                        >
+                                            {loadingOptionId === option?._id ? (
+                                                <Spinner animation="border" size="sm" />
+                                            ) : (
+                                                t("ໃຊ້ອ໋ອບຊັນ")
+                                            )}
+                                        </Button>
+                                    )}
                                     <Button
-                                        variant="success"
+                                        style={{
+                                            margin:"0px"
+                                        }}
+                                        variant="danger" 
                                         size="sm"
-                                        onClick={() => handleAddOption(option?._id)}
-                                        disabled={loadingOptionId === option?._id}
+                                        className=""
+                                        onClick={() => handleDeleteClick(option)}
                                     >
-                                        {loadingOptionId === option?._id ? (
-                                            <Spinner animation="border" size="sm" />
-                                        ) : (
-                                            t("add")
-                                        )}
+                                        {t("delete")}
                                     </Button>
-                                )}
+                                </div>
                             </ListGroup.Item>
                         ))}
                     </ListGroup>
@@ -321,6 +418,15 @@ function PopUpAddMenuOptionCategory({
                     </Button>
                 </Modal.Footer>
             </Modal>
+            
+            <PopUpUpdateMenuOptionCategory
+                show2={show2}
+                handleClose2={handleClose2}
+                dataUpdate={dataUpdate}
+                getTokken={getTokken}
+                refreshMenuOptionCategory={refreshMenuOptionCategory}
+                refreshUpdatedOption={refreshUpdatedOption}
+            />
         </div>
     );
 }

@@ -463,12 +463,12 @@ export default function MenuOptionCategory() {
                         </td>
 
                         <td>
-                          <FontAwesomeIcon
+                          {/* <FontAwesomeIcon
                             icon={faEdit}
                             onClick={() => handleShow2(data)}
                             style={{ color: COLOR_APP, cursor: "pointer" }}
-                          />
-                          <FontAwesomeIcon
+                          /> */}
+                          {/* <FontAwesomeIcon
                             icon={faTrashAlt}
                             style={{
                               marginLeft: 20,
@@ -476,7 +476,7 @@ export default function MenuOptionCategory() {
                               cursor: "pointer",
                             }}
                             onClick={() => handleShow3(data?._id, data?.name)}
-                          />
+                          /> */}
                         </td>
                       </tr>
                     );
