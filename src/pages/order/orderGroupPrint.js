@@ -55,6 +55,40 @@ export const convertHtmlToBase64Group = (items, printer, selectedTable) => {
   const base64ArrayAndPrinter = [];
   let totalPrice = 0; // Variable to hold the total price
 
+  // Helper function to wrap text
+  const wrapText = (context, text, x, y, maxWidth, lineHeight) => {
+    const words = text.split(' ');
+    let line = '';
+    let currentY = y;
+    const lines = [];
+
+    for (let n = 0; n < words.length; n++) {
+      const testLine = line + words[n] + ' ';
+      const metrics = context.measureText(testLine);
+      const testWidth = metrics.width;
+      
+      if (testWidth > maxWidth && n > 0) {
+        lines.push({ text: line.trim(), y: currentY });
+        line = words[n] + ' ';
+        currentY += lineHeight;
+      } else {
+        line = testLine;
+      }
+    }
+    
+    if (line.trim()) {
+      lines.push({ text: line.trim(), y: currentY });
+    }
+
+    // Draw all lines
+    lines.forEach(lineObj => {
+      context.fillText(lineObj.text, x, lineObj.y);
+    });
+
+    // Return the final Y position for next content
+    return lines.length > 0 ? lines[lines.length - 1].y : y;
+  };
+
   items.forEach((data) => {
     if (data) {
       const canvas = document.createElement("canvas");
@@ -63,22 +97,27 @@ export const convertHtmlToBase64Group = (items, printer, selectedTable) => {
       // Constants for layout
       const width = 510;
       const baseHeight = 100; // Header height
-      const extraHeightPerItem = 40; // Height for each item
+      const extraHeightPerItem = 40; // Base height for each item
       const extraHeightPerOption = 30; // Height for each option
       const footerHeight = 60; // Footer height
       const marginTop = 20; // Space between sections
       const titleMarginLeft = 20;
       const optionMarginLeft = 40;
+      const maxTextWidth = width - titleMarginLeft - 20; // Maximum width for text
+      const lineHeight = 35; // Height between lines for wrapped text
 
-      // Calculate total height dynamically
+      // Calculate total height dynamically (rough estimate, will adjust later)
       let contentHeight = baseHeight;
+      
+      // Estimate height for items (accounting for potential wrapping)
       items.forEach((item) => {
-        contentHeight += extraHeightPerItem;
+        // Estimate 2 lines max per item name
+        contentHeight += extraHeightPerItem + lineHeight; 
         if (item.options && item.options.length > 0) {
           contentHeight += item.options.length * extraHeightPerOption;
         }
       });
-      contentHeight += footerHeight + marginTop;
+      contentHeight += footerHeight + marginTop + 50; // Extra buffer
 
       // Set canvas dimensions
       canvas.width = width;
@@ -92,7 +131,7 @@ export const convertHtmlToBase64Group = (items, printer, selectedTable) => {
       context.fillStyle = "#000";
       context.fillRect(0, 0, width / 2, 60);
       context.fillStyle = "#fff";
-      context.font = "bold  36px NotoSansLao, Arial, sans-serif";
+      context.font = "bold 36px NotoSansLao, Arial, sans-serif";
       context.fillText(
         selectedTable?.tableName || data?.tableName,
         titleMarginLeft,
@@ -100,7 +139,7 @@ export const convertHtmlToBase64Group = (items, printer, selectedTable) => {
       );
 
       context.fillStyle = "#000";
-      context.font = "bold  30px NotoSansLao, Arial, sans-serif";
+      context.font = "bold 30px NotoSansLao, Arial, sans-serif";
       context.fillText(selectedTable?.code || "N/A", width - 160, 45);
 
       // Divider line below header
@@ -111,86 +150,110 @@ export const convertHtmlToBase64Group = (items, printer, selectedTable) => {
       context.stroke();
 
       // Items
-      context.font = "30px  NotoSansLao, Arial, sans-serif";
-      let itemYPosition = baseHeight; // Start after header
+      context.fillStyle = "#000";
+      let itemYPosition = baseHeight + 20; // Start after header with some margin
+      
       items.forEach((item) => {
-        // Main item
-        context.font = "bold  28px NotoSansLao, Arial, sans-serif";
-        context.fillText(
-          `- ${item.name} (x${item.quantity || 1})`,
-          titleMarginLeft,
-          itemYPosition
+        // Main item with text wrapping
+        context.font = "bold 28px NotoSansLao, Arial, sans-serif";
+        const itemText = `- ${item.name} (x${item.quantity || 1})`;
+        const finalY = wrapText(
+          context, 
+          itemText, 
+          titleMarginLeft, 
+          itemYPosition, 
+          maxTextWidth, 
+          lineHeight
         );
-        itemYPosition += extraHeightPerItem;
+        
+        itemYPosition = finalY + 30; // Add more space after the item
 
-        // Calculate price for the item (assuming there's a 'price' property on the item)
+        // Calculate price for the item
         totalPrice += (item.price || 0) * (item.quantity || 1);
 
         // Options
         if (item.options && item.options.length > 0) {
-          context.font = "24px  NotoSansLao, Arial, sans-serif";
+          context.font = "24px NotoSansLao, Arial, sans-serif";
           item.options.forEach((option) => {
-            context.fillText(
-              `- ${option.name} ${option.price ? `- ${option.price}` : ""} x ${
-                option.quantity || 1
-              }`,
+            const optionText = `- ${option.name} ${option.price ? `- ${option.price}` : ""} ${option.quantity ? 'x' : ''} ${option.quantity || ""}`;
+            const optionFinalY = wrapText(
+              context,
+              optionText,
               optionMarginLeft,
-              itemYPosition
+              itemYPosition,
+              maxTextWidth - 20, // Slightly less width for options
+              28
             );
-            itemYPosition += extraHeightPerOption;
+            itemYPosition = optionFinalY + 15; // Add more space after each option
 
             // Add the option price to the total
             totalPrice += (option.price || 0) * (option.quantity || 1);
           });
         }
+        
+        itemYPosition += 20; // Extra space between items
       });
 
       // Total Price Text
-      context.font = " 30px NotoSansLao, Arial, sans-serif";
+      context.font = "30px NotoSansLao, Arial, sans-serif";
       context.fillStyle = "#000";
       context.fillText(
         `ລວມ: ${moneyCurrency(totalPrice)} LAK`,
         titleMarginLeft,
-        itemYPosition + marginTop - 15
+        itemYPosition + marginTop
       );
 
       // Dotted line
       context.strokeStyle = "#000";
       context.setLineDash([4, 2]);
       context.beginPath();
-      context.moveTo(0, itemYPosition + marginTop);
-      context.lineTo(width, itemYPosition + marginTop);
+      context.moveTo(0, itemYPosition + marginTop + 15);
+      context.lineTo(width, itemYPosition + marginTop + 15);
       context.stroke();
       context.setLineDash([]);
 
       // Footer
-      context.font = "bold  24px NotoSansLao, Arial, sans-serif";
+      const footerY = itemYPosition + marginTop + 45;
+      context.font = "bold 24px NotoSansLao, Arial, sans-serif";
       context.fillStyle = "#000";
       context.fillText(
         data?.createdBy?.firstname || data?.updatedBy?.firstname || "lailaolab",
         titleMarginLeft,
-        contentHeight - footerHeight / 2
+        footerY
       );
 
       context.fillStyle = "#6e6e6e";
-      context.font = "22px  NotoSansLao, Arial, sans-serif";
+      context.font = "22px NotoSansLao, Arial, sans-serif";
       context.fillText(
         `${moment(data?.createdAt).format("DD/MM/YY")} | ${moment(
           data?.createdAt
         ).format("LT")}`,
         width - 200,
-        contentHeight - footerHeight / 2
+        footerY
       );
 
-      // Convert to base64
-      const dataUrl = canvas.toDataURL("image/png");
-      base64ArrayAndPrinter.push({ dataUrl, printer });
+      // Adjust canvas height to actual content
+      const actualHeight = footerY + 30;
+      if (actualHeight < contentHeight) {
+        const newCanvas = document.createElement("canvas");
+        const newContext = newCanvas.getContext("2d");
+        newCanvas.width = width;
+        newCanvas.height = actualHeight;
+        newContext.drawImage(canvas, 0, 0);
+        
+        // Convert to base64
+        const dataUrl = newCanvas.toDataURL("image/png");
+        base64ArrayAndPrinter.push({ dataUrl, printer });
+      } else {
+        // Convert to base64
+        const dataUrl = canvas.toDataURL("image/png");
+        base64ArrayAndPrinter.push({ dataUrl, printer });
+      }
     }
   });
 
   return base64ArrayAndPrinter;
 };
-
 
 
 export const runPrintGroup = async (dataUrl, printer) => {
