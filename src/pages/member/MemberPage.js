@@ -84,6 +84,7 @@ import { useStoreStore } from "../../zustand/storeStore";
 import theme from "../../theme";
 
 import PopUpConfirmDeletion from "../../components/popup/PopUpConfirmDeletion";
+import matchRoundNumber from "../../helpers/matchRound";
 
 export default function MemberPage() {
   const limitData = 10;
@@ -1098,7 +1099,7 @@ export default function MemberPage() {
                       <td style={{ textAlign: "center" }}>{e?.phone}</td>
                       <td style={{ textAlign: "center" }}>{e?.email || "-"}</td>
                       <td className="text-center font-bold">
-                        {moneyCurrency(e?.point ?? 0)}
+                        {moneyCurrency(matchRoundNumber(e?.point ?? 0))}
                         <br />
                         {!storeDetail?.isStatusCafe &&
                           CountDateExpire(e?.pointDateExpirt)}
@@ -1673,27 +1674,24 @@ export default function MemberPage() {
                 ) : EarnList?.length > 0 ? (
                   EarnList?.map((e) => (
                     <tr>
-                      <td style={{ textAlign: "left" }}>{e?.memberId?.name}</td>
-                      <td style={{ textAlign: "center" }}>
-                        {e?.memberId?.phone}
+                      <td style={{ textAlign: "left" }}>
+                        {e?.memberId?.name || "--"}
                       </td>
                       <td style={{ textAlign: "center" }}>
-                        {moneyCurrency(e?.point)}
+                        {e?.memberId?.phone || "--"}
                       </td>
                       <td style={{ textAlign: "center" }}>
-                        {moneyCurrency(e?.totalAmount)}
+                        {e?.memberId?.email || "--"}
+                      </td>
+                      <td style={{ textAlign: "center" }}>
+                        {moneyCurrency(matchRoundNumber(e?.point || 0))}
+                      </td>
+                      <td style={{ textAlign: "center" }}>
+                        {moneyCurrency(e?.totalAmount || 0)}
                       </td>
                       <td style={{ textAlign: "center" }}>
                         {moment(e?.createdAt).format("DD/MM/YYYY")}
                       </td>
-                      {/* <td style={{ textAlign: "right" }}>
-                        <Button
-                          variant="outline-primary"
-                          onClick={() => handleEditClick(e)}
-                        >
-                          {t("edit")}
-                        </Button>
-                      </td> */}
                     </tr>
                   ))
                 ) : (

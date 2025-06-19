@@ -38,7 +38,10 @@ import { fontMap } from "../../utils/font-map";
 import { cn } from "../../utils/cn";
 import { useMenuStore } from "../../zustand/menuStore";
 import { useStoreStore } from "../../zustand/storeStore";
+import { useCounterRoleStore } from "../../zustand/counterRole";
 import { createMenu } from "../../services/menu";
+
+import { useStore } from "../../store";
 
 export default function MenuList() {
   const {
@@ -87,7 +90,6 @@ export default function MenuList() {
   //update show menu
   const [detailMenu, setDetailMenu] = useState();
   const [detailMenuOption, setDetailMenuOption] = useState();
-  console.log("detailMenuOption", detailMenuOption);
   const [menuOptionsCount, setMenuOptionsCount] = useState({});
 
   const [allMenuOptions, setAllMenuOptions] = useState([]);
@@ -96,8 +98,11 @@ export default function MenuList() {
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState([]);
-  const { updateMenuItem, createMenuItem, deleteMenuItem, getMenus } = useMenuStore();
+  const { updateMenuItem, createMenuItem, deleteMenuItem, getMenus } =
+    useMenuStore();
   const { storeDetail } = useStoreStore();
+  const { counterRoleEditMenu } = useCounterRoleStore();
+  const { profile } = useStore();
 
   const location = useLocation();
   const pathParts = location.pathname.split("/");
@@ -797,6 +802,7 @@ export default function MenuList() {
                     color: "#ffff",
                     border: 0,
                   }}
+                  disabled={!counterRoleEditMenu}
                   onClick={handleShow}
                   className={fontMap[language]}
                 >
@@ -869,18 +875,22 @@ export default function MenuList() {
                   >
                     {t("status")}
                   </th>
-                  <th
-                    scope="col"
-                    className={cn("whitespace-nowrap", fontMap[language])}
-                  >
-                    {t("setting_show")}
-                  </th>
-                  <th
-                    scope="col"
-                    className={cn("whitespace-nowrap", fontMap[language])}
-                  >
-                    {t("options")}
-                  </th>
+                  {profile?.data?.role === "APPZAP_ADMIN" && (
+                    <>
+                      <th
+                        scope="col"
+                        className={cn("whitespace-nowrap", fontMap[language])}
+                      >
+                        {t("setting_show")}
+                      </th>
+                      <th
+                        scope="col"
+                        className={cn("whitespace-nowrap", fontMap[language])}
+                      >
+                        {t("options")}
+                      </th>
+                    </>
+                  )}
                   <th
                     scope="col"
                     className={cn("whitespace-nowrap", fontMap[language])}
@@ -958,41 +968,54 @@ export default function MenuList() {
                             ? t("web") + " : " + t("Close")
                             : ""}
                         </td>
-                        <td>
-                          <button
-                            type="button"
-                            className={cn("menuSetting", fontMap[language])}
-                            onClick={() => {
-                              setShowSetting(true);
-                              setDetailMenu({ data, index });
-                            }}
-                          >
-                            {t("define")}
-                          </button>
-                        </td>
-
-                        <td>
-                          <button
-                            type="button"
-                            className={cn(
-                              "menuSetting whitespace-nowrap !w-fit px-2",
-                              fontMap[language]
-                            )}
-                            onClick={() => {
-                              setShowOptionSetting(true);
-                              console.log("data", data);
-                              console.log("index", index);
-                              setDetailMenuOption({ data, index });
-                            }}
-                          >
-                            + {t("addition_options")} (
-                            {menuOptionsCount[data._id] ||
-                              data?.menuOptions?.length ||
-                              0}
-                            )
-                          </button>
-                        </td>
-
+                        {profile?.data?.role === "APPZAP_ADMIN" && (
+                          <>
+                            <td>
+                              <button
+                                type="button"
+                                disabled={!counterRoleEditMenu}
+                                className={cn(
+                                  "menuSetting whitespace-nowrap !w-fit px-2",
+                                  counterRoleEditMenu
+                                    ? ""
+                                    : "cursor-not-allowed !text-gray-500",
+                                  fontMap[language]
+                                )}
+                                onClick={() => {
+                                  setShowSetting(true);
+                                  setDetailMenu({ data, index });
+                                }}
+                              >
+                                {t("define")}
+                              </button>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                disabled={!counterRoleEditMenu}
+                                className={cn(
+                                  "menuSetting whitespace-nowrap !w-fit px-2",
+                                  counterRoleEditMenu
+                                    ? ""
+                                    : "cursor-not-allowed !text-gray-500",
+                                  fontMap[language]
+                                )}
+                                onClick={() => {
+                                  setShowOptionSetting(true);
+                                  console.log("data", data);
+                                  console.log("index", index);
+                                  setDetailMenuOption({ data, index });
+                                }}
+                              >
+                                + {t("addition_options")} (
+                                {menuOptionsCount[data._id] ||
+                                  data?.menuOptions?.length ||
+                                  0}
+                                )
+                              </button>
+                            </td>
+                          </>
+                        )}
                         {/* manage icon */}
                         <td
                           // className="manage"
@@ -1001,40 +1024,76 @@ export default function MenuList() {
                             alignItems: "center",
                           }}
                         >
-                          <FontAwesomeIcon
-                            icon={faEdit}
-                            onClick={() =>
-                              navigate(
-                                `/settingStore/edit-menu/${storeDetail?._id}`,
-                                {
-                                  state: { data, index },
-                                }
-                              )
-                            }
-                            style={{ color: COLOR_APP, cursor: "pointer" }}
-                          />
-                          <FontAwesomeIcon
-                            icon={faTrashAlt}
-                            style={{
-                              marginLeft: 20,
-                              color: "red",
-                              cursor: "pointer",
-                            }}
-                            onClick={() => handleShow3(data?._id, data?.name)}
-                          />
-                          <FontAwesomeIcon
-                            icon={faCubes}
-                            style={{
-                              marginLeft: 20,
-                              color: "red",
-                              cursor: "pointer",
-                            }}
-                            onClick={() =>
-                              navigate(
-                                `/settingStore/menu/menu-stock/${data?._id}`
-                              )
-                            }
-                          />
+                          <button
+                            className={`${
+                              !counterRoleEditMenu ? "cursor-not-allowed" : ""
+                            }`}
+                            disabled={!counterRoleEditMenu}
+                          >
+                            <FontAwesomeIcon
+                              icon={faEdit}
+                              onClick={() =>
+                                navigate(
+                                  `/settingStore/edit-menu/${storeDetail?._id}`,
+                                  {
+                                    state: { data, index },
+                                  }
+                                )
+                              }
+                              className={`${
+                                !counterRoleEditMenu
+                                  ? "text-orange-300 ml-[20px]"
+                                  : " text-orange-500 ml-[20px]"
+                              }`}
+                            />
+                          </button>
+                          {profile?.data?.role === "APPZAP_ADMIN" && (
+                            <>
+                              <button
+                                className={`${
+                                  !counterRoleEditMenu
+                                    ? "cursor-not-allowed"
+                                    : ""
+                                }`}
+                                disabled={!counterRoleEditMenu}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faTrashAlt}
+                                  className={`${
+                                    !counterRoleEditMenu
+                                      ? "text-red-300 ml-[20px]"
+                                      : " text-red-500 ml-[20px]"
+                                  }`}
+                                  onClick={() =>
+                                    handleShow3(data?._id, data?.name)
+                                  }
+                                />
+                              </button>
+
+                              <button
+                                className={`${
+                                  !counterRoleEditMenu
+                                    ? "cursor-not-allowed"
+                                    : ""
+                                }`}
+                                disabled={!counterRoleEditMenu}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faCubes}
+                                  className={`${
+                                    !counterRoleEditMenu
+                                      ? "text-red-300 ml-[20px]"
+                                      : " text-red-500 ml-[20px]"
+                                  }`}
+                                  onClick={() =>
+                                    navigate(
+                                      `/settingStore/menu/menu-stock/${data?._id}`
+                                    )
+                                  }
+                                />
+                              </button>
+                            </>
+                          )}
                         </td>
                       </tr>
                     );
