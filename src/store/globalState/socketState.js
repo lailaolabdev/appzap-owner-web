@@ -72,21 +72,11 @@ export const useSocketState = ({ setRunSound }) => {
       try {
         // Ensure data and orders are properly defined
         if (data && Array.isArray(data.orders)) {
-<<<<<<< HEAD
           
           // Call handleNewOrderItems with the orders data
           handleNewOrderItems(data.orders);
           // Trigger sound or any other actions as needed
           if(settingData?.isOrderSound) {
-=======
-          console.log("Log sound socket V1: ", data);
-
-          // Call handleNewOrderItems with the orders data
-          handleNewOrderItems(data.orders);
-          // Trigger sound or any other actions as needed
-          if (settingData?.isOrderSound) {
-            console.log("Log sound socket V2: ", settingData);
->>>>>>> dev
             setRunSound({ orderSound: settingData?.isOrderSound });
           }
           // setRunSound({ orderSound: true });
