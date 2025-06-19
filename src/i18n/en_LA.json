@@ -1381,5 +1381,8 @@
   "new_expiry_date": "ວັນທີອາຍຸໃໝ່",
   "you_selected_all": "ທ່ານເລືອກທັງໝົດ",
   "email": "ອີເມວ",
-  "entries": "ລາຍການ"
+  "entries": "ລາຍການ",
+  "sale":"ຂາຍອອກ",
+  "import":"ນຳເຂົ້າ",
+  "export":"ນຳອອກ"
 }

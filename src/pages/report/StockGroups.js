@@ -27,8 +27,11 @@ function StockGroups({
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
+  console.log("datas", datas);
+
   return (
-    <Card className="w-100">
+    <div>
+      <Card className="w-100">
       <div
         style={{
           background: COLOR_APP,
@@ -56,9 +59,9 @@ function StockGroups({
             <th style={{ textAlign: "center", textWrap: "nowrap" }}>
               {t("in_amount")}
             </th>
-            {/* <th style={{ textAlign: "center", textWrap: "nowrap" }}>
-                {t("opening_stock")}
-              </th> */}
+            <th style={{ textAlign: "center", textWrap: "nowrap" }}>
+                {t("sale")}
+              </th>
             {/* <th style={{ textAlign: "center", textWrap: "nowrap" }}>
                 {t("closing_stock")}
               </th> */}
@@ -102,14 +105,14 @@ function StockGroups({
                 >
                   {numberFormat(item?.totalQtyImport)}
                 </td>
-                {/* <td
+                <td
                   style={{
                     textAlign: "center",
                     textWrap: "nowrap",
                   }}
                 >
-                  {numberFormat(item?.totalQtyOpening)}
-                </td> */}
+                  {numberFormat(item?.totalQtySale)}
+                </td>
                 {/* <td
                   style={{
                     textAlign: "center",
@@ -139,6 +142,7 @@ function StockGroups({
         </Table>
       </Card.Body>
     </Card>
+    </div>
   );
 }
 

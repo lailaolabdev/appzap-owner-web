@@ -1251,5 +1251,8 @@
   "claim_management": "จัดการคำขอเบิกเงิน",
   "rejection_reason": "เหตุผลในการปฏิเสธ",
   "paymentMethod": "วิธีการชำระเงิน",
-  "entries": "รายการ"
+  "entries": "รายการ",
+  "sale":"ขายออก",
+  "import":"นำเข้า",
+  "export":"ส่งออก"
 }

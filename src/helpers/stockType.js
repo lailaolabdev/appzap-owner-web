@@ -1,9 +1,15 @@
+import { t } from "i18next"
+
 export const stockType = (_type) => {
     if(_type === "EXPORT"){
-        return "ຂາຍອອກ"
+        return t("export")
     }
     if(_type === "IMPORT"){
-        return "ນຳເຂົ້າ"
+        return t("import")
+    }
+
+    if(_type === "SALE"){
+        return t("sale")
     }
 
     return ""

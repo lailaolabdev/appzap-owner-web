@@ -1245,5 +1245,8 @@
   "claim_management": "គ្រប់គ្រងការកត់ត្រាបំណុល",
   "rejection_reason": "មូលហេតុបដិសេធ",
   "paymentMethod": "វិធីសាស្ត្រទូទាត់",
-  "entries": "បញ្ជី"
+  "entries": "បញ្ជី",
+  "sale":"លក់",
+  "import":"នាំចូល",
+  "export":"នាំចេញ"
 }

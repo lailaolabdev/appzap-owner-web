@@ -103,6 +103,7 @@ import HomecafeEdit from "../pages/cafe_home/HomecafeEdit";
 import EditMenu from "../pages/menu/EditMenu";
 import BuyXGetYDetail from "../pages/promotion/components/BuyXGetYDetail";
 import DiscountDetail from "../pages/promotion/components/DiscountDetail";
+import StockGroups from "../pages/report/StockGroups";
 function Router() {
   return useRoutes([
     {
@@ -336,6 +337,10 @@ function Router() {
         {
           path: "/settingStore/reportStock",
           element: <ReportStocks />,
+        },
+        {
+          path: "/settingStore/reportStockGroup",
+          element: <StockGroups />,
         },
         {
           path: "/settingStore/stock/addCategory",

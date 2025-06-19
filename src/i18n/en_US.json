@@ -1381,5 +1381,8 @@
   "new_expiry_date": "New Expiry Date",
   "you_selected_all": "You selected all",
   "email": "email",
-  "entries": "entries"
+  "entries": "entries",
+  "sale":"Sale",
+  "import":"Import",
+  "export":"Export"
 }

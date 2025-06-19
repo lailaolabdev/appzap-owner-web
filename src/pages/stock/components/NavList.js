@@ -14,6 +14,9 @@ export default function NavList({ ActiveKey = "/settingStore/stock" }) {
   const _menuList = () => {
     navigate(`/settingStore/stock/limit/40/page/1/${id}`);
   };
+  const _stockGroup = () => {
+    navigate(`/settingStore/reportStockGroup`);
+  };
   const _category = () => {
     navigate(`/settingStore/stock/category/limit/40/page/1/${id}`);
   };
@@ -35,11 +38,11 @@ export default function NavList({ ActiveKey = "/settingStore/stock" }) {
             {t("current_stock")}
           </Nav.Link>
         </Nav.Item>
-        {/* <Nav.Item>
-          <Nav.Link eventKey="/settingStore/stock" onClick={() => _menuList()}>
+        <Nav.Item>
+          <Nav.Link eventKey="/settingStore/stockGroup" onClick={() => _stockGroup()}>
             {t("all_stock")}
           </Nav.Link>
-        </Nav.Item> */}
+        </Nav.Item>
         <Nav.Item>
           <Nav.Link
             eventKey="/settingStore/stock/category"
