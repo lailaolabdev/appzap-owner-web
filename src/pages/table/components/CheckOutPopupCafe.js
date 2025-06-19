@@ -134,6 +134,7 @@ export default function CheckOutPopupCafe({
     setMemberDataSearch,
     memberDataSearch,
     setUseTwoDiscount,
+    setPaymentMethodUseDiscount,
 
     // Calculation function
     calculateDiscountedTotal,
@@ -263,6 +264,7 @@ export default function CheckOutPopupCafe({
 
   useEffect(() => {
     setDataBill((prev) => ({ ...prev, paymentMethod: forcus }));
+    setPaymentMethodUseDiscount(forcus);
   }, [forcus]);
 
   useEffect(() => {
@@ -400,7 +402,18 @@ export default function CheckOutPopupCafe({
       discountValue > 0 &&
       memberDataSearch?.discountPercentage > 0
     ) {
-      console.log("Case 1: Using two discounts combined");
+      // console.log("Case 1: Using two discounts combined");
+      return (
+        parseInt(discountValue) + parseInt(memberDataSearch.discountPercentage)
+      );
+    }
+    if (
+      !useTwoDiscount &&
+      discountType === "PERCENT" &&
+      discountValue > 0 &&
+      memberDataSearch?.discountPercentage > 0
+    ) {
+      // console.log("Case 1.1: Using two discounts combined manual + member");
       return (
         parseInt(discountValue) + parseInt(memberDataSearch.discountPercentage)
       );
@@ -411,8 +424,8 @@ export default function CheckOutPopupCafe({
       selectedMethod === "USEPERCENT" &&
       memberDataSearch?.discountPercentage > 0
     ) {
-      console.log("Case 2: Using member percentage discount");
-      return memberDataSearch.discountPercentage;
+      // console.log("Case 2: Using member percentage discount");
+      return parseInt(memberDataSearch.discountPercentage);
     }
 
     // 3. Point method with member discount
@@ -420,29 +433,29 @@ export default function CheckOutPopupCafe({
       selectedMethod === "USEPOINT" &&
       memberDataSearch?.discountPercentage > 0
     ) {
-      console.log("Case 3: Using point method with member discount");
-      return memberDataSearch.discountPercentage;
+      // console.log("Case 3: Using point method with member discount");
+      return parseInt(memberDataSearch.discountPercentage);
     }
 
     // 4. Regular discount (from discount form/input)
     if (discountType === "PERCENT" && discountValue > 0) {
-      console.log("Case 4: Using regular discount value");
-      return discountValue;
+      // console.log("Case 4: Using regular discount value");
+      return parseInt(discountValue);
     }
 
     if (discountType === "LAK" && discountValue > 0) {
-      console.log("Case 4: Using regular discount value");
-      return discountValue;
+      // console.log("Case 4: Using regular discount value");
+      return parseInt(discountValue);
     }
 
     // 5. Edit bill discount (fallback)
     if (dataBillEdit?.discount > 0) {
-      console.log("Case 5: Using edit bill discount");
-      return dataBillEdit.discount;
+      // console.log("Case 5: Using edit bill discount");
+      return parseInt(dataBillEdit.discount);
     }
 
     // 6. No discount
-    console.log("Case 6: No discount applied");
+    // console.log("Case 6: No discount applied");
     return 0;
   };
 
@@ -476,6 +489,10 @@ export default function CheckOutPopupCafe({
     // Default: return applyDiscount or 0 if not defined
     return applyDiscount() ? applyDiscount() : 0;
   };
+
+  // console.log("getDiscount", getDiscount());
+  // console.log("applyDiscount", applyDiscount());
+  // console.log("getBillAmount", getBillAmount());
 
   const _checkBill = async (currencyId, currencyName) => {
     setIsLoading(true);
@@ -1114,13 +1131,11 @@ export default function CheckOutPopupCafe({
     const parsedTransfer = Number.parseInt(transfer) || 0;
     const parsedPoint = Number.parseInt(point) || 0;
 
-    const totalAmount = parsedCash + parsedTransfer + parsedPoint - totalBill;
+    const totalAmount =
+      parsedCash + parsedTransfer + parsedPoint - applyDiscount();
 
     return totalAmount <= 0 ? 0 : totalAmount;
   };
-
-  const totalCashAndTransfer =
-    (Number.parseInt(cash) || 0) + (Number.parseInt(transfer) || 0);
 
   const handleMethodChange = (method) => {
     if (
