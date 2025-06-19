@@ -27,6 +27,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Box from "../../components/Box";
 import { useTranslation } from "react-i18next";
 import { fontMap } from "../../utils/font-map";
+import { useCounterRoleStore } from "../../zustand/counterRole";
 
 const OPTION_PRICE_CURRENCY = {
   LAK: "LAK",
@@ -68,6 +69,8 @@ export default function MenuListOption() {
   const [menuOptions, setMenuOptions] = useState([]);
   const [dataUpdate, setdataUpdate] = useState("");
   const [dateDelete, setdateDelete] = useState("");
+
+  const { counterRoleEditMenu } = useCounterRoleStore();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -345,13 +348,16 @@ export default function MenuListOption() {
                 }}
               >
                 <Button
-                  style={{
-                    backgroundColor: COLOR_APP,
-                    color: "#ffff",
-                    border: 0,
-                  }}
+                  disabled={!counterRoleEditMenu}
                   onClick={handleShow}
-                  className={fontMap[language]}
+                  className={
+                    (fontMap[language],
+                    `${
+                      !counterRoleEditMenu
+                        ? "text-orange-300 ml-[20px]"
+                        : " text-orange-500 ml-[20px]"
+                    }`)
+                  }
                 >
                   + {t("add_new_options")}
                 </Button>
@@ -392,20 +398,29 @@ export default function MenuListOption() {
                         </td>
                         <td>{moneyCurrency(data?.price)}</td>
                         <td>
-                          <FontAwesomeIcon
-                            icon={faEdit}
-                            onClick={() => handleShow2(data)}
-                            style={{ color: COLOR_APP, cursor: "pointer" }}
-                          />
-                          <FontAwesomeIcon
-                            icon={faTrashAlt}
-                            style={{
-                              marginLeft: 20,
-                              color: "red",
-                              cursor: "pointer",
-                            }}
-                            onClick={() => handleShow3(data?._id, data?.name)}
-                          />
+                          <button disabled={!counterRoleEditMenu}>
+                            <FontAwesomeIcon
+                              icon={faEdit}
+                              onClick={() => handleShow2(data)}
+                              className={`${
+                                !counterRoleEditMenu
+                                  ? "text-orange-300 ml-[20px]"
+                                  : " text-orange-500 ml-[20px]"
+                              }`}
+                            />
+                          </button>
+
+                          <button disabled={!counterRoleEditMenu}>
+                            <FontAwesomeIcon
+                              icon={faTrashAlt}
+                              className={`${
+                                !counterRoleEditMenu
+                                  ? "text-red-300 ml-[20px]"
+                                  : " text-red-500 ml-[20px]"
+                              }`}
+                              onClick={() => handleShow3(data?._id, data?.name)}
+                            />
+                          </button>
                         </td>
                       </tr>
                     );

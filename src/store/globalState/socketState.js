@@ -13,6 +13,7 @@ import {
   useSlideImageStore,
   useCombinedToggleSlide,
 } from "../../zustand/slideImageStore";
+import { useCounterRoleStore } from "../../zustand/counterRole";
 import { data } from "browserslist";
 import { set } from "lodash";
 import Axios from "axios";
@@ -52,8 +53,14 @@ export const useSocketState = ({ setRunSound }) => {
   const { handleNewOrderItems } = useOrderStore();
   const { setTotalAmountClaim, TotalAmountClaim } = useClaimDataStore();
 
-  const { countNumber } = useCountStore()
+  const { countNumber } = useCountStore();
 
+  const {
+    counterRoleEditBill,
+    counterRoleEditMenu,
+    setCounterRoleEditBill,
+    setCounterRoleEditMenu,
+  } = useCounterRoleStore();
 
   useEffect(() => {
     if (!storeDetail?._id) return;
@@ -65,11 +72,21 @@ export const useSocketState = ({ setRunSound }) => {
       try {
         // Ensure data and orders are properly defined
         if (data && Array.isArray(data.orders)) {
+<<<<<<< HEAD
           
           // Call handleNewOrderItems with the orders data
           handleNewOrderItems(data.orders);
           // Trigger sound or any other actions as needed
           if(settingData?.isOrderSound) {
+=======
+          console.log("Log sound socket V1: ", data);
+
+          // Call handleNewOrderItems with the orders data
+          handleNewOrderItems(data.orders);
+          // Trigger sound or any other actions as needed
+          if (settingData?.isOrderSound) {
+            console.log("Log sound socket V2: ", settingData);
+>>>>>>> dev
             setRunSound({ orderSound: settingData?.isOrderSound });
           }
           // setRunSound({ orderSound: true });
@@ -158,6 +175,19 @@ export const useSocketState = ({ setRunSound }) => {
       setOpenShiftForCounter(data?.data?.isCounterFilterShift);
     };
 
+    const updateCounterRoleEditBill = async (data) => {
+      // console.log("updateCounterRoleEditBill", data?.data);
+      setCounterRoleEditBill(data?.data?.isEditBill);
+    };
+
+    const updateCounterRoleEditMenu = async (data) => {
+      // console.log("updateCounterRoleEditMenu", data?.data);
+      setCounterRoleEditMenu(data?.data?.isEditMenu);
+    };
+
+    // console.log("counterRoleEditBill", counterRoleEditBill);
+    // console.log("counterRoleEditMenu", counterRoleEditMenu);
+
     const getClaimAmountData = async () => {
       try {
         const { DATA } = await getLocalData();
@@ -212,7 +242,14 @@ export const useSocketState = ({ setRunSound }) => {
       `OPEN_COUNTER_FILTER_SHIFT:${storeDetail._id}`,
       updateCounterFilterShift
     );
-
+    socket.on(
+      `OPEN_COUNTER_EDIT_BILL:${storeDetail._id}`,
+      updateCounterRoleEditBill
+    );
+    socket.on(
+      `OPEN_COUNTER_EDIT_MENU:${storeDetail._id}`,
+      updateCounterRoleEditMenu
+    );
     // Cleanup listeners to prevent duplicates
     return () => {
       socket.off("connect", handleConnect);
@@ -245,27 +282,35 @@ export const useSocketState = ({ setRunSound }) => {
         `OPEN_COUNTER_FILTER_SHIFT:${storeDetail._id}`,
         updateCounterFilterShift
       );
+      socket.off(
+        `OPEN_COUNTER_EDIT_BILL:${storeDetail._id}`,
+        updateCounterRoleEditBill
+      );
+      socket.off(
+        `OPEN_COUNTER_EDIT_MENU:${storeDetail._id}`,
+        updateCounterRoleEditMenu
+      );
     };
   }, [storeDetail, setRunSound]);
 
   // Load initial settings
   useEffect(() => {
-    loadSettingByStore()
-  }, [countNumber])
+    loadSettingByStore();
+  }, [countNumber]);
 
   // get setting by store
   const loadSettingByStore = async () => {
     const localData = JSON.parse(localStorage.getItem("storeDetail"));
     try {
       let _storeId = localData?.state?.storeDetail._id;
-      const response = await getSettingByStore(_storeId)
+      const response = await getSettingByStore(_storeId);
       if (response) {
-        setSettingData(response)
+        setSettingData(response);
       }
     } catch (error) {
       console.log("get setting by store error:", error);
     }
-  }
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
