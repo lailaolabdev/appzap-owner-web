@@ -946,8 +946,7 @@ export default function DashboardFinance({
                       }).format(
                         item?.orderId.reduce((sum, orderItem) => {
                           return (
-                            sum +
-                            (orderItem?.totalPrice * orderItem?.quantity || 0)
+                            sum + (orderItem?.price * orderItem?.quantity || 0)
                           );
                         }, 0)
                       )}{" "}
