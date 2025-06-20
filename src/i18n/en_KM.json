@@ -1248,5 +1248,7 @@
   "entries": "បញ្ជី",
   "sale":"លក់",
   "import":"នាំចូល",
-  "export":"នាំចេញ"
+  "export":"នាំចេញ",
+  "select_reason":"ជ្រើសរើសមូលហេតុបដិសេធ",
+  "stock_transaction":"ប្រតិបត្តិការស្តុក"
 }

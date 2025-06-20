@@ -40,7 +40,7 @@ export default function NavList({ ActiveKey = "/settingStore/stock" }) {
         </Nav.Item>
         <Nav.Item>
           <Nav.Link eventKey="/settingStore/stockGroup" onClick={() => _stockGroup()}>
-            {t("all_stock")}
+            {t("stock_transaction")}
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>

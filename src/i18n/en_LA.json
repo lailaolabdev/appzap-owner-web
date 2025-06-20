@@ -1384,5 +1384,7 @@
   "entries": "ລາຍການ",
   "sale":"ຂາຍອອກ",
   "import":"ນຳເຂົ້າ",
-  "export":"ນຳອອກ"
+  "export":"ນຳອອກ",
+  "select_reason":"ເລືອກເຫດຜົນ",
+  "stock_transaction":"ຕິດຕາມສະຕ໋ອກ"
 }

@@ -742,7 +742,7 @@ export default function ReportStocks() {
         </Card>
       </div>
 
-      <div className="mt-8 mb-8 w-2/4">
+      {/* <div className="mt-8 mb-8 w-2/4">
         <Form.Group style={{ width: width > 700 ? "60%" : "100%" }}>
           <Form.Label>{t("date_time")}</Form.Label>
           <Button
@@ -766,9 +766,9 @@ export default function ReportStocks() {
             </div>
           </Button>
         </Form.Group>
-      </div>
+      </div> */}
 
-      <div
+      {/* <div
         style={{
           display: "flex",
           marginTop: "1em",
@@ -797,7 +797,7 @@ export default function ReportStocks() {
             onPageChange={handleChangePageTotal}
           />
         )}
-      </div>
+      </div> */}
 
       <div
         style={{

@@ -1384,5 +1384,7 @@
   "entries": "entries",
   "sale":"Sale",
   "import":"Import",
-  "export":"Export"
+  "export":"Export",
+  "select_reason":"Select reason",
+  "stock_transaction":"Stock Transaction"
 }

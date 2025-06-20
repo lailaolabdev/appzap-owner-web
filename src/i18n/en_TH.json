@@ -1254,5 +1254,7 @@
   "entries": "รายการ",
   "sale":"ขายออก",
   "import":"นำเข้า",
-  "export":"ส่งออก"
+  "export":"ส่งออก",
+  "select_reason":"เลือกเหตุผล",
+  "stock_transaction":"การติดต่อสินค้า"
 }
