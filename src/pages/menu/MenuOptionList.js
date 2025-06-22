@@ -28,7 +28,7 @@ import Box from "../../components/Box";
 import { useTranslation } from "react-i18next";
 import { fontMap } from "../../utils/font-map";
 import { useCounterRoleStore } from "../../zustand/counterRole";
-
+import { useStore } from "../../store";
 const OPTION_PRICE_CURRENCY = {
   LAK: "LAK",
   THB: "THB",
@@ -71,6 +71,7 @@ export default function MenuListOption() {
   const [dateDelete, setdateDelete] = useState("");
 
   const { counterRoleEditMenu } = useCounterRoleStore();
+  const { profile } = useStore();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -347,20 +348,27 @@ export default function MenuListOption() {
                   justifyContent: "end",
                 }}
               >
-                <Button
-                  disabled={!counterRoleEditMenu}
-                  onClick={handleShow}
-                  className={
-                    (fontMap[language],
-                    `${
-                      !counterRoleEditMenu
-                        ? "text-orange-300 ml-[20px]"
-                        : " text-orange-500 ml-[20px]"
-                    }`)
-                  }
-                >
-                  + {t("add_new_options")}
-                </Button>
+                {profile?.data?.role === "APPZAP_ADMIN" ? (
+                  <Button
+                    onClick={handleShow}
+                    className={
+                      (fontMap[language], " text-orange-500 ml-[20px]")
+                    }
+                  >
+                    + {t("add_new_options")}
+                  </Button>
+                ) : (
+                  <Button
+                    disabled={!counterRoleEditMenu}
+                    onClick={handleShow}
+                    className={
+                      (fontMap[language],
+                      `${!counterRoleEditMenu ? "cursor-not-allowed" : ""}`)
+                    }
+                  >
+                    + {t("add_new_options")}
+                  </Button>
+                )}
               </Col>
             </Row>
           </Col>
@@ -398,29 +406,55 @@ export default function MenuListOption() {
                         </td>
                         <td>{moneyCurrency(data?.price)}</td>
                         <td>
-                          <button disabled={!counterRoleEditMenu}>
-                            <FontAwesomeIcon
-                              icon={faEdit}
-                              onClick={() => handleShow2(data)}
-                              className={`${
-                                !counterRoleEditMenu
-                                  ? "text-orange-300 ml-[20px]"
-                                  : " text-orange-500 ml-[20px]"
-                              }`}
-                            />
-                          </button>
+                          {profile?.data?.role === "APPZAP_ADMIN" ? (
+                            <>
+                              <button>
+                                <FontAwesomeIcon
+                                  icon={faEdit}
+                                  onClick={() => handleShow2(data)}
+                                  className=" text-orange-500 ml-[20px]"
+                                />
+                              </button>
 
-                          <button disabled={!counterRoleEditMenu}>
-                            <FontAwesomeIcon
-                              icon={faTrashAlt}
-                              className={`${
-                                !counterRoleEditMenu
-                                  ? "text-red-300 ml-[20px]"
-                                  : " text-red-500 ml-[20px]"
-                              }`}
-                              onClick={() => handleShow3(data?._id, data?.name)}
-                            />
-                          </button>
+                              <button>
+                                <FontAwesomeIcon
+                                  icon={faTrashAlt}
+                                  className=" text-red-500 ml-[20px]"
+                                  onClick={() =>
+                                    handleShow3(data?._id, data?.name)
+                                  }
+                                />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button disabled={!counterRoleEditMenu}>
+                                <FontAwesomeIcon
+                                  icon={faEdit}
+                                  onClick={() => handleShow2(data)}
+                                  className={`${
+                                    !counterRoleEditMenu
+                                      ? "text-orange-300 ml-[20px]"
+                                      : " text-orange-500 ml-[20px]"
+                                  }`}
+                                />
+                              </button>
+
+                              <button disabled={!counterRoleEditMenu}>
+                                <FontAwesomeIcon
+                                  icon={faTrashAlt}
+                                  className={`${
+                                    !counterRoleEditMenu
+                                      ? "text-red-300 ml-[20px]"
+                                      : " text-red-500 ml-[20px]"
+                                  }`}
+                                  onClick={() =>
+                                    handleShow3(data?._id, data?.name)
+                                  }
+                                />
+                              </button>
+                            </>
+                          )}
                         </td>
                       </tr>
                     );

@@ -21,7 +21,7 @@ import { updateCategoryMenu } from "../../services/menu";
 import { useMenuStore } from "../../zustand/menuStore";
 import { useCounterRoleStore } from "../../zustand/counterRole";
 import { addCategory, getCategories } from "../../services/menuCategory";
-
+import { useStore } from "../../store";
 export default function Categorylist() {
   const {
     t,
@@ -53,6 +53,7 @@ export default function Categorylist() {
   const [categorysType, setCategorysType] = useState([]);
 
   const { counterRoleEditMenu } = useCounterRoleStore();
+  const { profile } = useStore();
 
   const handleShow2 = async (item) => {
     // console.log("ITEM: ", item.categoryTypeId.name);
@@ -300,14 +301,24 @@ export default function Categorylist() {
 
       <div>
         <div className="col-sm-12 text-right mt-3">
-          <Button
-            disabled={!counterRoleEditMenu}
-            className={cn("col-sm-2", fontMap[language])}
-            style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={handleShow}
-          >
-            + {t("addFoodType")}
-          </Button>{" "}
+          {profile?.data?.role === "APPZAP_ADMIN" ? (
+            <Button
+              className={cn("col-sm-2", fontMap[language])}
+              style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+              onClick={handleShow}
+            >
+              + {t("addFoodType")}
+            </Button>
+          ) : (
+            <Button
+              disabled={!counterRoleEditMenu}
+              className={cn("col-sm-2", fontMap[language])}
+              style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+              onClick={handleShow}
+            >
+              + {t("addFoodType")}
+            </Button>
+          )}
         </div>
         <div style={{ height: 20 }}></div>
         <div>
@@ -379,38 +390,67 @@ export default function Categorylist() {
                         <td>{data?.name_kr ?? ""}</td>
                         {/* <td>{data?.categoryTypeId?.name ?? ""}</td> */}
                         <td>
-                          <button
-                            className={`${
-                              !counterRoleEditMenu ? "cursor-not-allowed" : ""
-                            }`}
-                            disabled={!counterRoleEditMenu}
-                          >
-                            <FontAwesomeIcon
-                              icon={faEdit}
-                              className={`${
-                                !counterRoleEditMenu
-                                  ? "text-orange-300 ml-[20px]"
-                                  : " text-orange-500 ml-[20px]"
-                              }`}
-                              onClick={() => handleShow2(data)}
-                            />
-                          </button>
-                          <button
-                            className={`${
-                              !counterRoleEditMenu ? "cursor-not-allowed" : ""
-                            }`}
-                            disabled={!counterRoleEditMenu}
-                          >
-                            <FontAwesomeIcon
-                              icon={faTrashAlt}
-                              className={`${
-                                !counterRoleEditMenu
-                                  ? "text-red-300 ml-[20px]"
-                                  : " text-red-500 ml-[20px]"
-                              }`}
-                              onClick={() => handleShow3(data?._id, data?.name)}
-                            />
-                          </button>
+                          {profile?.data?.role === "APPZAP_ADMIN" ? (
+                            <>
+                              <button>
+                                <FontAwesomeIcon
+                                  icon={faEdit}
+                                  className=" text-orange-500 ml-[20px]"
+                                  onClick={() => handleShow2(data)}
+                                />
+                              </button>
+                              <button>
+                                <FontAwesomeIcon
+                                  icon={faTrashAlt}
+                                  className=" text-red-500 ml-[20px]"
+                                  onClick={() =>
+                                    handleShow3(data?._id, data?.name)
+                                  }
+                                />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                className={`${
+                                  !counterRoleEditMenu
+                                    ? "cursor-not-allowed"
+                                    : ""
+                                }`}
+                                disabled={!counterRoleEditMenu}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faEdit}
+                                  className={`${
+                                    !counterRoleEditMenu
+                                      ? "text-orange-300 ml-[20px]"
+                                      : " text-orange-500 ml-[20px]"
+                                  }`}
+                                  onClick={() => handleShow2(data)}
+                                />
+                              </button>
+                              <button
+                                className={`${
+                                  !counterRoleEditMenu
+                                    ? "cursor-not-allowed"
+                                    : ""
+                                }`}
+                                disabled={!counterRoleEditMenu}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faTrashAlt}
+                                  className={`${
+                                    !counterRoleEditMenu
+                                      ? "text-red-300 ml-[20px]"
+                                      : " text-red-500 ml-[20px]"
+                                  }`}
+                                  onClick={() =>
+                                    handleShow3(data?._id, data?.name)
+                                  }
+                                />
+                              </button>
+                            </>
+                          )}
                         </td>
                         {/*adamHere*/}
                         {counterRoleEditMenu && (

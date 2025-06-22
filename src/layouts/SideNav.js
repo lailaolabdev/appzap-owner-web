@@ -272,8 +272,8 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "menu",
       typeStore: "",
       icon: faBoxOpen,
-      hidden: !storeDetail?.isCounterView,
-      system: "stockManagement",
+      hidden: !storeDetail?.hasPOS,
+      system: "reservationManagement",
     },
   ]
     .filter((e) => e.title) // Filter out items with empty title
