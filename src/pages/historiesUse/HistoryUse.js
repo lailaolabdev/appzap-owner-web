@@ -34,7 +34,7 @@ export default function HistoryUse() {
   const params = useParams();
   const [data, setData] = useState([]);
   const [totalLogs, setTotalLogs] = useState(0);
-  const [filtterModele, setFiltterModele] = useState("bankTransfer");
+  const [filtterModele, setFiltterModele] = useState("checkBill");
   const [selectedCurrency, setSelectedCurrency] = useState("LAK");
   const [isLoading, setIsLoading] = useState(false);
   const [show, setShow] = useState(false);
@@ -218,7 +218,7 @@ export default function HistoryUse() {
       <Nav
         fill
         variant="tabs"
-        defaultActiveKey="/bankTransfer"
+        defaultActiveKey="/checkBill"
         style={{
           fontWeight: "bold",
           backgroundColor: "#f8f8f8",
@@ -228,7 +228,7 @@ export default function HistoryUse() {
           display: "flex",
         }}
       >
-        <Nav.Item>
+        {/* <Nav.Item>
           <Nav.Link
             eventKey="/bankTransfer"
             style={{
@@ -247,10 +247,11 @@ export default function HistoryUse() {
             <BsBank2 /> <div style={{ width: 8 }}></div>
             {t("bank_transfer_history")}
           </Nav.Link>
-        </Nav.Item>
+        </Nav.Item> */}
 
         <Nav.Item>
           <Nav.Link
+            // defaultActiveKey="/checkBill"
             eventKey="/checkBill"
             style={{
               color: "#FB6E3B",
@@ -725,17 +726,17 @@ export default function HistoryUse() {
                         ? t("surnameAndLastName")
                         : t("manager_name")}
                     </th>
-                    {filtterModele === "checkBill" ? (
+                    {filtterModele === "checkBill" || "resetBill" ? (
                       ""
                     ) : (
                       <th className="text-nowarp" scope="col">
                         {t("table")}
                       </th>
                     )}
-                    <th className="text-nowarp" scope="col">
+                    {/* <th className="text-nowarp" scope="col">
                       {t("amount")}
-                    </th>
-                    {filtterModele === "checkBill" ? (
+                    </th> */}
+                    {filtterModele === "checkBill" || "resetBill" ? (
                       ""
                     ) : (
                       <th className="text-nowarp" scope="col">
@@ -762,8 +763,14 @@ export default function HistoryUse() {
                       <th>{t("total_Amount_of_Money")}</th>
                     )}
 
+                    {filtterModele === "resetBill" && (
+                      <th className="text-nowarp" scope="col">
+                        {t("date_time")}
+                      </th>
+                    )}
+
                     <th className="text-nowarp" scope="col">
-                      {t("date_time")}
+                      {t("ວັນທີອັບເດດລ່າສຸດ")}
                     </th>
                   </tr>
                 </thead>
@@ -780,31 +787,25 @@ export default function HistoryUse() {
                             ? `${item.firstName} ${item.lastName}`
                             : item?.user}
                         </td>
-                        {filtterModele === "checkBill" ? (
-                          <td className="text-nowrap">
-                            {moneyCurrency(item?.billAmount)}{" "}
-                            {storeDetail?.firstCurrency}
-                          </td>
+                        {filtterModele === "checkBill" || "resetBill" ? (
+                          // <td className="text-nowrap">
+                          //   {moneyCurrency(item?.billAmount)}{" "}
+                          //   {storeDetail?.firstCurrency}
+                          // </td>
+                          ""
                         ) : (
                           <td className="text-nowrap">{item.table}</td>
                         )}
-                        {filtterModele === "checkBill" ? (
+                        {filtterModele === "checkBill" || "resetBill" ? (
                           ""
                         ) : (
                           <td className="text-nowrap">{item.orderAmount}</td>
                         )}
-                        {filtterModele === "checkBill" ? (
+                        {filtterModele === "checkBill" || "resetBill" ? (
                           ""
                         ) : (
                           <td className="text-nowrap">{item.orderItem}</td>
                         )}
-                        {/* <td
-        style={{
-          color: item?.event === "INFO" ? "green" : "red",
-        }}
-      >
-        {item?.event}
-      </td> */}
                         <td
                           style={{
                             maxWidth: "35%",
@@ -821,7 +822,8 @@ export default function HistoryUse() {
                           {filtterModele === "historyServiceChange"
                             ? ` ${formatNumber(item.total)} ກີບ`
                             : filtterModele === "deleted" ||
-                              filtterModele === "checkBill"
+                              filtterModele === "checkBill" ||
+                              "resetBill"
                             ? item?.commentCancelOrder || "-"
                             : item?.reason === null ||
                               item?.reason === "" ||
@@ -839,6 +841,15 @@ export default function HistoryUse() {
                         )}
                         {filtterModele === "historyServiceChange" && (
                           <td>{formatNumber(item.totalMustPay)} ກີບ</td>
+                        )}
+                        {filtterModele === "resetBill" && (
+                          <td>
+                            {item.dateCreatedBill
+                              ? moment(item.dateCreatedBill).format(
+                                  "DD/MM/YYYY HH:mm a"
+                                )
+                              : "--"}
+                          </td>
                         )}
 
                         <td className="text-nowarp">

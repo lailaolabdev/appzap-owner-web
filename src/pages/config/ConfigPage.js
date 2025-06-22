@@ -7,7 +7,7 @@ import {
   Tooltip,
   Button,
 } from "react-bootstrap";
-import { COLOR_APP, padding } from "../../constants";
+import { COLOR_APP } from "../../constants";
 import Box from "../../components/Box";
 import { useStore } from "../../store";
 import { BsExclamationDiamondFill } from "react-icons/bs";
@@ -16,7 +16,6 @@ import {
   updateSetting,
   updateSettingCafe,
   updateSettingCRM,
-  getSettingCafe,
   updateSettingDelivery,
   updateSettingShift,
   updateSettingServiceChange,
@@ -38,7 +37,6 @@ export default function ConfigPage() {
   // state
   const [setting, setSetting] = useState();
   const [switchState, setSwitchState] = useState({});
-  const [switchCafeState, setSwitchCafeState] = useState(false);
   const [tax, setTax] = useState(0);
   const [serviceCharge, setServiceCharge] = useState(0);
   const [popup, setPopup] = useState();
@@ -71,16 +69,15 @@ export default function ConfigPage() {
   };
   const handleChangeTax = async (newTax) => {
     const { DATA } = await getLocalData();
-    const _res = await Axios.put(
-      END_POINT_SEVER + "/v4/tax/update/" + DATA.storeId,
-      { newTax: parseInt(newTax) }
-    );
+    await Axios.put(END_POINT_SEVER + "/v4/tax/update/" + DATA.storeId, {
+      newTax: parseInt(newTax),
+    });
     getDataTax();
     setPopup();
   };
   const handleChangeServiceCharge = async (serviceCharge) => {
     const { DATA } = await getLocalData();
-    const _res = await Axios.put(
+    await Axios.put(
       END_POINT_SEVER + "/v4/update/service-charge/" + DATA.storeId,
       { serviceCharge: parseInt(serviceCharge) }
     );
@@ -530,13 +527,13 @@ export default function ConfigPage() {
                         }}
                       >
                         <Form.Label htmlFor={"switch-cafe-" + item?.key}>
-                          {storeDetail?.isRestuarant == "CAFE"
+                          {storeDetail?.isRestuarant === "CAFE"
                             ? `${t("oppen")}`
                             : `${t("close")}`}
                         </Form.Label>
                         <Form.Check
                           type="switch"
-                          checked={storeDetail?.isRestuarant == "CAFE"}
+                          checked={storeDetail?.isRestuarant === "CAFE"}
                           id={"switch-cafe-" + item?.key}
                           onChange={changeCafe}
                         />
@@ -865,93 +862,93 @@ export default function ConfigPage() {
               ))}
             </Card.Body>
           </Card>
-          {storeDetail?.isStatusCafe && (
-            <Card border="primary" style={{ margin: 0 }}>
-              <Card.Header
-                style={{
-                  backgroundColor: COLOR_APP,
-                  color: "#fff",
-                  fontSize: 18,
-                  fontWeight: "bold",
-                }}
-              >
-                {t("print_bill_and_sticker")}
-              </Card.Header>
-              <Card.Body>
-                {/* {[
+
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+              }}
+            >
+              {t("print_bill_and_sticker")}
+            </Card.Header>
+            <Card.Body>
+              {/* {[
                   {
                     title: t("print_bill_and_sticker"),
                     key: "print_bill_and_sticker",
                   },
                 ].map((item) => ( */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+                // key={item?.key}
+              >
+                <div>{t("print_bill_and_sticker")}</div>
                 <div
                   style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr auto",
+                    display: "flex",
+                    alignItems: "center",
                     gap: 10,
-                    padding: "10px 0",
-                    borderBottom: `1px dotted ${COLOR_APP}`,
+                    justifyContent: "center",
                   }}
-                  // key={item?.key}
                 >
-                  <div>{t("print_bill_and_sticker")}</div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Form.Label htmlFor={`show_amount_cafe`}>
-                      {storeDetail?.optionPrintBill
-                        ? `${t("oppen")}`
-                        : `${t("close")}`}
-                    </Form.Label>
-                    <Form.Check
-                      type="switch"
-                      checked={storeDetail?.optionPrintBill}
-                      id={`print_bill_and_sticker`}
-                      onChange={changeOptionPrintBill}
-                    />
-                  </div>
+                  <Form.Label htmlFor={`show_amount_cafe`}>
+                    {storeDetail?.optionPrintBill
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.optionPrintBill}
+                    id={`print_bill_and_sticker`}
+                    onChange={changeOptionPrintBill}
+                  />
                 </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+                // key={item?.key}
+              >
+                <div>{t("print_two_bill")}</div>
                 <div
                   style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr auto",
+                    display: "flex",
+                    alignItems: "center",
                     gap: 10,
-                    padding: "10px 0",
-                    borderBottom: `1px dotted ${COLOR_APP}`,
+                    justifyContent: "center",
                   }}
-                  // key={item?.key}
                 >
-                  <div>{t("print_two_bill")}</div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Form.Label htmlFor={`printBillTwo`}>
-                      {storeDetail?.printBillTwo
-                        ? `${t("oppen")}`
-                        : `${t("close")}`}
-                    </Form.Label>
-                    <Form.Check
-                      type="switch"
-                      checked={storeDetail?.printBillTwo}
-                      id={`printBillTwo`}
-                      onChange={changePrintBillTwo}
-                    />
-                  </div>
+                  <Form.Label htmlFor={`printBillTwo`}>
+                    {storeDetail?.printBillTwo
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.printBillTwo}
+                    id={`printBillTwo`}
+                    onChange={changePrintBillTwo}
+                  />
                 </div>
-                {/* ))} */}
-              </Card.Body>
-            </Card>
-          )}
+              </div>
+              {/* ))} */}
+            </Card.Body>
+          </Card>
+
           {/* show discount button */}
           <Card border="primary" style={{ margin: 0 }}>
             <Card.Header
@@ -984,7 +981,7 @@ export default function ConfigPage() {
                   }}
                 >
                   <Form.Label htmlFor={`discount_of_bill`}>
-                    {storeDetail?.optionPrintBill
+                    {storeDetail?.isShowDiscountButton
                       ? `${t("oppen")}`
                       : `${t("close")}`}
                   </Form.Label>
