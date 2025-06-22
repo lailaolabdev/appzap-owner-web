@@ -61,6 +61,7 @@ import { useStoreStore } from "../../zustand/storeStore";
 import { useMenuStore } from "../../zustand/menuStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
 import theme from "../../theme";
+import { getMenuStock, getStocksAll } from "../../services/stocks";
 
 function AddOrder() {
   const { state } = useLocation();
@@ -97,6 +98,7 @@ function AddOrder() {
 
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
+  const [menuStock, setMenuStock] = useState([]);
 
   const { shiftCurrent } = useShiftStore();
 
@@ -249,6 +251,22 @@ function AddOrder() {
       }
     };
 
+    const getStockData = async () => {
+      try {
+        let findBy = "";
+      findBy += "?";
+      findBy += "storeId=" + storeDetail._id;
+      const stock = await getMenuStock(findBy);
+      if (stock.status === 200) {
+        setMenuStock(stock?.data);
+      }
+      } catch (error) {
+        console.log(error);
+      }
+      
+    };
+
+    getStockData();
     fetchData();
   }, [
     menus,
@@ -258,7 +276,9 @@ function AddOrder() {
     setMenus,
     setMenuCategories,
     isMenuLoading,
+    
   ]);
+  
 
   const ShowCounterApp =
     profile?.data?.role === "APPZAP_COUNTER" ? true : false;
@@ -270,6 +290,9 @@ function AddOrder() {
       (e?.name?.indexOf(search) > -1 && selectedCategory === "All") ||
       e?.categoryId?._id === selectedCategory
   );
+
+  console.log({afterSearch});
+  console.log({menuStock});
 
   const arrLength = selectedMenu?.length;
   const billForCher80 = useRef([]);
@@ -668,6 +691,10 @@ function AddOrder() {
     );
     return calculateDiscount(menu) + optionsTotalPrice;
   };
+
+  console.log(selectedItem);
+
+  
 
   const handleConfirmOptions = () => {
     const filteredOptions =
@@ -1173,6 +1200,8 @@ function AddOrder() {
     setEditComments(values?.note);
   };
 
+  
+
   const handleAddCommentInCart = () => {
     let dataArray = [];
     for (const i of selectedMenu) {
@@ -1556,6 +1585,8 @@ function AddOrder() {
                     </div>
                     <div className="bg-white h-full text-gray-700 relative px-2 py-1">
                       <span className="text-sm">{data?.name}</span>
+                      <span className="text-sm">{"pkay"}</span>
+
                       <br />
 
                       {data?.promotionId?.length > 0 &&
@@ -1628,6 +1659,7 @@ function AddOrder() {
                           {storeDetail?.firstCurrency}
                         </span>
                       )}
+                      
                     </div>
                   </div>
                 ))
@@ -1651,6 +1683,7 @@ function AddOrder() {
                   </div>
                   <div className="bg-white h-full text-gray-700 relative px-2 py-1">
                     <span className="text-sm">{data?.name}</span>
+                    
                     <br />
                     {data?.promotionId?.length > 0 &&
                     data.promotionId.some(
@@ -1718,7 +1751,11 @@ function AddOrder() {
                         {moneyCurrency(data?.price)}{" "}
                         {storeDetail?.firstCurrency}
                       </span>
+                      
                     )}
+                    <span className="flex flex-col font-bold text-red-500 text-[14px]">
+                        {`ແຖມ 0 ລາຍການ`}
+                      </span>
                   </div>
                 </div>
               ))
@@ -2033,7 +2070,7 @@ function AddOrder() {
                       onSubmit(true);
                     }}
                   >
-                    {t("order_and_send_to_kitchen")} +{" "}
+                    {t("order_and_send_to_kitchen ຟ")} +{" "}
                     <FontAwesomeIcon
                       icon={faCashRegister}
                       style={{ color: "#fff" }}

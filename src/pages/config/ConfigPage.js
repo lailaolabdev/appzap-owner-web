@@ -32,6 +32,7 @@ import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Axios from "axios";
 import { useTranslation } from "react-i18next";
 import { useStoreStore } from "../../zustand/storeStore";
+import { updateStockMissing } from "../../services/stocks";
 
 export default function ConfigPage() {
   const { t } = useTranslation();
@@ -42,6 +43,7 @@ export default function ConfigPage() {
   const [tax, setTax] = useState(0);
   const [serviceCharge, setServiceCharge] = useState(0);
   const [popup, setPopup] = useState();
+  const [stockMissing, setStockMissing] = useState(false);
   const { storeDetail, fetchStoreDetail, updateStoreDetail } = useStoreStore();
 
   // provider
@@ -54,6 +56,7 @@ export default function ConfigPage() {
     getDataTax();
   }, []);
 
+  console.log("stockMissing", stockMissing);
   // function
   const handleCreateServiceCharge = async (serviceCharge) => {
     try {
@@ -122,6 +125,16 @@ export default function ConfigPage() {
   const changeCRM = async (e) => {
     const isType = e.target.checked;
     await updateSettingCRM(profile?.data.storeId, { data: isType });
+    // zustand store
+    await fetchStoreDetail(storeDetail?._id);
+  };
+  const changeStockMissing = async (e) => {
+    const isType = e.target.checked;
+    const _res = await updateStockMissing(profile?.data.storeId, { data: isType });
+    console.log("RESS", _res);
+    if (_res?.status === 200) {
+      setStockMissing(isType);
+    }
     // zustand store
     await fetchStoreDetail(storeDetail?._id);
   };
@@ -390,11 +403,17 @@ export default function ConfigPage() {
                 </Card.Header>
                 <Card.Body>
                   {[
+                    // {
+                    //   title: `${t("enable_stock")}`,
+                    //   key: "sang",
+                    //   default: false,
+                    //   disabled: true,
+                    // },
                     {
-                      title: `${t("enable_stock")}`,
-                      key: "sang",
+                      title: `${t("stock_missing")}`,
+                      key: "stockMissing",
                       default: false,
-                      disabled: true,
+                      // disabled: true,
                     },
                   ].map((item, index) => (
                     <div
@@ -416,22 +435,17 @@ export default function ConfigPage() {
                           justifyContent: "center",
                         }}
                       >
-                        <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                          {audioSetting?.[item?.key] || item?.default
+                        <Form.Label htmlFor={"switch-stockMissing-" + item?.key}>
+                          {stockMissing || item?.default
                             ? `${t("oppen")}`
                             : `${t("close")}`}
                         </Form.Label>
                         <Form.Check
                           disabled={item?.disabled}
                           type="switch"
-                          checked={audioSetting?.[item?.key] || item?.default}
-                          id={"switch-audio-" + item?.key}
-                          onChange={(e) =>
-                            setAudioSetting((prev) => ({
-                              ...prev,
-                              [item?.key]: e.target.checked,
-                            }))
-                          }
+                          checked={stockMissing || item?.default}
+                          id={"switch-stockMissing-" + item?.key}
+                          onChange={changeStockMissing}
                         />
                       </div>
                     </div>

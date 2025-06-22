@@ -12,6 +12,16 @@ export const getStocksAll = async (findBy) => {
   }
 };
 
+export const getMenuStock = async (findBy) => {
+  try {
+    const url = `${END_POINT_APP}/v3/menu-stocks${findBy}`;
+    const res = await axios.get(url);
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const getCountStocksAll = async (storeId, findBy) => {
   try {
     const url = `${END_POINT_APP}/v3/count-stocks/${storeId}`;
@@ -124,6 +134,25 @@ export const updateStock = async (id, data) => {
       {
         id: id,
         data: data,
+      },
+      {
+        headers: await getHeaders(),
+      }
+    );
+    return res;
+  } catch (error) {
+    return error.response || error;
+  }
+};
+
+export const updateStockMissing = async (storeId, data) => {
+  try {
+    const url = `${END_POINT_APP}/v6/stock/missing/update`;
+    const res = await axios.put(
+      url,
+      {
+        storeId: storeId,
+        type: data,
       },
       {
         headers: await getHeaders(),
