@@ -15,7 +15,7 @@ const useDiscountStore = create(
       useTwoDiscount: false,
       memberDataSearch: null,
       dataBillEdit: null,
-      paymentMethodUseDiscount: "CASH", // แก้ไข spelling และใช้ UPPERCASE
+      paymentMethodUseDiscount: "CASH", // ແກ້ໄຂ spelling ແລະໃຊ້ UPPERCASE
       t: (key) => key, // Translation function placeholder
 
       // Actions to update state
@@ -28,14 +28,14 @@ const useDiscountStore = create(
       setDataBillEdit: (data) => set({ dataBillEdit: data }),
       setTranslationFunction: (translateFn) => set({ t: translateFn }),
       setPaymentMethodUseDiscount: (
-        method // แก้ไข spelling
+        method // ແກ້ໄຂ spelling
       ) => set({ paymentMethodUseDiscount: method }),
 
       // Helper function to determine if should auto apply member discount
       shouldAutoApplyMemberDiscount: () => {
         const { paymentMethodUseDiscount } = get();
 
-        // เคส "ไม่ต้องเลือก" - ใช้ส่วนลดอัตโนมัติ
+        // cause "ไม่ต้องเลือก" - ใช้ส่วนลดอัตโนมัติ
         const autoApplyMethods = [
           "CASH",
           "TRANSFER",
@@ -43,20 +43,20 @@ const useDiscountStore = create(
           "DELIVERY",
         ];
 
-        // เคส "ต้องเลือก" - cash + transfer + point
+        // cause "ต้องเลือก" - cash + transfer + point
         const manualSelectMethod = "CASH_TRANSFER_POINT";
 
-        // ถ้าเป็น auto apply methods
+        //  auto apply methods
         if (autoApplyMethods.includes(paymentMethodUseDiscount)) {
           return true;
         }
 
-        // ถ้าเป็น cash_transfer_point
+        //  cash_transfer_point
         if (paymentMethodUseDiscount === manualSelectMethod) {
           return false;
         }
 
-        // Default: ใช้อัตโนมัติ (safety fallback)
+        // Default: ໃຊ້ອັດຕະໂນມັດ (safety fallback)
         return true;
       },
 
@@ -98,12 +98,12 @@ const useDiscountStore = create(
           Swal.fire({
             icon: "warning",
             title: t("noti"),
-            text: `มีการใช้ส่วนลดบิลแล้ว ${discountValue} ${
+            text: `ມີການໃຊ້ສ່ວນຫຼຸດບິນແລ້ວ ${discountValue} ${
               discountType === "PERCENT" ? "%" : storeDetail?.firstCurrency
-            } ท่านต้องการใช้ทั้งสองเลยหรือไม่?`,
+            } ທ່ານຕ້ອງການໃຊ້ທັງສອງເລີຍບໍ່`,
             showDenyButton: true,
-            confirmButtonText: "ยืนยัน",
-            denyButtonText: "ยกเลิก",
+            confirmButtonText: "ຢືນຢັນ",
+            denyButtonText: "ຍົກເລິກ",
             allowOutsideClick: false,
             allowEscapeKey: false,
           }).then((result) => {
