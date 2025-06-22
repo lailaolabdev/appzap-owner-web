@@ -119,19 +119,19 @@ export default function DashboardPage() {
       });
   };
   useEffect(() => {
-    getReportData();
-    getSalesInformationReportData();
-    getUserReportData();
-    getMenuReportData();
-    getMoneyReportData();
-    getDebtReportData();
-    getPromotionReportData();
-    getCurrencyName();
-    getCategoryReportData();
-    getBankBillName();
-    getDeliveryReports();
-    getPromotionDiscountAndFreeReportData();
-    getBillReportData();
+    getReportData(); // 0
+    getSalesInformationReportData(); // 1
+    getUserReportData(); // 2
+    getMenuReportData(); // 3
+    getMoneyReportData(); // 4
+    getDebtReportData(); // 5
+    getPromotionReportData(); // 6
+    getCurrencyName(); // 7
+    getCategoryReportData(); // 8
+    getBankBillName(); // 9
+    getDeliveryReports(); // 10
+    getPromotionDiscountAndFreeReportData(); // 11
+    // getBillReportData();
   }, [endDate, startDate, endTime, startTime, selectedTableIds, shiftId]);
 
   // function
@@ -303,87 +303,12 @@ export default function DashboardPage() {
     setLoading(false);
   };
 
-  const getBillReportData = async () => {
-    setLoading(true);
-    const data = await getBillReport(storeDetail?._id, findByData());
-    setBillReport(data);
-    setLoading(false);
-  };
-
-  // console.log("BANK", bankList);
-  const downloadCsv = async () => {
-    try {
-      const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
-      setLoadingExportCsv(true);
-      const url =
-        END_POINT_EXPORT + "/export/bill?storeId=" + storeDetail?._id + findBy;
-      const _res = await Axios.get(url);
-      // fileDownload(_res.data, storeDetail?.name + ".csv" || "export.csv");
-      setLoadingExportCsv(false);
-    } catch (err) {
-      setLoadingExportCsv(false);
-      errorAdd(`${t("export_fail")}`);
-    }
-  };
-
-  const downloadExcel = async () => {
-    try {
-      const findByData = () => {
-        let findBy = "";
-
-        if (profile?.data?.role === "APPZAP_ADMIN") {
-          findBy += `&dateFrom=${startDate}`;
-          findBy += `&dateTo=${endDate}`;
-          findBy += `&timeTo=${startTime}`;
-          findBy += `&timeFrom=${endTime}`;
-
-          if (shiftId) {
-            findBy += `&shiftId=${shiftId}`;
-          }
-        } else {
-          findBy += `&dateFrom=${startDate}`;
-          findBy += `&dateTo=${endDate}`;
-          findBy += `&timeTo=${startTime}`;
-          findBy += `&timeFrom=${endTime}`;
-          if (shiftCurrent[0]) {
-            findBy += `&shiftId=${shiftCurrent[0]?._id}`;
-          }
-        }
-
-        return findBy;
-      };
-      // const findBy = `&dateFrom=${startDate}&dateTo=${endDate}&timeTo=${endTime}&timeFrom=${startTime}`;
-      setLoadingExportCsv(true);
-      const url =
-        END_POINT_EXPORT +
-        "/export/bill?storeId=" +
-        storeDetail?._id +
-        findByData();
-      const _res = await Axios.get(url);
-
-      console.log("downloadExcel", _res);
-
-      // if (_res?.data?.exportUrl) {
-      //   const response = await Axios.get(_res?.data?.exportUrl, {
-      //     responseType: "blob", // Important to get the response as a Blob
-      //   });
-
-      //   // Create a Blob from the response data
-      //   // console.log("response", response.data);
-      //   const fileBlob = new Blob([response.data], {
-      //     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      //   });
-
-      //   // Use the file-saver library to save the file with a new name
-      //   saveAs(fileBlob, storeDetail?.name + ".xlsx" || "export.xlsx");
-      // }
-
-      setLoadingExportCsv(false);
-    } catch (err) {
-      setLoadingExportCsv(false);
-      errorAdd(`${t("export_fail")}`);
-    }
-  };
+  // const getBillReportData = async () => {
+  //   setLoading(true);
+  //   const data = await getBillReport(storeDetail?._id, findByData());
+  //   setBillReport(data);
+  //   setLoading(false);
+  // };
 
   const deliveryReports = moneyReport?.delivery[0]?.revenueByPlatform?.map(
     (e) => {
@@ -432,7 +357,7 @@ export default function DashboardPage() {
       getBankBillName();
       getDeliveryReports();
       getPromotionDiscountAndFreeReportData();
-      getBillReportData();
+      // getBillReportData();
     } else {
       setShiftId(option?.value?.shiftID);
     }
