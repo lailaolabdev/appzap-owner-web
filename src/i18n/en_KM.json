@@ -1245,5 +1245,19 @@
   "claim_management": "គ្រប់គ្រងការកត់ត្រាបំណុល",
   "rejection_reason": "មូលហេតុបដិសេធ",
   "paymentMethod": "វិធីសាស្ត្រទូទាត់",
-  "entries": "បញ្ជី"
+  "entries": "បញ្ជី",
+  "sale":"លក់",
+  "import":"នាំចូល",
+  "export":"នាំចេញ",
+  "select_reason":"ជ្រើសរើសមូលហេតុបដិសេធ",
+  "stock_transaction":"ប្រតិបត្តិការស្តុក",
+  "stock_history_edit":"កែប្រែប្រវត្តិការស្តុក",
+  "previousQuantity":"ចំនួនមុន",
+  "inputQuantity":"ចំនួនបន្ថែម",
+  "updatedQuantity":"ចំនួនកែប្រែ",
+  "stock":"ស្តុក",
+  "createdBy":"បង្កើតដោយ",
+  "createdAt":"បង្កើតក្នុង",  
+  "updatedAt":"កែប្រែក្នុង",
+  "updatedBy":"កែប្រែដោយ"
 }

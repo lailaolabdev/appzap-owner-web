@@ -1381,5 +1381,19 @@
   "new_expiry_date": "New Expiry Date",
   "you_selected_all": "You selected all",
   "email": "email",
-  "entries": "entries"
+  "entries": "entries",
+  "sale":"Sale",
+  "import":"Import",
+  "export":"Export",
+  "select_reason":"Select reason",
+  "stock_transaction":"Stock Transaction",
+  "stock_history_edit":"Stock History Edit",
+  "previousQuantity":"Previous Quantity",
+  "inputQuantity":"Input Quantity",
+  "updatedQuantity":"Updated Quantity",
+  "stock":"Stock",
+  "createdBy":"Created By",
+  "createdAt":"Created At",
+  "updatedAt":"Updated At",
+  "updatedBy": "Updated By"
 }

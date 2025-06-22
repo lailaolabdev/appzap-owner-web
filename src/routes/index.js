@@ -31,6 +31,7 @@ import FormAddMenuStock from "../pages/menu/form/FormAddMenuStock";
 import StockList from "../pages/stock/StockList";
 import StockCategory from "../pages/stock/Categorylist";
 import StockHistory from "../pages/stock/HistoryList";
+import StockHistoryUpdate from "../pages/stock/StockHistoryUpdate";
 import SettingList from "../pages/settingStore/SettingList";
 import MessagerList from "../pages/messager/MessagerList";
 import ReservationDashboard from "../pages/reservation_dashboard/ReservationDashboard";
@@ -103,6 +104,7 @@ import HomecafeEdit from "../pages/cafe_home/HomecafeEdit";
 import EditMenu from "../pages/menu/EditMenu";
 import BuyXGetYDetail from "../pages/promotion/components/BuyXGetYDetail";
 import DiscountDetail from "../pages/promotion/components/DiscountDetail";
+import StockGroups from "../pages/report/StockGroups";
 function Router() {
   return useRoutes([
     {
@@ -338,6 +340,10 @@ function Router() {
           element: <ReportStocks />,
         },
         {
+          path: "/settingStore/reportStockGroup",
+          element: <StockGroups />,
+        },
+        {
           path: "/settingStore/stock/addCategory",
           element: <StockCreateCategory />,
         },
@@ -352,6 +358,10 @@ function Router() {
         {
           path: "/settingStore/stock/history/limit/:limit/page/:page/:id",
           element: <StockHistory />,
+        },
+        {
+          path: "/settingStore/stock/historyEdit",
+          element: <StockHistoryUpdate />,
         },
         {
           path: "/settingStore/:id",

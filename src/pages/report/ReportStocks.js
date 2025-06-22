@@ -551,13 +551,13 @@ export default function ReportStocks() {
                       {/* <th style={{ textAlign: "left", width: 50 }}>
                         {t("no")}
                       </th> */}
-                      <th style={{ textAlign: "left" }}>{t("date")}</th>
+                      {/* <th style={{ textAlign: "left" }}>{t("date")}</th> */}
                       <th style={{ textAlign: "center" }}>{t("prod_name")}</th>
                       <th style={{ textAlign: "left" }}>{t("type")}</th>
                       <th style={{ textAlign: "left" }}>{t("buy_price")}</th>
                       <th style={{ textAlign: "left" }}>{t("amount")}</th>
-                      <th style={{ textAlign: "left" }}>{t("out_amount")}</th>
-                      <th style={{ textAlign: "left" }}>{t("in_amount")}</th>
+                      {/* <th style={{ textAlign: "left" }}>{t("out_amount")}</th>
+                      <th style={{ textAlign: "left" }}>{t("in_amount")}</th> */}
                       <th style={{ textAlign: "left" }}>{t("wastes")}</th>
                       <th style={{ textAlign: "left" }}>{t("low_stock")}</th>
                       <th style={{ textAlign: "left", width: 40 }}>
@@ -599,9 +599,9 @@ export default function ReportStocks() {
                               )}
                             </div>
                           </td>
-                          <td style={{ textAlign: "left" }}>
+                          {/* <td style={{ textAlign: "left" }}>
                             {formatDateNow(item?.createdAt)}
-                          </td>
+                          </td> */}
                           <td style={{ textAlign: "center" }}>{item?.name}</td>
                           <td style={{ textAlign: "left" }}>
                             {item?.stockCategoryId?.name ?? "-"}
@@ -630,8 +630,8 @@ export default function ReportStocks() {
                           <td style={{ textAlign: "left" }}>
                             {item?.quantity}
                           </td>
-                          <td style={{ textAlign: "left" }}>{item?.sale}</td>
-                          <td style={{ textAlign: "left" }}>{item?.import}</td>
+                          {/* <td style={{ textAlign: "left" }}>{item?.sale}</td>
+                          <td style={{ textAlign: "left" }}>{item?.import}</td> */}
                           <td style={{ textAlign: "left" }}>
                             {item?.wastes ?? "-"} %
                           </td>
@@ -742,7 +742,7 @@ export default function ReportStocks() {
         </Card>
       </div>
 
-      <div className="mt-8 mb-8 w-2/4">
+      {/* <div className="mt-8 mb-8 w-2/4">
         <Form.Group style={{ width: width > 700 ? "60%" : "100%" }}>
           <Form.Label>{t("date_time")}</Form.Label>
           <Button
@@ -766,9 +766,9 @@ export default function ReportStocks() {
             </div>
           </Button>
         </Form.Group>
-      </div>
+      </div> */}
 
-      <div
+      {/* <div
         style={{
           display: "flex",
           marginTop: "1em",
@@ -797,7 +797,7 @@ export default function ReportStocks() {
             onPageChange={handleChangePageTotal}
           />
         )}
-      </div>
+      </div> */}
 
       <div
         style={{
