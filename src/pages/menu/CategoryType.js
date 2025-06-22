@@ -17,7 +17,7 @@ import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import { successAdd, errorAdd } from "./../../helpers/sweetalert";
 import { fontMap } from "../../utils/font-map";
 import { cn } from "../../utils/cn";
-
+import { useStore } from "../../store";
 import { useCounterRoleStore } from "../../zustand/counterRole";
 
 export default function CategoryType() {
@@ -39,6 +39,7 @@ export default function CategoryType() {
   const [dataUpdate, setdataUpdate] = useState("");
 
   const { counterRoleEditMenu } = useCounterRoleStore();
+  const { profile } = useStore();
 
   const _menuList = () => {
     navigate(`/settingStore/menu/limit/40/page/1/${params?.id}`);
@@ -213,14 +214,24 @@ export default function CategoryType() {
           </Nav.Item>
         </Nav>
         <div className="col-sm-12 text-right mt-3">
-          <Button
-            disabled={!counterRoleEditMenu}
-            className={cn("col-sm-2", fontMap[language])}
-            style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
-            onClick={() => setPopup({ popUpAddCategoryType: true })}
-          >
-            + {t("create_category")}
-          </Button>
+          {profile?.data?.role === "APPZAP_ADMIN" ? (
+            <Button
+              className={cn("col-sm-2", fontMap[language])}
+              style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+              onClick={() => setPopup({ popUpAddCategoryType: true })}
+            >
+              + {t("create_category")}
+            </Button>
+          ) : (
+            <Button
+              disabled={!counterRoleEditMenu}
+              className={cn("col-sm-2", fontMap[language])}
+              style={{ backgroundColor: COLOR_APP, color: "#ffff", border: 0 }}
+              onClick={() => setPopup({ popUpAddCategoryType: true })}
+            >
+              + {t("create_category")}
+            </Button>
+          )}
         </div>
         <div style={{ height: 20 }}></div>
         <div>
@@ -261,41 +272,71 @@ export default function CategoryType() {
                         alignItems: "center",
                       }}
                     >
-                      <button
-                        className={`${
-                          !counterRoleEditMenu ? "cursor-not-allowed" : ""
-                        }`}
-                        disabled={!counterRoleEditMenu}
-                      >
-                        <FontAwesomeIcon
-                          icon={faEdit}
-                          onClick={() => handleShow2(categoryType)}
-                          className={`${
-                            !counterRoleEditMenu
-                              ? "text-orange-300 ml-[20px]"
-                              : " text-orange-500 ml-[20px]"
-                          }`}
-                        />
-                      </button>
+                      {profile?.data?.role === "APPZAP_ADMIN" ? (
+                        <>
+                          <button>
+                            <FontAwesomeIcon
+                              icon={faEdit}
+                              onClick={() => handleShow2(categoryType)}
+                              className=" text-orange-500 ml-[20px]"
+                            />
+                          </button>
 
-                      <button
-                        className={`${
-                          !counterRoleEditMenu ? "cursor-not-allowed" : ""
-                        }`}
-                        disabled={!counterRoleEditMenu}
-                      >
-                        <FontAwesomeIcon
-                          icon={faTrashAlt}
-                          className={`${
-                            !counterRoleEditMenu
-                              ? "text-red-300 ml-[20px]"
-                              : " text-red-500 ml-[20px]"
-                          }`}
-                          onClick={() =>
-                            handleShow3(categoryType?._id, categoryType?.name)
-                          }
-                        />
-                      </button>
+                          <button>
+                            <FontAwesomeIcon
+                              icon={faTrashAlt}
+                              className=" text-red-500 ml-[20px]"
+                              onClick={() =>
+                                handleShow3(
+                                  categoryType?._id,
+                                  categoryType?.name
+                                )
+                              }
+                            />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            className={`${
+                              !counterRoleEditMenu ? "cursor-not-allowed" : ""
+                            }`}
+                            disabled={!counterRoleEditMenu}
+                          >
+                            <FontAwesomeIcon
+                              icon={faEdit}
+                              onClick={() => handleShow2(categoryType)}
+                              className={`${
+                                !counterRoleEditMenu
+                                  ? "text-orange-300 ml-[20px]"
+                                  : " text-orange-500 ml-[20px]"
+                              }`}
+                            />
+                          </button>
+
+                          <button
+                            className={`${
+                              !counterRoleEditMenu ? "cursor-not-allowed" : ""
+                            }`}
+                            disabled={!counterRoleEditMenu}
+                          >
+                            <FontAwesomeIcon
+                              icon={faTrashAlt}
+                              className={`${
+                                !counterRoleEditMenu
+                                  ? "text-red-300 ml-[20px]"
+                                  : " text-red-500 ml-[20px]"
+                              }`}
+                              onClick={() =>
+                                handleShow3(
+                                  categoryType?._id,
+                                  categoryType?.name
+                                )
+                              }
+                            />
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}

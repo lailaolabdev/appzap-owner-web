@@ -97,6 +97,8 @@ export default function DashboardFinance({
   const { storeDetail } = useStoreStore();
   const { counterRoleEditBill } = useCounterRoleStore();
 
+  console.log("counterRoleEditBill", counterRoleEditBill);
+
   const getPaginationCountData = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
@@ -1437,16 +1439,15 @@ export default function DashboardFinance({
           )}
 
           {!storeDetail?.isStatusCafe &&
-            (counterRoleEditBill ? (
+            (profile?.data?.role === "APPZAP_ADMIN" ? (
               <Button
                 className="text-white font-bold"
                 disabled={
                   disabledEditBill ||
                   selectOrder?.status === "ACTIVE" ||
-                  // profile?.data?.role !== "APPZAP_ADMIN" ||
+                  profile?.data?.role !== "APPZAP_ADMIN" ||
                   dataModal?.isDebtPayment === true ||
-                  dataModal?.isDebtAndPay === true ||
-                  !counterRoleEditBill
+                  dataModal?.isDebtAndPay === true
                 }
                 onClick={handleEditBill}
               >
@@ -1460,7 +1461,7 @@ export default function DashboardFinance({
                 disabled={
                   disabledEditBill ||
                   selectOrder?.status === "ACTIVE" ||
-                  profile?.data?.role !== "APPZAP_ADMIN" ||
+                  // profile?.data?.role !== "APPZAP_ADMIN" ||
                   dataModal?.isDebtPayment === true ||
                   dataModal?.isDebtAndPay === true ||
                   !counterRoleEditBill
