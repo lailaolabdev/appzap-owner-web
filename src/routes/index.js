@@ -31,6 +31,7 @@ import FormAddMenuStock from "../pages/menu/form/FormAddMenuStock";
 import StockList from "../pages/stock/StockList";
 import StockCategory from "../pages/stock/Categorylist";
 import StockHistory from "../pages/stock/HistoryList";
+import StockHistoryUpdate from "../pages/stock/StockHistoryUpdate";
 import SettingList from "../pages/settingStore/SettingList";
 import MessagerList from "../pages/messager/MessagerList";
 import ReservationDashboard from "../pages/reservation_dashboard/ReservationDashboard";
@@ -357,6 +358,10 @@ function Router() {
         {
           path: "/settingStore/stock/history/limit/:limit/page/:page/:id",
           element: <StockHistory />,
+        },
+        {
+          path: "/settingStore/stock/historyEdit",
+          element: <StockHistoryUpdate />,
         },
         {
           path: "/settingStore/:id",

@@ -1256,5 +1256,14 @@
   "import":"นำเข้า",
   "export":"ส่งออก",
   "select_reason":"เลือกเหตุผล",
-  "stock_transaction":"การติดต่อสินค้า"
+  "stock_transaction":"การติดต่อสินค้า",
+  "stock_history_edit":"แก้ไขประวัติสต็อก",
+  "previousQuantity":"จำนวนก่อนหน้า",
+  "inputQuantity":"จำนวนเพิ่ม",
+  "updatedQuantity":"จำนวนอัปเดต",
+  "stock":"สต็อก",
+  "createdBy":"สร้างโดย",
+  "createdAt":"สร้างวันที่",
+  "updatedAt":"อัปเดตวันที่",
+  "updatedBy":"อัปเดตโดย"
 }

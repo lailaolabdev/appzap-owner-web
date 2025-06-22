@@ -1386,5 +1386,14 @@
   "import":"Import",
   "export":"Export",
   "select_reason":"Select reason",
-  "stock_transaction":"Stock Transaction"
+  "stock_transaction":"Stock Transaction",
+  "stock_history_edit":"Stock History Edit",
+  "previousQuantity":"Previous Quantity",
+  "inputQuantity":"Input Quantity",
+  "updatedQuantity":"Updated Quantity",
+  "stock":"Stock",
+  "createdBy":"Created By",
+  "createdAt":"Created At",
+  "updatedAt":"Updated At",
+  "updatedBy": "Updated By"
 }

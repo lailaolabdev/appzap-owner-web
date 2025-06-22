@@ -1386,5 +1386,14 @@
   "import":"ນຳເຂົ້າ",
   "export":"ນຳອອກ",
   "select_reason":"ເລືອກເຫດຜົນ",
-  "stock_transaction":"ຕິດຕາມສະຕ໋ອກ"
+  "stock_transaction":"ຕິດຕາມສະຕ໋ອກ",
+  "stock_history_edit":"ປະຫວັດແກ້ໄຂສະຕ໋ອກ",
+  "previousQuantity":"ຈຳນວນກ່ອນໝ້າ",
+  "inputQuantity":"ຈຳນວນເພີ່ມ",
+  "updatedQuantity":"ຈຳນວນແກ້ໄຂແລ້ວ",
+  "stock":"ສະຕ໋ອກ",
+  "createdBy":"ສ້າງໂດຍ",
+  "createdAt":"ສ້າງວັນທີ",
+  "updatedAt":"ແກ້ໄຂວັນທີ",
+  "updatedBy":"ແກ້ໄຂໂດຍ"
 }

@@ -23,6 +23,9 @@ export default function NavList({ ActiveKey = "/settingStore/stock" }) {
   const _history = () => {
     navigate(`/settingStore/stock/history/limit/40/page/1/${id}`);
   };
+  const _historyEdit = () => {
+    navigate(`/settingStore/stock/historyEdit`);
+  };
   return (
     <div>
       <Breadcrumb>
@@ -57,6 +60,14 @@ export default function NavList({ ActiveKey = "/settingStore/stock" }) {
             onClick={() => _history()}
           >
             {t("stock_history")}
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            eventKey="/settingStore/stock/historyEdit"
+            onClick={() => _historyEdit()}
+          >
+            {t("stock_history_edit")}
           </Nav.Link>
         </Nav.Item>
       </Nav>

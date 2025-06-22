@@ -15,13 +15,13 @@ export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
 
   // Predefined reasons for stock deletion
   const deletionReasons = [
-    { value: "expired", label: "ໝົດອາຍຸ" },
-    { value: "damaged", label: "ເສຍຫາຍ" },
-    { value: "returned", label: "ສົ່ງຄືນ" },
-    { value: "lost", label: "ສູນຫາຍ" },
-    { value: "sold", label: "ຂາຍແລ້ວ" },
-    { value: "transferred", label: "ໂອນຍ້າຍ" },
-    { value: "quality_issue", label: "ມີບັນຫາຄຸນນະພາບ" }
+    { value: "ໝົດອາຍຸ", label: "ໝົດອາຍຸ" },
+    { value: "ເສຍຫາຍ", label: "ເສຍຫາຍ" },
+    { value: "ສົ່ງຄືນ", label: "ສົ່ງຄືນ" },
+    { value: "ສູນຫາຍ", label: "ສູນຫາຍ" },
+    { value: "ຂາຍແລ້ວ", label: "ຂາຍແລ້ວ" },
+    { value: "ໂອນຍ້າຍ", label: "ໂອນຍ້າຍ" },
+    { value: "ມີບັນຫາຄຸນນະພາບ", label: "ມີບັນຫາຄຸນນະພາບ" }
   ];
 
   return (

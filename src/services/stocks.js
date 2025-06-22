@@ -31,6 +31,15 @@ export const getStocksHistories = async (storeId, findBy) => {
     return error;
   }
 };
+export const getStocksHistoriesUpdate = async (storeId, findBy) => {
+  try {
+    const url = `${END_POINT_APP}/v6/stock-history-update?storeId=${storeId}${findBy}`;
+    const res = await axios.get(url);
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
 
 export const getStocksCategory = async (storeId) => {
   try {
