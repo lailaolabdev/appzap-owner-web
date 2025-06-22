@@ -31,7 +31,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const { width, height } = useWindowDimensions2();
-  const limitData = 4;
+  const limitData = 100;
   // state
   const [popup, setPopup] = useState();
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
