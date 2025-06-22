@@ -454,6 +454,9 @@ function AddOrder() {
 
         // Content: Item Note
         if (data?.note) {
+          console.log("data note", data);
+          console.log("note", data.note);
+
           const noteLabel = "note: ";
           const noteText = data.note;
 
@@ -574,6 +577,7 @@ function AddOrder() {
 
         // Convert canvas to base64
         const dataUrl = canvas.toDataURL("image/png");
+        console.log("dataUrl", dataUrl);
         const printer = printers.find((e) => e?._id === data?.printer);
         if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
       }
