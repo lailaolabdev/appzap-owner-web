@@ -38,7 +38,7 @@ export default function PopUpOption({ open, onClose, data, onAddToCart }) {
       (total, option) => total + (quantities[option._id] || 0) * option.price,
       0
     );
-    return menuData.price + optionTotal;
+    return optionTotal;
   };
 
   const handleAddToCart = () => {
