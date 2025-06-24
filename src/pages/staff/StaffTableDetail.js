@@ -36,7 +36,7 @@ export default function StaffTableDetail() {
   } = useStore();
   // useEffect
 
-  console.log({ tableOrders });
+  // console.log({ tableOrders });
   useEffect(() => {
     const select = tableOrders.filter((e) => selectOrders?.[e._id]);
     if (select.length == 0) {
