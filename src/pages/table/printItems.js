@@ -167,8 +167,7 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
           context.font = "24px  NotoSansLao, Arial, sans-serif";
           item.options.forEach((option) => {
             context.fillText(
-              `- ${option.name} ${option.price ? `- ${option.price}` : ""} x ${
-                option.quantity || 1
+              `- ${option.name} ${option.price ? `- ${option.price}` : ""} ${option.quantity ? `"" ${option.quantity}` : "x"} ${option.quantity
               }`,
               optionMarginLeft,
               itemYPosition
