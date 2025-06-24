@@ -606,7 +606,7 @@ export default function TableList() {
       setOpenModalSetting(false);
       if (updateTable.status < 300) {
         setSelectedTable();
-        // getTableDataStore();
+        getTableDataStore();
         if (zoneId) {
           getTableDataStore({ zone: zoneId });
         } else {
@@ -2719,8 +2719,7 @@ export default function TableList() {
                                     <Checkbox
                                       disabled={
                                         orderItem?.status === "CANCELED" ||
-                                        orderItem?.status === "PAID" ||
-                                        orderItem?.status === "SERVED"
+                                        orderItem?.status === "PAID" 
                                       }
                                       name="checked"
                                       checked={orderItem?.isChecked || false}
