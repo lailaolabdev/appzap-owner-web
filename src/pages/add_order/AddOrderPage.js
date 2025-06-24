@@ -81,12 +81,16 @@ export default function AddOrderPage() {
     return matchesCategory && matchesSearch;
   });
 
+  // console.log("filteredMenus", filteredMenus);
+
   // Handler to add customized orders to the cart
   const handleAddToCart = (order) => {
     setStaffCart((prevCart) => [...prevCart, order]);
     setSelectMenu(); // Clear the selected menu
     setPopup(); // Close the popup
   };
+
+  console.log("staffCart", staffCart);
 
   return (
     <>
