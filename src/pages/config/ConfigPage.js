@@ -24,6 +24,7 @@ import {
   updateCounterFilterShift,
   updateCounterBill,
   updateCounterMenu,
+  updateSettingStockMissing,
 } from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
 import PopUpEditServiceCharge from "../../components/popup/PopUpEditServiceCharge";
@@ -32,6 +33,7 @@ import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Axios from "axios";
 import { useTranslation } from "react-i18next";
 import { useStoreStore } from "../../zustand/storeStore";
+import { useMenuStore } from "../../zustand/menuStore";
 import { updateStockMissing } from "../../services/stocks";
 
 export default function ConfigPage() {
@@ -45,6 +47,7 @@ export default function ConfigPage() {
   const [popup, setPopup] = useState();
   const [stockMissing, setStockMissing] = useState(false);
   const { storeDetail, fetchStoreDetail, updateStoreDetail } = useStoreStore();
+  const { getMenus, clearMenus } = useMenuStore();
 
   // provider
   const { audioSetting, setAudioSetting, profile } = useStore();
@@ -55,8 +58,6 @@ export default function ConfigPage() {
     getServiceCharge();
     getDataTax();
   }, []);
-
-  console.log("stockMissing", stockMissing);
   // function
   const handleCreateServiceCharge = async (serviceCharge) => {
     try {
@@ -130,12 +131,7 @@ export default function ConfigPage() {
   };
   const changeStockMissing = async (e) => {
     const isType = e.target.checked;
-    const _res = await updateStockMissing(profile?.data.storeId, { data: isType });
-    console.log("RESS", _res);
-    if (_res?.status === 200) {
-      setStockMissing(isType);
-    }
-    // zustand store
+    await updateSettingStockMissing(profile?.data.storeId, { data: isType });
     await fetchStoreDetail(storeDetail?._id);
   };
 
@@ -436,14 +432,14 @@ export default function ConfigPage() {
                         }}
                       >
                         <Form.Label htmlFor={"switch-stockMissing-" + item?.key}>
-                          {stockMissing || item?.default
+                          {storeDetail?.isStockMissing
                             ? `${t("oppen")}`
                             : `${t("close")}`}
                         </Form.Label>
                         <Form.Check
                           disabled={item?.disabled}
                           type="switch"
-                          checked={stockMissing || item?.default}
+                          checked={storeDetail?.isStockMissing}
                           id={"switch-stockMissing-" + item?.key}
                           onChange={changeStockMissing}
                         />

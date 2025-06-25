@@ -1395,5 +1395,6 @@
   "createdBy":"ສ້າງໂດຍ",
   "createdAt":"ສ້າງວັນທີ",
   "updatedAt":"ແກ້ໄຂວັນທີ",
-  "updatedBy":"ແກ້ໄຂໂດຍ"
+  "updatedBy":"ແກ້ໄຂໂດຍ",
+  "stock_is_missing":"ສະຕ໋ອກເຫຼືອ 0"
 }

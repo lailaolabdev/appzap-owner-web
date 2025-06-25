@@ -113,9 +113,9 @@ export const createStockCategory = async (data) => {
   }
 };
 
-export const deleteStockMenu = async (id) => {
+export const deleteStockMenu = async (id, menuId, stockId) => {
   try {
-    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu-stock/delete/${id}`;
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu-stock/delete/${id}?menuId=${menuId}&stockId=${stockId}`;
     const res = await axios.delete(url, {
       headers: await getHeaders(),
     });
