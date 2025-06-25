@@ -24,6 +24,7 @@ import {
   updateCounterFilterShift,
   updateCounterBill,
   updateCounterMenu,
+  updateSettingStockMissing,
 } from "../../services/setting";
 import PopUpEditTax from "../../components/popup/PopUpEditTax";
 import PopUpEditServiceCharge from "../../components/popup/PopUpEditServiceCharge";
@@ -32,6 +33,8 @@ import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import Axios from "axios";
 import { useTranslation } from "react-i18next";
 import { useStoreStore } from "../../zustand/storeStore";
+import { useMenuStore } from "../../zustand/menuStore";
+import { updateStockMissing } from "../../services/stocks";
 
 export default function ConfigPage() {
   const { t } = useTranslation();
@@ -42,7 +45,9 @@ export default function ConfigPage() {
   const [tax, setTax] = useState(0);
   const [serviceCharge, setServiceCharge] = useState(0);
   const [popup, setPopup] = useState();
+  const [stockMissing, setStockMissing] = useState(false);
   const { storeDetail, fetchStoreDetail, updateStoreDetail } = useStoreStore();
+  const { getMenus, clearMenus } = useMenuStore();
 
   // provider
   const { audioSetting, setAudioSetting, profile } = useStore();
@@ -53,7 +58,6 @@ export default function ConfigPage() {
     getServiceCharge();
     getDataTax();
   }, []);
-
   // function
   const handleCreateServiceCharge = async (serviceCharge) => {
     try {
@@ -123,6 +127,11 @@ export default function ConfigPage() {
     const isType = e.target.checked;
     await updateSettingCRM(profile?.data.storeId, { data: isType });
     // zustand store
+    await fetchStoreDetail(storeDetail?._id);
+  };
+  const changeStockMissing = async (e) => {
+    const isType = e.target.checked;
+    await updateSettingStockMissing(profile?.data.storeId, { data: isType });
     await fetchStoreDetail(storeDetail?._id);
   };
 
@@ -390,11 +399,17 @@ export default function ConfigPage() {
                 </Card.Header>
                 <Card.Body>
                   {[
+                    // {
+                    //   title: `${t("enable_stock")}`,
+                    //   key: "sang",
+                    //   default: false,
+                    //   disabled: true,
+                    // },
                     {
-                      title: `${t("enable_stock")}`,
-                      key: "sang",
+                      title: `${t("stock_is_missing")}`,
+                      key: "stockMissing",
                       default: false,
-                      disabled: true,
+                      // disabled: true,
                     },
                   ].map((item, index) => (
                     <div
@@ -416,22 +431,17 @@ export default function ConfigPage() {
                           justifyContent: "center",
                         }}
                       >
-                        <Form.Label htmlFor={"switch-audio-" + item?.key}>
-                          {audioSetting?.[item?.key] || item?.default
+                        <Form.Label htmlFor={"switch-stockMissing-" + item?.key}>
+                          {storeDetail?.isStockMissing
                             ? `${t("oppen")}`
                             : `${t("close")}`}
                         </Form.Label>
                         <Form.Check
                           disabled={item?.disabled}
                           type="switch"
-                          checked={audioSetting?.[item?.key] || item?.default}
-                          id={"switch-audio-" + item?.key}
-                          onChange={(e) =>
-                            setAudioSetting((prev) => ({
-                              ...prev,
-                              [item?.key]: e.target.checked,
-                            }))
-                          }
+                          checked={storeDetail?.isStockMissing}
+                          id={"switch-stockMissing-" + item?.key}
+                          onChange={changeStockMissing}
                         />
                       </div>
                     </div>

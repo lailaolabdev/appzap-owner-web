@@ -156,8 +156,8 @@ export const convertHtmlToBase64 = (
           const optionPriceText = option?.price
             ? ` - ${moneyCurrency(option?.price)}`
             : "";
-          const optionText = `- ${option?.name}${optionPriceText} x ${
-            option?.quantity || 1
+          const optionText = `- ${option?.name}${optionPriceText} ${option?.quantity === undefined ? "" : "x"} ${
+            option?.quantity ?? ""
           }`;
           yPosition = wrapText(
             context,

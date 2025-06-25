@@ -1265,5 +1265,6 @@
   "createdBy":"สร้างโดย",
   "createdAt":"สร้างวันที่",
   "updatedAt":"อัปเดตวันที่",
-  "updatedBy":"อัปเดตโดย"
+  "updatedBy":"อัปเดตโดย",
+  "stock_is_missing":"สต็อกไม่มี"
 }
