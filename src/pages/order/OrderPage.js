@@ -26,6 +26,8 @@ import moment, { lang } from "moment";
 import { printItems } from "../table/printItems";
 import { fontMap } from "../../utils/font-map";
 
+import { convertHtmlToBase64Group, runPrintGroup } from "./orderGroupPrint";
+
 import {
   groupItemsByPrinter,
   convertHtmlToBase64,
@@ -59,6 +61,7 @@ export default function OrderPage() {
   const [workAfterPin, setWorkAfterPin] = useState("");
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
+  const [isPrint, setIsPrint] = useState(false);
   const [show1, setShow1] = useState(false);
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
 
@@ -288,7 +291,7 @@ export default function OrderPage() {
       const orderSelect = getOrdersByStatus(fromStatus).filter(
         (item) => item.isChecked
       );
-
+      console.log("orderSelect", orderSelect);
       if (orderSelect.length === 0) {
         Swal.fire({
           icon: "warning",
@@ -300,48 +303,125 @@ export default function OrderPage() {
         return;
       }
 
-      console.log({ orderSelect });
-
-      const base64ArrayAndPrinter = convertHtmlToBase64(
-        orderSelect,
-        printers,
-        storeDetail,
-        t("total"),
-        t(storeDetail?.firstCurrency)
+      
+      const selectedPrinterIds = orderSelect.map((e) => e.printer);
+      const pickedUpPrinters = printers.filter((printer) =>
+        selectedPrinterIds.includes(printer._id)
       );
 
+      const printerCut = pickedUpPrinters.some(
+        (printer) => printer.cutPaper === "not_cut"
+      );
+
+      console.log("printerCut", printerCut);
+      
+      const groupItemsByPrinter = (items) => {
+        return items.reduce((groups, item) => {
+          const printer = printers.find((e) => e?._id === item.printer);
+          const printerIp = printer?.ip || "unknown";
+          if (!groups[printerIp]) {
+            groups[printerIp] = [];
+          }
+          groups[printerIp].push(item);
+          return groups;
+        }, {});
+      };
+
+      const grouped = groupItemsByPrinter(orderSelect);
+
       let arrayPrint = [];
-      for (let index = 0; index < base64ArrayAndPrinter.length; index++) {
-        arrayPrint.push(
-          runPrint(
-            base64ArrayAndPrinter[index].dataUrl,
-            index,
-            base64ArrayAndPrinter[index].printer
-          ).catch((error) => {
-            console.error(`Error printing index ${index}:`, error);
-            return { success: false, message: error.message };
-          })
-        );
-      }
 
-      const results = await Promise.all(arrayPrint);
-      const hasError = results.some((result) => !result.success);
-
-      if (hasError) {
-        Swal.fire({
-          icon: "error",
-          title: `${t("print_fial")}`,
-          showConfirmButton: false,
-          timer: 1500,
-        });
+      if (printerCut) {
+        for (const [printerIp, items] of Object.entries(grouped)) {
+          const _printer = printers.find((e) => e?.ip === printerIp);
+      
+          if (!_printer) {
+            console.error(`No printer found with IP: ${printerIp}`);
+            continue;
+          }
+      
+          try {
+            const base64ArrayAndPrinter = convertHtmlToBase64Group(
+              items,
+              _printer,
+              selectedTable
+            );
+      
+            if (base64ArrayAndPrinter.length > 0) {
+              const { dataUrl, printer } = base64ArrayAndPrinter[0]; // Use the first (and only) base64 image
+      
+             const response = await runPrintGroup(dataUrl, printer);
+             if (response.status === 200) {
+              Swal.fire({
+                        icon: "success",
+                        title: `${t("print_success")}`,
+                        showConfirmButton: false,
+                        timer: 1500,
+                      });
+             }
+            }
+          } catch (err) {
+            console.error(`Failed to print items for printer ${printerIp}:`, err);
+            continue;
+          }
+          setOrders((prevOrders) =>
+            prevOrders.map((order) =>
+              orderSelect.find((o) => o._id === order._id)
+                ? { ...order, isChecked: true } // ຄົງສະຖານະ isChecked
+                : order
+            )
+          );
+        }
       } else {
-        await Swal.fire({
+        const base64ArrayAndPrinter = convertHtmlToBase64(
+          orderSelect,
+          printers,
+          storeDetail,
+          t("total"),
+          t(storeDetail?.firstCurrency)
+        );
+  
+        for (let index = 0; index < base64ArrayAndPrinter.length; index++) {
+          arrayPrint.push(
+            runPrint(
+              base64ArrayAndPrinter[index].dataUrl,
+              index,
+              base64ArrayAndPrinter[index].printer
+            ).catch((error) => {
+              console.error(`Error printing index ${index}:`, error);
+              return { success: false, message: error.message };
+            })
+          );
+        }
+        Swal.fire({
           icon: "success",
           title: `${t("print_success")}`,
           showConfirmButton: false,
           timer: 1500,
         });
+
+        setOrders((prevOrders) =>
+          prevOrders.map((order) =>
+            orderSelect.find((o) => o._id === order._id)
+              ? { ...order, isChecked: true } // ຄົງສະຖານະ isChecked
+              : order
+          )
+        );
       }
+
+      // if (hasNoCut) {
+      //   console.log("hasNoCut");
+      //   printItems(orderSelect, combinedBillRefs, printers).then(
+      //     () => {
+      //       Swal.fire({
+      //         icon: "success",
+      //         title: `${t("print_success")}`,
+      //         showConfirmButton: false,
+      //         timer: 1500,
+      //       });
+      //     }
+      //   );
+      // } 
 
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
@@ -350,7 +430,6 @@ export default function OrderPage() {
             : order
         )
       );
-
       setOnPrinting(false);
       setPrintBackground((prev) => [...prev, ...arrayPrint]);
     } catch (err) {

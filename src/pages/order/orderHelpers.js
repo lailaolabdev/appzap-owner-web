@@ -47,6 +47,8 @@ export const groupItemsByPrinter = (items, printers) => {
       printerGroups[printerIp][tableId][code].push(item);
     }
 
+    console.log("printerGroups", printerGroups);
+
     return printerGroups;
   }, {});
 };
