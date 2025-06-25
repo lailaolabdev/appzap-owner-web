@@ -406,7 +406,7 @@ export default function ConfigPage() {
                     //   disabled: true,
                     // },
                     {
-                      title: `${t("stock_missing")}`,
+                      title: `${t("stock_is_missing")}`,
                       key: "stockMissing",
                       default: false,
                       // disabled: true,
