@@ -14,11 +14,17 @@ export default function NavList({ ActiveKey = "/settingStore/stock" }) {
   const _menuList = () => {
     navigate(`/settingStore/stock/limit/40/page/1/${id}`);
   };
+  const _stockGroup = () => {
+    navigate(`/settingStore/reportStockGroup`);
+  };
   const _category = () => {
     navigate(`/settingStore/stock/category/limit/40/page/1/${id}`);
   };
   const _history = () => {
     navigate(`/settingStore/stock/history/limit/40/page/1/${id}`);
+  };
+  const _historyEdit = () => {
+    navigate(`/settingStore/stock/historyEdit`);
   };
   return (
     <div>
@@ -35,11 +41,11 @@ export default function NavList({ ActiveKey = "/settingStore/stock" }) {
             {t("current_stock")}
           </Nav.Link>
         </Nav.Item>
-        {/* <Nav.Item>
-          <Nav.Link eventKey="/settingStore/stock" onClick={() => _menuList()}>
-            {t("all_stock")}
+        <Nav.Item>
+          <Nav.Link eventKey="/settingStore/stockGroup" onClick={() => _stockGroup()}>
+            {t("stock_transaction")}
           </Nav.Link>
-        </Nav.Item> */}
+        </Nav.Item>
         <Nav.Item>
           <Nav.Link
             eventKey="/settingStore/stock/category"
@@ -54,6 +60,14 @@ export default function NavList({ ActiveKey = "/settingStore/stock" }) {
             onClick={() => _history()}
           >
             {t("stock_history")}
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            eventKey="/settingStore/stock/historyEdit"
+            onClick={() => _historyEdit()}
+          >
+            {t("stock_history_edit")}
           </Nav.Link>
         </Nav.Item>
       </Nav>

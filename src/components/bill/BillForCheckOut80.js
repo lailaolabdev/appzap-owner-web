@@ -486,12 +486,12 @@ export default function BillForCheckOut80({
         {currencyData?.map((item, index) => (
           <Row key={index}>
             <Col xs={7}>
-              <div className="text-right text-[12px] text-gray-400">
+              <div className="text-right text-[16px] font-bold text-gray-400">
                 {item?.currencyCode}:
               </div>
             </Col>
             <Col>
-              <div className="text-right text-[12px] text-gray-400">
+              <div className="text-right text-[16px] font-bold text-gray-400">
                 {moneyCurrency(
                   (total + taxAmount + serviceChargeAmount) / item?.sell
                 )}

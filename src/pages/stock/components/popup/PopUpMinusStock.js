@@ -13,29 +13,47 @@ import { useTranslation } from "react-i18next";
 export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
   const { t } = useTranslation();
 
+  // Predefined reasons for stock deletion
+  const deletionReasons = [
+    { value: "ໝົດອາຍຸ", label: "ໝົດອາຍຸ" },
+    { value: "ເສຍຫາຍ", label: "ເສຍຫາຍ" },
+    { value: "ສົ່ງຄືນ", label: "ສົ່ງຄືນ" },
+    { value: "ສູນຫາຍ", label: "ສູນຫາຍ" },
+    { value: "ຂາຍແລ້ວ", label: "ຂາຍແລ້ວ" },
+    { value: "ໂອນຍ້າຍ", label: "ໂອນຍ້າຍ" },
+    { value: "ມີບັນຫາຄຸນນະພາບ", label: "ມີບັນຫາຄຸນນະພາບ" }
+  ];
+
   return (
     <Modal show={open} onHide={onClose} centered>
       <Modal.Header closeButton>
         <Modal.Title>{t("delete_stock")}</Modal.Title>
       </Modal.Header>
       <Formik
-        initialValues={{}}
+        initialValues={{
+          quantity: "",
+          reason: "",
+          note: ""
+        }}
         validate={(values) => {
           const errors = {};
           const _currentQuantity = data?.quantity;
-          const _minusQuantity = values?.quantity;
+          const _minusQuantity = Number(values?.quantity);
 
-          if (_minusQuantity > _currentQuantity) {
-            errors.quantity = t("quantity_to_delete_incorrect");
-          }
-
-          if (_minusQuantity.toString().includes("-")) {
-            errors.quantity = t("quantity_to_delete_incorrect");
-          }
-
+          // Validate quantity
           if (!values.quantity) {
             errors.quantity = t("please_fill_quantity_to_delete");
+          } else if (_minusQuantity > _currentQuantity) {
+            errors.quantity = t("quantity_to_delete_incorrect");
+          } else if (_minusQuantity <= 0) {
+            errors.quantity = t("quantity_must_be_positive");
           }
+
+          // Validate reason
+          if (!values.reason) {
+            errors.reason = t("please_select_reason");
+          }
+
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
@@ -48,7 +66,11 @@ export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
                 `${END_POINT_SEVER}/v3/stock-export`,
                 {
                   id: data?._id,
-                  data: { quantity: values?.quantity },
+                  data: { 
+                    quantity: Number(values?.quantity),
+                    reason: values?.reason,
+                    note: values?.note || ""
+                  },
                   storeId: _localData?.DATA?.storeId,
                 },
                 { headers: { ...header } }
@@ -82,11 +104,12 @@ export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
         }) => (
           <form onSubmit={handleSubmit}>
             <Modal.Body>
-              <Form.Group controlId="exampleForm.ControlSelect1">
+              <Form.Group controlId="productName">
                 <Form.Label>{t("product_name")}</Form.Label>
                 <Form.Control type="text" value={data?.name || "-"} disabled />
               </Form.Group>
-              <Form.Group controlId="exampleForm.ControlSelect1">
+              
+              <Form.Group controlId="productType">
                 <Form.Label>{t("product_type")}</Form.Label>
                 <Form.Control
                   type="text"
@@ -94,7 +117,8 @@ export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
                   disabled
                 />
               </Form.Group>
-              <Form.Group controlId="exampleForm.ControlInput1">
+              
+              <Form.Group controlId="currentStock">
                 <Form.Label>{t("current_stock")}</Form.Label>
                 <Form.Control
                   type="number"
@@ -102,7 +126,8 @@ export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
                   disabled
                 />
               </Form.Group>
-              <Form.Group controlId="exampleForm.ControlInput1">
+              
+              <Form.Group controlId="quantityToDelete">
                 <Form.Label>{t("quantity_to_delete")}</Form.Label>
                 <Form.Control
                   type="number"
@@ -111,23 +136,59 @@ export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
                   onBlur={handleBlur}
                   value={values.quantity}
                   placeholder={t("quantity")}
-                  isInvalid={errors.quantity}
+                  isInvalid={touched.quantity && errors.quantity}
                 />
-                {errors && errors.quantity}
+                {touched.quantity && errors.quantity && (
+                  <Form.Control.Feedback type="invalid">
+                    {errors.quantity}
+                  </Form.Control.Feedback>
+                )}
               </Form.Group>
-              <Form.Group controlId="exampleForm.ControlInput1">
+
+              <Form.Group controlId="deletionReason">
+                <Form.Label>{t("reason")} *</Form.Label>
+                <Form.Control
+                  as="select"
+                  name="reason"
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  value={values.reason}
+                  isInvalid={touched.reason && errors.reason}
+                >
+                  <option value="">{t("select_reason")}</option>
+                  {deletionReasons.map((reason) => (
+                    <option key={reason.value} value={reason.value}>
+                      {reason.label}
+                    </option>
+                  ))}
+                </Form.Control>
+                {touched.reason && errors.reason && (
+                  <Form.Control.Feedback type="invalid">
+                    {errors.reason}
+                  </Form.Control.Feedback>
+                )}
+              </Form.Group>
+              
+              <Form.Group controlId="additionalNote">
                 <Form.Label>{t("note")}</Form.Label>
                 <Form.Control
-                  type="text"
+                  as="textarea"
+                  rows={3}
                   name="note"
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.note}
-                  placeholder={t("note_")}
-                  isInvalid={errors.note}
+                  placeholder={t("note")}
+                  isInvalid={touched.note && errors.note}
                 />
+                {touched.note && errors.note && (
+                  <Form.Control.Feedback type="invalid">
+                    {errors.note}
+                  </Form.Control.Feedback>
+                )}
               </Form.Group>
             </Modal.Body>
+            
             <Modal.Footer>
               <input
                 className="btn btn-danger"
@@ -144,7 +205,7 @@ export default function PopUpAddStock({ open, onClose, data = {}, callback }) {
                 disabled={isSubmitting}
                 onClick={handleSubmit}
               >
-                {t("delete_from_stock")}
+                {isSubmitting ? t("processing") : t("delete_from_stock")}
               </Button>
             </Modal.Footer>
           </form>

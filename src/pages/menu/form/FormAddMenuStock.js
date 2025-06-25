@@ -21,6 +21,7 @@ import { get, update } from "lodash";
 import { updateMenuStockAmount } from "../../../services/menu";
 import { moneyCurrency } from "../../../helpers";
 import { useStoreStore } from "../../../zustand/storeStore";
+import { useMenuStore } from "../../../zustand/menuStore";
 import Swal from "sweetalert2";
 import {
   deleteStockMenu,
@@ -53,6 +54,7 @@ export default function FormAddMenuStock() {
   const [file, setFile] = useState();
   const [imageLoading, setImageLoading] = useState("");
   const [selectCategories, setSelectCategories] = useState("");
+  const { updateMenuItem, getMenus } = useMenuStore();
 
   const handleUpload = async (event) => {
     // setImageLoading("");
@@ -174,16 +176,18 @@ export default function FormAddMenuStock() {
       const res = await updateMenuStockAmount(id, data);
       if (res.status === 200) {
         getMenuStock(id);
+        getMenus();
       }
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleDeleteMenuStock = async (id) => {
+  const handleDeleteMenuStock = async (id, menuId, stockId) => {
     try {
-      const res = await deleteStockMenu(id);
+      const res = await deleteStockMenu(id, menuId, stockId);
       if (res.status === 200) {
+        getMenus();
         Swal.fire({
           icon: "success",
           title: `${t("delete_success")}`,
@@ -291,7 +295,7 @@ export default function FormAddMenuStock() {
     }
   };
   // ------------------------------------------------------------ //
-
+  console.log("menuStocks", menuStocks);
   useEffect(() => {
     const getData = async () => {
       // getCategory();
@@ -458,7 +462,7 @@ export default function FormAddMenuStock() {
                               ...prev.filter((e, i) => i !== index),
                             ]);
                             if (data?._id) {
-                              handleDeleteMenuStock(data?._id);
+                              handleDeleteMenuStock(data?._id, data?.menuId._id, data?.stockId._id);
                             }
                           }}
                         />

@@ -82,6 +82,20 @@ export const updateSettingDelivery = async (settingId, dataUpdate) => {
     return error;
   }
 };
+export const updateSettingStockMissing = async (id, dataUpdate) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v4/store-stock-missing/update`;
+    const res = await axios.put(
+      url,
+      { id: id, data: dataUpdate },
+      { headers: _header }
+    );
+    return res.data;
+  } catch (error) {
+    return error;
+  }
+};
 export const updateSettingShift = async (settingId, dataUpdate) => {
   try {
     const _header = await getHeaders();
