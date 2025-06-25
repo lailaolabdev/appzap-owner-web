@@ -291,8 +291,6 @@ function AddOrder() {
       e?.categoryId?._id === selectedCategory
   );
 
-  console.log({ afterSearch });
-  console.log({ menuStock });
 
   const arrLength = selectedMenu?.length;
   const billForCher80 = useRef([]);
@@ -477,8 +475,6 @@ function AddOrder() {
 
         // Content: Item Note
         if (data?.note) {
-          console.log("data", data);
-          console.log("note", data.note);
 
           const noteLabel = "note: ";
           const noteText = data.note;
@@ -507,6 +503,7 @@ function AddOrder() {
         }
 
         // Options
+        
         if (data.options && data.options.length > 0) {
           context.fillStyle = "#000";
           context.font = "24px NotoSansLao, Arial, sans-serif";
@@ -514,8 +511,7 @@ function AddOrder() {
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
               : "";
-            const optionText = `- ${option?.name}${optionPriceText} x ${option?.quantity || 1
-              }`;
+            const optionText = `- ${option?.name}${optionPriceText} ${option?.quantity !== 1 ? 'x' : ''} ${option?.quantity !== 1 ? option?.quantity : ""}`;
             yPosition = wrapText(
               context,
               optionText,
@@ -599,8 +595,6 @@ function AddOrder() {
 
         // Convert canvas to base64
         const dataUrl = canvas.toDataURL("image/png");
-
-        console.log("dataUrl", dataUrl);
 
         const printer = printers.find((e) => e?._id === data?.printer);
         if (printer) base64ArrayAndPrinter.push({ dataUrl, printer });
@@ -697,8 +691,6 @@ function AddOrder() {
     return calculateDiscount(menu) + optionsTotalPrice;
   };
 
-  console.log(selectedItem);
-
 
 
   const handleConfirmOptions = () => {
@@ -766,10 +758,6 @@ function AddOrder() {
           updatedMenu[existingMenuIndex].quantity +
           totalOptionPrice;
 
-        console.log(
-          "🆙 Updated Existing Menu:",
-          updatedMenu[existingMenuIndex]
-        );
       } else {
         updatedMenu.push(mainMenuData);
       }
@@ -2092,7 +2080,7 @@ function AddOrder() {
                       onSubmit(true);
                     }}
                   >
-                    {t("order_and_send_to_kitchen ໂ")} +{" "}
+                    {t("order_and_send_to_kitchen")} +{" "}
                     <FontAwesomeIcon
                       icon={faCashRegister}
                       style={{ color: "#fff" }}

@@ -218,7 +218,7 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
           if (item.options && item.options.length > 0) {
             context.font = "24px NotoSansLao, Arial, sans-serif";
             item.options.forEach((option) => {
-              const optionText = `- ${option.name} ${option.price ? `- ${option.price}` : ""} ${option.quantity ? 'x' : ''} ${option.quantity || ""}`;
+              const optionText = `- ${option.name} ${option.price ? `- ${option.price}` : ""} ${option.quantity !== 1 ? 'x' : ''} ${option.quantity !== 1 ? option.quantity : ""}`;
               const optionFinalY = wrapText(
                 context,
                 optionText,
@@ -227,7 +227,7 @@ const convertHtmlToBase64 = (items, printer, selectedTable) => {
                 maxTextWidth - 20, // Slightly less width for options
                 28
               );
-              itemYPosition = optionFinalY + 15; // Add more space after each option
+              itemYPosition = optionFinalY + 25; // Add more space after each option
   
               // Add the option price to the total
               totalPrice += (option.price || 0) * (option.quantity || 1);

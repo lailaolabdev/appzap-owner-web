@@ -184,7 +184,7 @@ export const convertHtmlToBase64Group = (items, printer, selectedTable) => {
               maxTextWidth - 20, // Slightly less width for options
               28
             );
-            itemYPosition = optionFinalY + 15; // Add more space after each option
+            itemYPosition = optionFinalY + 25; // Add more space after each option
 
             // Add the option price to the total
             totalPrice += (option.price || 0) * (option.quantity || 1);
