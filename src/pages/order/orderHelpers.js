@@ -47,6 +47,8 @@ export const groupItemsByPrinter = (items, printers) => {
       printerGroups[printerIp][tableId][code].push(item);
     }
 
+    console.log("printerGroups", printerGroups);
+
     return printerGroups;
   }, {});
 };
@@ -148,7 +150,7 @@ export const convertHtmlToBase64 = (
 
         yPosition += 10;
       }
-
+      console.log("options", data.options);
       if (data.options && data.options.length > 0) {
         context.fillStyle = "#000";
         context.font = "24px NotoSansLao, Arial, sans-serif";
@@ -156,9 +158,11 @@ export const convertHtmlToBase64 = (
           const optionPriceText = option?.price
             ? ` - ${moneyCurrency(option?.price)}`
             : "";
-          const optionText = `- ${option?.name}${optionPriceText} ${option?.quantity === undefined ? "" : "x"} ${
-            option?.quantity ?? ""
-          }`;
+          const optionText = `- ${option?.name}${optionPriceText} ${
+            option?.quantity === undefined || option?.quantity === 1
+              ? ""
+              : "x "
+          }${option?.quantity === undefined || option?.quantity === 1 ? "" : option?.quantity}`;
           yPosition = wrapText(
             context,
             optionText,
