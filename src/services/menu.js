@@ -18,6 +18,7 @@ export const getMenusByStoreId = async (storeId) => {
   try {
     const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menus?storeId=${storeId}`;
     const res = await axios.get(url);
+    console.log("RES:", res);
     return res.data;
   } catch (error) {
     return error;

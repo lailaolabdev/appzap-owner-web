@@ -61,6 +61,7 @@ import { useStoreStore } from "../../zustand/storeStore";
 import { useMenuStore } from "../../zustand/menuStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
 import theme from "../../theme";
+import { getMenuStock, getStocksAll } from "../../services/stocks";
 
 function AddOrder() {
   const { state } = useLocation();
@@ -97,6 +98,7 @@ function AddOrder() {
 
   const [combinedBillRefs, setCombinedBillRefs] = useState({});
   const [groupedItems, setGroupedItems] = useState({});
+  const [menuStock, setMenuStock] = useState([]);
 
   const { shiftCurrent } = useShiftStore();
 
@@ -185,7 +187,7 @@ function AddOrder() {
       if (
         data?.id === i?.id &&
         JSON.stringify(sortedDataOptionsForComparison) ===
-          JSON.stringify(sortedItemOptionsForComparison)
+        JSON.stringify(sortedItemOptionsForComparison)
       ) {
         _data = { ..._data, quantity: (_data?.quantity || 0) + int };
       }
@@ -249,6 +251,22 @@ function AddOrder() {
       }
     };
 
+    const getStockData = async () => {
+      try {
+        let findBy = "";
+        findBy += "?";
+        findBy += "storeId=" + storeDetail._id;
+        const stock = await getMenuStock(findBy);
+        if (stock.status === 200) {
+          setMenuStock(stock?.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+
+    };
+
+    getStockData();
     fetchData();
   }, [
     menus,
@@ -258,7 +276,9 @@ function AddOrder() {
     setMenus,
     setMenuCategories,
     isMenuLoading,
+
   ]);
+
 
   const ShowCounterApp =
     profile?.data?.role === "APPZAP_COUNTER" ? true : false;
@@ -270,6 +290,9 @@ function AddOrder() {
       (e?.name?.indexOf(search) > -1 && selectedCategory === "All") ||
       e?.categoryId?._id === selectedCategory
   );
+
+  console.log({ afterSearch });
+  console.log({ menuStock });
 
   const arrLength = selectedMenu?.length;
   const billForCher80 = useRef([]);
@@ -491,9 +514,8 @@ function AddOrder() {
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
               : "";
-            const optionText = `- ${option?.name}${optionPriceText} x ${
-              option?.quantity || 1
-            }`;
+            const optionText = `- ${option?.name}${optionPriceText} x ${option?.quantity || 1
+              }`;
             yPosition = wrapText(
               context,
               optionText,
@@ -675,6 +697,10 @@ function AddOrder() {
     return calculateDiscount(menu) + optionsTotalPrice;
   };
 
+  console.log(selectedItem);
+
+
+
   const handleConfirmOptions = () => {
     const filteredOptions =
       selectedOptionsArray[selectedItem._id]?.filter(
@@ -727,7 +753,7 @@ function AddOrder() {
         return (
           item.id === selectedItem._id &&
           JSON.stringify(sortedItemOptionsForComparison) ===
-            JSON.stringify(sortedFilteredOptionsForComparison)
+          JSON.stringify(sortedFilteredOptionsForComparison)
         );
       });
 
@@ -737,7 +763,7 @@ function AddOrder() {
         updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
         updatedMenu[existingMenuIndex].totalPrice =
           updatedMenu[existingMenuIndex].price *
-            updatedMenu[existingMenuIndex].quantity +
+          updatedMenu[existingMenuIndex].quantity +
           totalOptionPrice;
 
         console.log(
@@ -822,6 +848,19 @@ function AddOrder() {
   };
 
   const addToCart = async (menu) => {
+    const checkStock = storeDetail?.isStockMissing === true;
+    if (checkStock) {
+      const checkQuantity = menu?.stockId?.find((item) => item?.quantity <= 0);
+      if (checkQuantity) {
+        Swal.fire({
+          icon: "warning",
+          title: t("stock_is_missing"),
+          showConfirmButton: false,
+          timer: 1500,  
+        });
+        return;
+      }
+    }
     const _menuOptions = _checkMenuOption(menu);
     let updatedSelectedMenus = [...selectedMenu];
 
@@ -1179,6 +1218,8 @@ function AddOrder() {
     setEditComments(values?.note);
   };
 
+
+
   const handleAddCommentInCart = () => {
     let dataArray = [];
     for (const i of selectedMenu) {
@@ -1468,9 +1509,9 @@ function AddOrder() {
                         </span>
                       )} */}
                       {data?.promotionId?.length > 0 &&
-                      data.promotionId.some(
-                        (promotion) => promotion?.status === "ACTIVE"
-                      ) ? (
+                        data.promotionId.some(
+                          (promotion) => promotion?.status === "ACTIVE"
+                        ) ? (
                         data.promotionId
                           .filter((promotion) => promotion?.status === "ACTIVE")
                           .map((promotion, index) => {
@@ -1506,7 +1547,7 @@ function AddOrder() {
                                               promotion?.discountValue
                                             )}{" "}
                                             {promotion?.discountType ===
-                                            "PERCENTAGE"
+                                              "PERCENTAGE"
                                               ? "%"
                                               : storeDetail?.firstCurrency}
                                           </span>
@@ -1562,12 +1603,14 @@ function AddOrder() {
                     </div>
                     <div className="bg-white h-full text-gray-700 relative px-2 py-1">
                       <span className="text-sm">{data?.name}</span>
+                      <span className="text-sm">{"pkay"}</span>
+
                       <br />
 
                       {data?.promotionId?.length > 0 &&
-                      data.promotionId.some(
-                        (promotion) => promotion?.status === "ACTIVE"
-                      ) ? (
+                        data.promotionId.some(
+                          (promotion) => promotion?.status === "ACTIVE"
+                        ) ? (
                         data.promotionId
                           .filter((promotion) => promotion?.status === "ACTIVE")
                           .map((promotion, index) => {
@@ -1603,7 +1646,7 @@ function AddOrder() {
                                               promotion?.discountValue
                                             )}{" "}
                                             {promotion?.discountType ===
-                                            "PERCENTAGE"
+                                              "PERCENTAGE"
                                               ? "%"
                                               : storeDetail?.firstCurrency}
                                           </span>
@@ -1634,6 +1677,7 @@ function AddOrder() {
                           {storeDetail?.firstCurrency}
                         </span>
                       )}
+
                     </div>
                   </div>
                 ))
@@ -1657,11 +1701,12 @@ function AddOrder() {
                   </div>
                   <div className="bg-white h-full text-gray-700 relative px-2 py-1">
                     <span className="text-sm">{data?.name}</span>
+
                     <br />
                     {data?.promotionId?.length > 0 &&
-                    data.promotionId.some(
-                      (promotion) => promotion?.status === "ACTIVE"
-                    ) ? (
+                      data.promotionId.some(
+                        (promotion) => promotion?.status === "ACTIVE"
+                      ) ? (
                       data.promotionId
                         .filter((promotion) => promotion?.status === "ACTIVE")
                         .map((promotion, index) => {
@@ -1694,7 +1739,7 @@ function AddOrder() {
                                             promotion?.discountValue
                                           )}{" "}
                                           {promotion?.discountType ===
-                                          "PERCENTAGE"
+                                            "PERCENTAGE"
                                             ? "%"
                                             : storeDetail?.firstCurrency}
                                         </span>
@@ -1724,7 +1769,15 @@ function AddOrder() {
                         {moneyCurrency(data?.price)}{" "}
                         {storeDetail?.firstCurrency}
                       </span>
+
                     )}
+                    <div className="flex items-end justify-end mt-2 flex-col space-y-1">
+                      {data?.stockId?.map((item, index) => (
+                        <span key={index} className="font-bold text-red-500 text-[14px]">
+                          {`${item?.name} x ${item?.quantity}`}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
               ))
@@ -1776,12 +1829,12 @@ function AddOrder() {
                         const optionsString =
                           data.options && data.options.length > 0
                             ? data.options
-                                .map((option) =>
-                                  option.quantity > 1
-                                    ? `[${option.quantity} x ${option.name}]`
-                                    : `[${option.name}]`
-                                )
-                                .join(" ")
+                              .map((option) =>
+                                option.quantity > 1
+                                  ? `[${option.quantity} x ${option.name}]`
+                                  : `[${option.name}]`
+                              )
+                              .join(" ")
                             : "";
 
                         return (
@@ -2146,10 +2199,10 @@ function AddOrder() {
                     (selectedOption) => selectedOption._id === option._id
                   )?.quantity >= 1
                     ? {
-                        backgroundColor: "#fd8b66",
-                        borderRadius: "5px",
-                        padding: 5,
-                      }
+                      backgroundColor: "#fd8b66",
+                      borderRadius: "5px",
+                      padding: 5,
+                    }
                     : {}
                 }
               >

@@ -1259,5 +1259,6 @@
   "createdBy":"បង្កើតដោយ",
   "createdAt":"បង្កើតក្នុង",  
   "updatedAt":"កែប្រែក្នុង",
-  "updatedBy":"កែប្រែដោយ"
+  "updatedBy":"កែប្រែដោយ",
+  "stock_is_missing":"ស៊ុកមិនមាន"
 }

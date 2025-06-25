@@ -1395,5 +1395,6 @@
   "createdBy":"Created By",
   "createdAt":"Created At",
   "updatedAt":"Updated At",
-  "updatedBy": "Updated By"
+  "updatedBy": "Updated By",
+  "stock_is_missing":"Stock quantity is 0"
 }
