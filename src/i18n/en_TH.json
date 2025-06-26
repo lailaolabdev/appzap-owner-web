@@ -1266,5 +1266,6 @@
   "createdAt":"สร้างวันที่",
   "updatedAt":"อัปเดตวันที่",
   "updatedBy":"อัปเดตโดย",
-  "stock_is_missing":"สต็อกไม่มี"
+  "stock_is_missing":"สต็อกไม่มี",
+  "status_is_served":"สถานะเป็นเสร็จแล้ว"
 }

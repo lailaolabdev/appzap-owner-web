@@ -1612,7 +1612,6 @@ export default function TableList() {
         await calculateTotalBillV7(updatedOrderItems);
         ableToCheckoutFunc(updatedOrderItems);
         setIsServerdLoading(false);
-
         // Optionally, update other states based on your requirements
         // e.g., Update waiting count or trigger a re-fetch for fresh data
         const count = await getCountOrderWaiting(storeId);
@@ -1680,7 +1679,7 @@ export default function TableList() {
     const storeId = storeDetail?._id;
     let menuId;
     const _updateItems = isCheckedOrderItem
-      ?.filter((e) => e?.isChecked)
+      ?.filter((e) => e?.isChecked && e?.status !== "SERVED")
       .map((i) => {
         return {
           status: status,
@@ -1689,6 +1688,15 @@ export default function TableList() {
           name: i?.name,
         };
       });
+    if (_updateItems.length === 0) {
+      Swal.fire({
+        icon: "warning",
+        title: `${t("status_is_served")}`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      return;
+    }
     const _resOrderUpdate = await updateOrderItem(
       _updateItems,
       storeId,
@@ -1723,9 +1731,22 @@ export default function TableList() {
     const storeId = storeDetail?._id;
     // let previousStatus = orderItems[0].status;
     let menuId;
+    // Find all items with status "SERVED"
     const _updateItems = isCheckedOrderItem
       ?.filter((e) => e?.isChecked)
       .map((i) => {
+        if (i?.status === "SERVED") {
+          return {
+            status: status,
+            _id: i?._id,
+            menuId: i?.menuId,
+            name: i?.name,
+            isServed: true,
+            quantity: i?.quantity,
+            price: i?.price,
+          };
+        }
+        // Otherwise, return the normal object
         return {
           status: status,
           _id: i?._id,
@@ -1735,7 +1756,6 @@ export default function TableList() {
           price: i?.price,
         };
       });
-    console.log("logs body: --> ", isCheckedOrderItem);
 
     const _resOrderUpdate = await updateOrderItemV7(
       _updateItems,
@@ -1744,7 +1764,8 @@ export default function TableList() {
       seletedCancelOrderItem,
       selectedTable
     );
-    if (_resOrderUpdate?.data?.message === "UPDATE_ORDER_SUCCESS") {
+
+    if (_resOrderUpdate?.status === 200) {
       handleClose1();
       reLoadData();
       setCheckedBox(!checkedBox);
@@ -2719,7 +2740,7 @@ export default function TableList() {
                                     <Checkbox
                                       disabled={
                                         orderItem?.status === "CANCELED" ||
-                                        orderItem?.status === "PAID" 
+                                        orderItem?.status === "PAID"
                                       }
                                       name="checked"
                                       checked={orderItem?.isChecked || false}
