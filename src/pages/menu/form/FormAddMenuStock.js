@@ -54,7 +54,7 @@ export default function FormAddMenuStock() {
   const [file, setFile] = useState();
   const [imageLoading, setImageLoading] = useState("");
   const [selectCategories, setSelectCategories] = useState("");
-  const { updateMenuItem, getMenus } = useMenuStore();
+  const { updateMenuItem, getMenus, clearMenus } = useMenuStore();
 
   const handleUpload = async (event) => {
     // setImageLoading("");
@@ -176,7 +176,7 @@ export default function FormAddMenuStock() {
       const res = await updateMenuStockAmount(id, data);
       if (res.status === 200) {
         getMenuStock(id);
-        getMenus();
+        clearMenus();
       }
     } catch (error) {
       console.log(error);

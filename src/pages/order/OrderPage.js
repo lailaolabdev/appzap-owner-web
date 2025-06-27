@@ -195,6 +195,8 @@ export default function OrderPage() {
         seletedCancelOrderItem,
       }));
 
+      console.log("After update:", _updateItems);
+
       const uniqueBillIds = [
         ...new Set(_updateItems.map((item) => item.billId)),
       ];

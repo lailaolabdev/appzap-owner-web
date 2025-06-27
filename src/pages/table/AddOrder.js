@@ -1760,11 +1760,12 @@ function AddOrder() {
 
                     )}
                     <div className="flex items-end justify-end mt-2 flex-col space-y-1">
-                      {data?.stockId?.map((item, index) => (
-                        <span key={index} className="font-bold text-red-500 text-[14px]">
-                          {`${item?.name} x ${item?.quantity}`}
-                        </span>
-                      ))}
+                      {Array.isArray(data?.stockId) &&
+                        data?.stockId?.map((item, index) => (
+                          <span key={index} className="font-bold text-red-500 text-[14px]">
+                            {`${item?.name} x ${item?.quantity}`}
+                          </span>
+                        ))}
                     </div>
                   </div>
                 </div>
@@ -2055,7 +2056,7 @@ function AddOrder() {
                       onSubmit(true);
                     }}
                   >
-                    {t("order_and_send_to_kitchen ຟ")} +{" "}
+                    {t("order_and_send_to_kitchen")} +{" "}
                     <FontAwesomeIcon
                       icon={faCashRegister}
                       style={{ color: "#fff" }}
