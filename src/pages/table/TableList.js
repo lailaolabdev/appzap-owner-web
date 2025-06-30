@@ -212,6 +212,8 @@ export default function TableList() {
   const { setSelectedDataBill, clearSelectedDataBill } = usePaymentStore();
   const { setPointStore, PointStore } = usePointStore();
 
+  let updatedOrderItems = [];
+
   const reLoadData = () => {
     setReload(true);
   };
@@ -336,6 +338,7 @@ export default function TableList() {
 
   useEffect(() => {
     ableToCheckoutFunc(isCheckedOrderItem);
+    setIsCheckedOrderItem(isCheckedOrderItem);
   }, [isCheckedOrderItem]);
 
   const getUserData = async () => {
@@ -346,14 +349,6 @@ export default function TableList() {
       .then((response) => response.json())
       .then((json) => setuserData(json));
     // setIsLoading(false);
-  };
-
-  const getDataTax = async () => {
-    const { DATA } = await getLocalData();
-    const _res = await axios.get(
-      END_POINT_SEVER_TABLE_MENU + "/v4/tax/" + DATA?.storeId
-    );
-    setTaxPercent(_res?.data?.taxPercent);
   };
 
   const getDataServiceCharge = async () => {
@@ -833,14 +828,7 @@ export default function TableList() {
         serviceChargePer: 0,
         isServiceCharge: false,
       });
-      // update bill status to call check out
-      // callCheckOutPrintBillOnly(selectedTable?._id);
-      // callPayBeforePrintBillOnly(selectedTable?._id);
-      // orderPayBefore.length > 0
-      //   ? updateTablePayBefore()
-      //   : callCheckOutPrintBillOnly(selectedTable?._id);
-      // setSelectedTable();
-      // setOrderPayBefore([]);
+
       getTableDataStore();
       if (zoneId) {
         getTableDataStore({ zone: zoneId });
@@ -870,19 +858,6 @@ export default function TableList() {
       return err;
     }
   };
-
-  // const updateTablePayBefore = async () => {
-  //   const orderItem =
-  //     orderPayBefore.length > 0 ? orderPayBefore?.map((e) => e?._id) : [];
-  //   const checkStatus = orderPayBefore.length > 0 ? "false" : "";
-  //   const checkStatusBill = orderPayBefore.length > 0 ? "PRINTBILL" : "";
-  //   const body = {
-  //     orderPayBefore: orderItem,
-  //     isCheckout: checkStatus,
-  //     status: checkStatusBill,
-  //   };
-  //   callToUpdatePrintBillBefore(selectedTable?.billId, body);
-  // };
 
   useEffect(() => {
     getTableDataStore();
@@ -1470,7 +1445,6 @@ export default function TableList() {
         console.log(err);
         if (_index === 0) {
           setOnPrinting(false);
-          return { error: true, err };
           await Swal.fire({
             icon: "error",
             title: "ປິ້ນບໍ່ສຳເລັດ",
@@ -1537,6 +1511,9 @@ export default function TableList() {
       });
       setOrderPayBefore({ ...orderPayBefore, _newOrderItems });
     }
+    console.log("_newOrderItems", _newOrderItems);
+    console.log("tableOrderItems", tableOrderItems);
+    console.log("isCheckedOrderItem", isCheckedOrderItem);
 
     setCheckedBox(!checkedBox);
     setOrderPayBefore(!checkedBox);
@@ -1588,8 +1565,8 @@ export default function TableList() {
         });
 
         // 1. Optimistically update the order list in the state (Update the status to "SERVED")
-        const updatedOrderItems = isCheckedOrderItem.map((item) => {
-          console.log("OrderItems", item);
+        updatedOrderItems = isCheckedOrderItem.map((item) => {
+          // console.log("OrderItems", item);
           // Check if the item is checked, and update its status
           const updatedItem = {
             ...item,
@@ -1606,8 +1583,11 @@ export default function TableList() {
           return updatedItem;
         });
 
-        setIsCheckedOrderItem(updatedOrderItems); // Update state
+        console.log("Before state update:", isCheckedOrderItem);
 
+        setIsCheckedOrderItem(updatedOrderItems);
+
+        console.log("After state update:", updatedOrderItems); // Update state
         // 2. Update total price immediately for the served items
         await calculateTotalBillV7(updatedOrderItems);
         ableToCheckoutFunc(updatedOrderItems);
@@ -1986,13 +1966,6 @@ export default function TableList() {
     }
   };
 
-  const canCheckOut = !tableOrderItems.find(
-    (e) =>
-      e?.status === "DOING" ||
-      e?.status === "WAITING" ||
-      e?.tableOrderItems?.length === 0
-  )?._id;
-
   const getDataZone = async () => {
     try {
       const header = await getHeaders();
@@ -2022,68 +1995,11 @@ export default function TableList() {
     }
   };
 
-  const handleUpdateOrderStatus = async (status) => {
-    try {
-      if (status === "SERVED") setIsServerdLoading(true);
-      const storeId = storeDetail?._id;
-      let menuId;
-      let _updateItems = isCheckedOrderItem
-        ?.filter((e) => e?.isChecked)
-        .map((i) => {
-          return {
-            status: status,
-            _id: i?._id,
-            menuId: i?.menuId,
-          };
-        });
-      let _resOrderUpdate = await updateOrderItem(
-        _updateItems,
-        storeId,
-        menuId,
-        seletedCancelOrderItem,
-        selectedTable
-      );
-      if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
-        reLoadData();
-        setCheckedBox(!checkedBox);
-        Swal.fire({
-          icon: "success",
-          title: `${t("update_order_status_success")}`,
-          showConfirmButton: false,
-          timer: 2000,
-        });
-        let _newOrderItems = isCheckedOrderItem.map((item) => {
-          return {
-            ...item,
-            isChecked: false,
-          };
-        });
-        setIsCheckedOrderItem(_newOrderItems);
-
-        const count = await getCountOrderWaiting(storeId);
-        setCountOrderWaiting(count || 0);
-        setIsServerdLoading(false);
-      } else {
-        setIsServerdLoading(false);
-      }
-    } catch (error) {
-      setIsServerdLoading(false);
-      console.log(error);
-    }
-  };
-
   const handleConfirmCloseTable = async () => {
     setOpenConfirmCloseTable(false);
     _checkBillOrdering();
     // onPrintBill();
   };
-
-  const isCheckedOrderItemPaid = isCheckedOrderItem.filter(
-    (item) =>
-      item?.status === "SERVED" ||
-      item?.status === "DOING" ||
-      item?.status === "WAITING"
-  );
 
   const getSelectedZoneText = () => {
     if (zoneId === "ALL") {
