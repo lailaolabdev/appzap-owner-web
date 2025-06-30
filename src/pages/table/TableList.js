@@ -196,6 +196,7 @@ export default function TableList() {
     setbillSplitOldId,
     // billSplitNewId,
     // billSplitOldId,
+    setTableOrderItems,
     userCallCheckout,
     setUserCallCheckout,
     isWaitingCheckout,
@@ -1591,6 +1592,7 @@ export default function TableList() {
         // 2. Update total price immediately for the served items
         await calculateTotalBillV7(updatedOrderItems);
         ableToCheckoutFunc(updatedOrderItems);
+        setTableOrderItems(updatedOrderItems);
         setIsServerdLoading(false);
         // Optionally, update other states based on your requirements
         // e.g., Update waiting count or trigger a re-fetch for fresh data
