@@ -572,7 +572,7 @@ export default function CheckOutPopup({
 
       if (storeDetail?.isCRM && tab === "cash_transfer_point") {
         try {
-          // await RedeemPointUser();
+          await RedeemPointUser();
         } catch (err) {
           if (err?.response?.data.isExpire) {
             Swal.fire({
