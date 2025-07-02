@@ -40,10 +40,10 @@ function PopUpAddMenuOption({
     deleteMenuOption,
   } = useMenuStore();
 
+  const storeId = getTokken?.DATA?.storeId;
+
   useEffect(() => {
     if (showSetting && detailMenu) {
-      const storeId = getTokken?.DATA?.storeId;
-
       const fetchAllMenuOptions = async () => {
         try {
           const response = await axios.get(
@@ -81,7 +81,7 @@ function PopUpAddMenuOption({
   const handleAddOption = async (optionId) => {
     setLoadingOptionId(optionId);
     try {
-      await addMunuOption(detailMenu.data._id, optionId);
+      await addMunuOption(storeId, detailMenu.data._id, optionId);
       const updatedOptions = await axios.get(
         END_POINT_SEVER_TABLE_MENU +
           `/v3/menu/${detailMenu.data._id}/menu-options`
@@ -103,7 +103,7 @@ function PopUpAddMenuOption({
   const handleDeleteOption = async (optionId) => {
     setLoadingOptionId(optionId);
     try {
-      await deleteMenuOption(detailMenu.data._id, optionId);
+      await deleteMenuOption(storeId, detailMenu.data._id, optionId);
       const updatedOptions = await axios.get(
         END_POINT_SEVER_TABLE_MENU +
           `/v3/menu/${detailMenu.data._id}/menu-options`
@@ -127,7 +127,7 @@ function PopUpAddMenuOption({
     try {
       for (const option of allMenuOptions) {
         if (!isSpecificOption(option._id)) {
-          await addMunuOption(detailMenu.data._id, option._id);
+          await addMunuOption(storeId, detailMenu.data._id, option._id);
         }
       }
       const updatedOptions = await axios.get(
@@ -152,7 +152,7 @@ function PopUpAddMenuOption({
     setIsRemovingAll(true);
     try {
       for (const option of specificMenuOptions) {
-        await deleteMenuOption(detailMenu.data._id, option._id);
+        await deleteMenuOption(storeId, detailMenu.data._id, option._id);
       }
       const updatedOptions = await axios.get(
         END_POINT_SEVER_TABLE_MENU +

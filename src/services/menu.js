@@ -140,9 +140,9 @@ export const deleteMenuData = async (menuId) => {
   }
 };
 
-export const addMenuOption = async (id, optionId) => {
+export const addMenuOption = async (storeId, id, optionId) => {
   try {
-    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu/${id}/menu-option/${optionId}/add`;
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu/${storeId}/${id}/menu-option/${optionId}/add`;
     const res = await axios.post(url, {
       headers: await getHeaders(),
     });
@@ -152,9 +152,9 @@ export const addMenuOption = async (id, optionId) => {
   }
 };
 
-export const deleteMenuOption = async (id, optionId) => {
+export const deleteMenuOption = async (storeId, id, optionId) => {
   try {
-    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu/${id}/menu-option/${optionId}/remove`;
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu/${storeId}/${id}/menu-option/${optionId}/remove`;
     const res = await axios.delete(url, {
       headers: await getHeaders(),
     });
