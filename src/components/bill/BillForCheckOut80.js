@@ -96,10 +96,6 @@ export default function BillForCheckOut80({
     return 0;
   })();
 
-  useEffect(() => {
-    getDataCurrency();
-  }, []);
-
   const _calculateTotal = () => {
     let _total = 0;
 
@@ -153,7 +149,21 @@ export default function BillForCheckOut80({
 
   useEffect(() => {
     _calculateTotal();
+    getDataCurrency();
+  }, []);
+
+  useEffect(() => {
+    _calculateTotal();
   }, [dataBill?.discount]);
+
+  // console.log("TotalAfterDiscount:", totalAfterDiscount);
+  // console.log("taxAmount:", taxAmount);
+  // console.log("serviceChargeAmount:", serviceChargeAmount);
+  // console.log(
+  //   "SelectedDataBill?.pointToMoney:",
+  //   SelectedDataBill?.pointToMoney
+  // );
+  // console.log("total", total);
 
   const getDataCurrency = async () => {
     try {
@@ -473,10 +483,11 @@ export default function BillForCheckOut80({
             >
               {moneyCurrency(
                 Math.floor(
-                  totalAfterDiscount +
-                    taxAmount +
-                    serviceChargeAmount -
-                    SelectedDataBill?.pointToMoney
+                  totalAfterDiscount ||
+                    total +
+                      taxAmount +
+                      serviceChargeAmount -
+                      SelectedDataBill?.pointToMoney
                 )
               )}
             </div>
