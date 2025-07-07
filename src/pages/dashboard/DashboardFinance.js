@@ -417,17 +417,15 @@ export default function DashboardFinance({
   };
 
   const _countAmount = (item) => {
-    let _amount = 0;
-    if (item?.length > 0) {
-      for (let i = 0; i < item.length; i++) {
-        const totalOptionPrice = item[i]?.totalOptionPrice ?? 0;
+    if (!item?.length) return 0;
+    return item
+      .filter((i) => i?.status !== "CANCELED" && i?.status !== "DOING") // Corrected filter condition
+      .reduce((amount, i) => {
+        const totalOptionPrice = i?.totalOptionPrice ?? 0;
         const totalPrice =
-          item[i]?.totalPrice ??
-          (item[i]?.price + totalOptionPrice) * item[i]?.quantity;
-        _amount += totalPrice;
-      }
-    }
-    return _amount;
+          i?.totalPrice ?? (i?.price + totalOptionPrice) * i?.quantity;
+        return amount + totalPrice;
+      }, 0);
   };
 
   const formatMenuName = (name, options) => {
@@ -524,8 +522,8 @@ export default function DashboardFinance({
         (dataModal?.serviceChargeAmount ?? 0)
       : baseTotal - dataModal?.change;
 
-  console.log("totalAfter", totalAfter);
-  console.log("dataModal", dataModal);
+  // console.log("totalAfter", totalAfter);
+  // console.log("dataModal", dataModal);
 
   let TotalCalculate = 0;
 
