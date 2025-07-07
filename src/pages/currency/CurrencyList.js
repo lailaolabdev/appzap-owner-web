@@ -43,7 +43,16 @@ export default function CurrencyList() {
   const [showEdit, setShowEdit] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [showEditMainCurrency, setShowEditMainCurrency] = useState(false);
-  const [isShowExchangeRate, setIsShowExchangeRate] = useState(storeDetail?.isShowExchangeRate || false);
+  const [toggleStates, setToggleStates] = useState({
+    fer: storeDetail?.isShowExchangeRate || false,
+    label: storeDetail?.isShowLabelRate || false,
+  });
+
+  // Mapping from UI key to backend field
+  const keyToBackendField = {
+    fer: 'isShowExchangeRate',
+    label: 'isShowLabelRate',
+  };
 
   const handleShowAdd = () => setShowAdd(true);
   const handleCloseAdd = () => setShowAdd(false);
@@ -74,20 +83,23 @@ export default function CurrencyList() {
   }, []);
 
   // Function to toggle currency display on bill
-  const handleToggleCurrencyDisplay = async (value) => {
+  const handleToggleCurrencyDisplay = async (key, value) => {
     try {
       const _localData = await getLocalData();
       const id = _localData?.DATA?.storeId;
-      const response = await updateStore(value, id);
+      // Map UI key to backend field
+      const backendField = keyToBackendField[key];
+      const payload = { [backendField]: value };
+      const response = await updateStore(payload, id);
       if (response.error) {
         throw new Error('error');
       }
       await fetchStoreDetail(storeDetail?._id);
-      setIsShowExchangeRate(value?.isShowExchangeRate);
+      setToggleStates((prev) => ({ ...prev, [key]: value }));
       getDataCurrencyHistory();
       getDataCurrency();
     } catch (error) {
-      console.error( error);
+      console.error(error);
       errorAdd(`${t("update_failed")}`);
     }
   };
@@ -212,6 +224,8 @@ export default function CurrencyList() {
       });
   };
 
+  const isShowLabelRateChecked = !!storeDetail?.isShowLabelRate;
+  const isShowExchangeRateChecked = !!storeDetail?.isShowExchangeRate;
 
   return (
     <>
@@ -356,6 +370,10 @@ export default function CurrencyList() {
                   title: t("show_exchange_rate_on_bill"),
                   key: "fer",
                 },
+                {
+                  title: t("ສະແດງ rate ເງີນ"),
+                  key: "label",
+                },
               ].map((item, index) => (
                 <div
                   style={{
@@ -377,16 +395,16 @@ export default function CurrencyList() {
                     }}
                   >
                     <Form.Label htmlFor={"transfer-payment-" + item?.key}>
-                      {storeDetail?.isBankPaymentAvailable
+                      {toggleStates[item.key]
                         ? `${t("oppen")}`
                         : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
-                  type="switch"
-                  id="currency-display-switch"
-                  checked={isShowExchangeRate}
-                  onChange={() => handleToggleCurrencyDisplay({ isShowExchangeRate: !isShowExchangeRate })}
-                />
+                      type="switch"
+                      id={`currency-display-switch-${item.key}`}
+                      checked={toggleStates[item.key]}
+                      onChange={() => handleToggleCurrencyDisplay(item.key, !toggleStates[item.key])}
+                    />
                   </div>
                 </div>
               ))}
