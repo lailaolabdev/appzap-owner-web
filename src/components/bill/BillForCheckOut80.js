@@ -45,6 +45,8 @@ export default function BillForCheckOut80({
     storeDetail?.isShowExchangeRate || false
   );
 
+  // console.log("storeDetail", storeDetail);
+
   const { SelectedDataBill } = usePaymentStore();
   const { PointStore } = usePointStore();
 
@@ -467,8 +469,8 @@ export default function BillForCheckOut80({
       </Row>
       <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
-      <div style={{ fontSize: 14 }}>
-        <Row>
+      <div className="text-[14px]">
+        <Row className="mb-2">
           <Col xs={7}>
             <div
               style={{ textAlign: "right", fontSize: 16, fontWeight: "bold" }}
@@ -497,12 +499,12 @@ export default function BillForCheckOut80({
         {currencyData?.map((item, index) => (
           <Row key={index}>
             <Col xs={7}>
-              <div className="text-right text-[16px] font-bold text-gray-400">
+              <div className={`text-right font-bold ${storeDetail?.isShowLabelRate ? "text-[16px]" : "text-[12px]"}`}>
                 {item?.currencyCode}:
               </div>
             </Col>
             <Col>
-              <div className="text-right text-[16px] font-bold text-gray-400">
+            <div className={`text-right font-bold ${storeDetail?.isShowLabelRate ? "text-[16px]" : "text-[12px]"}`}>
                 {moneyCurrency(
                   (total + taxAmount + serviceChargeAmount) / item?.sell
                 )}
