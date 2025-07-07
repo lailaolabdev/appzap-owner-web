@@ -84,10 +84,10 @@ export const useMenuStore = create(
         }
       },
       //TODO: delete menu option by store id
-      deleteMenuOption: async (menuId, optionId) => {
+      deleteMenuOption: async (storeId, menuId, optionId) => {
         set({ isMenuLoading: true });
         try {
-          const res = await deleteMenuOption(menuId, optionId);
+          const res = await deleteMenuOption(storeId, menuId, optionId);
           set({ menus: res, isMenuLoading: false });
           return res;
         } catch (error) {
@@ -96,10 +96,10 @@ export const useMenuStore = create(
         }
       },
       //TODO: Add menu option
-      addMunuOption: async (menuId, optionId) => {
+      addMunuOption: async (storeId, menuId, optionId) => {
         set({ isMenuLoading: true });
         try {
-          const res = await addMenuOption(menuId, optionId);
+          const res = await addMenuOption(storeId, menuId, optionId);
           set({ menus: res, isMenuLoading: false });
           return res;
         } catch (error) {

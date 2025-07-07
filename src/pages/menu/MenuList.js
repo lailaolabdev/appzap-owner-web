@@ -546,6 +546,7 @@ export default function MenuList() {
         method: "PUT",
         url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/update/`,
         data: {
+          storeId: storeDetail?._id,
           id: id,
           data: {
             isShowCustomerWeb:
@@ -579,6 +580,7 @@ export default function MenuList() {
         method: "PUT",
         url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/update/`,
         data: {
+          storeId: storeDetail?._id,
           id: id,
           data: {
             isShowCustomerApp:
@@ -612,6 +614,7 @@ export default function MenuList() {
         method: "PUT",
         url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/update/`,
         data: {
+          storeId: storeDetail?._id,
           id: id,
           data: {
             isShowStaffApp: isOpenMenuStaff === "true" ? "false" : "true",
@@ -643,6 +646,7 @@ export default function MenuList() {
         method: "PUT",
         url: END_POINT_SEVER_TABLE_MENU + `/v3/menu/update/`,
         data: {
+          storeId: storeDetail?._id,
           id: id,
           data: {
             isShowCounterApp: isShowCounterApp === "true" ? "false" : "true",
