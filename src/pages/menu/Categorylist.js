@@ -235,7 +235,7 @@ export default function Categorylist() {
 
       await axios({
         method: "PUT",
-        url: END_POINT_SEVER_TABLE_MENU + `/v3/category/update/`,
+        url: END_POINT_SEVER_TABLE_MENU + `/v3/category/update`,
         data: {
           id: id,
           data: {
