@@ -793,8 +793,17 @@ export default function TableList() {
       bodyFormData.append("beep2", 9);
       bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
 
-      async function printHandler() {
-        try {
+      await printFlutter(
+        {
+          drawer: true,
+          paper: printerBillData?.width === "58mm" ? 400 : 500,
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
+        },
+        async () => {
           const response = await axios({
             method: "post",
             url: urlForPrinter,
@@ -802,7 +811,6 @@ export default function TableList() {
             headers: { "Content-Type": "multipart/form-data" },
           });
 
-          // If your backend returns { message: "Success!" }
           if (response.data && response.data.message === "Success!") {
             await Swal.fire({
               icon: "success",
@@ -811,12 +819,9 @@ export default function TableList() {
               timer: 1800,
             });
           }
-        } catch (error) {
-          // handle error if needed
         }
-      }
+      );
 
-      await printHandler();
 
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
