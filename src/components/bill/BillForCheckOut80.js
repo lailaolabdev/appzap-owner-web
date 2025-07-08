@@ -45,8 +45,6 @@ export default function BillForCheckOut80({
     storeDetail?.isShowExchangeRate || false
   );
 
-  // console.log("storeDetail", storeDetail);
-
   const { SelectedDataBill } = usePaymentStore();
   const { PointStore } = usePointStore();
 
@@ -97,6 +95,10 @@ export default function BillForCheckOut80({
     // Default case: no service charge
     return 0;
   })();
+
+  useEffect(() => {
+    getDataCurrency();
+  }, []);
 
   const _calculateTotal = () => {
     let _total = 0;
@@ -151,21 +153,7 @@ export default function BillForCheckOut80({
 
   useEffect(() => {
     _calculateTotal();
-    getDataCurrency();
-  }, []);
-
-  useEffect(() => {
-    _calculateTotal();
   }, [dataBill?.discount]);
-
-  // console.log("TotalAfterDiscount:", totalAfterDiscount);
-  // console.log("taxAmount:", taxAmount);
-  // console.log("serviceChargeAmount:", serviceChargeAmount);
-  // console.log(
-  //   "SelectedDataBill?.pointToMoney:",
-  //   SelectedDataBill?.pointToMoney
-  // );
-  // console.log("total", total);
 
   const getDataCurrency = async () => {
     try {
@@ -469,8 +457,8 @@ export default function BillForCheckOut80({
       </Row>
       <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
-      <div className="text-[14px]">
-        <Row className="mb-2">
+      <div style={{ fontSize: 14 }}>
+        <Row>
           <Col xs={7}>
             <div
               style={{ textAlign: "right", fontSize: 16, fontWeight: "bold" }}
@@ -485,11 +473,10 @@ export default function BillForCheckOut80({
             >
               {moneyCurrency(
                 Math.floor(
-                  totalAfterDiscount ||
-                    total +
-                      taxAmount +
-                      serviceChargeAmount -
-                      SelectedDataBill?.pointToMoney
+                  totalAfterDiscount +
+                    taxAmount +
+                    serviceChargeAmount -
+                    SelectedDataBill?.pointToMoney
                 )
               )}
             </div>
