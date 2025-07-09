@@ -181,22 +181,22 @@ export default function CheckOutPopupCafe({
       (Number.parseFloat(cash) || 0) +
         (Number.parseFloat(transfer) || 0) -
         (dataBill
-          ? totalBill
-            ? totalBill
+          ? applyDiscount()
+            ? applyDiscount()
             : 0
-          : totalBill > 0
-          ? totalBill
+          : applyDiscount() > 0
+          ? applyDiscount()
           : 0) <=
       0
         ? 0
         : (Number.parseFloat(cash) || 0) +
           (Number.parseFloat(transfer) || 0) -
           (dataBill
-            ? totalBill > 0
-              ? totalBill
+            ? applyDiscount() > 0
+              ? applyDiscount()
               : 0
-            : totalBill > 0
-            ? totalBill
+            : applyDiscount() > 0
+            ? applyDiscount()
             : 0);
 
     setDataBill((prev) => ({

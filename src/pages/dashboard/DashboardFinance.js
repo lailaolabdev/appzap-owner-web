@@ -1011,10 +1011,14 @@ export default function DashboardFinance({
                       ເງິນທີ່ຕ້ອງຈ່າຍ ={" "}
                       {dataModal?.pointToMoney > 0
                         ? moneyCurrency(
-                            totalPriceAferDiscount() - dataModal?.pointToMoney
+                            matchRoundNumber(
+                              totalPriceAferDiscount() - dataModal?.pointToMoney
+                            )
                           )
                         : moneyCurrency(
-                            totalPriceAferDiscount() - totalPriceOfPoint
+                            matchRoundNumber(
+                              totalPriceAferDiscount() - totalPriceOfPoint
+                            )
                           )}{" "}
                       {storeDetail?.firstCurrency}
                     </span>
