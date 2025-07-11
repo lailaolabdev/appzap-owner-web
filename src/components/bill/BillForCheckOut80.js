@@ -275,8 +275,14 @@ export default function BillForCheckOut80({
           <div>
             {t("date")}:{" "}
             <span style={{ fontWeight: "bold" }}>
-              {moment(dataBill?.createdAt).format("DD-MM-YYYY - HH:mm:ss")}
+              {moment(dataBill?.createdAt).format("DD-MM-YYYY") }
             </span>
+          </div>
+          <div className="flex items-center items-center">
+            {t("time")}:{" "}
+            {moment(dataBill?.createdAt).format("HH:mm:ss")}
+            {" - "}
+            {moment(dataBill?.updatedAt).format("HH:mm:ss")}
           </div>
           <div>
             {t("staffCheckBill")}:{" "}

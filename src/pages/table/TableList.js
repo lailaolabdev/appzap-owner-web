@@ -106,6 +106,8 @@ import { useClaimDataStore } from "../../zustand/claimData";
 import { useOrderStore } from "../../zustand/orderStore";
 import { usePaymentStore } from "../../zustand/paymentStore";
 import { usePointStore } from "../../zustand/pointStore";
+import { useMenuStore } from "../../zustand/menuStore";
+
 import theme from "../../theme";
 import PopUpConfirms from "../../components/popup/PopUpConfirms";
 import { set } from "lodash";
@@ -212,6 +214,7 @@ export default function TableList() {
   const { fetchOrdersByStatus, orderItems } = useOrderStore();
   const { setSelectedDataBill, clearSelectedDataBill } = usePaymentStore();
   const { setPointStore, PointStore } = usePointStore();
+  const { clearMenus } = useMenuStore();
 
   let updatedOrderItems = [];
 
@@ -1608,6 +1611,7 @@ export default function TableList() {
         // e.g., Update waiting count or trigger a re-fetch for fresh data
         const count = await getCountOrderWaiting(storeId);
         setCountOrderWaiting(count || 0);
+        clearMenus();
       } else {
         // Handle failure in updating status
         setIsServerdLoading(false);

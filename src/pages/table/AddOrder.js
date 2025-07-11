@@ -2055,7 +2055,7 @@ function AddOrder() {
                       onSubmit(true);
                     }}
                   >
-                    {t("order_and_send_to_kitchen ຟ")} +{" "}
+                    {t("order_and_send_to_kitchen")} +{" "}
                     <FontAwesomeIcon
                       icon={faCashRegister}
                       style={{ color: "#fff" }}

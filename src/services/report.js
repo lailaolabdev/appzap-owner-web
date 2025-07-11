@@ -101,6 +101,7 @@ export const getPromotionReport = async (storeId, findBy, tableIds) => {
     const _header = await getHeaders();
     const url = `${END_POINT_APP}/v7/report-promotion/${storeId}${findBy}`;
     const res = await axios.post(url, { tableIds }, { headers: _header });
+    console.log("res:--->", res.data);
     return res.data;
   } catch (error) {
     return error;
