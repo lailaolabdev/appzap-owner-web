@@ -13,8 +13,13 @@ const now_domain = window.location.hostname;
 const dev = "http://localhost:7070"; //locals
 const dev1 = "http://localhost:7070"; //locals
 const dev2 = "http://localhost:7070"; //locals
+<<<<<<< HEAD
 const production = "https://api.appzap.la:445"; // Production report & other [7079 - 7080]
 const production1 = "https://api.appzap.la:444"; // Production table & menu [7076 - 7078]
+=======
+// const production = "https://api.appzap.la:445"; // Production report & other [7079 - 7080]
+// const production1 = "https://api.appzap.la:444"; // Production table & menu [7076 - 7078]
+>>>>>>> f8ccc72a (Debt function)
 const production2 = "https://api.appzap.la"; // Production bill & order [7070 - 7075]
 const production_socket = "https://api.appzap.la:8888"; // Production
 const dev_socket = "https://api.appzap.la:8888";
@@ -36,7 +41,7 @@ export const END_POINT_WEB_CLIENT = isProduction
   : dev_web_client;
 
 const production_bunsi = "https://accounting.lailaolab.la/";
-const dev_bunsi = "http://localhost:7777";
+// const dev_bunsi = "http://localhost:7777";
 
 // export const END_POINT_SERVER_BUNSI = "http://localhost:7777";
 export const END_POINT_SERVER_BUNSI = isProduction
