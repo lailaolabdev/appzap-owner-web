@@ -1724,8 +1724,9 @@ export default function CheckOutPopup({
                 saveServiceChargeDetails();
 
                 try {
+                  await handleSubmit();
                   await onPrintBill();
-                  await handleSubmit(); // Run handleSubmit first
+                   // Run handleSubmit first
                 } catch (error) {
                   Swal.fire({
                     icon: "error",

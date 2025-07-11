@@ -88,8 +88,10 @@ export default function DashboardPage() {
   const [debtReport, setDebtReport] = useState(null);
 
   const [dataFreeItems, setDataFreeItems] = useState([]);
+  const [dataAmountDiscountItems, setDataAmountDiscountItems] = useState([]);
   const [dataDiscountItems, setDataDiscountItems] = useState([]);
   const [openModalFree, setOpenModalFree] = useState(false);
+  const [openModalAmountDiscount, setOpenModalAmountDiscount] = useState(false);
   const [openModalDiscount, setOpenModalDiscount] = useState(false);
   const [openModalExchange, setOpenModalExchange] = useState(false);
   const [openModalUsePoint, setOpenModalUsePoint] = useState(false);
@@ -263,7 +265,8 @@ export default function DashboardPage() {
       findByData(),
       selectedTableIds
     );
-    setPromotionReport(data);
+    setPromotionReport(data?.billCash);
+    setDataAmountDiscountItems(data?.discount);
     setLoading(false);
   };
   const getPromotionDiscountAndFreeReportData = async () => {
@@ -445,6 +448,9 @@ export default function DashboardPage() {
   const handleGetDataDiscount = (data) => {
     setOpenModalDiscount(true);
     setDataDiscountItems(data);
+  };
+  const handleGetAmountDiscount = () => {
+    setOpenModalAmountDiscount(true);
   };
 
   const handleGetDataExchangePoint = (data) => {
@@ -705,7 +711,15 @@ export default function DashboardPage() {
                   }}
                 >
                   <div>{t("discount_bill")}</div>
-                  <div>{promotionReport?.[0]?.count || 0}</div>
+                  <div
+                    className="flex gap-2 items-center text-orange-500 cursor-pointer"
+                    onClick={() =>
+                      handleGetAmountDiscount(promotionReport?.[0]?.count || 0)
+                    }
+                  >
+                    {promotionReport?.[0]?.count || 0}{" "}
+                    <BsArrowDownRightSquare />
+                  </div>
                 </div>
                 <div
                   style={{
@@ -1275,6 +1289,64 @@ export default function DashboardPage() {
           <div className="flex justify-end mt-2">
             <p className="text-orange-500 text-[18px] pt-3 font-bold">
               ລວມຈຳນວນລາຄາແຖມທັງໝົດ : {moneyCurrency(TotalPriceFreeItems())}{" "}
+              {storeDetail?.firstCurrency}
+            </p>
+          </div>
+        </Modal.Body>
+      </Modal>
+
+      <Modal
+        show={openModalAmountDiscount}
+        size="md"
+        onHide={() => setOpenModalAmountDiscount(false)}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>{t("discount_bill")}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <table style={{ width: "100%" }}>
+            <tr className="border-b">
+              <th className="text-left">{t("no")}</th>
+              <th className="text-center">{t("code")}</th>
+              <th className="text-center">{t("bill_amount")}</th>
+              <th className="text-center">{t("discount")}</th>
+              <th className="text-right">{t("total")}</th>
+            </tr>
+            {dataAmountDiscountItems.length > 0 ? (
+              dataAmountDiscountItems?.map((item, index) => (
+                <tr key={item?._id} className="border-b">
+                  <td className="text-left">{index + 1}</td>
+                  <td className="text-center">{item?.code}</td>
+                  <td className="text-center">
+                    {moneyCurrency(item?.billAmount)}
+                  </td>
+                  <td className="text-center">
+                    {moneyCurrency(item?.discount)}{" "}
+                    {item?.discountType === "PERCENT"
+                      ? "%"
+                      : storeDetail?.firstCurrency}
+                  </td>
+                  <td className="text-right">
+                    {moneyCurrency(item.discountType === "PERCENT" ? (item?.billAmount / 100) * item?.discount : item?.discount)}{" "}
+                    {storeDetail?.firstCurrency}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4}>
+                  <div className="flex justify-center">
+                    <p className="text-[16px] font-bold text-gray-900">
+                      ບໍ່ມີລາຍການ
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </table>
+          <div className="flex justify-end mt-2">
+            <p className="text-orange-500 text-[18px] pt-3 font-bold">
+              ລວມຈຳນວນເງິນທັງໝົດ : {moneyCurrency(promotionReport?.[0]?.totalSaleAmount || 0)} {""}
               {storeDetail?.firstCurrency}
             </p>
           </div>
