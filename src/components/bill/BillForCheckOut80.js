@@ -31,6 +31,7 @@ export default function BillForCheckOut80({
   profile,
   paymentMethod,
   enableServiceChange,
+  language
 }) {
   // state
   const [total, setTotal] = useState();
@@ -379,7 +380,15 @@ export default function BillForCheckOut80({
                     width: "6rem",
                   }}
                 >
-                  {item?.name} {optionsNames}
+                  {language === "la"
+                    ? item?.name
+                    : language === "en"
+                    ? item.name_en || item.name
+                    : language === "kr"
+                    ? item.name_kr
+                    : language === "cn"
+                    ? item.name_cn
+                    : item.name}{" "} {optionsNames}
                 </div>
                 <div style={{ textAlign: "center" }}>{item?.quantity}</div>
                 <div style={{ textAlign: "left" }}>

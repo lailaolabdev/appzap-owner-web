@@ -14,7 +14,9 @@ import { useTranslation } from "react-i18next";
 import { NotifyButton } from "../components/NotifyButton";
 import { useStoreStore } from "../zustand/storeStore";
 import { useMenuStore } from "../zustand/menuStore";
+import { useLanguageStore } from "../zustand/languageStore";
 import { useClaimDataStore } from "../zustand/claimData";
+
 import { Badge } from "../components/ui/Badge";
 
 // sound
@@ -42,6 +44,7 @@ export default function NavBar() {
 
   const { clearStoreDetail, storeDetail } = useStoreStore();
   const { clearMenus } = useMenuStore();
+  const { setSelectLanguage } = useLanguageStore();
 
   useEffect(() => {
     const getData = () => {
@@ -79,6 +82,7 @@ export default function NavBar() {
     // const lang = localStorage.getItem("i18nextLng");
 
     i18n.changeLanguage(language);
+    setSelectLanguage(language);
     localStorage.setItem("language", language); // ເກັບຄ່າພາສາໃນ localStorage
     setSelectedLanguage(language); // ອັບເດດ state ຂອງພາສາ
   };

@@ -27,6 +27,7 @@ import Loading from "../../components/Loading";
 import { billCancelCafe, getCountBills } from "../../services/bill";
 import matchRoundNumber from "../../helpers/matchRound";
 import { useStoreStore } from "../../zustand/storeStore";
+import { useLanguageStore } from "../../zustand/languageStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
 
 import {
@@ -43,7 +44,6 @@ import BillForCheckOutCafe80 from "../../components/bill/BillForCheckOutCafe80";
 import { convertUnitgramAndKilogram } from "../../helpers/convertUnitgramAndKilogram";
 import { Button } from "react-bootstrap";
 import PopUpCommentCancelOrder from "../../components/popup/PopUpCommentCancelOrder";
-
 import { useCounterRoleStore } from "../../zustand/counterRole";
 
 const limitData = 50;
@@ -64,6 +64,7 @@ export default function DashboardFinance({
   const params = useParams();
   const [data, setData] = useState();
   const [index, setIndex] = useState(0);
+  const [language, setLanguage] = useState("la");
   const [disCountDataKib, setDisCountDataKib] = useState(0);
   const [disCountDataPercent, setDisCountDataPercent] = useState(0);
   const [dataNotCheckBill, setDataNotCheckBill] = useState({});
@@ -95,9 +96,10 @@ export default function DashboardFinance({
   } = useStore();
   const { shiftCurrent } = useShiftStore();
   const { storeDetail } = useStoreStore();
+  const { selectLanguage } = useLanguageStore();
   const { counterRoleEditBill } = useCounterRoleStore();
 
-  console.log("counterRoleEditBill", counterRoleEditBill);
+  
 
   const getPaginationCountData = async () => {
     try {
@@ -222,6 +224,13 @@ export default function DashboardFinance({
     setDataModal(item);
   };
 
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("language");
+    if (savedLanguage) {
+      setLanguage(savedLanguage);
+    }
+  }, []);
+
   const getCurrency = async () => {
     try {
       const x = await fetch(
@@ -267,6 +276,8 @@ export default function DashboardFinance({
     getCurrency();
     _fetchFinanceData();
   }, []);
+
+  
 
   useEffect(() => {
     getPaginationCountData();
@@ -549,6 +560,8 @@ export default function DashboardFinance({
     const filteredData = data?.checkOut?.filter((item) => !item.isDebt) || [];
     setGetDataDashboardFinance(filteredData);
   }, [data]);
+
+  console.log("getDataDashboardFinance", getDataDashboardFinance);
 
   useEffect(() => {
     // console.log("logs data?.checkOut:--> ", data?.checkOut);
@@ -1519,6 +1532,7 @@ export default function DashboardFinance({
             totalBillBillForCheckOut80={totalAfter}
             taxPercent={dataModal?.taxPercent}
             profile={profile}
+            language={selectLanguage}
           />
         </div>
       )}

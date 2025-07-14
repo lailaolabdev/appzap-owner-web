@@ -107,6 +107,7 @@ import { useOrderStore } from "../../zustand/orderStore";
 import { usePaymentStore } from "../../zustand/paymentStore";
 import { usePointStore } from "../../zustand/pointStore";
 import { useMenuStore } from "../../zustand/menuStore";
+import { useLanguageStore } from "../../zustand/languageStore";
 
 import theme from "../../theme";
 import PopUpConfirms from "../../components/popup/PopUpConfirms";
@@ -215,6 +216,7 @@ export default function TableList() {
   const { setSelectedDataBill, clearSelectedDataBill } = usePaymentStore();
   const { setPointStore, PointStore } = usePointStore();
   const { clearMenus } = useMenuStore();
+  const { selectLanguage } = useLanguageStore();
 
   let updatedOrderItems = [];
 
@@ -2544,6 +2546,7 @@ export default function TableList() {
                       </ButtonCustom>
                       <ButtonCustom
                         disabled={
+                          storeDetail.isBankPaymentAvailable === false &&
                           !isCheckedOrderItem.every(
                             (e) =>
                               e?.status === "PAID" ||
@@ -2875,6 +2878,7 @@ export default function TableList() {
           serviceCharge={serviceChargePercent}
           paymentMethod={paymentMethod}
           enableServiceChange={enableServiceChange}
+          language={selectLanguage}
         />
       </div>
       <div style={{ width: "80mm", padding: 10 }} ref={qrSmartOrder80Ref}>
