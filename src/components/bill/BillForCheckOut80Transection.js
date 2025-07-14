@@ -31,12 +31,14 @@ export default function BillForCheckOut80Transection({
   profile,
   paymentMethod,
   enableServiceChange,
+  language,
 }) {
   // state
   const [total, setTotal] = useState();
   const [taxAmount, setTaxAmount] = useState(0);
   const [serviceChargeAmount, setServiceChargeAmount] = useState(0);
   const [totalAfterDiscount, setTotalAfterDiscount] = useState();
+  // const [language, setLanguage] = useState();
   const [currencyData, setCurrencyData] = useState([]);
   const [rateCurrency, setRateCurrency] = useState();
   const { t } = useTranslation();
@@ -54,7 +56,7 @@ export default function BillForCheckOut80Transection({
   const serviceChargeRef = useRef(serviceCharge);
   const enableServiceChangeRef = useRef(enableServiceChange);
 
-  
+  console.log("dataBill:", dataBill);
 
   const orders =
     orderPayBefore && orderPayBefore.length > 0
@@ -124,9 +126,7 @@ export default function BillForCheckOut80Transection({
     }
 
     const totalAmountAll =
-      orderPayBefore && orderPayBefore.length > 0
-        ? _total
-        : _total;
+      orderPayBefore && orderPayBefore.length > 0 ? _total : _total;
 
     // Handle discount logic
     if (dataBill?.discount > 0) {
@@ -143,15 +143,13 @@ export default function BillForCheckOut80Transection({
       setTotalAfterDiscount(totalAmountAll);
     }
 
-    
-
     setTaxAmount((totalAmountAll * taxPercent) / 100);
 
     // Service charge calculation using the improved TotalServiceChange
     const serviceChargeTotal = Math.floor(
       (totalAmountAll * TotalServiceChange) / 100
     );
-    
+
     setServiceChargeAmount(serviceChargeTotal);
     setTotal(totalAmountAll);
   };
@@ -378,7 +376,16 @@ export default function BillForCheckOut80Transection({
                     width: "6rem",
                   }}
                 >
-                  {item?.name} {optionsNames}
+                  {language === "la"
+                    ? item?.name
+                    : language === "en"
+                    ? item.name_en
+                    : language === "kr"
+                    ? item.name_kr
+                    : language === "cn"
+                    ? item.name_cn
+                    : ""}{" "}
+                  {optionsNames}
                 </div>
                 <div style={{ textAlign: "center" }}>{item?.quantity}</div>
                 <div style={{ textAlign: "left" }}>
@@ -456,7 +463,9 @@ export default function BillForCheckOut80Transection({
         </Col>
         <Col>
           <div style={{ textAlign: "right" }}>
-            {moneyCurrency(serviceChargeAmount || dataBill?.serviceChargeAmount)}
+            {moneyCurrency(
+              serviceChargeAmount || dataBill?.serviceChargeAmount
+            )}
           </div>
         </Col>
       </Row>
