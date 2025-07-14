@@ -836,6 +836,7 @@ function AddOrder() {
   };
 
   const addToCart = async (menu) => {
+    console.log("addToCart", menu);
     const checkStock = storeDetail?.isStockMissing === true;
     if (checkStock) {
       const checkQuantity = menu?.stockId?.find((item) => item?.quantity <= 0);
@@ -870,6 +871,9 @@ function AddOrder() {
     const mainMenuData = {
       id: menu._id,
       name: menu.name,
+      name_en: menu.name_en,
+      name_cn: menu.name_cn,
+      name_kr: menu.name_kr,
       quantity: 1,
       price: finalPrice,
       priceDiscount: Math.max(menu?.price - finalPrice, 0),
