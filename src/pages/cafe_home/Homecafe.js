@@ -1931,11 +1931,11 @@ function Homecafe() {
         </CafeMenu>
 
         {!isMobile ? (
-          <div className="w-[480px] lg:w-[560px] max-w-[480px] lg:max-w-[560px] min-w-[480px] lg:min-w-[560px] h-[90vh] overflow-y-scroll bg-white border-gray-500 ">
+          <div className="border w-[480px] lg:w-[560px] max-w-[480px] lg:max-w-[560px] min-w-[480px] lg:min-w-[560px] h-[90vh] overflow-y-scroll bg-white border-gray-500 ">
             <div className="container">
               <div className="row">
                 <div className="col-lg-12 col-md-12">
-                  <div className="mt-1  h-[450px] overflow-auto">
+                  <div className="mt-1 h-full">
                     <h3 className="text-lg font-semibold">{t("order_item")}</h3>
                     {SelectedMenus.length === 0 ? (
                       <div className="h-[400px] flex justify-center items-center">
@@ -1947,7 +1947,7 @@ function Homecafe() {
                         </div>
                       </div>
                     ) : (
-                      <div className="space-y-4">
+                      <div className="space-y-4 h-full overflow-auto">
                         {SelectedMenus?.filter(
                           (item) => item.storeId === storeDetail?._id
                         )?.map((item) => {
@@ -2755,6 +2755,7 @@ function Homecafe() {
           setDiscountedTotal={setDiscountedTotal}
         />
       </div>
+
       {storeDetail?.optionPrintBill &&
         SelectedMenus?.map((val, i) => {
           const totalPrice = () => {
