@@ -35,6 +35,7 @@ import { useTranslation } from "react-i18next";
 import { useStoreStore } from "../../zustand/storeStore";
 import { useMenuStore } from "../../zustand/menuStore";
 import { updateStockMissing } from "../../services/stocks";
+import { updateStore } from "../../services/store";
 
 export default function ConfigPage() {
   const { t } = useTranslation();
@@ -198,6 +199,15 @@ export default function ConfigPage() {
     // console.log("changeSericeChange", isType);
     await fetchStoreDetail(storeDetail?._id);
   };
+
+  const changeCounterReport = async (e) => {
+    const isType = e.target.checked;
+    const response = await updateStore({counterDisableReport: isType}, storeDetail?._id);
+    // await updateCounterBill(profile?.data.storeId, { data: isType });
+    console.log("response", response);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+
 
   const TooltipFunc = ({ id, children, title }) => (
     <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
@@ -992,6 +1002,37 @@ export default function ConfigPage() {
                     checked={storeDetail?.isEditBill}
                     id={`counter-edit-bill`}
                     onChange={changeCounterBill}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>ລາຍງານຍອດຂາຍ</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Form.Label htmlFor={`counter-disable-report`}>
+                    {storeDetail?.counterDisableReport
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.counterDisableReport}
+                    id={`counter-disable-report`}
+                    onChange={changeCounterReport}
                   />
                 </div>
               </div>
