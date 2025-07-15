@@ -62,6 +62,17 @@ export const getBilldebts = async (findby, token) => {
   }
 };
 
+// new function
+export const getBillDebtDatas = async (params) => {
+  try {
+    const response = await axiosInstance.get(`/v4/bill-debts${params}`);
+    return response.data;
+  } catch (error) {
+    return { error: true };
+  }
+};
+
+// new function
 export const getBilldebtReport = async (params) => {
   try {
     const response = await axiosInstance.get(`/v4/bill-debt-report${params}`);

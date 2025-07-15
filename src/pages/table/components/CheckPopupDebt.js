@@ -30,6 +30,7 @@ import { useTranslation } from "react-i18next";
 import { getMembersAll } from "./../../../services/member.service";
 
 import { useStoreStore } from "../../../zustand/storeStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function CheckPopupDebt({
   onPrintDrawer,
@@ -50,6 +51,7 @@ export default function CheckPopupDebt({
   const { profile } = useStore();
   const { storeDetail } = useStoreStore()
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
+  const queryClient = useQueryClient()
 
   // state
   const [menuDebtData, setMenuDebtData] = useState();
@@ -246,8 +248,12 @@ export default function CheckPopupDebt({
         return;
       }
 
-      navigate("/debt");
       await handleSubmit();
+      navigate("/debt");
+      // query new data for debt page
+      queryClient.refetchQueries({ queryKey: ['reportDebtBill'] });
+      queryClient.refetchQueries({ queryKey: ['bill_debtion_data'] });
+
     } catch (err) {
       console.log(err);
       errorAdd(`${t("debt_fail")}`);
