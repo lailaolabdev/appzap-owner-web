@@ -640,7 +640,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
               ))}
             <hr />
 
-            {itemReports?.length !== 0 ? (
+            { itemReports?.length !== 0 && (profileRole === "APPZAP_ADMIN" || storeDetail?.counterDisableReport !== true) ? (
               <NavItem
                 eventKey="reportGroups"
                 style={{

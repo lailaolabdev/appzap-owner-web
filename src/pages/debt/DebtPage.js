@@ -13,7 +13,7 @@ import {
 import { FaCoins } from "react-icons/fa";
 import Box from "../../components/Box";
 import { getLocalData } from "../../constants/api";
-import { debtsRemainingAmount, getBilldebts } from "../../services/debt";
+import { debtsRemainingAmount, getBillDebtDatas, getBilldebtReport } from "../../services/debt";
 import { getdebtHistory } from "../../services/debt";
 import moment from "moment";
 import { moneyCurrency } from "../../helpers";
@@ -23,6 +23,7 @@ import PopUpSetStartAndEndDateDebt from "../../components/popup/PopUpSetStartAnd
 import { useStoreStore } from "../../zustand/storeStore";
 import { DebtListAll } from "./DebtListAll";
 import { PayDebtListHistory } from "./PayDebtListHistory";
+import { useQuery } from "@tanstack/react-query";
 
 export default function DebtPage() {
   const { t } = useTranslation();
@@ -42,18 +43,15 @@ export default function DebtPage() {
   const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
-  const [searchCode, setSearchCode] = useState(null);
   const [exportType, setExportType] = useState('');
   const [activeTab, setActiveTab] = useState('billDebt-list');
-  const [remainingAmountData, setRemainingAmountData] = useState([])
+  const [reportData, setReportData] = useState({
+    isLoadingReport: false,
+    summary: null
+  })
   const limitData = 50;
 
- 
-  useEffect(()=>{
-    console.log("exportType: ",exportType)
-  },[activeTab])
-
-
+  // On select tab
   const handleTabSelect = (key) => {
     setActiveTab(key);
     switch (key) {
@@ -71,45 +69,12 @@ export default function DebtPage() {
     }
   };
 
-
+  // Handle fetch function
   useEffect(() => {
-    getData();
     getDataHistory();
-    //getDataReminning();
   }, [pagination, startDate, endDate, startTime, endTime]);
 
-  // Calculate totals
-  const amount = billDebtData.reduce((total, item) => {
-    return total + (item.amount || 0);
-  }, 0);
-
-  const remainingAmount = billDebtData.reduce((total, item) => {
-    return total + (item.remainingAmount || 0);
-  }, 0);
-
-  const getData = async () => {
-    setIsLoading(true);
-    try {
-      const { TOKEN } = await getLocalData();
-      let findby = `?skip=${(pagination - 1) * limitData}&limit=${limitData}&storeId=${storeDetail?._id}`;
-
-      if (startDate && endDate) {
-        const startDateTime = `${startDate}T${startTime || '00:00:00'}`;
-        const endDateTime = `${endDate}T${endTime || '23:59:59'}`;
-        findby += `&createdAt[$gte]=${startDateTime}&createdAt[$lte]=${endDateTime}`;
-      }
-
-
-      const data = await getBilldebts(findby, TOKEN);
-      setBillDebtData(data?.data || []);
-      setTotalPagination(Math.ceil(data?.totalCount / limitData));
-    } catch (err) {
-      console.error("Error fetching data:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  // Query bill debt history datas
   const getDataHistory = async () => {
     setIsLoading(true);
     try {
@@ -176,6 +141,68 @@ export default function DebtPage() {
     }
   };
 
+  // Fecth for report
+  const fetchReportDebtBill = async ({ storeId, startDate, endDate, startTime, endTime }) => {
+    let findby = `?storeId=${storeId}`;
+
+    if (startDate && endDate) {
+      const startDateTime = `${startDate}T${startTime || '00:00:00'}`;
+      const endDateTime = `${endDate}T${endTime || '23:59:59'}`;
+      findby += `&startDate=${startDateTime}&endDate=${endDateTime}`;
+    }
+
+    const response = await getBilldebtReport(findby);
+
+    return response?.summary || null;
+  };
+
+  // Fetch for data list
+  const fetchBillDebtion = async ({ storeId, startDate, endDate, startTime, endTime }) => {
+    let findby = `?storeId=${storeId}`;
+
+    if (startDate && endDate) {
+      const startDateTime = `${startDate}T${startTime || '00:00:00'}`;
+      const endDateTime = `${endDate}T${endTime || '23:59:59'}`;
+      findby += `&startDate=${startDateTime}&endDate=${endDateTime}`;
+    }
+
+    const response = await getBillDebtDatas(findby);
+    return response;
+  };
+
+  // Query bill report
+  const {
+    data: reportSummary,
+    isLoading: isLoadingReport,
+  } = useQuery({
+    queryKey: ['reportDebtBill', storeDetail?._id, startDate, endDate, startTime, endTime],
+    queryFn: () => fetchReportDebtBill({
+      storeId: storeDetail?._id,
+      startDate,
+      endDate,
+      startTime,
+      endTime
+    }),
+    // enabled: !!storeDetail?._id, // Only run query when storeId exists
+  });
+
+  // Query bill data lists
+  const {
+    data: billDebtionData,
+    isLoading: isLoadingBilldebtion,
+  } = useQuery({
+    queryKey: ['bill_debtion_data', storeDetail?._id, startDate, endDate, startTime, endTime],
+    queryFn: () => fetchBillDebtion({
+      storeId: storeDetail?._id,
+      startDate,
+      endDate,
+      startTime,
+      endTime
+    }),
+    // enabled: !!storeDetail?._id, // Only run query when storeId exists
+  });
+
+
   return (
     <div style={{ padding: 20 }}>
       <Box
@@ -208,7 +235,7 @@ export default function DebtPage() {
                 // fontWeight: 700
               }}
             >
-              {billDebtData?.length || 0} ລາຍການ
+              {reportSummary?.count || 0} ລາຍການ
             </div>
           </Card.Body>
         </Card>
@@ -234,7 +261,7 @@ export default function DebtPage() {
               }}
             >
 
-              {moneyCurrency(amount)} ກີບ
+              {moneyCurrency(reportSummary?.totalPrice || 0)} ກີບ
             </div>
           </Card.Body>
         </Card>
@@ -260,7 +287,7 @@ export default function DebtPage() {
               }}
             >
               {/* {moneyCurrency(totalPayment)} ກີບ */}
-              {moneyCurrency(amount - remainingAmount)} ກີບ
+              {moneyCurrency(reportSummary?.totalPaied > 0 ? reportSummary?.totalPaied : reportSummary?.totalTransfer || 0)} ກີບ
             </div>
           </Card.Body>
         </Card>
@@ -289,42 +316,44 @@ export default function DebtPage() {
                 fontWeight: 400,
               }}
             >
-              {moneyCurrency(remainingAmount)} ກີບ
+              {moneyCurrency(reportSummary?.totalRemaining || 0)} ກີບ
             </div>
           </Card.Body>
         </Card>
       </Box>
 
-      <Tabs 
+      <Tabs
         defaultActiveKey="billDebt-list"
         activeKey={activeTab}
         onSelect={handleTabSelect}
       >
-        
+
         <Tab
           eventKey="billDebt-list"
           title={t("debt_list_all")}
           style={{ paddingTop: 20 }}
-          
+
         >
-          <DebtListAll
-            t={t}
-            getData={getData}
-            startDate={startDate}
-            startTime={startTime}
-            endDate={endDate}
-            endTime={endTime}
-            setPopup={setPopup}
-            isHovered={isHovered}
-            setIsHovered={setIsHovered}
-            isLoading={isLoading}
-            billDebtData={billDebtData}
-            pagination={pagination}
-            limitData={limitData}
-            totalPagination={totalPagination}
-            setPagination={setPagination}
-            setSelectBillDebt={setSelectBillDebt}
-          />
+          {isLoadingBilldebtion || isLoadingReport ? (
+            <Spinner animation="border" variant="warning" />
+          ) : (
+            <DebtListAll
+              t={t}
+              startDate={startDate}
+              startTime={startTime}
+              endDate={endDate}
+              endTime={endTime}
+              setPopup={setPopup}
+              isHovered={isHovered}
+              setIsHovered={setIsHovered}
+              billDebtData={billDebtionData?.data}
+              pagination={pagination}
+              limitData={limitData}
+              totalPagination={billDebtionData?.totalCount}
+              setPagination={setPagination}
+              setSelectBillDebt={setSelectBillDebt}
+            />
+          )}
         </Tab>
 
         <Tab
@@ -364,7 +393,8 @@ export default function DebtPage() {
           callback={async () => {
             setPopup();
             setSelectBillDebt();
-            await getData();
+            // await getReportDebtBill()
+            // await getData();
             await getDataHistory();
           }}
         />
@@ -378,22 +408,24 @@ export default function DebtPage() {
             setPopup();
             setSelectDebtData();
           }}
-          billDebtData={billDebtData}
+          billDebtData={billDebtionData?.data}
           COLOR_APP={COLOR_APP}
-          debtHistoryData={popup.exportData || debtHistoryData} 
+          debtHistoryData={popup.exportData || debtHistoryData}
           callback={async () => {
             setPopup();
             setSelectDebtData();
-            await getData();
+            // await getReportDebtBill()
+            // await getData();
             await getDataHistory();
           }}
         />
       )}
+
       <PopUpSetStartAndEndDateDebt
         open={popup?.popupfiltter}
         onClose={() => {
           setPopup();
-          getData(); // เพิ่มการเรียก getData เมื่อปิด popup
+          // getData(); // เพิ่มการเรียก getData เมื่อปิด popup
         }}
         startDate={startDate}
         setStartDate={setStartDate}

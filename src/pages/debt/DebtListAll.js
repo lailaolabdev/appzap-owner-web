@@ -31,23 +31,23 @@ export const DebtListAll = ({
 
   // คำนวณผลรวม remainingAmount สำหรับลูกค้าที่ค้นหา
   const getSearchResults = () => {
-    if (!searchTerm || searchTerm.length < 2) return {
+    if (!searchTerm || searchTerm?.length < 2) return {
       filteredData: billDebtData,
       totalRemaining: 0,
       customerInfo: null
     };
 
-    const filtered = billDebtData.filter(item =>
-      item.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.customerPhone?.includes(searchTerm)
+    const filtered = billDebtData?.filter(item =>
+      item?.customerName?.toLowerCase()?.includes(searchTerm?.toLowerCase()) ||
+      item?.customerPhone?.includes(searchTerm)
     );
 
     if (filtered.length > 0) {
-      const totalRemaining = filtered.reduce((sum, item) => sum + (item.remainingAmount || 0), 0);
-      const totalRemainingAmount = filtered.reduce((sum, item) => sum + (item?.amount || 0), 0);
+      const totalRemaining = filtered?.reduce((sum, item) => sum + (item?.remainingAmount || 0), 0);
+      const totalRemainingAmount = filtered?.reduce((sum, item) => sum + (item?.amount || 0), 0);
       const customerInfo = {
-        name: filtered[0].customerName,
-        phone: filtered[0].customerPhone
+        name: filtered[0]?.customerName,
+        phone: filtered[0]?.customerPhone
       };
       return { filteredData: filtered, totalRemaining,totalRemainingAmount, customerInfo };
     }
@@ -57,8 +57,8 @@ export const DebtListAll = ({
 
   const { filteredData, totalRemaining,totalRemainingAmount, customerInfo } = getSearchResults();
 
-  const sortedData = filteredData.sort((a, b) =>
-    new Date(b.updatedAt) - new Date(a.updatedAt)
+  const sortedData = filteredData?.sort((a, b) =>
+    new Date(b?.updatedAt) - new Date(a?.updatedAt)
   );
 
   return (
@@ -70,13 +70,6 @@ export const DebtListAll = ({
             placeholder={t("ຄົນຫາຊື່ຫຼຶເບີໂທ")}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Button
-            variant="primary"
-            onClick={getData}
-            style={{ color: "white" }}
-          >
-            {t("search")}
-          </Button>
         </div>
 
         <Button
@@ -169,14 +162,8 @@ export const DebtListAll = ({
               </tr>
             </thead>
             <tbody>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={9} style={{ textAlign: "center" }}>
-                    <Spinner animation="border" variant="warning" />
-                  </td>
-                </tr>
-              ) : sortedData.length > 0 ? (
-                sortedData.map((e, i) => (
+              {sortedData?.length > 0 ? (
+                sortedData?.map((e, i) => (
                   <tr
                     key={e?._id}
                     onClick={() => {

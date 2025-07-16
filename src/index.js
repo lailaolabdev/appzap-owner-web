@@ -3,7 +3,6 @@ import ReactDOM from "react-dom";
 import App from "./App";
 import "./i18n";
 import { BrowserRouter } from "react-router-dom";
-// import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 
@@ -22,4 +21,3 @@ ReactDOM.render(
   </BrowserRouter>,
   document.querySelector("#root")
 );
-// serviceWorkerRegistration.unregister();

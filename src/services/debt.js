@@ -1,5 +1,6 @@
 import { END_POINT_APP } from "../constants/api";
 import axios from "axios";
+import axiosInstance from "../utils/axios";
 
 export const getBillFarkById = async (billFarkId, token) => {
   try {
@@ -56,6 +57,26 @@ export const getBilldebts = async (findby, token) => {
       headers: token,
     });
     return res.data;
+  } catch (error) {
+    return { error: true };
+  }
+};
+
+// new function
+export const getBillDebtDatas = async (params) => {
+  try {
+    const response = await axiosInstance.get(`/v4/bill-debts${params}`);
+    return response.data;
+  } catch (error) {
+    return { error: true };
+  }
+};
+
+// new function
+export const getBilldebtReport = async (params) => {
+  try {
+    const response = await axiosInstance.get(`/v4/bill-debt-report${params}`);
+    return response.data;
   } catch (error) {
     return { error: true };
   }

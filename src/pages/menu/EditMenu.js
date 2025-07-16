@@ -13,6 +13,8 @@ import PopUpAddMenuOption from "./components/popup/PopUpAddMenuOption";
 import { getLocalData } from "../../constants/api";
 import { getCategories } from "../../services/menuCategory";
 import Box from "../../components/Box";
+import { useQueryClient } from "@tanstack/react-query";
+import useScrollRestoration from "../../hooks/useScrollRestoration";
 
 export default function EditMenu() {
   const location = useLocation();
@@ -23,6 +25,9 @@ export default function EditMenu() {
   const [categories, setCategories] = useState([]);
   const [isWeightMenu, setIsWeightMenu] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient()
+ const { saveScrollPosition, restoreScrollPosition, clearScrollPosition } = useScrollRestoration('edit-menu');
+
   const {
     t,
     i18n: { language },
@@ -130,18 +135,19 @@ export default function EditMenu() {
       const updatedMenu = await updateMenuItem(menuData, data?._id);
       if (updatedMenu?.status === 200) {
         successAdd(`${t("edit_success")}`);
-        navigate("/menu");
-        getMenus(storeDetail?._id);
+        // set timeout before calback
+        setTimeout(() => {
+          queryClient.refetchQueries({ queryKey: ['menu_management'] });
+          clearScrollPosition();
+          navigate("/menu");
+        }, 500)
       }
     } catch (error) {
       console.error("Update failed:", error);
       errorAdd(`${t("edit_failed")}`);
     }
   };
-  console.log("DATA", data);
-  console.log("formData?.isWeightMenu", data?.isWeightMenu);
-  console.log("isWeightMenu", isWeightMenu);
-  console.log("formData?.unitWeightMenu", data?.unitWeightMenu);
+
 
   return (
     <div style={BODY}>
@@ -256,9 +262,8 @@ export default function EditMenu() {
             <input
               type="text"
               {...register("name", { required: true })}
-              className={`w-full p-2 border rounded ${
-                errors.name ? "border-red-500" : ""
-              }`}
+              className={`w-full p-2 border rounded ${errors.name ? "border-red-500" : ""
+                }`}
             />
             {errors.name && (
               <span className="text-red-500">ກະລຸນາປ້ອນຊື່ອາຫານ</span>
@@ -310,9 +315,8 @@ export default function EditMenu() {
                   field.onChange(rawValue);
                 }}
                 value={field.value}
-                className={`w-full p-2 border rounded ${
-                  errors.price ? "border-red-500" : ""
-                }`}
+                className={`w-full p-2 border rounded ${errors.price ? "border-red-500" : ""
+                  }`}
               />
             )}
           />

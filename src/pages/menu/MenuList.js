@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, createContext } from "react";
 import { Formik } from "formik";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
@@ -39,9 +39,11 @@ import { cn } from "../../utils/cn";
 import { useMenuStore } from "../../zustand/menuStore";
 import { useStoreStore } from "../../zustand/storeStore";
 import { useCounterRoleStore } from "../../zustand/counterRole";
-import { createMenu } from "../../services/menu";
+import { createMenu, getMenuDatas } from "../../services/menu";
 
 import { useStore } from "../../store";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import useScrollRestoration from "../../hooks/useScrollRestoration";
 
 export default function MenuList() {
   const {
@@ -50,6 +52,8 @@ export default function MenuList() {
   } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
+  const queryClient = useQueryClient()
+ const { saveScrollPosition } = useScrollRestoration('product-table');
 
   const [showSetting, setShowSetting] = useState(false);
   const [showOptionSetting, setShowOptionSetting] = useState(false);
@@ -98,13 +102,10 @@ export default function MenuList() {
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState([]);
-  const { updateMenuItem, createMenuItem, deleteMenuItem, getMenus } =
-    useMenuStore();
+  const { updateMenuItem, createMenuItem, deleteMenuItem } = useMenuStore();
   const { storeDetail } = useStoreStore();
   const { counterRoleEditMenu } = useCounterRoleStore();
   const { profile } = useStore();
-
-  console.log("counterRoleEditMenu", counterRoleEditMenu);
 
   const location = useLocation();
   const pathParts = location.pathname.split("/");
@@ -117,7 +118,7 @@ export default function MenuList() {
         if (_localData) {
           setgetTokken(_localData);
           getcategory(_localData?.DATA?.storeId);
-          getMenu(_localData?.DATA?.storeId);
+          queryClient.refetchQueries({ queryKey: ['menu_management'] })
         }
       } catch (err) {
         console.log(err);
@@ -125,45 +126,45 @@ export default function MenuList() {
     };
     fetchData();
     // getCategory();
+
   }, []);
 
-  useEffect(() => {
-    if (filterName || filterCategory) {
-      const fetchFilter = async () => {
-        try {
-          const _localData = await getLocalData();
+  // useEffect(() => {
+  //   if (filterName || filterCategory) {
+  //     const fetchFilter = async () => {
+  //       try {
+  //         const _localData = await getLocalData();
 
-          setIsLoading(true);
-          // getMenu(_localData?.DATA?.storeId, filterCategory)
+  //         setIsLoading(true);
+  //         // getMenu(_localData?.DATA?.storeId, filterCategory)
 
-          await fetch(
-            MENUS +
-              `/?storeId=${_localData?.DATA?.storeId}${
-                filterCategory === "All" ? "" : `&categoryId=${filterCategory}`
-              }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
-            {
-              method: "GET",
-            }
-          )
-            .then((response) => response.json())
-            .then((json) => {
-              setMenus(json);
-            });
-          setIsLoading(false);
-        } catch (err) {
-          console.log(err);
-          setIsLoading(false);
-        }
-      };
-      fetchFilter();
-    }
-  }, [filterName, filterCategory]);
+  //         await fetch(
+  //           MENUS +
+  //           `/?storeId=${_localData?.DATA?.storeId}${filterCategory === "All" ? "" : `&categoryId=${filterCategory}`
+  //           }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
+  //           {
+  //             method: "GET",
+  //           }
+  //         )
+  //           .then((response) => response.json())
+  //           .then((json) => {
+  //             setMenus(json);
+  //           });
+  //         setIsLoading(false);
+  //       } catch (err) {
+  //         console.log(err);
+  //         setIsLoading(false);
+  //       }
+  //     };
+  //     fetchFilter();
+  //   }
+  // }, [filterName, filterCategory]);
 
   const getcategory = async (id) => {
     try {
       await fetch(
         END_POINT_SEVER_TABLE_MENU +
-          `/v3/categories?storeId=${id}&isDeleted=false`,
+        `/v3/categories?storeId=${id}&isDeleted=false`,
         {
           method: "GET",
         }
@@ -179,32 +180,64 @@ export default function MenuList() {
     setMenuOptionsCount((prev) => ({ ...prev, [menuId]: count }));
   };
 
-  const getMenu = async (id, categoryId) => {
-    try {
-      setIsLoading(true);
-      await fetch(
-        MENUS +
-          `/?storeId=${id}${
-            filterName && filterName !== "" ? `&name=${filterName}` : ""
-          }${
-            categoryId && categoryId !== "All"
-              ? `&categoryId=${categoryId}`
-              : ""
-          }`,
-        {
-          method: "GET",
-        }
-      )
-        .then((response) => response.json())
-        .then((json) => {
-          setMenus(json);
-        });
-      setIsLoading(false);
-    } catch (err) {
-      console.log(err);
-      setIsLoading(false);
+  // Option 3: More flexible parameter building
+const buildQueryParams = (storeId, filters = {}) => {
+  const params = new URLSearchParams();
+  
+  params.append('storeId', storeId);
+  
+  if (filters.name) params.append('name', filters.name);
+  if (filters.categoryId && filters.categoryId !== 'All') {
+    params.append('categoryId', filters.categoryId);
+  }
+  if (filters.skip !== undefined) params.append('skip', filters.skip);
+  if (filters.limit !== undefined) params.append('limit', filters.limit);
+  
+  return `?${params.toString()}`;
+};
+
+  // Query menu list
+  const { data: menuDatas, isLoading: loadingMenu } = useQuery({
+    queryKey: ["menu_management", filterName, filterCategory],
+    queryFn: async () => {
+      const _localData = await getLocalData();
+
+      let params = `?storeId=${_localData?.DATA?.storeId}${filterName && filterName !== "" ? `&name=${filterName}` : ""
+        }${filterCategory && filterCategory !== "All"
+          ? `&categoryId=${filterCategory}`
+          : ""
+        }`;
+      const response = await getMenuDatas(params);
+      return response;
     }
-  };
+  })
+
+  // console.log("logs transtack-query: ", menuDatas)
+
+  // const getMenu = async (id, categoryId) => {
+  //   try {
+  //     setIsLoading(true);
+  //     await fetch(
+  //       MENUS +
+  //       `/?storeId=${id}${filterName && filterName !== "" ? `&name=${filterName}` : ""
+  //       }${categoryId && categoryId !== "All"
+  //         ? `&categoryId=${categoryId}`
+  //         : ""
+  //       }`,
+  //       {
+  //         method: "GET",
+  //       }
+  //     )
+  //       .then((response) => response.json())
+  //       .then((json) => {
+  //         setMenus(json);
+  //       });
+  //     setIsLoading(false);
+  //   } catch (err) {
+  //     console.log(err);
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const _addMenuOption = () => {
     setDataMenuOption([
@@ -299,7 +332,8 @@ export default function MenuList() {
         handleClose();
         // handleShow();
         setgetTokken(_localData);
-        getMenu(_localData?.DATA?.storeId);
+        queryClient.refetchQueries({ queryKey: ['menu_management'] })
+
         setMenuType("MENU");
         setConnectMenuId("");
         successAdd(`${t("add_success")}`);
@@ -349,11 +383,11 @@ export default function MenuList() {
         handleClose();
         // handleShow();
         setgetTokken(_localData);
-        getMenu(_localData?.DATA?.storeId);
+        queryClient.refetchQueries({ queryKey: ['menu_management'] })
+
         setMenuType("MENU");
         setConnectMenuId("");
         successAdd(`${t("add_success")}`);
-        getMenus(_localData?.DATA?.storeId);
         values.name = "";
         values.name_en = "";
         values.name_cn = "";
@@ -393,10 +427,10 @@ export default function MenuList() {
       if (resData?.data) {
         const _localData = await getLocalData();
         setgetTokken(_localData);
-        getMenu(_localData?.DATA?.storeId);
+        queryClient.refetchQueries({ queryKey: ['menu_management'] })
+
         handleClose3();
         successAdd(`${t("delete_success")}`);
-        getMenus(_localData?.DATA?.storeId);
       }
     } catch (err) {
       errorAdd(`${t("delete_fail")}`);
@@ -440,7 +474,8 @@ export default function MenuList() {
       if (updatedMenu?.data) {
         handleClose2();
         successAdd(`${t("edit_success")}`);
-        getMenus(getTokken?.DATA?.storeId);
+        queryClient.refetchQueries({ queryKey: ['menu_management'] })
+
       }
     } catch (error) {
       console.error("Update menu item error:", error.message);
@@ -682,17 +717,6 @@ export default function MenuList() {
 
   const [categoriesRestaurant, setCategoriesRestaurant] = useState([]);
 
-  // const getCategory = async () => {
-  //   try {
-  //     await fetch(master_menu_api_dev + `/api/restaurant-categories`, {
-  //       method: "GET",
-  //     })
-  //       .then((response) => response.json())
-  //       .then((json) => setCategoriesRestaurant(json));
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
 
   return (
     <div style={BODY}>
@@ -839,11 +863,11 @@ export default function MenuList() {
           >
             <table
               className="table table-hover"
-              // style={{ maxWidth: 700 }}
-              // style={{
-              // 	width: "100%",
-              // 	overflowX: "scroll",
-              // }}
+            // style={{ maxWidth: 700 }}
+            // style={{
+            // 	width: "100%",
+            // 	overflowX: "scroll",
+            // }}
             >
               <thead className="thead-light">
                 <tr>
@@ -920,12 +944,12 @@ export default function MenuList() {
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? (
+                {loadingMenu ? (
                   <td colSpan={9}>
                     <Spinner animation="border" variant="warning" />
                   </td>
                 ) : (
-                  Menus?.map((data, index) => {
+                  menuDatas?.map((data, index) => {
                     return (
                       <tr key={index}>
                         <td>{index + 1}</td>
@@ -1094,14 +1118,15 @@ export default function MenuList() {
                               <button>
                                 <FontAwesomeIcon
                                   icon={faEdit}
-                                  onClick={() =>
+                                  onClick={() => {
                                     navigate(
                                       `/settingStore/edit-menu/${storeDetail?._id}`,
                                       {
                                         state: { data, index },
                                       }
-                                    )
-                                  }
+                                    );
+                                    saveScrollPosition();
+                                  }}
                                   className=" text-orange-500 ml-[20px]"
                                 />
                               </button>
@@ -1130,20 +1155,18 @@ export default function MenuList() {
                           ) : (
                             <>
                               <button
-                                className={`${
-                                  !counterRoleEditMenu
-                                    ? "cursor-not-allowed"
-                                    : ""
-                                }`}
+                                className={`${!counterRoleEditMenu
+                                  ? "cursor-not-allowed"
+                                  : ""
+                                  }`}
                                 disabled={!counterRoleEditMenu}
                               >
                                 <FontAwesomeIcon
                                   icon={faTrashAlt}
-                                  className={`${
-                                    !counterRoleEditMenu
-                                      ? "text-red-300 ml-[20px]"
-                                      : " text-red-500 ml-[20px]"
-                                  }`}
+                                  className={`${!counterRoleEditMenu
+                                    ? "text-red-300 ml-[20px]"
+                                    : " text-red-500 ml-[20px]"
+                                    }`}
                                   onClick={() =>
                                     handleShow3(data?._id, data?.name)
                                   }
@@ -1151,20 +1174,18 @@ export default function MenuList() {
                               </button>
 
                               <button
-                                className={`${
-                                  !counterRoleEditMenu
-                                    ? "cursor-not-allowed"
-                                    : ""
-                                }`}
+                                className={`${!counterRoleEditMenu
+                                  ? "cursor-not-allowed"
+                                  : ""
+                                  }`}
                                 disabled={!counterRoleEditMenu}
                               >
                                 <FontAwesomeIcon
                                   icon={faCubes}
-                                  className={`${
-                                    !counterRoleEditMenu
-                                      ? "text-red-300 ml-[20px]"
-                                      : " text-red-500 ml-[20px]"
-                                  }`}
+                                  className={`${!counterRoleEditMenu
+                                    ? "text-red-300 ml-[20px]"
+                                    : " text-red-500 ml-[20px]"
+                                    }`}
                                   onClick={() =>
                                     navigate(
                                       `/settingStore/menu/menu-stock/${data?._id}`
@@ -1200,7 +1221,7 @@ export default function MenuList() {
           open={showAddMenus}
           onClose={handleCloseAddMenus}
           categoriesRestaurant={categoriesRestaurant}
-          // onSubmit={_confirmeDelete}
+        // onSubmit={_confirmeDelete}
         />
 
         {/* add menu */}
@@ -1337,8 +1358,8 @@ export default function MenuList() {
                         style={{
                           border:
                             errors.unitWeightMenu &&
-                            touched.unitWeightMenu &&
-                            errors.unitWeightMenu
+                              touched.unitWeightMenu &&
+                              errors.unitWeightMenu
                               ? "solid 1px red"
                               : "",
                         }}
@@ -1373,8 +1394,8 @@ export default function MenuList() {
                       style={{
                         border:
                           errors.categoryId &&
-                          touched.categoryId &&
-                          errors.categoryId
+                            touched.categoryId &&
+                            errors.categoryId
                             ? "solid 1px red"
                             : "",
                       }}
@@ -1515,10 +1536,10 @@ export default function MenuList() {
                         const rawValue = e.target.value.replace(/[^0-9]/g, "");
                         const formattedValue = rawValue
                           ? new Intl.NumberFormat("la-LA", {
-                              style: "currency",
-                              currency: "LAK",
-                              minimumFractionDigits: 0,
-                            }).format(rawValue)
+                            style: "currency",
+                            currency: "LAK",
+                            minimumFractionDigits: 0,
+                          }).format(rawValue)
                           : "";
                         setFieldValue("price", rawValue);
                         setFormattedPrice(formattedValue);
@@ -1534,10 +1555,10 @@ export default function MenuList() {
                         formattedPrice ||
                         (values?.price
                           ? new Intl.NumberFormat("la-LA", {
-                              style: "currency",
-                              currency: "LAK",
-                              minimumFractionDigits: 0,
-                            }).format(values.price)
+                            style: "currency",
+                            currency: "LAK",
+                            minimumFractionDigits: 0,
+                          }).format(values.price)
                           : "LAK 0")
                       }
                       placeholder={t("food_name")}
@@ -1774,7 +1795,7 @@ export default function MenuList() {
                 const _localData = await getLocalData();
                 if (_localData) {
                   setgetTokken(_localData);
-                  getMenu(_localData?.DATA?.storeId, filterCategory);
+                  queryClient.refetchQueries({ queryKey: ['menu_management'] })
                 }
               };
               getData();
@@ -1978,8 +1999,8 @@ export default function MenuList() {
                           style={{
                             border:
                               errors.name_en &&
-                              touched.name_en &&
-                              errors.name_en
+                                touched.name_en &&
+                                errors.name_en
                                 ? "solid 1px red"
                                 : "",
                           }}
@@ -2001,8 +2022,8 @@ export default function MenuList() {
                           style={{
                             border:
                               errors.name_cn &&
-                              touched.name_cn &&
-                              errors.name_cn
+                                touched.name_cn &&
+                                errors.name_cn
                                 ? "solid 1px red"
                                 : "",
                           }}
@@ -2022,8 +2043,8 @@ export default function MenuList() {
                           style={{
                             border:
                               errors.name_kr &&
-                              touched.name_kr &&
-                              errors.name_kr
+                                touched.name_kr &&
+                                errors.name_kr
                                 ? "solid 1px red"
                                 : "",
                           }}
@@ -2044,10 +2065,10 @@ export default function MenuList() {
                         const rawValue = e.target.value.replace(/[^0-9]/g, "");
                         const formattedValue = rawValue
                           ? new Intl.NumberFormat("la-LA", {
-                              style: "currency",
-                              currency: "LAK",
-                              minimumFractionDigits: 0,
-                            }).format(rawValue)
+                            style: "currency",
+                            currency: "LAK",
+                            minimumFractionDigits: 0,
+                          }).format(rawValue)
                           : "";
                         setFieldValue("price", rawValue);
                         setFormattedPrice(formattedValue);
@@ -2063,10 +2084,10 @@ export default function MenuList() {
                         formattedPrice ||
                         (values?.price
                           ? new Intl.NumberFormat("la-LA", {
-                              style: "currency",
-                              currency: "LAK",
-                              minimumFractionDigits: 0,
-                            }).format(values.price)
+                            style: "currency",
+                            currency: "LAK",
+                            minimumFractionDigits: 0,
+                          }).format(values.price)
                           : "LAK 0")
                       }
                       placeholder={t("food_name")}

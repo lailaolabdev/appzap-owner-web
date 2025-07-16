@@ -1,7 +1,7 @@
 import Axios from "axios";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Form,Spinner } from "react-bootstrap";
+import { Modal, Button, Form, Spinner } from "react-bootstrap";
 import { END_POINT_SEVER, getLocalData } from "../../constants/api";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
 import convertNumber from "../../helpers/convertNumber";
@@ -16,6 +16,7 @@ import { useStoreStore } from "../../zustand/storeStore";
 import { COLOR_APP, END_POINT } from "../../constants";
 import { getHeaders } from "../../services/auth";
 import useQuery from "../../helpers/useQuery";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 export default function PopUpDetailBillDebt({
@@ -25,6 +26,8 @@ export default function PopUpDetailBillDebt({
   billDebtData,
 }) {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
+
   const [numericValue, setNumericValue] = useState(0);
   const [remainingAmount, setRemainingAmount] = useState(null);
   const [forcus, setForcus] = useState("CASH");
@@ -86,9 +89,12 @@ export default function PopUpDetailBillDebt({
     setIsLoading(true);
 
     try {
-      await billReset();
-      handleClickConfirmDebt();
-      _checkBill();
+      await billReset(billDebtData?.billId?._id, storeDetail?._id);
+      await handleClickConfirmDebt();
+      await _checkBill();
+      queryClient.refetchQueries({ queryKey: ['reportDebtBill'] });
+      queryClient.refetchQueries({ queryKey: ['bill_debtion_data'] });
+
       successAdd(t("paymentCompleted"));
     } catch (error) {
       errorAdd(t("checkbill_fial"));
@@ -98,12 +104,12 @@ export default function PopUpDetailBillDebt({
     }
   };
 
-  const billReset = async () => {
+  const billReset = async (billId, storeId) => {
     try {
       const url = END_POINT_SEVER + "/v3/bill-reset";
       const _body = {
-        id: billDebtData?.billId?._id,
-        storeId: storeDetail?._id,
+        id: billId,
+        storeId: storeId,
       };
       const res = await axios.post(url, _body, {
         headers: await getHeaders(accessToken),
@@ -133,7 +139,6 @@ export default function PopUpDetailBillDebt({
           headers: TOKEN,
         }
       );
-      callback();
     } catch (err) {
       console.log(err);
     }
@@ -167,8 +172,8 @@ export default function PopUpDetailBillDebt({
             debtPaymentDateTime: [{
               payAmount: totalPayment,
               transferAmount: transfer,
-              billAmount:totalPayment + transfer,
-              billAmountBefore:totalPayment + transfer,
+              billAmount: totalPayment + transfer,
+              billAmountBefore: totalPayment + transfer,
               dateTime: currentDateTime
             }]
           },
@@ -241,7 +246,7 @@ export default function PopUpDetailBillDebt({
                   }}
                   placeholder="0"
                 />
-                 <div style={{ color: "red" }}>{errorAdd}</div>
+                <div style={{ color: "red" }}>{errorAdd}</div>
               </Form.Group>
 
               <Form.Group hidden={paymentMethod !== "TRANSFER" && paymentMethod !== "TRANSFER_CASH"}>
@@ -325,42 +330,42 @@ export default function PopUpDetailBillDebt({
         ) : null}
       </Modal.Body>
       <Modal.Footer>
-      {!disabledEditBill ? (
-        <Button onClick={() => setDisabledEditBill(true)}>
-          {t("Do_you_want_to_make_a_payment")}?
-        </Button>
-      ) : (
-        <>
-          <Button
-            onClick={handleSubmit}
-            disabled={
-              (billDebtData?.status !== "DEBT" &&
-                billDebtData?.status !== "PARTIAL_PAYMENT") ||
-              isLoading || isPaymentExceeded
-            }
-          >
-            {isLoading ? (
-              <>
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  role="status"
-                  aria-hidden="true"
-                  style={{ marginRight: "8px" }}
-                />
-                {t("processing")}
-              </>
-            ) : (
-              `${t("confirm")}`
-            )}
+        {!disabledEditBill ? (
+          <Button onClick={() => setDisabledEditBill(true)}>
+            {t("Do_you_want_to_make_a_payment")}?
           </Button>
-          <Button variant="secondary" onClick={() => setDisabledEditBill(false)}>
-            {t("cancel")}
-          </Button>
-        </>
-      )}
-    </Modal.Footer>
+        ) : (
+          <>
+            <Button
+              onClick={handleSubmit}
+              disabled={
+                (billDebtData?.status !== "DEBT" &&
+                  billDebtData?.status !== "PARTIAL_PAYMENT") ||
+                isLoading || isPaymentExceeded
+              }
+            >
+              {isLoading ? (
+                <>
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                    style={{ marginRight: "8px" }}
+                  />
+                  {t("processing")}
+                </>
+              ) : (
+                `${t("confirm")}`
+              )}
+            </Button>
+            <Button variant="secondary" onClick={() => setDisabledEditBill(false)}>
+              {t("cancel")}
+            </Button>
+          </>
+        )}
+      </Modal.Footer>
     </Modal>
   );
 }

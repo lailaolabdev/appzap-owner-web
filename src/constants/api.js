@@ -36,7 +36,7 @@ export const END_POINT_WEB_CLIENT = isProduction
   : dev_web_client;
 
 const production_bunsi = "https://accounting.lailaolab.la/";
-const dev_bunsi = "http://localhost:7777";
+// const dev_bunsi = "http://localhost:7777";
 
 // export const END_POINT_SERVER_BUNSI = "http://localhost:7777";
 export const END_POINT_SERVER_BUNSI = isProduction
