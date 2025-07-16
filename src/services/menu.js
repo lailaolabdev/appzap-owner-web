@@ -1,8 +1,7 @@
 import { END_POINT_SEVER, END_POINT_SEVER_TABLE_MENU } from "../constants/api";
 import axios from "axios";
 import { getHeaders } from "./auth";
-import { Store } from "@material-ui/icons";
-import { data } from "browserslist";
+import axiosInstance from "../utils/axios";
 
 export const getMenus = async (findby) => {
   try {
@@ -13,6 +12,16 @@ export const getMenus = async (findby) => {
     return error;
   }
 };
+
+export const getMenuDatas = async (findby) => {
+  try {
+    const response = await axiosInstance.get(`/v3/menus${findby}`);
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 
 export const getMenusByStoreId = async (storeId) => {
   try {
