@@ -476,7 +476,7 @@ export default function BillForCheckOut80({
         <Row>
           <Col xs={7}>
             <div
-              style={{ textAlign: "right", fontSize: 16, fontWeight: "bold" }}
+              style={{ textAlign: "right", fontSize: 15, fontWeight: "bold" }}
             >
               {/* {t("aPriceHasToPay")} + {t("vat")} {taxPercent}%{" "}({storeDetail?.firstCurrency}): */}
               {t("total")} + {"ອມພ"} {taxPercent}% {storeDetail?.firstCurrency}:
@@ -484,7 +484,7 @@ export default function BillForCheckOut80({
           </Col>
           <Col>
             <div
-              style={{ textAlign: "right", fontSize: 16, fontWeight: "bold" }}
+              style={{ textAlign: "right", fontSize: 15, fontWeight: "bold" }}
             >
               {moneyCurrency(
                 Math.floor(
@@ -501,12 +501,12 @@ export default function BillForCheckOut80({
         {currencyData?.map((item, index) => (
           <Row key={index}>
             <Col xs={7}>
-              <div className={`text-right font-bold ${storeDetail?.isShowLabelRate ? "text-[16px]" : "text-[12px]"}`}>
+              <div className={`text-right font-bold ${storeDetail?.isShowLabelRate ? "text-[15px]" : "text-[12px]"}`}>
                 {item?.currencyCode}:
               </div>
             </Col>
             <Col>
-            <div className={`text-right font-bold ${storeDetail?.isShowLabelRate ? "text-[16px]" : "text-[12px]"}`}>
+            <div className={`text-right font-bold ${storeDetail?.isShowLabelRate ? "text-[15px]" : "text-[12px]"}`}>
                 {moneyCurrency(
                   (total + taxAmount + serviceChargeAmount) / item?.sell
                 )}

@@ -99,6 +99,8 @@ export default function OrderPage() {
 
   const customerSocket = getCustomerSocketInstance();
 
+  // console.log("orderItems", orderItems);
+
   // const customerSocket = socketClient(END_POINT_SOCKET_CUSTOMER, {
   //   transports: ["websocket", "polling"],
   // });

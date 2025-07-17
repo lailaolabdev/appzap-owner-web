@@ -1297,7 +1297,7 @@ export default function DashboardPage() {
 
       <Modal
         show={openModalAmountDiscount}
-        size="md"
+        size="lg"
         onHide={() => setOpenModalAmountDiscount(false)}
       >
         <Modal.Header closeButton>
@@ -1307,6 +1307,7 @@ export default function DashboardPage() {
           <table style={{ width: "100%" }}>
             <tr className="border-b">
               <th className="text-left">{t("no")}</th>
+              <th className="text-left">{t("table")}</th>
               <th className="text-center">{t("code")}</th>
               <th className="text-center">{t("bill_amount")}</th>
               <th className="text-center">{t("discount")}</th>
@@ -1316,6 +1317,7 @@ export default function DashboardPage() {
               dataAmountDiscountItems?.map((item, index) => (
                 <tr key={item?._id} className="border-b">
                   <td className="text-left">{index + 1}</td>
+                  <td className="text-left">{item?.tableId?.name}</td>
                   <td className="text-center">{item?.code}</td>
                   <td className="text-center">
                     {moneyCurrency(item?.billAmount)}
@@ -1327,7 +1329,7 @@ export default function DashboardPage() {
                       : storeDetail?.firstCurrency}
                   </td>
                   <td className="text-right">
-                    {moneyCurrency(item.discountType === "PERCENT" ? (item?.billAmount / 100) * item?.discount : item?.discount)}{" "}
+                    {moneyCurrency(item.discountType === "PERCENT" ? (item?.billAmountBefore / 100) * item?.discount : item?.discount)}{" "}
                     {storeDetail?.firstCurrency}
                   </td>
                 </tr>
