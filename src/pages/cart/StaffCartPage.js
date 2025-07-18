@@ -57,6 +57,9 @@ function StaffCartPage() {
       orders.push({
         id: item?._id,
         name: item?.name,
+        name_en: item?.name_en,
+        name_kr: item?.name_kr,
+        name_cn: item?.name_cn,
         quantity: item?.quantity,
         note: item?.note,
         options: item?.options,
