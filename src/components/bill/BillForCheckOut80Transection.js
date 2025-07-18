@@ -56,7 +56,7 @@ export default function BillForCheckOut80Transection({
   const serviceChargeRef = useRef(serviceCharge);
   const enableServiceChangeRef = useRef(enableServiceChange);
 
-  console.log("dataBill:", dataBill);
+  // console.log("dataBill:", dataBill);
 
   const orders =
     orderPayBefore && orderPayBefore.length > 0
