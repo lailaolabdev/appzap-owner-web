@@ -1397,5 +1397,6 @@
   "updatedAt":"ແກ້ໄຂວັນທີ",
   "updatedBy":"ແກ້ໄຂໂດຍ",
   "stock_is_missing":"ສະຕ໋ອກເຫຼືອ 0",
-  "status_is_served":"ສະຖານະເປັນເສີບແລ້ວ"
+  "status_is_served":"ສະຖານະເປັນເສີບແລ້ວ",
+  "filter_date_local": "ເປີດຮ້ານຕາມໂມງໃນພື້ນທີ່"
 }
