@@ -99,9 +99,9 @@ export default function DetailBrancPage() {
       storeDetail?.branchStartTime !== undefined &&
       storeDetail?.branchEndTime !== undefined
     ) {
-      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}`;
+      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     } else {
-      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     }
     const data = await getReports(state?.storeId, findBy);
 
@@ -124,9 +124,9 @@ export default function DetailBrancPage() {
       storeDetail?.branchStartTime !== undefined &&
       storeDetail?.branchEndTime !== undefined
     ) {
-      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}`;
+      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     } else {
-      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     }
     const data = await getSalesInformationReport(state?.storeId, findBy);
     if (data.error) {
@@ -148,9 +148,9 @@ export default function DetailBrancPage() {
       storeDetail?.branchStartTime !== undefined &&
       storeDetail?.branchEndTime !== undefined
     ) {
-      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}`;
+      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     } else {
-      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     }
     const data = await getUserReport(state?.storeId, findBy);
     if (data.error) {
@@ -172,9 +172,9 @@ export default function DetailBrancPage() {
       storeDetail?.branchStartTime !== undefined &&
       storeDetail?.branchEndTime !== undefined
     ) {
-      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}`;
+      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     } else {
-      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     }
     const data = await getMenuReport(state?.storeId, findBy);
     if (data.error) {
@@ -196,9 +196,9 @@ export default function DetailBrancPage() {
       storeDetail?.branchStartTime !== undefined &&
       storeDetail?.branchEndTime !== undefined
     ) {
-      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}`;
+      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     } else {
-      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     }
     const data = await getCategoryReport(state?.storeId, findBy);
     if (data.error) {
@@ -220,9 +220,9 @@ export default function DetailBrancPage() {
       storeDetail?.branchStartTime !== undefined &&
       storeDetail?.branchEndTime !== undefined
     ) {
-      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}`;
+      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     } else {
-      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     }
     const data = await getMoneyReport(state?.storeId, findBy);
     if (data.error) {
@@ -247,9 +247,9 @@ export default function DetailBrancPage() {
       storeDetail?.branchStartTime !== undefined &&
       storeDetail?.branchEndTime !== undefined
     ) {
-      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}`;
+      findBy = `?startDate=${storeDetail?.branchStartDate}&endDate=${storeDetail?.branchEndDate}&endTime=${storeDetail?.branchEndTime}&startTime=${storeDetail?.branchStartTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     } else {
-      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     }
     const data = await getPromotionReport(state?.storeId, findBy);
     if (data.error) {

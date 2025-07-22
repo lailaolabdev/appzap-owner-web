@@ -1189,6 +1189,7 @@
   "wastes": "ສິ່ງສູນເສຍ",
   "order_": "ສັ່ງຊື້",
   "shift": "ໂມງກະ",
+  "filter_date_local": "ເປີດຮ້ານຕາມໂມງໃນພື້ນທີ່",
   "shift_open": "ເປີດກະ",
   "shift_close": "ປິດກະ",
   "shift_name": "ຊື່ກະ",

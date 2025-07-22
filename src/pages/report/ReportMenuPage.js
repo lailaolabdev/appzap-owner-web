@@ -60,38 +60,38 @@ export default function ReportMenuPage() {
 
   // function
   const getReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     const data = await getReports(storeDetail?._id, findBy);
     setReportData(data);
   };
   const getSalesInformationReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     const data = await getSalesInformationReport(storeDetail?._id, findBy);
     setSalesInformationReport(data);
   };
   const getUserReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     const data = await getUserReport(storeDetail?._id, findBy);
     setUserReport(data);
   };
 
   const getMenuReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     const data = await getMenuReport(storeDetail?._id, findBy);
     setMenuReport(data);
   };
   const getCategoryReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     const data = await getCategoryReport(storeDetail?._id, findBy);
     setCategoryReport(data);
   };
   const getMoneyReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     const data = await getMoneyReport(storeDetail?._id, findBy);
     setMoneyReport(data);
   };
   const getPromotionReportData = async () => {
-    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+    const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
     const data = await getPromotionReport(storeDetail?._id, findBy);
     setPromotionReport(data);
   };

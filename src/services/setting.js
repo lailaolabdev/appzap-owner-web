@@ -182,6 +182,7 @@ export const updateCounterFilterShift = async (settingId, dataUpdate) => {
   }
 };
 
+
 export const updateSettingByStore = async ({ storeId, settings }) => {
   try {
     let body = {

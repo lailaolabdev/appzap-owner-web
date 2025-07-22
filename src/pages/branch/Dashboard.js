@@ -77,12 +77,14 @@ export default function Dashboard() {
         findby += `userId=${DATA?._id}&`;
         findby += `skip=${(paginations - 1) * limitData}&`;
         findby += `limit=${limitData}&`;
+        findby += `isDateLocal=${storeDetail?.isDateLocal}&`;
         if (filterValue) {
           findby += `storeName=${filterValue}`;
         }
 
         let findbyIncome = "?";
         findbyIncome += `userId=${DATA?._id}&`;
+        findbyIncome += `isDateLocal=${storeDetail?.isDateLocal}&`;
         if (filterValue) {
           findbyIncome += `storeName=${filterValue}&`;
         }

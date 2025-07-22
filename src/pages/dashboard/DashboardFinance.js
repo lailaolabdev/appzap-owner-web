@@ -308,6 +308,7 @@ export default function DashboardFinance({
       findby += `endTime=${endTime}`;
       findby += `&skip=${(pagination - 1) * limitData}`;
       findby += `&limit=${limitData}`;
+      findby += `&isDateLocal=${storeDetail?.isDateLocal}`;
 
       if (shiftId) {
         findby += `&shiftId=${shiftId}`;
@@ -323,6 +324,7 @@ export default function DashboardFinance({
       if (shiftCurrent[0]) {
         findby += `&shiftId=${shiftCurrent[0]?._id}`;
       }
+      findby += `&isDateLocal=${storeDetail?.isDateLocal}`;
     }
 
     const getDataDashBoard = await axios.get(

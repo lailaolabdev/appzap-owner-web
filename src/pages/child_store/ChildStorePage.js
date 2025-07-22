@@ -77,7 +77,7 @@ export default function ChildStores() {
     const childId = selected?._id;
 
     const getSalesInformationReportData = async () => {
-      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
       const data = await getSalesInformationReport(
         childId,
         findBy,
@@ -88,13 +88,13 @@ export default function ChildStores() {
     };
 
     const getCategoryReportData = async () => {
-      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
       const data = await getCategoryReport(childId, findBy, selectedTableIds);
       setCategoryReport(data);
     };
 
     const getPromotionReportData = async () => {
-      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
       const data = await getPromotionReport(
         storeDetail?._id,
         findBy,
@@ -109,26 +109,26 @@ export default function ChildStores() {
     };
 
     const getMoneyReportData = async () => {
-      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
       const data = await getMoneyReport(childId, findBy, selectedTableIds);
       setMoneyReport(data);
     };
 
     const getUserReportData = async () => {
-      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
       const data = await getUserReport(childId, findBy, selectedTableIds);
 
       setUserReport(data);
     };
 
     const getReportData = async () => {
-      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
       const data = await getReports(childId, findBy, selectedTableIds);
       setReportData(data);
     };
 
     const getMenuReportData = async () => {
-      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
+      const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}&isDateLocal=${storeDetail?.isDateLocal}`;
       const data = await getMenuReport(childId, findBy, selectedTableIds);
       setMenuReport(data);
     };

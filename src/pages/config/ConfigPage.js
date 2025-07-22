@@ -22,6 +22,7 @@ import {
   updateSettingServiceChange,
   updateSettingShowAmountCafe,
   updateCounterFilterShift,
+  updateCounterFilterDateLocal,
   updateCounterBill,
   updateCounterMenu,
   updateSettingStockMissing,
@@ -164,6 +165,12 @@ export default function ConfigPage() {
     const isType = e.target.checked;
     await updateCounterFilterShift(profile?.data.storeId, { data: isType });
     // console.log("changeSericeChange", isType);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+
+  const changeCounterFilterDateLocal = async (e) => {
+    const isType = e.target.checked;
+    await updateStore({ isDateLocal: isType }, storeDetail?._id);
     await fetchStoreDetail(storeDetail?._id);
   };
 
@@ -785,6 +792,14 @@ export default function ConfigPage() {
                 {
                   title: t("counter_can_use_filter_shift"),
                   key: "filter_shift",
+                  state: storeDetail?.isCounterFilterShift,
+                  handler: changeCounterFilterShift,
+                },
+                {
+                  title: t("filter_date_local"),
+                  key: "filter_date_local",
+                  state: storeDetail?.isCounterFilterDateLocal,
+                  handler: changeCounterFilterDateLocal,
                 },
               ].map((item) => (
                 <div
@@ -807,17 +822,17 @@ export default function ConfigPage() {
                     }}
                   >
                     <Form.Label
-                      htmlFor={`switch-CounterFilterShift-${item?.key}`}
+                      htmlFor={`switch-CounterFilter-${item?.key}`}
                     >
-                      {storeDetail?.isCounterFilterShift
+                      {item?.state
                         ? `${t("oppen")}`
                         : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
                       type="switch"
-                      checked={storeDetail?.isCounterFilterShift}
-                      id={`switch-CounterFilterShift-${item?.key}`}
-                      onChange={changeCounterFilterShift}
+                      checked={item?.state}
+                      id={`switch-CounterFilter-${item?.key}`}
+                      onChange={item?.handler}
                     />
                   </div>
                 </div>

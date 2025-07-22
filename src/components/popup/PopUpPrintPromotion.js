@@ -199,7 +199,7 @@ export default function PopUpPrintPromotion({
       findBy += `endDate=${selectedDate}&`;
       findBy += `startTime=${startTime}&`;
       findBy += `endTime=${endTime}&`;
-
+      findBy += `isDateLocal=${storeDetail?.isDateLocal}&`;
       if (shiftId) {
         findBy += `shiftId=${shiftId}&`;
       }
@@ -208,6 +208,7 @@ export default function PopUpPrintPromotion({
       findBy += `endDate=${selectedDate}&`;
       findBy += `startTime=${startTime}&`;
       findBy += `endTime=${endTime}&`;
+      findBy += `isDateLocal=${storeDetail?.isDateLocal}&`;
       if (shiftCurrent?.[0]) {
         findBy += `shiftId=${shiftCurrent[0]?._id}&`;
       }

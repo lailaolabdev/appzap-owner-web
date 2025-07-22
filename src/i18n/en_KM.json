@@ -1261,5 +1261,6 @@
   "updatedAt":"កែប្រែក្នុង",
   "updatedBy":"កែប្រែដោយ",
   "stock_is_missing":"ស៊ុកមិនមាន",
-  "status_is_served":"ស្ថានភាពបានបញ្ចប់"
+  "status_is_served":"ស្ថានភាពបានបញ្ចប់",
+  "filter_date_local": "បើកទីនេះដោយថ្ងៃនិងពេលវេលា"
 }
