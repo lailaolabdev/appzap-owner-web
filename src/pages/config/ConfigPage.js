@@ -22,7 +22,6 @@ import {
   updateSettingServiceChange,
   updateSettingShowAmountCafe,
   updateCounterFilterShift,
-  updateCounterFilterDateLocal,
   updateCounterBill,
   updateCounterMenu,
   updateSettingStockMissing,
