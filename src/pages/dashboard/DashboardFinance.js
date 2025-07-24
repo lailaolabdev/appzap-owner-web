@@ -207,6 +207,7 @@ export default function DashboardFinance({
       const _body = {
         id: selectOrder?._id,
         storeId: storeDetail?._id,
+        dateUpdate: selectOrder?.createdAt,
       };
       const res = await axios.post(url, _body, {
         headers: await getHeaders(accessToken),

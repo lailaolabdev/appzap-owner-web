@@ -2546,7 +2546,7 @@ export default function TableList() {
                       </ButtonCustom>
                       <ButtonCustom
                         disabled={
-                          storeDetail.isBankPaymentAvailable === false &&
+                          storeDetail.isBankPaymentAvailable === false ||
                           !isCheckedOrderItem.every(
                             (e) =>
                               e?.status === "PAID" ||
