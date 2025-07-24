@@ -46,12 +46,14 @@ export default function CurrencyList() {
   const [toggleStates, setToggleStates] = useState({
     fer: storeDetail?.isShowExchangeRate || false,
     label: storeDetail?.isShowLabelRate || false,
+    vat: storeDetail?.isShowVatLabel || false,
   });
 
   // Mapping from UI key to backend field
   const keyToBackendField = {
     fer: 'isShowExchangeRate',
     label: 'isShowLabelRate',
+    vat: 'isShowVatLabel',
   };
 
   const handleShowAdd = () => setShowAdd(true);
@@ -371,8 +373,12 @@ export default function CurrencyList() {
                   key: "fer",
                 },
                 {
-                  title: t("ສະແດງ rate ເງີນ"),
+                  title: t("rate-lable-size"),
                   key: "label",
+                },
+                {
+                  title: t("vat-label"),
+                  key: "vat",
                 },
               ].map((item, index) => (
                 <div

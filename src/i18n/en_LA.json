@@ -1398,5 +1398,8 @@
   "updatedBy":"ແກ້ໄຂໂດຍ",
   "stock_is_missing":"ສະຕ໋ອກເຫຼືອ 0",
   "status_is_served":"ສະຖານະເປັນເສີບແລ້ວ",
-  "filter_date_local": "ເປີດຮ້ານຕາມໂມງໃນພື້ນທີ່"
+  "filter_date_local": "ເປີດຮ້ານຕາມໂມງໃນພື້ນທີ່",
+  "rate-lable-size": "ສະແດງຂະໜາດຂອງເລດອັດຕາແລກປ່ຽນ",
+  "vat-label": "ສະແດງ ອມພ",
+  "billEditing_cafe": "ແກ້ໄຂບິນຄາຟີ"
 }

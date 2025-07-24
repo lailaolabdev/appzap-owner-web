@@ -1398,5 +1398,8 @@
   "updatedBy": "Updated By",
   "stock_is_missing":"Stock quantity is 0",
   "status_is_served":"Status is served",
-  "filter_date_local": "Open store by date and time"
+  "filter_date_local": "Open store by date and time",
+  "rate-lable-size": "Rate label size",
+  "vat-label": "VAT label",
+  "billEditing_cafe": "Edit Cafe Bill"
 }

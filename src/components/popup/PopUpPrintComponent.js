@@ -40,6 +40,9 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   // state
   const [selectPrinter, setSelectPrinter] = useState("select");
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
+  const [startTime, setStartTime] = useState(moment().format("HH:mm:ss"));
+  const [endTime, setEndTime] = useState(moment().format("HH:mm:ss"));
   const [bills, setBill] = useState();
   const [bank, setBank] = useState([]);
   const [shiftData, setShiftData] = useState([]);
@@ -74,7 +77,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
     getMoneyReportData(startDate);
     getDebtReportData(startDate);
     getCategoryReportData(startDate);
-  }, [startDate, shiftId]);
+  }, [startDate, endDate, shiftId,]);
 
   const fetchShift = async () => {
     await getAllShift()
@@ -211,9 +214,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   };
 
   const findByData = () => {
-    const endDate = startDate; // Same date range for a single day
-    const startTime = "00:00:00";
-    const endTime = "23:59:59";
+    // const endDate = startDate; // Same date range for a single day
+    // const startTime = "00:00:00";
+    // const endTime = "23:59:59";
+
     let findBy = "?";
 
     if (profile?.data?.role === "APPZAP_ADMIN") {
@@ -400,10 +404,35 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
             <Form.Control
               type="date"
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              onChange={(e) => {
+                const newStartDate = e.target.value;
+                setStartDate(newStartDate);
+                // If end date is earlier than new start date, update end date to match start date
+                if (endDate < newStartDate) {
+                  setEndDate(newStartDate);
+                }
+              }}
             />
           </div>
-          {profile?.data?.role === "APPZAP_ADMIN"
+          <div>
+            <Form.Control
+              type="date"
+              value={endDate}
+              min={startDate} // Prevent selecting dates earlier than start date
+              onChange={(e) => {
+                const newEndDate = e.target.value;
+                // Only update if end date is not earlier than start date
+                if (newEndDate >= startDate) {
+                  setEndDate(newEndDate);
+                }
+              }}
+            />
+          </div>
+          
+        </div>
+
+        <div className="mt-2 items-start flex gap-2 justify-start">
+        {profile?.data?.role === "APPZAP_ADMIN"
             ? storeDetail?.isShift && (
                 <div className="flex items-center gap-2 whitespace-nowrap">
                   <Select

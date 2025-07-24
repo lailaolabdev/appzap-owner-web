@@ -730,7 +730,7 @@ export default function DashboardFinance({
         paymentMethodText = "ເງິນໂອນ";
         _amount = dataModal?.transferAmount;
         break;
-      case "BANK_TRANSFER":
+      case "APPZAP_TRANSFER":
         paymentMethodText = "ເງິນໂອນ (AppZap)";
         _amount = dataModal?.transferAmount;
         break;
@@ -907,7 +907,7 @@ export default function DashboardFinance({
                 }}
               >
                 <td>{(pagination - 1) * limitData + index + 1}</td>
-                <td>{item?.tableId?.name ?? "-"}</td>
+                <td>{item?.tableId?.name ?? "Cafe"}</td>
                 <td>{item?.code}</td>
                 <td>
                   {item?.discountType === "LAK"
@@ -1459,7 +1459,8 @@ export default function DashboardFinance({
                   selectOrder?.status === "ACTIVE" ||
                   profile?.data?.role !== "APPZAP_ADMIN" ||
                   dataModal?.isDebtPayment === true ||
-                  dataModal?.isDebtAndPay === true
+                  dataModal?.isDebtAndPay === true ||
+                  dataModal?.isCafe === true
                 }
                 onClick={handleEditBill}
               >
@@ -1485,27 +1486,21 @@ export default function DashboardFinance({
                   : t("billEditing")}
               </Button>
             ))}
-          {storeDetail?.isStatusCafe && (
             <Button
-              className="text-white font-bold"
-              // disabled={
-              //   disabledEditBill ||
-              //   selectOrder?.status === "ACTIVE" ||
-              //   profile?.data?.role != "APPZAP_ADMIN" ||
-              //   dataModal?.isDebtPayment === true ||
-              //   dataModal?.isDebtAndPay === true
-              // }
-              onClick={() => navigate(`/cafe/Edit/${dataModal?._id}`)}
-            >
-              {t("billEditing")}
-            </Button>
-          )}
-          <Button
             className="text-white font-bold"
             onClick={() => onPrintBill()}
-          >
-            {t("print_bill")}
-          </Button>
+            >
+              {t("print_bill")}
+            </Button>
+            {dataModal?.isCafe === true && (
+              <Button
+              className="text-white font-bold"
+              onClick={() => navigate(`/cafe/Edit/${dataModal?._id}`)}
+            >
+              {t("billEditing_cafe")}
+            </Button>
+            )}
+            
         </Modal.Footer>
       </Modal>
 
