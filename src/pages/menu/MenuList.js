@@ -102,7 +102,7 @@ export default function MenuList() {
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState([]);
-  const { updateMenuItem, createMenuItem, deleteMenuItem } = useMenuStore();
+  const { updateMenuItem, createMenuItem, deleteMenuItem, getMenus } = useMenuStore();
   const { storeDetail } = useStoreStore();
   const { counterRoleEditMenu } = useCounterRoleStore();
   const { profile } = useStore();
@@ -591,13 +591,17 @@ const buildQueryParams = (storeId, filters = {}) => {
         headers: headers,
       });
 
-      const _newData = [...Menus];
-
-      _newData[index].isShowCustomerWeb =
-        isOpenMenuCustomerWeb === "true" ? "false" : "true";
-      setMenus(_newData);
-      const data = _newData[index];
-      setDetailMenu({ data, index });
+      // Refetch menu data using React Query
+      queryClient.refetchQueries({ queryKey: ['menu_management'] });
+      
+      // Update the detail menu with the new data
+      if (menuDatas && menuDatas[index]) {
+        const updatedData = {
+          ...menuDatas[index],
+          isShowCustomerWeb: isOpenMenuCustomerWeb === "true" ? "false" : "true"
+        };
+        setDetailMenu({ data: updatedData, index });
+      }
     } catch (err) {
       console.log("err:", err);
     }
@@ -625,13 +629,17 @@ const buildQueryParams = (storeId, filters = {}) => {
         headers: headers,
       });
 
-      const _newData = [...Menus];
-
-      _newData[index].isShowCustomerApp =
-        isOpenMenuCustomerApp === "true" ? "false" : "true";
-      setMenus(_newData);
-      const data = _newData[index];
-      setDetailMenu({ data, index });
+      // Refetch menu data using React Query
+      queryClient.refetchQueries({ queryKey: ['menu_management'] });
+      
+      // Update the detail menu with the new data
+      if (menuDatas && menuDatas[index]) {
+        const updatedData = {
+          ...menuDatas[index],
+          isShowCustomerApp: isOpenMenuCustomerApp === "true" ? "false" : "true"
+        };
+        setDetailMenu({ data: updatedData, index });
+      }
     } catch (err) {
       console.log("err:", err);
     }
@@ -658,13 +666,17 @@ const buildQueryParams = (storeId, filters = {}) => {
         headers: headers,
       });
 
-      const _newData = [...Menus];
-
-      _newData[index].isShowStaffApp =
-        isOpenMenuStaff === "true" ? "false" : "true";
-      setMenus(_newData);
-      const data = _newData[index];
-      setDetailMenu({ data, index });
+      // Refetch menu data using React Query
+      queryClient.refetchQueries({ queryKey: ['menu_management'] });
+      
+      // Update the detail menu with the new data
+      if (menuDatas && menuDatas[index]) {
+        const updatedData = {
+          ...menuDatas[index],
+          isShowStaffApp: isOpenMenuStaff === "true" ? "false" : "true"
+        };
+        setDetailMenu({ data: updatedData, index });
+      }
     } catch (err) {
       console.log("err:", err);
     }
@@ -690,12 +702,17 @@ const buildQueryParams = (storeId, filters = {}) => {
         headers: headers,
       });
 
-      const _newData = [...Menus];
-      _newData[index].isShowCounterApp =
-        isShowCounterApp === "true" ? "false" : "true";
-      setMenus(_newData);
-      const data = _newData[index];
-      setDetailMenu({ data, index });
+      // Refetch menu data using React Query
+      queryClient.refetchQueries({ queryKey: ['menu_management'] });
+      
+      // Update the detail menu with the new data
+      if (menuDatas && menuDatas[index]) {
+        const updatedData = {
+          ...menuDatas[index],
+          isShowCounterApp: isShowCounterApp === "true" ? "false" : "true"
+        };
+        setDetailMenu({ data: updatedData, index });
+      }
     } catch (err) {
       console.log("err:", err);
     }
