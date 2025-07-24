@@ -14,6 +14,7 @@ export default function BillFark80({
   code,
 }) {
   const { storeDetail } = useStoreStore()
+  console.log("menuFarkData", menuFarkData);
   return (
     <Container>
       <div
@@ -69,8 +70,8 @@ export default function BillFark80({
             </tr>
             {menuFarkData?.map((e) => (
               <tr>
-                <td style={{ textAlign: "start" }}>{e?.name}</td>
-                <td>{e?.cartCount}</td>
+                <td style={{ textAlign: "start" }}>{e?.name || e?.nameMenu}</td>
+                <td>{e?.cartCount || e?.amount}</td>
               </tr>
             ))}
           </Table>

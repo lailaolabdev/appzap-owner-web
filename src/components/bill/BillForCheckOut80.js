@@ -508,7 +508,7 @@ export default function BillForCheckOut80({
             <Col>
             <div className={`text-right font-bold ${storeDetail?.isShowLabelRate ? "text-[15px]" : "text-[12px]"}`}>
                 {moneyCurrency(
-                  (total + taxAmount + serviceChargeAmount) / item?.sell
+                  parseFloat(((total + taxAmount + serviceChargeAmount) / item?.sell).toFixed(2))
                 )}
               </div>
             </Col>

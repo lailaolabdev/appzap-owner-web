@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import Select from "react-select";
+import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { COLOR_APP, COLOR_APP_CANCEL } from "../../constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -43,6 +44,18 @@ import { useStoreStore } from "../../zustand/storeStore";
 import PopUpSetStartAndEndDate from "./../../components/popup/PopUpSetStartAndEndDate";
 import { useShiftStore } from "../../zustand/ShiftStore";
 import { getAllShift } from "../../services/shift";
+import html2canvas from "html2canvas";
+import { base64ToBlob } from "../../helpers";
+import printFlutter from "../../helpers/printFlutter";
+import {
+  ETHERNET_PRINTER_PORT,
+  BLUETOOTH_PRINTER_PORT,
+  USB_PRINTER_PORT,
+} from "../../constants/index";
+import Swal from "sweetalert2";
+import BillFark80 from "../../components/bill/BillFark80";
+// import BillFark80 from "../../components/bill/BillFark80";
+
 export default function FarkPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -66,11 +79,25 @@ export default function FarkPage() {
 
   const [shiftData, setShiftData] = useState([]);
   const [shiftId, setShiftId] = useState([]);
+  const [orderFarkData, setOrderFarkData] = useState();
 
   // provider
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const { profile } = useStore();
+  const { printerCounter, printers } = useStore();
   const { shiftCurrent } = useShiftStore();
+  const [widthBill80, setWidthBill80] = useState(0);
+  const billFark80Ref = useRef();
+
+  // console.log("billFarkData", billFarkData);
+
+  useEffect(() => {
+    const element = billFark80Ref?.current;
+    console.log(element); // 👈️ element here
+  }, []);
+  useLayoutEffect(() => {
+    setWidthBill80(billFark80Ref?.current?.offsetWidth);
+  }, [billFark80Ref]);
 
   const fetchShift = async () => {
     await getAllShift()
@@ -113,6 +140,12 @@ export default function FarkPage() {
     getData();
     fetchShift();
   }, []);
+
+  useEffect(() => {
+    if (selectBillFark) {
+      getDate();
+    }
+  }, [selectBillFark]);
 
   // useEffect
   useEffect(() => {
@@ -162,6 +195,134 @@ export default function FarkPage() {
     } catch (err) {
       console.log("err", err);
       setIsLoading(false);
+    }
+  };
+
+  console.log("orderFarkData", orderFarkData);
+
+  const getDate = async () => {
+    try {
+      const { TOKEN, DATA } = await getLocalData();
+      const url =
+        END_POINT_SEVER + "/v4/order-farks?billFarkId=" + selectBillFark?._id;
+      const data = await Axios.get(url, { headers: TOKEN });
+      console.log("data", data);
+      setOrderFarkData(data.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const onPrintBillFark = async () => {
+    try {
+      // if (!tokenQR) {
+      //   return;
+      // }
+      // alert(tokenQR);
+      // setTokenForSmartOrder(tokenQR, (ee) => {
+      //   console.log(tokenForSmartOrder, "tokenForSmartOrder");
+      // });
+      // if (!tokenForSmartOrder) {
+      //   setTokenForSmartOrder(tokenQR);
+      //   await delay(1000);
+      //   return;
+      // }
+      // if (!tokenForSmartOrder) {
+      //   return;
+      // }
+      let urlForPrinter = "";
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
+      let dataImageForPrint;
+      console.log("check 1");
+      if (printerBillData?.width === "80mm") {
+        dataImageForPrint = await html2canvas(billFark80Ref.current, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 530 / widthBill80,
+        });
+      }
+
+      if (printerBillData?.width === "58mm") {
+        dataImageForPrint = await html2canvas(billFark80Ref.current, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 530 / widthBill80,
+        });
+      }
+      console.log("dataImageForPrint", dataImageForPrint);
+      console.log("check 2");
+
+      if (printerBillData?.type === "ETHERNET") {
+        urlForPrinter = ETHERNET_PRINTER_PORT;
+      }
+      if (printerBillData?.type === "BLUETOOTH") {
+        urlForPrinter = BLUETOOTH_PRINTER_PORT;
+      }
+      if (printerBillData?.type === "USB") {
+        urlForPrinter = USB_PRINTER_PORT;
+      }
+      console.log(dataImageForPrint.toDataURL());
+      const _file = await base64ToBlob(dataImageForPrint.toDataURL());
+      console.log("check 3");
+      var bodyFormData = new FormData();
+
+      bodyFormData.append("ip", printerBillData?.ip);
+      bodyFormData.append("isdrawer", false);
+      bodyFormData.append("port", "9100");
+      bodyFormData.append("image", _file);
+      bodyFormData.append("beep1", 1);
+      bodyFormData.append("beep2", 9);
+      bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
+
+      console.log("check 4");
+      await printFlutter(
+        {
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
+      // await axios({
+      //   method: "post",
+      //   url: urlForPrinter,
+      //   data: bodyFormData,
+      //   headers: { "Content-Type": "multipart/form-data" },
+      // });
+      console.log("check 5");
+      // setCodeShortLink(null);
+      await Swal.fire({
+        icon: "success",
+        title: `${t("print_success")}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      // setPrintCode();
+      // navigate("../", { replace: true });
+      // setCodeShortLink(null);
+    } catch (err) {
+      // setCodeShortLink(null);
+      console.log("onprint:", err);
+      await Swal.fire({
+        icon: "error",
+        title: `${t("print_fail")}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
   };
   return (
@@ -365,6 +526,21 @@ export default function FarkPage() {
             </Card>
           </Tab>
         </Tabs>
+        <div
+          style={{
+            width: "80mm",
+            padding: 10,
+          }}
+          ref={billFark80Ref}
+        >
+          <BillFark80
+            expirDate={selectBillFark?.endDate}
+            customerPhone={selectBillFark?.customerPhone}
+            customerName={selectBillFark?.customerName}
+            menuFarkData={orderFarkData}
+            code={selectBillFark?.code}
+          />
+        </div>
       </div>
       <PopUpDetaillBillFark
         open={popup?.PopUpDetaillBillFark}
@@ -373,10 +549,12 @@ export default function FarkPage() {
           setSelectBillFark();
         }}
         billFarkData={selectBillFark}
+        onPrintBillFark={onPrintBillFark}
         callback={() => {
           setPopup();
           setSelectBillFark();
           getData();
+          
         }}
       />
 

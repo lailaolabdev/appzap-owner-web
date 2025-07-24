@@ -18,6 +18,7 @@ export default function PopUpDetaillBillFark({
   onClose,
   callback,
   billFarkData,
+  onPrintBillFark,
 }) {
   const { t } = useTranslation();
   // state
@@ -147,6 +148,14 @@ export default function PopUpDetaillBillFark({
           disabled={billFarkData?.stockStatus != "INSTOCK"}
         >
           ຍືນຍັນ
+        </Button>
+        <Button
+          onClick={() => {  
+            onPrintBillFark();
+            onClose();
+          }}
+        >
+          {t("print_bill")}
         </Button>
       </Modal.Footer>
     </Modal>
