@@ -1270,5 +1270,6 @@
   "status_is_served":"สถานะเป็นเสร็จแล้ว",
   "filter_date_local": "เปิดร้านตามวันที่และเวลา",
   "rate-lable-size": "ขนาดของอัตราแลกเปลี่ยน",
-  "vat-label": "ขนาดของภาษี"
+  "vat-label": "ขนาดของภาษี",
+  "billEditing_cafe": "แก้ไขบินคาฟเฟ"
 }
