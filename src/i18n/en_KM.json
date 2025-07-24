@@ -1262,5 +1262,7 @@
   "updatedBy":"កែប្រែដោយ",
   "stock_is_missing":"ស៊ុកមិនមាន",
   "status_is_served":"ស្ថានភាពបានបញ្ចប់",
-  "filter_date_local": "បើកទីនេះដោយថ្ងៃនិងពេលវេលា"
+  "filter_date_local": "បើកទីនេះដោយថ្ងៃនិងពេលវេលា",
+  "rate-lable-size": "គូរសំរាប់អត្ថបទប្រាក់",
+  "vat-label": "គូរសំរាប់អត្ថបទហេតុ"
 }

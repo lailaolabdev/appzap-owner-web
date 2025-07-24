@@ -479,7 +479,7 @@ export default function BillForCheckOut80({
               style={{ textAlign: "right", fontSize: 15, fontWeight: "bold" }}
             >
               {/* {t("aPriceHasToPay")} + {t("vat")} {taxPercent}%{" "}({storeDetail?.firstCurrency}): */}
-              {t("total")} + {"ອມພ"} {taxPercent}% {storeDetail?.firstCurrency}:
+                {t("total")} + {storeDetail?.isShowVatLabel ? `ອມພ ${taxPercent}%` : ""}  + {storeDetail?.firstCurrency}:
             </div>
           </Col>
           <Col>

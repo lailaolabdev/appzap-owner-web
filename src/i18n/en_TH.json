@@ -1268,5 +1268,7 @@
   "updatedBy":"อัปเดตโดย",
   "stock_is_missing":"สต็อกไม่มี",
   "status_is_served":"สถานะเป็นเสร็จแล้ว",
-  "filter_date_local": "เปิดร้านตามวันที่และเวลา"
+  "filter_date_local": "เปิดร้านตามวันที่และเวลา",
+  "rate-lable-size": "ขนาดของอัตราแลกเปลี่ยน",
+  "vat-label": "ขนาดของภาษี"
 }
