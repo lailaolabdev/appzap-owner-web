@@ -76,7 +76,7 @@ export const useSocketState = ({ setRunSound }) => {
           // Call handleNewOrderItems with the orders data
           handleNewOrderItems(data.orders);
           // Trigger sound or any other actions as needed
-          if(settingData?.isOrderSound) {
+          if(settingData?.isOrderSound === true) {
             setRunSound({ orderSound: settingData?.isOrderSound });
           }
           // setRunSound({ orderSound: true });
@@ -102,20 +102,21 @@ export const useSocketState = ({ setRunSound }) => {
     };
 
     const handleOrderStatusUpdate = () => {
-      if(settingData?.isOrderSound) {
+      if(settingData?.isOrderSound === true) {
         setRunSound({ orderSound: settingData?.isOrderSound });
         setNewOrderUpdateStatusTransaction(true);
       }
     };
     const handleReservationUpdate = () => {
-      if(settingData?.isOrderSound) {
+      if(settingData?.isOrderSound === true) {
         setRunSound({ orderSound: settingData?.isOrderSound });
         setNewOreservationTransaction(true);
       }
     };
     const handleCheckoutTable = (data) => {
       // console.log("data: ", data);
-      if(settingData?.isOrderSound) {
+      if(settingData?.isOrderSound === true) {
+        console.log("settingData?.isOrderSound", settingData?.isOrderSound);
         setRunSound({ orderSound: settingData?.isOrderSound });
         setCheckoutTable(true);
       }
