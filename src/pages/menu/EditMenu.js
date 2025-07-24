@@ -14,11 +14,11 @@ import { getLocalData } from "../../constants/api";
 import { getCategories } from "../../services/menuCategory";
 import Box from "../../components/Box";
 import { useQueryClient } from "@tanstack/react-query";
-import useScrollRestoration from "../../hooks/useScrollRestoration";
+
 
 export default function EditMenu() {
   const location = useLocation();
-  const { data, index } = location.state || {};
+  const { data, index } = location?.state || location?.data || {};
   const [showOptionSetting, setShowOptionSetting] = useState(false);
   const [detailMenuOption, setDetailMenuOption] = useState(null);
   const [menuOptionsCount, setMenuOptionsCount] = useState({});
@@ -26,7 +26,6 @@ export default function EditMenu() {
   const [isWeightMenu, setIsWeightMenu] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient()
- const { saveScrollPosition, restoreScrollPosition, clearScrollPosition } = useScrollRestoration('edit-menu');
 
   const {
     t,
@@ -99,7 +98,7 @@ export default function EditMenu() {
         setValue(key, data[key]);
       });
     }
-    setIsWeightMenu(data.isWeightMenu);
+    setIsWeightMenu(data?.isWeightMenu);
   }, [data, setValue]);
 
   const toggleWeightMenu = () => {
@@ -113,7 +112,7 @@ export default function EditMenu() {
 
   const onSubmit = async (formData) => {
     try {
-      const menuData = {
+      let menuData = {
         recommended: formData?.recommended,
         isWeightMenu: formData?.isWeightMenu,
         unitWeightMenu: formData?.unitWeightMenu,
@@ -135,10 +134,21 @@ export default function EditMenu() {
       const updatedMenu = await updateMenuItem(menuData, data?._id);
       if (updatedMenu?.status === 200) {
         successAdd(`${t("edit_success")}`);
-        // set timeout before calback
-        setTimeout(() => {
+
+        menuData = {
+          ...menuData,
+          _id: data?._id,
+          categoryId: {
+            ...formData?.categoryId,
+            name: data?.categoryId?.name || formData?.categoryId,
+          }
+        }
+
+        // update localstorage
+        localStorage.setItem("POSITION_MENU_ACTION", JSON.stringify({ data: menuData }));
+
+        setTimeout(async () => {
           queryClient.refetchQueries({ queryKey: ['menu_management'] });
-          clearScrollPosition();
           navigate("/menu");
         }, 500)
       }

@@ -211,7 +211,7 @@ export default function CategoryType() {
             >
               <span className={fontMap[language]}>{t("categoryType")}</span>
             </Nav.Link>
-          </Nav.Item>
+          </Nav.Item> 
         </Nav>
         <div className="col-sm-12 text-right mt-3">
           {profile?.data?.role === "APPZAP_ADMIN" ? (

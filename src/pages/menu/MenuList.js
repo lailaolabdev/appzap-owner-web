@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, createContext } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Formik } from "formik";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
@@ -39,11 +39,11 @@ import { cn } from "../../utils/cn";
 import { useMenuStore } from "../../zustand/menuStore";
 import { useStoreStore } from "../../zustand/storeStore";
 import { useCounterRoleStore } from "../../zustand/counterRole";
-import { createMenu, getMenuDatas } from "../../services/menu";
+import { getMenuDatas } from "../../services/menu";
 
 import { useStore } from "../../store";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import useScrollRestoration from "../../hooks/useScrollRestoration";
+import { BsClockHistory } from "react-icons/bs";
 
 export default function MenuList() {
   const {
@@ -53,7 +53,7 @@ export default function MenuList() {
   const navigate = useNavigate();
   const params = useParams();
   const queryClient = useQueryClient()
- const { saveScrollPosition } = useScrollRestoration('product-table');
+
 
   const [showSetting, setShowSetting] = useState(false);
   const [showOptionSetting, setShowOptionSetting] = useState(false);
@@ -96,8 +96,6 @@ export default function MenuList() {
   const [detailMenuOption, setDetailMenuOption] = useState();
   const [menuOptionsCount, setMenuOptionsCount] = useState({});
 
-  const [allMenuOptions, setAllMenuOptions] = useState([]);
-  const [menuSpecificOptions, setMenuSpecificOptions] = useState([]);
 
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
@@ -129,37 +127,6 @@ export default function MenuList() {
 
   }, []);
 
-  // useEffect(() => {
-  //   if (filterName || filterCategory) {
-  //     const fetchFilter = async () => {
-  //       try {
-  //         const _localData = await getLocalData();
-
-  //         setIsLoading(true);
-  //         // getMenu(_localData?.DATA?.storeId, filterCategory)
-
-  //         await fetch(
-  //           MENUS +
-  //           `/?storeId=${_localData?.DATA?.storeId}${filterCategory === "All" ? "" : `&categoryId=${filterCategory}`
-  //           }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
-  //           {
-  //             method: "GET",
-  //           }
-  //         )
-  //           .then((response) => response.json())
-  //           .then((json) => {
-  //             setMenus(json);
-  //           });
-  //         setIsLoading(false);
-  //       } catch (err) {
-  //         console.log(err);
-  //         setIsLoading(false);
-  //       }
-  //     };
-  //     fetchFilter();
-  //   }
-  // }, [filterName, filterCategory]);
-
   const getcategory = async (id) => {
     try {
       await fetch(
@@ -181,63 +148,38 @@ export default function MenuList() {
   };
 
   // Option 3: More flexible parameter building
-const buildQueryParams = (storeId, filters = {}) => {
-  const params = new URLSearchParams();
-  
-  params.append('storeId', storeId);
-  
-  if (filters.name) params.append('name', filters.name);
-  if (filters.categoryId && filters.categoryId !== 'All') {
-    params.append('categoryId', filters.categoryId);
-  }
-  if (filters.skip !== undefined) params.append('skip', filters.skip);
-  if (filters.limit !== undefined) params.append('limit', filters.limit);
-  
-  return `?${params.toString()}`;
-};
+  const buildQueryParams = (storeId, filters = {}) => {
+    const params = new URLSearchParams();
+
+    params.append('storeId', storeId);
+
+    if (filters.name) params.append('name', filters.name);
+    if (filters.categoryId && filters.categoryId !== 'All') {
+      params.append('categoryId', filters.categoryId);
+    }
+    if (filters.skip !== undefined) params.append('skip', filters.skip);
+    if (filters.limit !== undefined) params.append('limit', filters.limit);
+
+    return `?${params.toString()}`;
+  };
 
   // Query menu list
   const { data: menuDatas, isLoading: loadingMenu } = useQuery({
-    queryKey: ["menu_management", filterName, filterCategory],
+    queryKey: ["menu_management", getTokken, filterName, filterCategory],
     queryFn: async () => {
-      const _localData = await getLocalData();
+      // const _localData = await getLocalData();
 
-      let params = `?storeId=${_localData?.DATA?.storeId}${filterName && filterName !== "" ? `&name=${filterName}` : ""
+      let params = `?storeId=${getTokken?.DATA?.storeId}${filterName && filterName !== "" ? `&name=${filterName}` : ""
         }${filterCategory && filterCategory !== "All"
           ? `&categoryId=${filterCategory}`
           : ""
         }`;
       const response = await getMenuDatas(params);
       return response;
-    }
+    },
+    enabled: !!getTokken?.DATA?.storeId,
   })
 
-  // console.log("logs transtack-query: ", menuDatas)
-
-  // const getMenu = async (id, categoryId) => {
-  //   try {
-  //     setIsLoading(true);
-  //     await fetch(
-  //       MENUS +
-  //       `/?storeId=${id}${filterName && filterName !== "" ? `&name=${filterName}` : ""
-  //       }${categoryId && categoryId !== "All"
-  //         ? `&categoryId=${categoryId}`
-  //         : ""
-  //       }`,
-  //       {
-  //         method: "GET",
-  //       }
-  //     )
-  //       .then((response) => response.json())
-  //       .then((json) => {
-  //         setMenus(json);
-  //       });
-  //     setIsLoading(false);
-  //   } catch (err) {
-  //     console.log(err);
-  //     setIsLoading(false);
-  //   }
-  // };
 
   const _addMenuOption = () => {
     setDataMenuOption([
@@ -716,10 +658,80 @@ const buildQueryParams = (storeId, filters = {}) => {
   };
 
   const [categoriesRestaurant, setCategoriesRestaurant] = useState([]);
+  const [positionMenu, setPositionMenu] = useState()
+  const [timeRemaining, setTimeRemaining] = useState(0)
 
+
+  useEffect(() => {
+    const localPosition = JSON.parse(localStorage.getItem("POSITION_MENU_ACTION"));
+    setPositionMenu(localPosition || null);
+
+    if (localPosition) {
+      // Set initial countdown time (30 seconds)
+      const countdownDuration = 35;
+      setTimeRemaining(countdownDuration);
+
+      // Update timer every second
+      const interval = setInterval(() => {
+        setTimeRemaining(prev => {
+          if (prev <= 1) {
+            // Timer finished - clear localStorage and reset state
+            localStorage.removeItem("POSITION_MENU_ACTION");
+            setPositionMenu(null);
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      // Cleanup interval on component unmount
+      return () => clearInterval(interval);
+    }
+  }, []);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleEditClick = (storeId, data, index) => {
+
+    // set data to localstorage
+    localStorage.setItem("POSITION_MENU_ACTION", JSON.stringify({ data, index }));
+
+    navigate(
+      `/settingStore/edit-menu/${storeId}`,
+      {
+        state: { data, index },
+      }
+    )
+  };
 
   return (
     <div style={BODY}>
+      {positionMenu?.data && (
+        <div className="w-full flex justify-between absolute left-0 bottom-0 p-2 bg-red-200 z-50 text-gray-600">
+          <div className="flex justify-start items-center gap-2">
+            {positionMenu?.data?.images?.length > 0 && <Image
+              src={URL_PHOTO_AW3 + positionMenu?.data?.images[0]}
+              width="150"
+              height="150"
+              style={{
+                height: 50,
+                width: 50,
+                borderRadius: "50%",
+              }}
+              alt="menu-image"
+            />}
+            <h4>{positionMenu?.data?.categoryId?.name ?? "-"}</h4> &nbsp; &nbsp; | &nbsp; &nbsp;
+            <h4>{positionMenu?.data?.name ?? "-"}</h4> &nbsp; &nbsp; | &nbsp; &nbsp;
+            <h5>{moneyCurrency(positionMenu?.data?.price ?? 0)}</h5>
+          </div>
+          <Button className="flex gap-2 justify-center items-center"><BsClockHistory /> {formatTime(timeRemaining)}s</Button>
+        </div>
+      )}
       <Box sx={{ padding: { md: 20, xs: 10 } }}>
         <Breadcrumb>
           <Breadcrumb.Item>
@@ -765,6 +777,7 @@ const buildQueryParams = (storeId, filters = {}) => {
             </Nav.Item>
           </Nav>
         </div>
+
 
         <Row>
           <Col sm="12">
@@ -861,13 +874,9 @@ const buildQueryParams = (storeId, filters = {}) => {
               overflowX: "auto",
             }}
           >
+
             <table
               className="table table-hover"
-            // style={{ maxWidth: 700 }}
-            // style={{
-            // 	width: "100%",
-            // 	overflowX: "scroll",
-            // }}
             >
               <thead className="thead-light">
                 <tr>
@@ -951,7 +960,7 @@ const buildQueryParams = (storeId, filters = {}) => {
                 ) : (
                   menuDatas?.map((data, index) => {
                     return (
-                      <tr key={index}>
+                      <tr key={index} className={positionMenu?.data?._id === data?._id ? "bg-orange-100" : ""}>
                         <td>{index + 1}</td>
                         <td>{data?.sort ?? 0}</td>
                         <td>
@@ -1119,13 +1128,13 @@ const buildQueryParams = (storeId, filters = {}) => {
                                 <FontAwesomeIcon
                                   icon={faEdit}
                                   onClick={() => {
-                                    navigate(
-                                      `/settingStore/edit-menu/${storeDetail?._id}`,
-                                      {
-                                        state: { data, index },
-                                      }
-                                    );
-                                    saveScrollPosition();
+                                    handleEditClick(storeDetail?._id, data, index)
+                                    // navigate(
+                                    //   `/settingStore/edit-menu/${storeDetail?._id}`,
+                                    //   {
+                                    //     state: { data, index },
+                                    //   }
+                                    // )
                                   }}
                                   className=" text-orange-500 ml-[20px]"
                                 />
@@ -1202,8 +1211,10 @@ const buildQueryParams = (storeId, filters = {}) => {
                 )}
               </tbody>
             </table>
+
           </Col>
         </Row>
+
         {/* >>>>>>>>>>>>> popup >>>>>>>>>>>> */}
         <PopUpConfirmDeletion
           open={show3}
@@ -1571,144 +1582,6 @@ const buildQueryParams = (storeId, filters = {}) => {
                     />
                   </Form.Group>
 
-                  {/* <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>{t("order_add")}</Form.Label>
-                    {dataMenuOption?.length > 0 &&
-                      dataMenuOption?.map((item, index) => (
-                        <div key={index}>
-                          <div className="pl-4 row">
-                            <Col xs={11}>
-                              <Row>
-                                <Col>
-                                  <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>{t("food_name")}</Form.Label>
-                                    <Form.Control
-                                      type="text"
-                                      name="name"
-                                      onChange={(e) =>
-                                        _handleChangeMenuOption(
-                                          index,
-                                          "name",
-                                          e.target.value
-                                        )
-                                      }
-                                      value={item?.name}
-                                      placeholder={t("food_name")}
-                                      isInvalid={!item?.name}
-                                    />
-                                  </Form.Group>
-                                </Col>
-                                <Col>
-                                  <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>
-                                      {t("food_name")} (EN)
-                                    </Form.Label>
-                                    <Form.Control
-                                      type="text"
-                                      name="name_en"
-                                      onChange={(e) =>
-                                        _handleChangeMenuOption(
-                                          index,
-                                          "name_en",
-                                          e.target.value
-                                        )
-                                      }
-                                      value={item?.name_en}
-                                      placeholder={t("food_name")}
-                                    />
-                                  </Form.Group>
-                                </Col>
-                              </Row>
-                              <Row>
-                                <Col>
-                                  <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>
-                                      {t("food_name")} (CN)
-                                    </Form.Label>
-                                    <Form.Control
-                                      type="text"
-                                      name="name_cn"
-                                      onChange={(e) =>
-                                        _handleChangeMenuOption(
-                                          index,
-                                          "name_cn",
-                                          e.target.value
-                                        )
-                                      }
-                                      value={item?.name_cn}
-                                      placeholder={t("food_name")}
-                                    />
-                                  </Form.Group>
-                                </Col>
-                                <Col>
-                                  <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>
-                                      {t("food_name")} (KR)
-                                    </Form.Label>
-                                    <Form.Control
-                                      type="text"
-                                      name="name_kr"
-                                      onChange={(e) =>
-                                        _handleChangeMenuOption(
-                                          index,
-                                          "name_kr",
-                                          e.target.value
-                                        )
-                                      }
-                                      value={item?.name_kr}
-                                      placeholder={t("food_name")}
-                                    />
-                                  </Form.Group>
-                                </Col>
-                              </Row>
-                              <Row>
-                                <Col xs={6}>
-                                  <Form.Group controlId="exampleForm.ControlInput1">
-                                    <Form.Label>{t("price")}</Form.Label>
-                                    <Form.Control
-                                      type="number"
-                                      name="price"
-                                      onChange={(e) =>
-                                        _handleChangeMenuOption(
-                                          index,
-                                          "price",
-                                          e.target.value
-                                        )
-                                      }
-                                      value={item?.price}
-                                      placeholder={t("food_name")}
-                                      min="0"
-                                      isInvalid={!item?.price ? "required" : ""}
-                                    />
-                                  </Form.Group>
-                                </Col>
-                              </Row>
-                            </Col>
-                            <Col className="d-flex align-items-center justify-content-center">
-                              <FontAwesomeIcon
-                                icon={faTrashAlt}
-                                style={{ color: "red", cursor: "pointer" }}
-                                onClick={() => _removeItem(index)}
-                              />
-                            </Col>
-                          </div>
-                          <hr />
-                        </div>
-                      ))}
-                    <div>
-                      <Button
-                        style={{
-                          backgroundColor: COLOR_APP,
-                          color: "#ffff",
-                          border: 0,
-                          marginTop: 10,
-                        }}
-                        onClick={() => _addMenuOption()}
-                      >
-                        + {t("order_add")}
-                      </Button>
-                    </div>
-                  </Form.Group> */}
                   <Form.Group controlId="exampleForm.ControlInput1">
                     <Form.Label>{t("note")}</Form.Label>
                     <Form.Control
@@ -2330,6 +2203,6 @@ const buildQueryParams = (storeId, filters = {}) => {
           updateMenuOptionsCount={handleUpdateMenuOptionsCount}
         />
       </Box>
-    </div>
+    </div >
   );
 }

@@ -6,8 +6,9 @@ import { StateProvider } from "./store";
 import { ToastContainer /* toast */ } from "react-toastify";
 import moment from "moment";
 import { useTranslation } from "react-i18next";
-import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query';
-import { useLocation, useBeforeUnload } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useLocation } from 'react-router-dom';
+
 
 const theme = {
   xl: "@media screen and (min-width: 1536px)",
@@ -19,21 +20,21 @@ const theme = {
 
 // Create QueryClient
 const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 5 * 60 * 1000,
-        gcTime: 10 * 60 * 1000,
-        retry: 3,
-        retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-        refetchOnWindowFocus: true,
-        refetchOnReconnect: true,
-        refetchOnMount: false,
-      },
-      mutations: {
-        retryDelay: 1000,
-      },
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+      refetchOnMount: false,
     },
-  });
+    mutations: {
+      retryDelay: 1000,
+    },
+  },
+});
 
 
 function App() {
