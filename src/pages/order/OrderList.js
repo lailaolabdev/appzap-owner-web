@@ -54,7 +54,7 @@ const OrderList = ({
               <th className={fontMap[language]}>{t("from_table")}</th>
               <th className={fontMap[language]}>{t("table_code")}</th>
               <th className={fontMap[language]}>{t("status")}</th>
-              <th className={fontMap[language]}>{t("status")}</th>
+              <th className={fontMap[language]}>{t("time")}</th>
               <th className={fontMap[language]}>{t("commend")}</th>
             </tr>
           </thead>
