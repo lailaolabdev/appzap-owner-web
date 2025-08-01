@@ -1419,5 +1419,6 @@
   "no_discount_applied":"No discount applied",
   "for_category":"For category",
   "no_category_discount_applied":"No category discount applied",
-  "other_categories":"Other categories"
+  "other_categories":"Other categories",
+  "select_all":"Select all"
 }

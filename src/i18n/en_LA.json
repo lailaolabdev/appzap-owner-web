@@ -1419,5 +1419,6 @@
   "no_discount_applied":"ບໍ່ມີສ່ວນຫຼຸດທີ່ໃຊ້",
   "for_category":"ສ່ວນຫຼຸດສໍາລັບຫມວດຫມູ່",
   "no_category_discount_applied":"ບໍ່ມີສ່ວນຫຼຸດສໍາລັບຫມວດຫມູ່",
-  "other_categories":"ຫມວດຫມູ່ອື່ນໆ"
+  "other_categories":"ຫມວດຫມູ່ອື່ນໆ",
+  "select_all":"ເລືອກທັງໝົດ"
 }
