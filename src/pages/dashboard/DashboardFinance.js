@@ -913,8 +913,9 @@ export default function DashboardFinance({
                   {item?.discountType === "LAK"
                     ? new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
-                      }).format(item?.discount) + t("lak")
-                    : `${item?.discount}%`}
+                      }).format(item?.discount || item?.discountAmount) + t("lak")
+                    : `${item?.discount || item?.discountCategoryAmount
+                    }%`}
                 </td>
                 <td>{item?.point ? moneyCurrency(item?.point) : 0}</td>
 
@@ -1285,7 +1286,7 @@ export default function DashboardFinance({
                     <span>{t("total_Amount_of_Money")} :</span>
                   </div>
                   <div className="flex flex-col">
-                    <span>{renderDiscount(dataModal?.discount)}</span>
+                    <span>{renderDiscount(dataModal?.discount || dataModal?.discountCategoryAmount)}</span>
                     <span>
                       {moneyCurrency(dataModal?.taxAmount)}{" "}
                       {storeDetail?.firstCurrency}

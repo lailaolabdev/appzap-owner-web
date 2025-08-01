@@ -1323,18 +1323,22 @@ export default function DashboardPage() {
                     {moneyCurrency(item?.billAmount)}
                   </td>
                   <td className="text-center">
-                    {moneyCurrency(item?.discount)}{" "}
+                    {moneyCurrency(item?.discount || item?.discountCategoryAmount)}{" "}
                     {item?.discountType === "PERCENT"
                       ? "%"
                       : storeDetail?.firstCurrency}
                   </td>
                   <td className="text-right">
-                    {moneyCurrency(item.discountType === "PERCENT" ? (item?.billAmountBefore / 100) * item?.discount : item?.discount)}{" "}
+                    {item?.discountCategoryAmount ? (
+                      moneyCurrency(item?.discountAmount)
+                    ) : (
+                      moneyCurrency(item?.discountType === "PERCENT" ? (item?.billAmountBefore / 100) * item?.discount : item?.discount)
+                    )}{" "}
                     {storeDetail?.firstCurrency}
                   </td>
                 </tr>
               ))
-            ) : (
+            ) : ( 
               <tr>
                 <td colSpan={4}>
                   <div className="flex justify-center">
