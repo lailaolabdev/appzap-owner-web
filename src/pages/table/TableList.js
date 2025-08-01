@@ -1385,7 +1385,7 @@ export default function TableList() {
     await _createHistoriesPrinter(_dataBill);
 
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
-    console.log("ORDER", orderSelect);
+    
     let _index = 0;
     const printDate = [...billForCherCancel80.current];
     let dataUrls = [];
@@ -1527,9 +1527,7 @@ export default function TableList() {
       });
       setOrderPayBefore({ ...orderPayBefore, _newOrderItems });
     }
-    console.log("_newOrderItems", _newOrderItems);
-    console.log("tableOrderItems", tableOrderItems);
-    console.log("isCheckedOrderItem", isCheckedOrderItem);
+    
 
     setCheckedBox(!checkedBox);
     setOrderPayBefore(!checkedBox);
@@ -1599,11 +1597,11 @@ export default function TableList() {
           return updatedItem;
         });
 
-        console.log("Before state update:", isCheckedOrderItem);
+        
 
         setIsCheckedOrderItem(updatedOrderItems);
 
-        console.log("After state update:", updatedOrderItems); // Update state
+        
         // 2. Update total price immediately for the served items
         await calculateTotalBillV7(updatedOrderItems);
         ableToCheckoutFunc(updatedOrderItems);
@@ -1639,6 +1637,7 @@ export default function TableList() {
   };
 
   const calculateTotalBillV7 = async (updatedOrderItems) => {
+    
     setPrintBillCalulate(true);
 
     // We are now using the passed updatedOrderItems to avoid querying unnecessary state
@@ -1665,9 +1664,12 @@ export default function TableList() {
       }
 
       setTotalAfterDiscount(discountedAmount);
+    } else if (dataBill?.discountCategoryAmount > 0) {
+      setTotalAfterDiscount(_total - dataBill?.discountAmount);
     } else {
       setTotalAfterDiscount(_total);
     }
+    
 
     setTotal(_total); // Set the total without discount
     setPrintBillCalulate(false);
@@ -1940,6 +1942,7 @@ export default function TableList() {
   };
 
   const calculateTotalBill = () => {
+    
     setPrintBillCalulate(true);
     let _total = 0;
     if (dataBill && dataBill?.orderId) {
@@ -1966,9 +1969,12 @@ export default function TableList() {
         const ddiscount = Number.parseInt((_total * dataBill?.discount) / 100);
         setTotalAfterDiscount(_total - ddiscount);
       }
+    } else if (dataBill?.discountCategoryAmount > 0) {
+      setTotalAfterDiscount(_total - dataBill?.discountAmount);
     } else {
       setTotalAfterDiscount(_total);
     }
+    
     setTotal(_total);
     setPrintBillCalulate(false);
   };
@@ -2414,7 +2420,7 @@ export default function TableList() {
                       <div className={cn("text-base", fontMap[language])}>
                         {t("discount")}:{" "}
                         <span className="font-bold text-color-app">
-                          {moneyCurrency(dataBill?.discount)}{" "}
+                          {moneyCurrency(dataBill?.discount || dataBill?.discountCategoryAmount)}{" "}
                           {dataBill?.discountType === "PERCENT"
                             ? "%"
                             : storeDetail?.firstCurrency}
@@ -2988,7 +2994,7 @@ export default function TableList() {
         onPrintBill={onPrintBill}
         onPrintDrawer={onPrintDrawer}
         dataBill={dataBill}
-        totalBillCheckOutPopup={total} // new props
+        totalBillCheckOutPopup={totalAfterDiscount} // new props
         tableData={selectedTable}
         open={popup?.CheckOutType}
         setPaymentMethod={setPaymentMethod}
@@ -3020,7 +3026,7 @@ export default function TableList() {
         setServiceChangeAmount={setServiceChangeAmount}
         staffData={userData}
         data={dataBill}
-        totalBillOrderCheckOut={total} // new props
+        totalBillOrderCheckOut={totalAfterDiscount} // new props
         printBillCalulate={printBillCalulate}
         setDataBill={setDataBill}
         onPrintBill={onPrintBill}

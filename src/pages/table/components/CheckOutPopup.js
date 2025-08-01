@@ -85,6 +85,8 @@ export default function CheckOutPopup({
   const [datePointExpirt, setDatePointExpirt] = useState("");
   const [userEmployee, setUserEmployee] = useState([]);
 
+  
+
   const {
     setSelectedTable,
     getTableDataStore,
@@ -474,7 +476,7 @@ export default function CheckOutPopup({
       body.currencyName = currencyName;
     }
 
-    console.log("body", body);
+    
 
     await axios
       .put(
@@ -691,15 +693,16 @@ export default function CheckOutPopup({
         }
       }
     } else if (forcus === "TRANSFER") {
-      if (dataBill?.discount) {
-        if (dataBill?.discountType === "PERCENT") {
-          setTransfer(totalBill - (totalBill * dataBill?.discount) / 100);
-        } else {
-          setTransfer(totalBill - dataBill?.discount);
-        }
-      } else {
-        setTransfer(totalBill);
-      }
+      setTransfer(totalBill);
+      // if (dataBill?.discount) {
+      //   if (dataBill?.discountType === "PERCENT") {
+      //     setTransfer(totalBill - (totalBill * dataBill?.discount) / 100);
+      //   } else {
+      //     setTransfer(totalBill - dataBill?.discount);
+      //   }
+      // } else {
+      //   setTransfer(totalBill);
+      // }
       setCanCheckOut(true);
     } else if (forcus === "TRANSFER_CASH") {
       const _sum =
@@ -822,27 +825,9 @@ export default function CheckOutPopup({
     }
   }, [cash, transfer, totalBill, delivery, forcus, point]);
 
-  const transferCal =
-    dataBill?.discountType === "PERCENT"
-      ? totalBill - dataBill?.discount > 0
-        ? totalBill - dataBill?.discount
-        : 0
-      : totalBill - (totalBill * dataBill?.discount) / 100 > 0
-      ? (totalBill * dataBill?.discount) / 100
-      : 0;
+  const transferCal = 0;
 
-  const totalBillMoney =
-    dataBill?.discountType === "LAK"
-      ? Math.floor(
-          totalBill - dataBill?.discount > 0
-            ? totalBill - dataBill?.discount
-            : 0
-        )
-      : Math.floor(
-          totalBill - (totalBill * dataBill?.discount) / 100 > 0
-            ? totalBill - (totalBill * dataBill?.discount) / 100
-            : 0
-        );
+  const totalBillMoney = Math.floor(totalBill);
   const serviceChangeTotal = () => {
     return (
       totalBillMoney +
@@ -934,7 +919,7 @@ export default function CheckOutPopup({
       parsedTransfer +
       parsedDelivery +
       parsedPoint -
-      discountAmount;
+      totalBill;
 
     return totalAmount <= 0 ? 0 : totalAmount;
   };

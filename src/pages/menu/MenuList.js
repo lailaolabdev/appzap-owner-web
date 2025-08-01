@@ -91,6 +91,12 @@ export default function MenuList() {
   const [isLoading, setIsLoading] = useState(false);
   const [formattedPrice, setFormattedPrice] = useState("");
 
+  // Loading states for update operations
+  const [loadingUpdateWeb, setLoadingUpdateWeb] = useState(false);
+  const [loadingUpdateApp, setLoadingUpdateApp] = useState(false);
+  const [loadingUpdateStaff, setLoadingUpdateStaff] = useState(false);
+  const [loadingUpdateCounter, setLoadingUpdateCounter] = useState(false);
+
   //update show menu
   const [detailMenu, setDetailMenu] = useState();
   const [detailMenuOption, setDetailMenuOption] = useState();
@@ -571,6 +577,7 @@ const buildQueryParams = (storeId, filters = {}) => {
 
   const _onOpenMenu = async (id, isOpenMenuCustomerWeb, index) => {
     try {
+      setLoadingUpdateWeb(true);
       const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
@@ -604,11 +611,14 @@ const buildQueryParams = (storeId, filters = {}) => {
       }
     } catch (err) {
       console.log("err:", err);
+    } finally {
+      setLoadingUpdateWeb(false);
     }
   };
 
   const _onOpenMenuCustomerApp = async (id, isOpenMenuCustomerApp, index) => {
     try {
+      setLoadingUpdateApp(true);
       const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
@@ -642,11 +652,14 @@ const buildQueryParams = (storeId, filters = {}) => {
       }
     } catch (err) {
       console.log("err:", err);
+    } finally {
+      setLoadingUpdateApp(false);
     }
   };
 
   const _onOpenMenuStaff = async (id, isOpenMenuStaff, index) => {
     try {
+      setLoadingUpdateStaff(true);
       const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
@@ -679,11 +692,14 @@ const buildQueryParams = (storeId, filters = {}) => {
       }
     } catch (err) {
       console.log("err:", err);
+    } finally {
+      setLoadingUpdateStaff(false);
     }
   };
 
   const _onOpenMenuCounter = async (id, isShowCounterApp, index) => {
     try {
+      setLoadingUpdateCounter(true);
       const header = await getHeaders();
       const headers = {
         "Content-Type": "application/json",
@@ -715,6 +731,8 @@ const buildQueryParams = (storeId, filters = {}) => {
       }
     } catch (err) {
       console.log("err:", err);
+    } finally {
+      setLoadingUpdateCounter(false);
     }
   };
 
@@ -2334,6 +2352,10 @@ const buildQueryParams = (storeId, filters = {}) => {
           _handOpenMenuShowStaff={(id, isOpenMenuStaff, index) =>
             _onOpenMenuStaff(id, isOpenMenuStaff, index)
           }
+          loadingUpdateWeb={loadingUpdateWeb}
+          loadingUpdateApp={loadingUpdateApp}
+          loadingUpdateStaff={loadingUpdateStaff}
+          loadingUpdateCounter={loadingUpdateCounter}
         />
 
         <PopUpAddMenuOption

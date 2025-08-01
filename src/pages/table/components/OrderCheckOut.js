@@ -160,6 +160,8 @@ const OrderCheckOut = ({
       return mainPrice + menuOptionPrice;
     });
 
+    console.log("totalBillOrderCheckOut", totalBillOrderCheckOut);
+
     orderPayBefore && orderPayBefore.length > 0
       ? setTotal(paidData)
       : setTotal(totalBillOrderCheckOut);
@@ -358,37 +360,11 @@ const OrderCheckOut = ({
                 >
                   <span style={{ justifyContent: "flex-end", display: "row" }}>
                     <b>
-                      {data && data?.discountType === "LAK"
-                        ? moneyCurrency(
-                            Math.floor(
-                              total * (taxPercent * 0.01 + 1) +
-                                serviceChargeAmount() -
-                                data?.discount >
-                                0
-                                ? (total + serviceChargeAmount()) *
-                                    (taxPercent * 0.01 + 1) -
-                                    data?.discount
-                                : 0
-                            )
-                          )
-                        : moneyCurrency(
-                            Math.floor(
-                              total * (taxPercent * 0.01 + 1) +
-                                serviceChargeAmount() -
-                                ((total + serviceChargeAmount()) *
-                                  (taxPercent * 0.01 + 1) *
-                                  data?.discount) /
-                                  100 >
-                                0
-                                ? total * (taxPercent * 0.01 + 1) +
-                                    serviceChargeAmount() -
-                                    ((total + serviceChargeAmount()) *
-                                      (taxPercent * 0.01 + 1) *
-                                      data?.discount) /
-                                      100
-                                : 0
-                            )
-                          )}
+                      {moneyCurrency(
+                        Math.floor(
+                          total * (taxPercent * 0.01 + 1) + serviceChargeAmount()
+                        )
+                      )}
                     </b>
                   </span>
                 </div>

@@ -1,10 +1,10 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useMemo } from "react";
 import { getHeaders } from "../../services/auth";
 import { Formik } from "formik";
 import Box from "../../components/Box";
 import axios from "axios";
-import { BODY, COLOR_APP } from "../../constants";
-import { Button, Modal, Form, Nav, Breadcrumb } from "react-bootstrap";
+import { BODY, COLOR_APP, URL_PHOTO_AW3 } from "../../constants";
+import { Button, Modal, Form, Nav, Breadcrumb, Row, Col, Card, Badge } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { END_POINT_SEVER_TABLE_MENU, getLocalData } from "../../constants/api";
@@ -19,6 +19,8 @@ import { fontMap } from "../../utils/font-map";
 import { cn } from "../../utils/cn";
 import { useStore } from "../../store";
 import { useCounterRoleStore } from "../../zustand/counterRole";
+import { useMenuStore } from "../../zustand/menuStore";
+import { moneyCurrency } from "../../helpers";
 
 export default function CategoryType() {
   const {
@@ -38,8 +40,89 @@ export default function CategoryType() {
   const [dateDelete, setdateDelete] = useState("");
   const [dataUpdate, setdataUpdate] = useState("");
 
+  // Edit modal menu selection states
+  const [editSelectedMenus, setEditSelectedMenus] = useState([]);
+  const [editSearchTerm, setEditSearchTerm] = useState("");
+  const [editSelectAll, setEditSelectAll] = useState(false);
+  const [editSelectedCategoryFilter, setEditSelectedCategoryFilter] = useState("All");
+
   const { counterRoleEditMenu } = useCounterRoleStore();
   const { profile } = useStore();
+  const { menus, menuCategories, getMenuCategories, setMenuCategories, getMenus, setMenus } = useMenuStore();
+
+  // Safety checks for props
+  const safeMenus = menus || [];
+  const safeMenuCategories = menuCategories || [];
+
+  // Filter menus for edit modal based on search term and category
+  const editFilteredMenus = useMemo(() => {
+    if (!safeMenus || !Array.isArray(safeMenus)) return [];
+    
+    let filtered = safeMenus.filter((menu) =>
+      menu.name?.toLowerCase().includes(editSearchTerm.toLowerCase()) ||
+      menu.name_en?.toLowerCase().includes(editSearchTerm.toLowerCase())
+    );
+
+    // Filter by category if not "All"
+    if (editSelectedCategoryFilter !== "All") {
+      filtered = filtered.filter((menu) => 
+        menu.categoryId?._id === editSelectedCategoryFilter ||
+        menu.categoryId === editSelectedCategoryFilter
+      );
+    }
+
+    return filtered;
+  }, [safeMenus, editSearchTerm, editSelectedCategoryFilter]);
+
+  // Get category statistics for edit modal
+  const editGetCategoryStats = useMemo(() => {
+    if (!safeMenus || !Array.isArray(safeMenus) || !safeMenuCategories) return {};
+    
+    const stats = {};
+    safeMenuCategories.forEach(category => {
+      const categoryMenus = safeMenus.filter(menu => 
+        menu.categoryId?._id === category._id || menu.categoryId === category._id
+      );
+      stats[category._id] = {
+        name: category.name,
+        count: categoryMenus.length,
+        selected: categoryMenus.filter(menu => editSelectedMenus.includes(menu._id)).length
+      };
+    });
+    
+    return stats;
+  }, [safeMenus, safeMenuCategories, editSelectedMenus]);
+
+  // Update selectAll state based on current filter for edit modal
+  useEffect(() => {
+    if (editFilteredMenus.length === 0) {
+      setEditSelectAll(false);
+    } else {
+      const allFilteredSelected = editFilteredMenus.every(menu => 
+        editSelectedMenus.includes(menu._id)
+      );
+      setEditSelectAll(allFilteredSelected);
+    }
+  }, [editFilteredMenus, editSelectedMenus]);
+
+  // Synchronize editSelectedMenus with dataUpdate when modal opens
+  useEffect(() => {
+    if (show2 && dataUpdate) {
+      
+      let existingMenuIds = [];
+      
+      if (dataUpdate.menuIds && Array.isArray(dataUpdate.menuIds)) {
+        existingMenuIds = dataUpdate.menuIds;
+      } else if (dataUpdate.menuId && Array.isArray(dataUpdate.menuId)) {
+        existingMenuIds = dataUpdate.menuId;
+      } else if (dataUpdate.menus && Array.isArray(dataUpdate.menus)) {
+        existingMenuIds = dataUpdate.menus.map(m => m._id || m.id);
+      }
+      
+      
+      setEditSelectedMenus(existingMenuIds);
+    }
+  }, [show2, dataUpdate]);
 
   const _menuList = () => {
     navigate(`/settingStore/menu/limit/40/page/1/${params?.id}`);
@@ -62,7 +145,16 @@ export default function CategoryType() {
         fetchCategoryTypes(_localData?.DATA?.storeId);
         setgetTokken(_localData);
       }
+      if (!menus.length) {
+        const fetchedMenus = await getMenus(storeId);
+        setMenus(fetchedMenus); // Save to zustand store
+      }
+      if (!menuCategories.length) {
+        const fetchedCategories = await getMenuCategories(_localData.DATA.storeId);
+        setMenuCategories(fetchedCategories); // Save to zustand store
+      }
     };
+    
     fetchData();
   }, []);
 
@@ -91,9 +183,60 @@ export default function CategoryType() {
   };
 
   const handleShow2 = async (item) => {
-    // console.log("ITEM: ", item.categoryTypeId.name);
+     // Debug log to see the structure
     setdataUpdate(item);
+    
+    // Initialize selected menus with existing menuIds from the category type
+    if (item.menuIds && Array.isArray(item.menuIds)) {
+      console.log("Using menuIds:", item.menuIds);
+      setEditSelectedMenus(item.menuIds);
+    } else if (item.menuId && Array.isArray(item.menuId)) {
+      console.log("Using menuId:", item.menuId);
+      setEditSelectedMenus(item.menuId);
+    } else if (item.menus && Array.isArray(item.menus)) {
+      console.log("Using menus:", item.menus.map(m => m._id || m.id));
+      setEditSelectedMenus(item.menus.map(m => m._id || m.id));
+    } else {
+      console.log("No menu IDs found, starting with empty selection");
+      setEditSelectedMenus([]);
+    }
+    
     setShow2(true);
+  };
+
+  
+
+  // Handle individual menu selection for edit modal
+  const handleEditMenuSelect = (menuId) => {
+    setEditSelectedMenus(prev => {
+      if (prev.includes(menuId)) {
+        return prev.filter(id => id !== menuId);
+      } else {
+        return [...prev, menuId];
+      }
+    });
+  };
+
+  // Handle select all functionality for edit modal
+  const handleEditSelectAll = () => {
+    if (editSelectAll) {
+      // Deselect all filtered items
+      const filteredMenuIds = editFilteredMenus.map(menu => menu._id);
+      setEditSelectedMenus(prev => prev.filter(id => !filteredMenuIds.includes(id)));
+    } else {
+      // Select all filtered items (add them to existing selection)
+      const filteredMenuIds = editFilteredMenus.map(menu => menu._id);
+      setEditSelectedMenus(prev => {
+        const newSelection = [...prev];
+        filteredMenuIds.forEach(id => {
+          if (!newSelection.includes(id)) {
+            newSelection.push(id);
+          }
+        });
+        return newSelection;
+      });
+    }
+    // selectAll state will be updated by useEffect
   };
 
   const handleShow3 = (id, name) => {
@@ -102,7 +245,14 @@ export default function CategoryType() {
   };
 
   const handleClose3 = () => setShow3(false);
-  const handleClose2 = () => setShow2(false);
+  const handleClose2 = () => {
+    // Reset edit modal states
+    setEditSelectedMenus([]);
+    setEditSearchTerm("");
+    setEditSelectAll(false);
+    setEditSelectedCategoryFilter("All");
+    setShow2(false);
+  };
 
   // const getData = async (id) => {
   //   setIsLoading(true);
@@ -129,6 +279,7 @@ export default function CategoryType() {
           id: dataUpdate?._id,
           data: {
             name: values?.name,
+            selectedMenus: editSelectedMenus, // Include selected menus
           },
         },
         {
@@ -350,20 +501,29 @@ export default function CategoryType() {
         onClose={() => setPopup()}
         onSubmit={createCategoryType}
         storeId={storeId}
+        menus={menus}
+        menuCategories={menuCategories}
       />
-      <Modal show={show2} onHide={handleClose2}>
+      <Modal show={show2} onHide={handleClose2} size="lg">
         <Formik
           initialValues={{
             name: dataUpdate?.name ?? "",
+            selectedMenus: (() => {
+              if (dataUpdate?.menuIds && Array.isArray(dataUpdate.menuIds)) {
+                return dataUpdate.menuIds;
+              } else if (dataUpdate?.menuId && Array.isArray(dataUpdate.menuId)) {
+                return dataUpdate.menuId;
+              } else if (dataUpdate?.menus && Array.isArray(dataUpdate.menus)) {
+                return dataUpdate.menus.map(m => m._id || m.id);
+              }
+              return [];
+            })()
           }}
           validate={(values) => {
             const errors = {};
             if (!values.name) {
               errors.name = `${t("fill_type_name")}`;
             }
-
-            // console.log("CATEGORYID: ", values.categoryTypeId);
-
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
@@ -383,8 +543,9 @@ export default function CategoryType() {
               <Modal.Header closeButton>
                 <Modal.Title>{t("edit_category")}</Modal.Title>
               </Modal.Header>
-              <Modal.Body>
-                <Form.Group controlId="exampleForm.ControlInput1">
+              <Modal.Body style={{ maxHeight: '600px', overflowY: 'auto' }}>
+                {/* Category Name Section */}
+                <Form.Group controlId="name" className="mb-4">
                   <Form.Label>{t("food_category")}</Form.Label>
                   <Form.Control
                     type="text"
@@ -393,14 +554,190 @@ export default function CategoryType() {
                     onBlur={handleBlur}
                     value={values.name}
                     placeholder={`${t("food_category")}...`}
+                    isInvalid={errors.name && touched.name}
                   />
+                  {errors.name && touched.name && (
+                    <Form.Control.Feedback type="invalid">
+                      {errors.name}
+                    </Form.Control.Feedback>
+                  )}
                 </Form.Group>
-                <div style={{ color: "red" }}>
-                  {errors.name && touched.name && errors.name}
+
+                {/* Menu Selection Section */}
+                <div className="border-top pt-3">
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h6 className="mb-0">{t("menu_items_selected") || "Menu Items Selected"}</h6>
+                    <Badge bg="info">
+                      {editSelectedMenus.length} {t("select") || "selected"}
+                    </Badge>
+                  </div>
+
+                  {/* Quick Category Filter Buttons */}
+                  {safeMenuCategories && safeMenuCategories.length > 0 && (
+                    <div className="mb-3">
+                      <div className="d-flex flex-wrap" style={{ gap: '8px' }}>
+                        <Button
+                          variant={editSelectedCategoryFilter === "All" ? "primary" : "outline-secondary"}
+                          size="sm"
+                          onClick={() => setEditSelectedCategoryFilter("All")}
+                          className="d-flex align-items-center"
+                          style={{ gap: '4px' }}
+                        >
+                          {t("all") || "All"}
+                          <span style={{ marginLeft: '4px' }}>({safeMenus?.length || 0})</span>
+                        </Button>
+                        {safeMenuCategories.map((category) => {
+                          const stats = editGetCategoryStats[category._id];
+                          const isActive = editSelectedCategoryFilter === category._id;
+                          return (
+                            <Button
+                              key={category._id}
+                              variant={isActive ? "primary" : "outline-secondary"}
+                              size="sm"
+                              onClick={() => setEditSelectedCategoryFilter(category._id)}
+                              className="d-flex align-items-center"
+                              style={{ gap: '4px' }}
+                            >
+                              {category.name}
+                              {/* <span style={{ marginLeft: '4px' }}>
+                                ({stats?.selected || 0}/{stats?.count || 0})
+                              </span> */}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Search and Select All */}
+                  <Row className="mb-3">
+                    <Col md={8}>
+                      <Form.Control
+                        type="text"
+                        placeholder={t("search_menu_items") || "Search menu items..."}
+                        value={editSearchTerm}
+                        onChange={(e) => setEditSearchTerm(e.target.value)}
+                      />
+                    </Col>
+                    <Col md={4}>
+                      <Form.Check
+                        type="checkbox"
+                        label={
+                          editSelectedCategoryFilter !== "All" 
+                            ? (editSelectAll 
+                                ? `${t("deselect_all") || "Deselect All"} (${editGetCategoryStats[editSelectedCategoryFilter]?.name})` 
+                                : `${t("select_all") || "Select All"} (${editGetCategoryStats[editSelectedCategoryFilter]?.name})`)
+                            : (editSelectAll ? t("deselect_all") || "Deselect All" : t("select_all") || "Select All")
+                        }
+                        checked={editSelectAll}
+                        onChange={handleEditSelectAll}
+                        className="mt-2"
+                      />
+                    </Col>
+                  </Row>
+
+                  {/* Menu Items List */}
+                  <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                    {editFilteredMenus && editFilteredMenus.length > 0 ? (
+                      <Row className="g-2 row-cols-1 row-cols-md-2 row-cols-lg-3 rounded-sm">
+                        {editFilteredMenus.map((menu) => (
+                          <Col md={6} key={menu._id} className="mb-2 rounded-sm">
+                            <Card 
+                              className={`h-100 cursor-pointer ${
+                                editSelectedMenus.includes(menu._id) ? 'border-primary bg-light' : ''
+                              }`}
+                              onClick={() => handleEditMenuSelect(menu._id)}
+                              style={{ cursor: 'pointer' }}
+                            >
+                              <Card.Body className="p-2">
+                                <div className="d-flex align-items-center">
+                                  <Form.Check
+                                    type="checkbox"
+                                    checked={editSelectedMenus.includes(menu._id)}
+                                    onChange={() => handleEditMenuSelect(menu._id)}
+                                    className="me-2"
+                                    onClick={(e) => e.stopPropagation()}
+                                  />
+                                  
+                                  {/* Menu Image */}
+                                  {menu.images && menu.images.length > 0 && (
+                                    <img
+                                      src={`${URL_PHOTO_AW3}${menu.images[0]}`}
+                                      alt={menu.name}
+                                      style={{
+                                        width: '40px',
+                                        height: '40px',
+                                        objectFit: 'cover',
+                                        borderRadius: '4px'
+                                      }}
+                                      className="me-2"
+                                    />
+                                  )}
+                                  
+                                  {/* Menu Details */}
+                                  <div className="flex-grow-1">
+                                    <div className="fw-bold text-truncate" style={{ fontSize: '14px' }}>
+                                      {menu.name}
+                                    </div>
+                                    
+                                    <div className="text-success small">
+                                      {moneyCurrency(menu.price)}
+                                    </div>
+                                  </div>
+                                </div>
+                              </Card.Body>
+                            </Card>
+                          </Col>
+                        ))}
+                      </Row>
+                    ) : (
+                      <div className="text-center text-muted py-4">
+                        {editSearchTerm ? (
+                          editSelectedCategoryFilter !== "All" ? 
+                            `${t("no_menu_found_in_category") || "No menu found in category"} "${editGetCategoryStats[editSelectedCategoryFilter]?.name || editSelectedCategoryFilter}"` :
+                            t("no_menu_found") || "No menu found"
+                        ) : (
+                          editSelectedCategoryFilter !== "All" ? 
+                            `${t("no_menu_in_category") || "No menu in category"} "${editGetCategoryStats[editSelectedCategoryFilter]?.name || editSelectedCategoryFilter}"` :
+                            t("no_menu_available") || "No menu available"
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Category Selection Summary */}
+                  {/* {editSelectedMenus.length > 0 && safeMenuCategories && (
+                    <div className="border-top pt-3 mt-3">
+                      <div className="mb-2">
+                        <h6 className="mb-0">{t("selection_summary_by_category") || "Selection Summary by Category"}</h6>
+                      </div>
+                      <div className="d-flex flex-wrap" style={{ gap: '8px' }}>
+                        {Object.entries(editGetCategoryStats).map(([categoryId, stats]) => {
+                          if (stats.selected === 0) return null;
+                          return (
+                            <Badge 
+                              key={categoryId}
+                              bg="primary" 
+                              style={{ fontSize: '12px', padding: '6px 10px' }}
+                            >
+                              {stats.name}: {stats.selected}/{stats.count}
+                            </Badge>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )} */}
                 </div>
               </Modal.Body>
               <Modal.Footer>
-                <Button variant="danger" onClick={handleClose2}>
+                <div className="d-flex justify-content-between w-100 align-items-center">
+                  <small className="text-muted">
+                    {editSelectedMenus.length > 0 && (
+                      `${editSelectedMenus.length} ${t("menu_items_selected") || "menu items selected"}`
+                    )}
+                  </small>
+                  <div>
+                    <Button variant="secondary" onClick={handleClose2} className="me-2">
                   {t("cancel")}
                 </Button>
                 <Button
@@ -409,10 +746,13 @@ export default function CategoryType() {
                     color: "#ffff",
                     border: 0,
                   }}
-                  onClick={() => handleSubmit()}
+                      type="submit"
+                      disabled={isSubmitting}
                 >
-                  {t("save")}
+                      {isSubmitting ? t("updating...") || "Updating..." : t("save")}
                 </Button>
+                  </div>
+                </div>
               </Modal.Footer>
             </form>
           )}
