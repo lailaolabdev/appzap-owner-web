@@ -50,6 +50,20 @@ export default function CategoryType() {
   const { profile } = useStore();
   const { menus, menuCategories, getMenuCategories, setMenuCategories, getMenus, setMenus } = useMenuStore();
 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!menus.length || !menuCategories.length) {
+        const fetchedMenus = await getMenus(storeId);
+        setMenus(fetchedMenus); // Save to zustand store
+      }
+      if (!menuCategories.length) {
+        const fetchedCategories = await getMenuCategories(storeId);
+        setMenuCategories(fetchedCategories); // Save to zustand store
+      }
+    };
+    fetchData();
+  }, [show2]);
+
   // Safety checks for props
   const safeMenus = menus || [];
   const safeMenuCategories = menuCategories || [];
@@ -103,6 +117,7 @@ export default function CategoryType() {
       );
       setEditSelectAll(allFilteredSelected);
     }
+    
   }, [editFilteredMenus, editSelectedMenus]);
 
   // Synchronize editSelectedMenus with dataUpdate when modal opens
