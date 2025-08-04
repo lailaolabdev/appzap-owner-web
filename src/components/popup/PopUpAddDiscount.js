@@ -865,11 +865,14 @@ export default function PopUpAddDiscount({
                 }
               }
 
-              await setDiscountBill();
+              if (activeTab === "general") {
+                await setDiscountBill();
+              }
+              
               onSubmit().then(() => {
                 handleClose(); // Use handleClose instead of onClose to reset states
-                setButtonDisabled(false);
               });
+              setButtonDisabled(false);
             }}
           >
             {buttonDisabled ? t("processing...") : t("append_discount")}

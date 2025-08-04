@@ -1290,5 +1290,6 @@
   "for_category":"ส่วนลดสำหรับหมวดหมู่",
   "no_category_discount_applied":"ไม่มีส่วนลดสำหรับหมวดหมู่",
   "other_categories":"หมวดหมู่อื่นๆ",
-  "select_all":"เลือกทั้งหมด"
+  "select_all":"เลือกทั้งหมด",
+  "deselect_all":"ยกเลิกเลือกทั้งหมด"
 }

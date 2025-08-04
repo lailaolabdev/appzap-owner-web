@@ -1284,5 +1284,6 @@
   "for_category":"សម្រាប់ប្រភេទ",
   "no_category_discount_applied":"មិនមានបញ្ចុះតម្លៃប្រភេទ",
   "other_categories":"ប្រភេទផ្សេងទៀត",
-  "select_all":"ជ្រើសរើសទាំងអស់"
+  "select_all":"ជ្រើសរើសទាំងអស់",
+  "deselect_all":"បោះបង់ជ្រើសរើសទាំងអស់"
 }

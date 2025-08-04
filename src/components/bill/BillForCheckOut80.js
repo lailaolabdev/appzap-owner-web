@@ -138,6 +138,8 @@ export default function BillForCheckOut80({
         const ddiscount = parseInt((totalAmountAll * dataBill?.discount) / 100);
         setTotalAfterDiscount(totalAmountAll - ddiscount);
       }
+    } else if (dataBill?.discountType === "PERCENT") {
+      setTotalAfterDiscount(totalAmountAll - dataBill?.discountAmount);
     } else {
       setTotalAfterDiscount(totalAmountAll);
     }
@@ -413,10 +415,10 @@ export default function BillForCheckOut80({
           <Col>
             {SelectedDataBill?.pointRecived > 0 ? (
               <div style={{ textAlign: "right" }}>
-                {moneyCurrency(total - SelectedDataBill?.pointToMoney)}
+                {moneyCurrency(totalAfterDiscount - SelectedDataBill?.pointToMoney)}
               </div>
             ) : (
-              <div style={{ textAlign: "right" }}>{moneyCurrency(total)}</div>
+              <div style={{ textAlign: "right" }}>{moneyCurrency(totalAfterDiscount)}</div>
             )}
           </Col>
         </Row>
@@ -479,7 +481,7 @@ export default function BillForCheckOut80({
               style={{ textAlign: "right", fontSize: 15, fontWeight: "bold" }}
             >
               {/* {t("aPriceHasToPay")} + {t("vat")} {taxPercent}%{" "}({storeDetail?.firstCurrency}): */}
-                {t("total")} + {storeDetail?.isShowVatLabel ? `ອມພ ${taxPercent}%` : ""}  + {storeDetail?.firstCurrency}:
+                {t("total")}  {storeDetail?.isShowVatLabel ? `ອມພ ${taxPercent}%` : ""}   {storeDetail?.firstCurrency}:
             </div>
           </Col>
           <Col>
@@ -508,7 +510,7 @@ export default function BillForCheckOut80({
             <Col>
             <div className={`text-right font-bold ${storeDetail?.isShowLabelRate ? "text-[15px]" : "text-[12px]"}`}>
                 {moneyCurrency(
-                  parseFloat(((total + taxAmount + serviceChargeAmount) / item?.sell).toFixed(2))
+                  parseFloat(((totalAfterDiscount + taxAmount + serviceChargeAmount) / item?.sell).toFixed(2))
                 )}
               </div>
             </Col>

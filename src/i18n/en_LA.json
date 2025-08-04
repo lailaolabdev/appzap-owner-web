@@ -1420,5 +1420,6 @@
   "for_category":"ສ່ວນຫຼຸດສໍາລັບຫມວດຫມູ່",
   "no_category_discount_applied":"ບໍ່ມີສ່ວນຫຼຸດສໍາລັບຫມວດຫມູ່",
   "other_categories":"ຫມວດຫມູ່ອື່ນໆ",
-  "select_all":"ເລືອກທັງໝົດ"
+  "select_all":"ເລືອກທັງໝົດ",
+  "deselect_all":"ຍົກເລີກເລືອກທັງໝົດ"
 }
