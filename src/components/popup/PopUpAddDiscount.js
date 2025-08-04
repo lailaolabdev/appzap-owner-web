@@ -153,16 +153,24 @@ export default function PopUpAddDiscount({
   const sendCategoryDiscountToAPI = async (categoryData) => {
     try {
       const _header = await getHeaders();
-      const menuIds = filteredMenus.map((item) => item.menuId);
+      // const menuIds = filteredMenus.map((item) => item.menuId);
+      const menuId = filteredMenus.map((item) => {
+        return {
+          menuId: item.menuId,
+          quantity: item.quantity,
+        }
+      });
       const _body = {
         id: dataBill?._id,
         data: {
           discount: discountCategory.toString(),
           discountType: selectedButtonCategory === "%" ? "PERCENT" : "LAK",
           // menuId: categoryData.menuId || []
-          menuId: menuIds,
+          menuId: menuId,
+          
         },
       };
+      // console.log("body", _body);
       const url = END_POINT_SEVER + "/v3/bill-discount-category";
       const res = await axios.put(url, _body, { headers: _header });
 
