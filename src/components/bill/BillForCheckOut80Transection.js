@@ -139,6 +139,8 @@ export default function BillForCheckOut80Transection({
         const ddiscount = parseInt((totalAmountAll * dataBill?.discount) / 100);
         setTotalAfterDiscount(totalAmountAll - ddiscount);
       }
+    } else if (dataBill?.discountType === "PERCENT") {
+      setTotalAfterDiscount(totalAmountAll - dataBill?.discountAmount);
     } else {
       setTotalAfterDiscount(totalAmountAll);
     }
@@ -410,10 +412,10 @@ export default function BillForCheckOut80Transection({
           <Col>
             {SelectedDataBill?.pointRecived > 0 ? (
               <div style={{ textAlign: "right" }}>
-                {moneyCurrency(total - SelectedDataBill?.pointToMoney)}
+                {moneyCurrency(totalAfterDiscount - SelectedDataBill?.pointToMoney)}
               </div>
             ) : (
-              <div style={{ textAlign: "right" }}>{moneyCurrency(total)}</div>
+              <div style={{ textAlign: "right" }}>{moneyCurrency(totalAfterDiscount)}</div>
             )}
           </Col>
         </Row>
@@ -430,7 +432,7 @@ export default function BillForCheckOut80Transection({
           </Col>
           <Col>
             <div style={{ textAlign: "right" }}>
-              {moneyCurrency(dataBill?.discount)}
+              {moneyCurrency(dataBill?.discount || dataBill.discountAmount)}
             </div>
           </Col>
         </Row>
