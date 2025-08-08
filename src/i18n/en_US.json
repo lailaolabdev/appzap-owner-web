@@ -1421,5 +1421,7 @@
   "no_category_discount_applied":"No category discount applied",
   "other_categories":"Other categories",
   "select_all":"Select all",
-  "deselect_all":"Deselect all"
+  "deselect_all":"Deselect all",
+  "print_bill_to_kitcher":"Print bill to kitchen",
+  "print_bill_sticker":"Print sticker"
 }

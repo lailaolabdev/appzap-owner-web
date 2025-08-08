@@ -1285,5 +1285,7 @@
   "no_category_discount_applied":"មិនមានបញ្ចុះតម្លៃប្រភេទ",
   "other_categories":"ប្រភេទផ្សេងទៀត",
   "select_all":"ជ្រើសរើសទាំងអស់",
-  "deselect_all":"បោះបង់ជ្រើសរើសទាំងអស់"
+  "deselect_all":"បោះបង់ជ្រើសរើសទាំងអស់",
+  "print_bill_to_kitcher":"បោះពុម្ពវិក្កយបត្រទៅងាយ",
+  "print_bill_sticker":"បោះពុម្ពស្តុកផ្ទាល់ខ្លួន"
 }

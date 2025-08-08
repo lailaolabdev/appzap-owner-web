@@ -1421,5 +1421,7 @@
   "no_category_discount_applied":"ບໍ່ມີສ່ວນຫຼຸດສໍາລັບຫມວດຫມູ່",
   "other_categories":"ຫມວດຫມູ່ອື່ນໆ",
   "select_all":"ເລືອກທັງໝົດ",
-  "deselect_all":"ຍົກເລີກເລືອກທັງໝົດ"
+  "deselect_all":"ຍົກເລີກເລືອກທັງໝົດ",
+  "print_bill_to_kitcher":"ພີມບີນໄປຄົວ",
+  "print_bill_sticker":"ພີມ sticker"
 }
