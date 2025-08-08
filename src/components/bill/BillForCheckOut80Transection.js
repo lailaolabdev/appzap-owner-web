@@ -412,10 +412,10 @@ export default function BillForCheckOut80Transection({
           <Col>
             {SelectedDataBill?.pointRecived > 0 ? (
               <div style={{ textAlign: "right" }}>
-                {moneyCurrency(totalAfterDiscount - SelectedDataBill?.pointToMoney)}
+                {moneyCurrency(total - SelectedDataBill?.pointToMoney)}
               </div>
             ) : (
-              <div style={{ textAlign: "right" }}>{moneyCurrency(totalAfterDiscount)}</div>
+              <div style={{ textAlign: "right" }}>{moneyCurrency(total)}</div>
             )}
           </Col>
         </Row>
@@ -432,7 +432,7 @@ export default function BillForCheckOut80Transection({
           </Col>
           <Col>
             <div style={{ textAlign: "right" }}>
-              {moneyCurrency(dataBill?.discount || dataBill.discountAmount)}
+              {moneyCurrency(dataBill?.discount || dataBill.discountCategoryAmount)}
             </div>
           </Col>
         </Row>

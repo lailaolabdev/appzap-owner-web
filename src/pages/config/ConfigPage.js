@@ -21,6 +21,8 @@ import {
   updateSettingShift,
   updateSettingServiceChange,
   updateSettingShowAmountCafe,
+  updateSettingPrintBillToKitchen,
+  updateSettingPrintBillSticker,
   updateCounterFilterShift,
   updateCounterBill,
   updateCounterMenu,
@@ -158,6 +160,20 @@ export default function ConfigPage() {
     const isType = e.target.checked;
     await updateSettingShowAmountCafe(profile?.data.storeId, { data: isType });
     // console.log("changeSericeChange", isType);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+
+  const changePrintBillToKitchen = async (e) => {
+    const isType = e.target.checked;
+    await updateStore({ isPrintBillToKitchen: isType }, storeDetail?._id);
+    // console.log("changePrintBillToKitchen", isType);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+
+  const changePrintBillSticker = async (e) => {
+    const isType = e.target.checked;
+    await updateStore({ isPrintBillSticker: isType }, storeDetail?._id);
+    // console.log("changePrintBillSticker", isType);
     await fetchStoreDetail(storeDetail?._id);
   };
   const changeCounterFilterShift = async (e) => {
@@ -904,45 +920,99 @@ export default function ConfigPage() {
               {t("show_amount")}
             </Card.Header>
             <Card.Body>
-              {[
-                {
-                  title: t("show_amount_open"),
-                  key: "show_amount_cafe",
-                },
-              ].map((item) => (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>{t("show_amount_open")}</div>
                 <div
                   style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr auto",
+                    display: "flex",
+                    alignItems: "center",
                     gap: 10,
-                    padding: "10px 0",
-                    borderBottom: `1px dotted ${COLOR_APP}`,
+                    justifyContent: "center",
                   }}
-                  key={item?.key}
                 >
-                  <div>{item?.title}</div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Form.Label htmlFor={`show_amount_cafe-${item?.key}`}>
-                      {storeDetail?.isShowAmountCafe
-                        ? `${t("oppen")}`
-                        : `${t("close")}`}
-                    </Form.Label>
-                    <Form.Check
-                      type="switch"
-                      checked={storeDetail?.isShowAmountCafe}
-                      id={`show_amount_cafe-${item?.key}`}
-                      onChange={changeShowAmountCafe}
-                    />
-                  </div>
+                  <Form.Label htmlFor="show_amount_cafe">
+                    {storeDetail?.isShowAmountCafe
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.isShowAmountCafe}
+                    id="show_amount_cafe"
+                    onChange={changeShowAmountCafe}
+                  />
                 </div>
-              ))}
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>{t("print_bill_to_kitcher")}</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Form.Label htmlFor="print_bill_to_kitchen">
+                    {storeDetail?.isPrintBillToKitchen
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.isPrintBillToKitchen}
+                    id="print_bill_to_kitchen"
+                    onChange={changePrintBillToKitchen}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>{t("print_bill_sticker")}</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Form.Label htmlFor="print_bill_sticker">
+                    {storeDetail?.isPrintBillSticker
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.isPrintBillSticker}
+                    id="print_bill_sticker"
+                    onChange={changePrintBillSticker}
+                  />
+                </div>
+              </div>
             </Card.Body>
           </Card>
           <Card border="primary" style={{ margin: 0 }}>

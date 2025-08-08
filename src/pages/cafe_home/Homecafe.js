@@ -1436,7 +1436,9 @@ function Homecafe() {
           });
         }
       );
-      await onPrintForCherLaBel();
+      if (storeDetail?.isPrintBillSticker === true) {
+        await onPrintForCherLaBel();
+      }
       setSelectedTable();
       getTableDataStore();
       setSelectedMenu([]);

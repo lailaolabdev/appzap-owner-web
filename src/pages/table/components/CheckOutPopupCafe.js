@@ -492,7 +492,8 @@ export default function CheckOutPopupCafe({
 
           onQueue();
           setTotalPointPrice();
-          if (!storeDetail?.isStatusCafe) {
+          if (storeDetail?.isPrintBillToKitchen === true) {
+            console.log("storeDetail?.isPrintBillToKitchen", storeDetail?.isPrintBillToKitchen);
             await onPrintForCher();
           }
 

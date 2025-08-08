@@ -301,7 +301,7 @@ const OrderCheckOut = ({
             <div className="w-full flex justify-end">
               <div className="text-end">{t("discount")}:</div>
               <div className="w-60 text-end">
-                {moneyCurrency(data?.discount)}{" "}
+                {moneyCurrency(data?.discount || data?.discountCategoryAmount)}{" "}
                 {data?.discountType !== "LAK"
                   ? "%"
                   : storeDetail?.firstCurrency}

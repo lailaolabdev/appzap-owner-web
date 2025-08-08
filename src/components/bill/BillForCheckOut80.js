@@ -415,10 +415,10 @@ export default function BillForCheckOut80({
           <Col>
             {SelectedDataBill?.pointRecived > 0 ? (
               <div style={{ textAlign: "right" }}>
-                {moneyCurrency(totalAfterDiscount - SelectedDataBill?.pointToMoney)}
+                {moneyCurrency(total - SelectedDataBill?.pointToMoney)}
               </div>
             ) : (
-              <div style={{ textAlign: "right" }}>{moneyCurrency(totalAfterDiscount)}</div>
+              <div style={{ textAlign: "right" }}>{moneyCurrency(total)}</div>
             )}
           </Col>
         </Row>
@@ -435,7 +435,7 @@ export default function BillForCheckOut80({
           </Col>
           <Col>
             <div style={{ textAlign: "right" }}>
-              {moneyCurrency(dataBill?.discount)}
+              {moneyCurrency(dataBill?.discount || dataBill?.discountCategoryAmount)}
             </div>
           </Col>
         </Row>

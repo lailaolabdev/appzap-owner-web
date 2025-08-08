@@ -240,7 +240,7 @@ export default function MenuListOption() {
       };
 
       const resData = await axios.delete(
-        END_POINT_SEVER_TABLE_MENU + `/v3/menu-option/${dateDelete?.id}/delete`,
+        END_POINT_SEVER_TABLE_MENU + `/v3/menu-option/${getTokken?.DATA?.storeId}/${dateDelete?.id}/delete`,
         { headers: headers }
       );
 
