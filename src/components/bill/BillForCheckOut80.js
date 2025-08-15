@@ -19,6 +19,7 @@ import axios from "axios";
 import { useTranslation } from "react-i18next";
 import _ from "lodash";
 import { data } from "autoprefixer";
+import { useReceiptStore } from "../../zustand/receiptStore";
 
 export default function BillForCheckOut80({
   storeDetail,
@@ -50,6 +51,7 @@ export default function BillForCheckOut80({
   const { PointStore } = usePointStore();
 
   const { selectUserEmployee } = useUserStore();
+  const { showTaxInfo, showQRCode, showSizeRate } = useReceiptStore();
 
   // Replace the current useRef and console.log
   const serviceChargeRef = useRef(serviceCharge);
@@ -289,7 +291,7 @@ export default function BillForCheckOut80({
               {moment(dataBill?.createdAt).format("DD-MM-YYYY") }
             </span>
           </div>
-          <div className="flex items-center items-center">
+          <div className="flex items-center">
             {t("time")}:{" "}
             {moment(dataBill?.createdAt).format("HH:mm:ss")}
             {" - "}
@@ -489,7 +491,7 @@ export default function BillForCheckOut80({
               style={{ textAlign: "right", fontSize: 15, fontWeight: "bold" }}
             >
               {/* {t("aPriceHasToPay")} + {t("vat")} {taxPercent}%{" "}({storeDetail?.firstCurrency}): */}
-                {t("total")}  {storeDetail?.isShowVatLabel ? `ອມພ ${taxPercent}%` : ""}   {storeDetail?.firstCurrency}:
+                {t("total")}  {(storeDetail?.isShowVatLabel && showTaxInfo) ? `ອມພ ${taxPercent}%` : ""}   {storeDetail?.firstCurrency}:
             </div>
           </Col>
           <Col>
@@ -511,12 +513,12 @@ export default function BillForCheckOut80({
         {currencyData?.map((item, index) => (
           <Row key={index}>
             <Col xs={7}>
-              <div className={`text-right font-bold ${storeDetail?.isShowLabelRate ? "text-[15px]" : "text-[12px]"}`}>
+              <div className={`text-right font-bold ${showSizeRate ? "text-[15px]" : "text-[12px]"}`}>
                 {item?.currencyCode}:
               </div>
             </Col>
             <Col>
-            <div className={`text-right font-bold ${storeDetail?.isShowLabelRate ? "text-[15px]" : "text-[12px]"}`}>
+            <div className={`text-right font-bold ${showSizeRate ? "text-[15px]" : "text-[12px]"}`}>
                 {moneyCurrency(
                   parseFloat(((totalAfterDiscount + taxAmount + serviceChargeAmount) / item?.sell).toFixed(2))
                 )}
@@ -587,7 +589,7 @@ export default function BillForCheckOut80({
           padding: 10,
           marginTop: 10,
         }}
-        hidden={storeDetail?.printer?.qr ? false : true}
+        hidden={!showQRCode || !storeDetail?.printer?.qr}
       >
         <Img>
           <img

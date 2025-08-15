@@ -162,6 +162,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       }
 
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
+      console.log("_file: ", dataImageForPrint.toDataURL());
       const bodyFormData = new FormData();
       bodyFormData.append("ip", myPrinter?.ip);
       bodyFormData.append("isdrawer", false);
@@ -184,7 +185,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
           ip: printerBillData?.ip,
           type: printerBillData?.type,
           port: "9100",
-          width: myPrinter?.width === "58" ? 400 : 580,
+          width: myPrinter?.width === "58" ? 580 : 580,
         },
         async () => {
           await axios({
@@ -458,18 +459,18 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
         <div
           ref={billRef}
-          style={{ maxWidth: 330, width: "100%", minWidth: 330 }}
+          style={{ maxWidth: 330, width: "80mm", minWidth: 330 }}
         >
           <Container>
-            <div style={{ fontWeight: "bold", fontSize: 24 }}>
+            <div style={{ fontSize: 24 }}>
               {t("sale_amount_list")}
               {shiftDate ? `(${shiftDate?.name})` : ""}
             </div>
-            <div style={{ fontWeight: "bold" }}>
+            <div style={{  }}>
               {t("start")}: {startDate}{" "}
               {shiftDate ? shiftDate?.startTime : "00:00:00"}
             </div>
-            <div style={{ fontWeight: "bold" }}>
+            <div >
               {t("to")}: {startDate}{" "}
               {shiftDate ? shiftDate?.endTime : "23:59:59"}
             </div>
@@ -506,7 +507,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 ? deliveryReports.map((e, idx) => ({
                     name: (
                       <div
-                        style={{ fontWeight: 700 }}
+                        
                       >{`delivery (${e?.name})`}</div>
                     ),
                     value: Math.floor(e?.amount || 0),
@@ -551,10 +552,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 key={e?.name}
                 style={{ display: "flex", justifyContent: "space-between" }}
               >
-                <span style={{ textAlign: "left", fontWeight: "bold" }}>
+                <span style={{ textAlign: "left",  }}>
                   {e?.name}
                 </span>
-                <span style={{ textAlign: "right", fontWeight: "bold" }}>
+                <span style={{ textAlign: "right",  }}>
                   {moneyCurrency(e?.value)} {e?.type}
                 </span>
               </div>

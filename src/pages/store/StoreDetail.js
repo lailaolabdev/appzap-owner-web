@@ -19,6 +19,7 @@ import StarRatings from "react-star-ratings";
 import { useTranslation } from "react-i18next";
 import { useStoreStore } from "../../zustand/storeStore";
 import { useStore } from "../../store";
+import PopUpReciept from "../../components/popup/PopUpReciept";
 
 export default function StoreDetail() {
   const params = useParams();
@@ -35,6 +36,7 @@ export default function StoreDetail() {
   const [getTokken, setgetTokken] = useState();
   const [popEditStroe, setPopEditStroe] = useState(false);
   const [popEditQR, setPopEditQR] = useState(false);
+  const [popEditSettingPrintReceipt, setPopEditSettingPrintReceipt] = useState(false);
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
 
   const { profile } = useStore();
@@ -144,6 +146,13 @@ export default function StoreDetail() {
           >
             <FontAwesomeIcon icon={faEdit} className="mr-2" />
             {t("QR Code")}
+          </button>
+          <button
+            className="px-4 py-2 bg-color-app hover:bg-orange-400 text-white border border-gray-300 rounded-md shadow-sm transition-all flex items-center"
+            onClick={() => setPopEditSettingPrintReceipt(true)}
+          >
+            <FontAwesomeIcon icon={faEdit} className="mr-2" />
+            {t("Setting Print Receipt")}
           </button>
         </div>
       </div>
@@ -257,6 +266,10 @@ export default function StoreDetail() {
         data={dataStore}
         onClose={() => setPopEditQR(false)}
         onSubmit={handleUpdateStore}
+      />
+      <PopUpReciept
+        open={popEditSettingPrintReceipt}
+        onClose={() => setPopEditSettingPrintReceipt(false)}
       />
     </div>
   );
