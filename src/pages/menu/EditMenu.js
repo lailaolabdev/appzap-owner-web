@@ -311,8 +311,11 @@ export default function EditMenu() {
                 {...field}
                 type="text"
                 onChange={(e) => {
-                  const rawValue = e.target.value.replace(/[^0-9]/g, "");
-                  field.onChange(rawValue);
+                  const rawValue = e.target.value.replace(/[^0-9.]/g, "");
+                  // Ensure only one decimal point is allowed
+                  const parts = rawValue.split('.', ',');
+                  const formattedValue = parts.length > 2 ? parts[0] + '.' + parts.slice(1).join('') : rawValue;
+                  field.onChange(formattedValue);
                 }}
                 value={field.value}
                 className={`w-full p-2 border rounded ${errors.price ? "border-red-500" : ""

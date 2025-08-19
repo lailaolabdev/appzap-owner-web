@@ -327,7 +327,7 @@ export default function CheckOutPopup({
         ? Number.parseFloat(totalReceived)
         : Number.parseFloat(cashCurrency) || 0;
 
-    const changeAmount = totalReceived - discountedTotalBill;
+    const changeAmount = totalReceived - totalBill;
     moneyChange = Number.parseFloat(changeAmount > 0 ? changeAmount : 0);
 
     setDataBill((prev) => ({
