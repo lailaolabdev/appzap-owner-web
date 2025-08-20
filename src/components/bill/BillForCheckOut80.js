@@ -577,6 +577,7 @@ export default function BillForCheckOut80({
           display: "flex",
           justifyContent: "center",
           padding: 10,
+          marginTop: 10,
         }}
         hidden={storeDetail?.printer?.qr ? false : true}
       >

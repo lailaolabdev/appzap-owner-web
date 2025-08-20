@@ -572,6 +572,7 @@ export default function BillForCheckOut80Transection({
           display: "flex",
           justifyContent: "center",
           padding: 10,
+          marginTop: 10,
         }}
         hidden={storeDetail?.printer?.qr ? false : true}
       >
