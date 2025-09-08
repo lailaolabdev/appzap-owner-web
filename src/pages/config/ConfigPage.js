@@ -229,6 +229,13 @@ export default function ConfigPage() {
     console.log("response", response);
     await fetchStoreDetail(storeDetail?._id);
   };
+  const changeCounterMenuManagement = async (e) => {
+    const isType = e.target.checked;
+    const response = await updateStore({counterMenuManagement: isType}, storeDetail?._id);
+    // await updateCounterBill(profile?.data.storeId, { data: isType });
+    console.log("response", response);
+    await fetchStoreDetail(storeDetail?._id);
+  };
 
 
   const TooltipFunc = ({ id, children, title }) => (
@@ -1117,6 +1124,37 @@ export default function ConfigPage() {
                     checked={storeDetail?.counterDisableReport}
                     id={`counter-disable-report`}
                     onChange={changeCounterReport}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>{t("counter_menu_management")}</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Form.Label htmlFor={`counter-menu-management`}>
+                    {storeDetail?.counterMenuManagement
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.counterMenuManagement}
+                    id={`counter-menu-management`}
+                    onChange={changeCounterMenuManagement}
                   />
                 </div>
               </div>

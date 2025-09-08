@@ -1293,5 +1293,6 @@
   "select_all":"เลือกทั้งหมด",
   "deselect_all":"ยกเลิกเลือกทั้งหมด",
   "print_bill_to_kitcher":"พิมพ์บิลไปครัว",
-  "print_bill_sticker":"พิมพ์สแตกเตอร์"
+  "print_bill_sticker":"พิมพ์สแตกเตอร์",
+  "counter_menu_management":"counnter การจัดการเมนู"
 }

@@ -1423,5 +1423,6 @@
   "select_all":"ເລືອກທັງໝົດ",
   "deselect_all":"ຍົກເລີກເລືອກທັງໝົດ",
   "print_bill_to_kitcher":"ພີມບີນໄປຄົວ",
-  "print_bill_sticker":"ພີມ sticker"
+  "print_bill_sticker":"ພີມ sticker",
+  "counter_menu_management":"counter ຈັດການເມນູ"
 }

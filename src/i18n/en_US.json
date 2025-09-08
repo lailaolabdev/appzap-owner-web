@@ -1423,5 +1423,6 @@
   "select_all":"Select all",
   "deselect_all":"Deselect all",
   "print_bill_to_kitcher":"Print bill to kitchen",
-  "print_bill_sticker":"Print sticker"
+  "print_bill_sticker":"Print sticker",
+  "counter_menu_management":"Counter menu management"
 }
