@@ -9,6 +9,10 @@ export const useReceiptStore = create((set) => ({
   showTaxInfo: false,
   showQRCode: false,
   showSizeRate: false,
+  showPrice: true,
+  showUserName: false,
+  nameCodeSize: 'medium', // 'small', 'medium', 'large'
+  userName: 'John Doe',
   setBusinessName: (businessName) => set({ businessName }),
   setAddress: (address) => set({ address }),
   setPhone: (phone) => set({ phone }),
@@ -17,4 +21,8 @@ export const useReceiptStore = create((set) => ({
   setShowTaxInfo: (showTaxInfo) => set({ showTaxInfo }),
   setShowQRCode: (showQRCode) => set({ showQRCode }),
   setShowSizeRate: (showSizeRate) => set({ showSizeRate }),
+  setShowPrice: (showPrice) => set({ showPrice }),
+  setShowUserName: (showUserName) => set({ showUserName }),
+  setNameCodeSize: (nameCodeSize) => set({ nameCodeSize }),
+  setUserName: (userName) => set({ userName }),
 }));

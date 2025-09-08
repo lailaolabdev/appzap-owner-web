@@ -406,7 +406,7 @@ export default function Dashboard() {
               }}
               className={fontMap[language]}
             >
-              {t("success_amount")}
+              {t("success_amount 12")}
             </Card.Header>
             <Card.Body>
               <div className={fontMap[language]} style={{ marginBottom: '8px' }}>

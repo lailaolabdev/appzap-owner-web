@@ -3,13 +3,37 @@ import styled from "styled-components";
 import moment from "moment";
 import { moneyCurrency } from "../../helpers";
 
-export default function BillForChef80({ selectedTable, dataBill, val }) {
+export default function BillForChef80({ 
+  selectedTable, 
+  dataBill, 
+  val, 
+  showPrice = true, 
+  showUserName = true, 
+  nameCodeSize = 'medium' 
+}) {
   const options =
     val?.options
       ?.map((option) => `[${option.name} x ${option.quantity || 1}]`)
       .join(" ") || "";
 
   // console.log("val: ", val);
+
+  // Determine header font size based on nameCodeSize
+  const getHeaderFontSize = () => {
+    switch (nameCodeSize) {
+      case 'small': return 16;
+      case 'large': return 24;
+      default: return 20; // medium
+    }
+  };
+
+  const getCodeFontSize = () => {
+    switch (nameCodeSize) {
+      case 'small': return 12;
+      case 'large': return 16;
+      default: return 14; // medium
+    }
+  };
 
   return (
     <div style={{ background: "#fff" }}>
@@ -28,7 +52,7 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
                 background: "#000",
                 color: "#fff",
                 fontWeight: "bold",
-                fontSize: 20,
+                fontSize: getHeaderFontSize(),
                 lineHeight: "100%",
                 padding: 5,
               }}
@@ -39,7 +63,7 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
               style={{
                 color: "#000",
                 fontWeight: "bold",
-                fontSize: 14,
+                fontSize: getCodeFontSize(),
               }}
             >
               {val?.code || selectedTable?.code}
@@ -91,16 +115,19 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
           <tr>
             <td colSpan={2}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div
-                  style={{
-                    color: "#000",
-                    fontWeight: "bold",
-                    fontSize: 14,
-                  }}
-                >
-                  {moneyCurrency(val?.price + (val?.totalOptionPrice ?? 0))} x{" "}
-                  {val?.quantity}
-                </div>
+                {showPrice && (
+                  <div
+                    style={{
+                      color: "#000",
+                      fontWeight: "bold",
+                      fontSize: 14,
+                    }}
+                  >
+                    {moneyCurrency(val?.price + (val?.totalOptionPrice ?? 0))} x{" "}
+                    {val?.quantity}
+                  </div>
+                )}
+                {!showPrice && <div></div>}
                 <div
                   style={{
                     fontSize: 12,
@@ -114,15 +141,18 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
           <tr>
             <td colSpan={2} style={{ borderTop: "1px dotted #000" }}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div
-                  style={{
-                    color: "#000",
-                    fontWeight: "bold",
-                    fontSize: 14,
-                  }}
-                >
-                  {val?.createdBy?.firstname}
-                </div>
+                {showUserName && (
+                  <div
+                    style={{
+                      color: "#000",
+                      fontWeight: "bold",
+                      fontSize: 14,
+                    }}
+                  >
+                    {val?.createdBy?.firstname}
+                  </div>
+                )}
+                {!showUserName && <div></div>}
                 <div
                   style={{
                     fontSize: 12,

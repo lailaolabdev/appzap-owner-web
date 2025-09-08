@@ -32,7 +32,8 @@ export default function BillForCheckOut80({
   profile,
   paymentMethod,
   enableServiceChange,
-  language
+  language,
+  isOrderBill = false
 }) {
   // state
   const [total, setTotal] = useState();
@@ -271,6 +272,16 @@ export default function BillForCheckOut80({
         {" "}
         {`${t("tableNumber")} ${dataBill?.tableId?.name}`}
       </div>
+      {storeDetail?.showUserName && storeDetail?.userName && (
+        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 14 }}>
+          {t("Served by")}: {storeDetail.userName}
+        </div>
+      )}
+      {isOrderBill && (
+        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 16, marginTop: 5 }}>
+          ========== ORDER BILL ==========
+        </div>
+      )}
       <Price>
         <div style={{ textAlign: "left", fontSize: 12 }}>
           <div>
@@ -344,12 +355,23 @@ export default function BillForCheckOut80({
       <div style={{ height: 10 }} />
       <hr style={{ border: "1px dashed #000", margin: 0 }} />
       <div style={{ flexGrow: 1 }} />
-      <Name style={{ marginBottom: 10, fontSize: 12 }}>
+      <Name style={{ 
+        marginBottom: 10, 
+        fontSize: 12,
+        display: "grid",
+        gridTemplateColumns: storeDetail?.showPrice === false 
+          ? "1fr 3fr 1fr" 
+          : "1fr 1fr 1fr 1fr 1fr"
+      }}>
         <div style={{ textAlign: "left", width: "10px" }}>{t("no")}</div>
         <div style={{ textAlign: "left" }}>{t("list")}</div>
         <div style={{ textAlign: "center" }}>{t("amount")}</div>
-        <div style={{ textAlign: "left" }}>{t("price")}</div>
-        <div style={{ textAlign: "right" }}>{t("total")}</div>
+        {storeDetail?.showPrice !== false && (
+          <>
+            <div style={{ textAlign: "left" }}>{t("price")}</div>
+            <div style={{ textAlign: "right" }}>{t("total")}</div>
+          </>
+        )}
       </Name>
       <Order>
         {orders
@@ -373,12 +395,23 @@ export default function BillForCheckOut80({
             const itemPrice = item?.price + totalOptionPrice;
             const itemTotal = itemPrice * item?.quantity;
 
+            // Determine font size based on nameCodeSize setting
+            const getFontSize = () => {
+              switch (storeDetail?.nameCodeSize) {
+                case 'small': return 10;
+                case 'large': return 14;
+                default: return 12; // medium
+              }
+            };
+
             return (
               <div
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
-                  fontSize: 12,
+                  gridTemplateColumns: storeDetail?.showPrice === false 
+                    ? "1fr 3fr 1fr" 
+                    : "1fr 1fr 1fr 1fr 1fr",
+                  fontSize: getFontSize(),
                 }}
                 key={item?._id}
               >
@@ -389,7 +422,7 @@ export default function BillForCheckOut80({
                   style={{
                     textAlign: "left",
                     marginLeft: "-20px",
-                    width: "6rem",
+                    width: storeDetail?.showPrice === false ? "auto" : "6rem",
                   }}
                 >
                   {language === "la"
@@ -403,148 +436,160 @@ export default function BillForCheckOut80({
                     : item.name}{" "} {optionsNames}
                 </div>
                 <div style={{ textAlign: "center" }}>{item?.quantity}</div>
-                <div style={{ textAlign: "left" }}>
-                  {itemPrice ? moneyCurrency(itemPrice) : "-"}
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  {itemTotal ? moneyCurrency(itemTotal) : "-"}
-                </div>
+                {storeDetail?.showPrice !== false && (
+                  <>
+                    <div style={{ textAlign: "left" }}>
+                      {itemPrice ? moneyCurrency(itemPrice) : "-"}
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      {itemTotal ? moneyCurrency(itemTotal) : "-"}
+                    </div>
+                  </>
+                )}
               </div>
             );
           })}
       </Order>
-      <div style={{ height: 10 }} />
-      <hr style={{ border: "1px dashed #000", margin: 0 }} />
-      <div style={{ fontSize: 14 }}>
-        <Row>
-          <Col xs={7}>
-            <div style={{ textAlign: "right" }}>
-              {t("total")} ({storeDetail?.firstCurrency}):{" "}
-            </div>
-          </Col>
-          <Col>
-            {SelectedDataBill?.pointRecived > 0 ? (
+      {!isOrderBill && storeDetail?.showPrice !== false && (
+        <>
+          <div style={{ height: 10 }} />
+          <hr style={{ border: "1px dashed #000", margin: 0 }} />
+          <div style={{ fontSize: 14 }}>
+            <Row>
+              <Col xs={7}>
+                <div style={{ textAlign: "right" }}>
+                  {t("total")} ({storeDetail?.firstCurrency}):{" "}
+                </div>
+              </Col>
+              <Col>
+                {SelectedDataBill?.pointRecived > 0 ? (
+                  <div style={{ textAlign: "right" }}>
+                    {moneyCurrency(total - SelectedDataBill?.pointToMoney)}
+                  </div>
+                ) : (
+                  <div style={{ textAlign: "right" }}>{moneyCurrency(total)}</div>
+                )}
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={7}>
+                <div style={{ textAlign: "right" }}>
+                  {t("discount")} (
+                  {dataBill?.discountType == "MONEY" ||
+                  dataBill?.discountType == "LAK"
+                    ? storeDetail?.firstCurrency
+                    : "%"}
+                  ):
+                </div>
+              </Col>
+              <Col>
+                <div style={{ textAlign: "right" }}>
+                  {moneyCurrency(dataBill?.discount || dataBill?.discountCategoryAmount)}
+                </div>
+              </Col>
+            </Row>
+            {SelectedDataBill?.memberPhone
+              ? SelectedDataBill?.Point > 0 && (
+                  <Row>
+                    <Col xs={7}>
+                      <div style={{ textAlign: "right" }}>{t("point_use")}: </div>
+                    </Col>
+                    <Col>
+                      <div style={{ textAlign: "right" }}>
+                        {SelectedDataBill?.pointRecived
+                          ? `${moneyCurrency(
+                              SelectedDataBill?.pointRecived
+                            )} => ${moneyCurrency(
+                              SelectedDataBill?.pointToMoney || 0
+                            )}`
+                          : 0}
+                      </div>
+                    </Col>
+                  </Row>
+                )
+              : ""}
+          </div>
+        </>
+      )}
+      {!isOrderBill && (
+        <>
+          <Row>
+            <Col xs={7}>
               <div style={{ textAlign: "right" }}>
-                {moneyCurrency(total - SelectedDataBill?.pointToMoney)}
+                {t("service_charge")} {TotalServiceChange}% :
               </div>
-            ) : (
-              <div style={{ textAlign: "right" }}>{moneyCurrency(total)}</div>
-            )}
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={7}>
-            <div style={{ textAlign: "right" }}>
-              {t("discount")} (
-              {dataBill?.discountType == "MONEY" ||
-              dataBill?.discountType == "LAK"
-                ? storeDetail?.firstCurrency
-                : "%"}
-              ):
-            </div>
-          </Col>
-          <Col>
-            <div style={{ textAlign: "right" }}>
-              {moneyCurrency(dataBill?.discount || dataBill?.discountCategoryAmount)}
-            </div>
-          </Col>
-        </Row>
-        {SelectedDataBill?.memberPhone
-          ? SelectedDataBill?.Point > 0 && (
-              <Row>
+            </Col>
+            <Col>
+              <div style={{ textAlign: "right" }}>
+                {moneyCurrency(serviceChargeAmount)}
+              </div>
+            </Col>
+          </Row>
+          <div style={{ height: 10 }} />
+          <hr style={{ border: "1px dashed #000", margin: 0 }} />
+          <div style={{ fontSize: 14 }}>
+            <Row>
+              <Col xs={7}>
+                <div
+                  style={{ textAlign: "right", fontSize: 15, fontWeight: "bold" }}
+                >
+                  {/* {t("aPriceHasToPay")} + {t("vat")} {taxPercent}%{" "}({storeDetail?.firstCurrency}): */}
+                    {t("total")}  {(storeDetail?.isShowVatLabel && showTaxInfo) ? `ອມພ ${taxPercent}%` : ""}   {storeDetail?.firstCurrency}:
+                </div>
+              </Col>
+              <Col>
+                <div
+                  style={{ textAlign: "right", fontSize: 15, fontWeight: "bold" }}
+                >
+                  {moneyCurrency(
+                    Math.floor(
+                      totalAfterDiscount +
+                        taxAmount +
+                        serviceChargeAmount -
+                        SelectedDataBill?.pointToMoney
+                    )
+                  )}
+                </div>
+              </Col>
+            </Row>
+
+            {currencyData?.map((item, index) => (
+              <Row key={index}>
                 <Col xs={7}>
-                  <div style={{ textAlign: "right" }}>{t("point_use")}: </div>
+                  <div className={`text-right font-bold ${showSizeRate ? "text-[15px]" : "text-[12px]"}`}>
+                    {item?.currencyCode}:
+                  </div>
                 </Col>
                 <Col>
-                  <div style={{ textAlign: "right" }}>
-                    {SelectedDataBill?.pointRecived
-                      ? `${moneyCurrency(
-                          SelectedDataBill?.pointRecived
-                        )} => ${moneyCurrency(
-                          SelectedDataBill?.pointToMoney || 0
-                        )}`
-                      : 0}
+                <div className={`text-right font-bold ${showSizeRate ? "text-[15px]" : "text-[12px]"}`}>
+                    {moneyCurrency(
+                      parseFloat(((totalAfterDiscount + taxAmount + serviceChargeAmount) / item?.sell).toFixed(2))
+                    )}
                   </div>
                 </Col>
               </Row>
-            )
-          : ""}
-      </div>
-      <Row>
-        <Col xs={7}>
-          <div style={{ textAlign: "right" }}>
-            {t("service_charge")} {TotalServiceChange}% :
+            ))}
+            {storeDetail?.isCRM && dataBill?.memberPhone && (
+              <Row>
+                <Col xs={7}>
+                  <div className="text-right text-[12px] text-gray-400">
+                    {t("point_remain")}:
+                  </div>
+                </Col>
+                <Col>
+                  <div className="text-right text-[12px] text-gray-400">
+                    {moneyCurrency(
+                      SelectedDataBill?.Point - SelectedDataBill?.pointRecived
+                    )}
+                  </div>
+                </Col>
+              </Row>
+            )}
           </div>
-        </Col>
-        <Col>
-          <div style={{ textAlign: "right" }}>
-            {moneyCurrency(serviceChargeAmount)}
-          </div>
-        </Col>
-      </Row>
-      <div style={{ height: 10 }} />
-      <hr style={{ border: "1px dashed #000", margin: 0 }} />
-      <div style={{ fontSize: 14 }}>
-        <Row>
-          <Col xs={7}>
-            <div
-              style={{ textAlign: "right", fontSize: 15, fontWeight: "bold" }}
-            >
-              {/* {t("aPriceHasToPay")} + {t("vat")} {taxPercent}%{" "}({storeDetail?.firstCurrency}): */}
-                {t("total")}  {(storeDetail?.isShowVatLabel && showTaxInfo) ? `ອມພ ${taxPercent}%` : ""}   {storeDetail?.firstCurrency}:
-            </div>
-          </Col>
-          <Col>
-            <div
-              style={{ textAlign: "right", fontSize: 15, fontWeight: "bold" }}
-            >
-              {moneyCurrency(
-                Math.floor(
-                  totalAfterDiscount +
-                    taxAmount +
-                    serviceChargeAmount -
-                    SelectedDataBill?.pointToMoney
-                )
-              )}
-            </div>
-          </Col>
-        </Row>
+        </>
+      )}
 
-        {currencyData?.map((item, index) => (
-          <Row key={index}>
-            <Col xs={7}>
-              <div className={`text-right font-bold ${showSizeRate ? "text-[15px]" : "text-[12px]"}`}>
-                {item?.currencyCode}:
-              </div>
-            </Col>
-            <Col>
-            <div className={`text-right font-bold ${showSizeRate ? "text-[15px]" : "text-[12px]"}`}>
-                {moneyCurrency(
-                  parseFloat(((totalAfterDiscount + taxAmount + serviceChargeAmount) / item?.sell).toFixed(2))
-                )}
-              </div>
-            </Col>
-          </Row>
-        ))}
-        {storeDetail?.isCRM && dataBill?.memberPhone && (
-          <Row>
-            <Col xs={7}>
-              <div className="text-right text-[12px] text-gray-400">
-                {t("point_remain")}:
-              </div>
-            </Col>
-            <Col>
-              <div className="text-right text-[12px] text-gray-400">
-                {moneyCurrency(
-                  SelectedDataBill?.Point - SelectedDataBill?.pointRecived
-                )}
-              </div>
-            </Col>
-          </Row>
-        )}
-      </div>
-
-      {isShowExchangeRate && (
+      {!isOrderBill && isShowExchangeRate && (
         <>
           <div style={{ height: 10 }} />
           <hr style={{ border: "1px dashed #000", margin: 0 }} />
@@ -577,10 +622,13 @@ export default function BillForCheckOut80({
         </>
       )}
 
-      <div style={{ height: 10 }} />
-      <hr style={{ border: "1px dashed #000", margin: 0 }} />
-
-      {paymentDisplay}
+      {!isOrderBill && (
+        <>
+          <div style={{ height: 10 }} />
+          <hr style={{ border: "1px dashed #000", margin: 0 }} />
+          {paymentDisplay}
+        </>
+      )}
 
       <div
         style={{
@@ -613,7 +661,6 @@ export default function BillForCheckOut80({
 
 const Name = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 `;
 const Price = styled.div`
   display: flex;

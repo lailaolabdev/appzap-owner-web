@@ -1431,5 +1431,10 @@
   "bill_debt_payment": "Bill debt payment",
   "bill_debt_remaining": "Bill debt remaining",
   "bill_debt_paid": "Bill debt paid",
-  "print_both_bill": "Print both bill"
+  "print_both_bill": "Print both bill",
+  "Show Price": "Show Price",
+  "Show User Name": "Show User Name",
+  "Served by": "Served by",
+  "Print Test Receipt": "Print Test Receipt",
+  "Print Test Order Bill": "Print Test Order Bill"
 }
