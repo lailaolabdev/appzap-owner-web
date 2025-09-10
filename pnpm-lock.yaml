@@ -504,6 +504,9 @@ importers:
       '@babel/plugin-proposal-private-property-in-object':
         specifier: ^7.21.11
         version: 7.21.11(@babel/core@7.26.10)
+      '@locator/babel-jsx':
+        specifier: ^0.4.4
+        version: 0.4.4(@babel/core@7.26.10)
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.21(postcss@8.5.3)
@@ -1932,6 +1935,15 @@ packages:
 
   '@leichtgewicht/ip-codec@2.0.5':
     resolution: {integrity: sha512-Vo+PSpZG2/fmgmiNzYK9qWRh8h/CHrwD0mo1h1DzL4yzHNSfWYujGTYsWGreD000gcgmZ7K4Ys6Tx9TxtsKdDw==}
+
+  '@locator/babel-jsx@0.4.4':
+    resolution: {integrity: sha512-77H+nhwjBxv+kxGJdAUCrKA244LsIYDe17rXn/TJTdOkXfTZGPV55W5Vmac/W3cORbeN90pqEJkk8ct1SejuqA==}
+
+  '@locator/runtime@0.4.4':
+    resolution: {integrity: sha512-6uCkE12N5y0136wcBNEeyYn1iEOFKG+SDYsNeCJsC54/yyD4/6fKywOYJqManA64mg20f41utBFP+b262oZYXQ==}
+
+  '@locator/shared@0.4.4':
+    resolution: {integrity: sha512-8fF395jPvrAAetsiQCj/8HcZXfDiY5mL1M/d4V2jDbjKkzM/BiZAukn4ndeuqSehnsck1Uu7ir8wDRTeg34Mog==}
 
   '@material-tailwind/react@2.1.10':
     resolution: {integrity: sha512-xGU/mLDKDBp/qZ8Dp2XR7fKcTpDuFeZEBqoL9Bk/29kakKxNxjUGYSRHEFLsyOFf4VIhU6WGHdIS7tOA3QGJHA==}
@@ -7867,6 +7879,16 @@ packages:
   serialize-javascript@6.0.2:
     resolution: {integrity: sha512-Saa1xPByTTq2gdeFZYLLo+RFE35NHZkAbqZeWNd3BpzppeVisAqpDjcp8dyf6uIvEqJRd46jemmyA4iFIeVk8g==}
 
+  seroval-plugins@1.3.3:
+    resolution: {integrity: sha512-16OL3NnUBw8JG1jBLUoZJsLnQq0n5Ua6aHalhJK4fMQkz1lqR7Osz1sA30trBtd9VUDc2NgkuRCn8+/pBwqZ+w==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      seroval: ^1.0
+
+  seroval@1.3.2:
+    resolution: {integrity: sha512-RbcPH1n5cfwKrru7v7+zrZvjLurgHhGyso3HTyGtRivGWgYjbOmGuivCQaORNELjNONoK35nj28EoWul9sb1zQ==}
+    engines: {node: '>=10'}
+
   serve-index@1.9.1:
     resolution: {integrity: sha512-pXHfKNP4qujrtteMrSBb0rc8HJ9Ms/GrXwcUtUtD5s4ewDJI8bT3Cz2zTVRMKtri49pLx2e0Ya8ziP5Ya2pZZw==}
     engines: {node: '>= 0.8.0'}
@@ -7963,6 +7985,9 @@ packages:
 
   sockjs@0.3.24:
     resolution: {integrity: sha512-GJgLTZ7vYb/JtPSSZ10hsOYIvEYsjbNU+zPdIHcUaWVNUEPivzxku31865sSSud0Da0W4lEeOPlmw93zLQchuQ==}
+
+  solid-js@1.9.9:
+    resolution: {integrity: sha512-A0ZBPJQldAeGCTW0YRYJmt7RCeh5rbFfPZ2aOttgYnctHE7HgKeHCBB/PVc2P7eOfmNXqMFFFoYYdm3S4dcbkA==}
 
   source-list-map@2.0.1:
     resolution: {integrity: sha512-qnQ7gVMxGNxsiL4lEuJwe/To8UnK7fAnmbGEEH8RpLouuKbeEm0lhbQVFIrNSuB+G7tVrAlVsZgETT5nljf+Iw==}
@@ -10718,6 +10743,35 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.0
 
   '@leichtgewicht/ip-codec@2.0.5': {}
+
+  '@locator/babel-jsx@0.4.4(@babel/core@7.26.10)':
+    dependencies:
+      '@babel/parser': 7.27.0
+      '@babel/plugin-syntax-jsx': 7.25.9(@babel/core@7.26.10)
+      '@babel/preset-env': 7.26.9(@babel/core@7.26.10)
+      '@babel/preset-react': 7.26.3(@babel/core@7.26.10)
+      '@babel/preset-typescript': 7.27.0(@babel/core@7.26.10)
+      '@babel/traverse': 7.27.0(supports-color@5.5.0)
+      '@babel/types': 7.27.0
+      '@locator/runtime': 0.4.4
+      '@locator/shared': 0.4.4
+    transitivePeerDependencies:
+      - '@babel/core'
+      - supports-color
+      - ts-node
+
+  '@locator/runtime@0.4.4':
+    dependencies:
+      '@floating-ui/dom': 1.6.13
+      '@locator/shared': 0.4.4
+      solid-js: 1.9.9
+      tailwindcss: 3.4.17
+    transitivePeerDependencies:
+      - ts-node
+
+  '@locator/shared@0.4.4':
+    dependencies:
+      semver: 7.7.1
 
   '@material-tailwind/react@2.1.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -17386,6 +17440,12 @@ snapshots:
     dependencies:
       randombytes: 2.1.0
 
+  seroval-plugins@1.3.3(seroval@1.3.2):
+    dependencies:
+      seroval: 1.3.2
+
+  seroval@1.3.2: {}
+
   serve-index@1.9.1:
     dependencies:
       accepts: 1.3.8
@@ -17549,6 +17609,12 @@ snapshots:
       faye-websocket: 0.11.4
       uuid: 8.3.2
       websocket-driver: 0.7.4
+
+  solid-js@1.9.9:
+    dependencies:
+      csstype: 3.1.3
+      seroval: 1.3.2
+      seroval-plugins: 1.3.3(seroval@1.3.2)
 
   source-list-map@2.0.1: {}
 

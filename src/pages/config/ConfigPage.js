@@ -236,6 +236,13 @@ export default function ConfigPage() {
     console.log("response", response);
     await fetchStoreDetail(storeDetail?._id);
   };
+  const changeDisableMenuPricing = async (e) => {
+    const isType = e.target.checked;
+    const response = await updateStore({disableMenuPricing: isType}, storeDetail?._id);
+    // await updateCounterBill(profile?.data.storeId, { data: isType });
+    console.log("response", response);
+    await fetchStoreDetail(storeDetail?._id);
+  };
 
 
   const TooltipFunc = ({ id, children, title }) => (
@@ -1155,6 +1162,37 @@ export default function ConfigPage() {
                     checked={storeDetail?.counterMenuManagement}
                     id={`counter-menu-management`}
                     onChange={changeCounterMenuManagement}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0", 
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>{t("disable_menu_pricing")}</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Form.Label htmlFor={`disable-menu-pricing`}>
+                    {storeDetail?.disableMenuPricing
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.disableMenuPricing}
+                    id={`disable-menu-pricing`}
+                    onChange={changeDisableMenuPricing}
                   />
                 </div>
               </div>

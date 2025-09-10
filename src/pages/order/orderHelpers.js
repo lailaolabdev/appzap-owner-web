@@ -185,7 +185,7 @@ export const convertHtmlToBase64 = (
 
       context.fillStyle = "#000";
       context.font = " 24px NotoSansLao, Arial, sans-serif";
-      yPosition = wrapText(
+      yPosition = !storeDetail?.disableMenuPricing ? wrapText(
         context,
         `${totalText} ${moneyCurrency(
           data?.price + (data?.totalOptionPrice ?? 0)
@@ -194,7 +194,7 @@ export const convertHtmlToBase64 = (
         yPosition,
         width - 20,
         46
-      );
+      ) : yPosition;
 
       context.fillStyle = "#000";
       context.font = "28px NotoSansLao, Arial, sans-serif";

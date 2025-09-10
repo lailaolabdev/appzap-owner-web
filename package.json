@@ -1,6 +1,6 @@
 {
   "name": "admin.selfordering",
-  "version": "7.1.47",
+  "version": "7.1.48",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.16.0",
@@ -198,6 +198,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@locator/babel-jsx": "^0.4.4",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "postcss-preset-env": "^10.1.1",

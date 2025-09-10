@@ -1288,5 +1288,6 @@
   "deselect_all":"បោះបង់ជ្រើសរើសទាំងអស់",
   "print_bill_to_kitcher":"បោះពុម្ពវិក្កយបត្រទៅងាយ",
   "print_bill_sticker":"បោះពុម្ពស្តុកផ្ទាល់ខ្លួន",
-  "counter_menu_management":"ការគ្រប់គ្រងម៉ឺនុយក្នុងការគ្រប់គ្រង"
+  "counter_menu_management":"ការគ្រប់គ្រងម៉ឺនុយក្នុងការគ្រប់គ្រង",
+  "disable_menu_pricing": "បិទការគ្រប់គ្រងតម្លៃម៉ឺនុយ"
 }
