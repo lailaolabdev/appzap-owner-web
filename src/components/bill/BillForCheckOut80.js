@@ -55,7 +55,9 @@ export default function BillForCheckOut80({
   const serviceChargeRef = useRef(serviceCharge);
   const enableServiceChangeRef = useRef(enableServiceChange);
 
-  console.log("serviceCharge", serviceCharge);
+  console.log("serviceCharge11", serviceCharge);
+  console.log("dataBill22", dataBill);
+
 
   const orders =
     orderPayBefore && orderPayBefore.length > 0
@@ -93,7 +95,7 @@ export default function BillForCheckOut80({
       enableServiceChangeRef.current === true
     ) {
       return serviceChargeRef.current || 0;
-    } else {
+    } else if  (dataBill?.serviceChargeManual) {
       return serviceCharge;
     }
 

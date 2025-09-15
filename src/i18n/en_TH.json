@@ -1295,5 +1295,10 @@
   "print_bill_to_kitcher":"พิมพ์บิลไปครัว",
   "print_bill_sticker":"พิมพ์สแตกเตอร์",
   "counter_menu_management":"counnter การจัดการเมนู",
-  "disable_menu_pricing": "ปิดการจัดการราคาสินค้า"
+  "disable_menu_pricing": "ปิดการจัดการราคาสินค้า",
+  "bill_debt": "ติดดอกเบี้ย",
+  "bill_debt_amount": "จำนวนเงินติดดอกเบี้ย",
+  "bill_debt_payment": "จำนวนเงินที่ชำระ",
+  "bill_debt_remaining": "จำนวนเงินติดดอกเบี้ยที่ยังไม่ชำระ",
+  "bill_debt_paid": "จำนวนเงินที่ชำระแล้ว"
 }

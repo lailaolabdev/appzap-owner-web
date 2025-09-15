@@ -31,18 +31,9 @@ export default function BillDebt80({
         }}
       >
         <div className="text-center mb-4">
-          {storeDetail?.image && (
-            <div className="mb-3 flex justify-center">
-              <img
-                src={storeDetail.image}
-                alt="Store Logo"
-                style={{ width: '60px', height: '60px', objectFit: 'contain' }}
-              />
-            </div>
-          )}
-          <div className="font-bold text-lg text-center w-full">{storeDetail?.name || 'Store Name'}</div>
+          <div className="font-bold text-lg justify-center item-center w-full">{storeDetail?.name || 'Store Name'}</div>
           {storeDetail?.phone && (
-            <div className="text-sm mt-1 text-center w-full">{t('phone')}: {storeDetail.phone}</div>
+            <div className="text-sm mt-1 justify-center item-center w-full">{t('phone')}: {storeDetail.phone}</div>
           )}
         </div>
         <div className="w-full pr-3">
@@ -68,11 +59,11 @@ export default function BillDebt80({
             <span>{billDebtData?.code}</span>
           </InfoRow>
           <InfoRow>
-            <span>{t('start_date') || 'Start Date'}:</span>
+            <span>{t('start_date_debt') || 'Start Date Debt'}:</span>
             <span>{formatDate(billDebtData?.startDate || new Date())}</span>
           </InfoRow>
           <InfoRow>
-            <span>{t('end_date') || 'End Date'}:</span>
+            <span>{t('end_date_debt') || 'End Date Debt'}:</span>
             <span>{formatDate(billDebtData?.endDate || new Date())}</span>
           </InfoRow>
           <InfoRow>
@@ -115,33 +106,23 @@ export default function BillDebt80({
       {/* <hr className="w-full border-b border-dotted border-black pr-2 py-4"/> */}
       <div className="mb-4 w-full pr-2">
         <InfoRow>
-          <span>{t('original_amount') || 'Original Amount'}:</span>
+          <span>{t('bill_debt_amount') || 'Original Amount'}:</span>
           <span>{moneyCurrency(billDebtData?.amount || 0)} {storeDetail?.firstCurrency}</span>
         </InfoRow>
 
         <InfoRow>
-          <span>{t('paid_amount') || 'Paid Amount'}:</span>
+          <span>{t('bill_debt_payment') || 'Paid Amount'}:</span>
           <span>{moneyCurrency(billDebtData?.payAmount || 0)} {storeDetail?.firstCurrency}</span>
         </InfoRow>
 
         <InfoRow className="font-bold">
-          <span>{t('remaining_amount') || 'Remaining Amount'}:</span>
+          <span>{t('bill_debt_remaining') || 'Remaining Amount'}:</span>
           <span>{moneyCurrency(billDebtData?.remainingAmount || (billDebtData?.originalAmount - billDebtData?.paidAmount) || 0)} {storeDetail?.firstCurrency}</span>
         </InfoRow>
       </div>
-      <div className="w-full pr-3">
-        <hr style={{ borderBottom: "1px dotted #000", width: "100%" }} />
-      </div>
-      {/* QR Code (if available) */}
-      {storeDetail?.printer?.qr && (
-        <div className="flex justify-center text-center mt-4">
-          <img
-            src={`https://app-api.appzap.la/qr-gennerate/qr?data=${storeDetail.printer.qr}`}
-            style={{ width: '100px', height: '100px' }}
-            alt="QR Code"
-          />
-        </div>
-      )}
+      
+      
+      
     </Container>
   )
 }
