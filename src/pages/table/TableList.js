@@ -61,7 +61,7 @@ import {
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders, tokenSelfOrderingPost } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
-import { getBills } from "../../services/bill";
+import { billUpdate, getBills } from "../../services/bill";
 import {
   getCountOrderWaiting,
   updateOrderItem,
@@ -229,6 +229,8 @@ export default function TableList() {
       setReload(false);
     }
   }, [reload]);
+
+  console.log("DATA567",dataBill)
 
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
   const [seletedOrderItem, setSeletedOrderItem] = useState();
@@ -1635,6 +1637,24 @@ export default function TableList() {
       });
     }
   };
+
+  const handleServiceChargeChange = async (isServiceChargeEnabled) => {
+    try {
+      const res = await billUpdate(dataBill?._id, {
+        serviceChargeManual: isServiceChargeEnabled,
+      });
+      if (res?.status === 200) {
+        getData(dataBill?.code)
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: `${t("update_order_status_error")}`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+    }
+  }
 
   const calculateTotalBillV7 = async (updatedOrderItems) => {
     
@@ -3043,6 +3063,7 @@ export default function TableList() {
         printBillLoading={printBillLoading}
         billDataLoading={billDataLoading}
         setEnableServiceChange={setEnableServiceChange}
+        handleServiceChargeChange={handleServiceChargeChange}
       />
 
       <PopUpPin
@@ -3099,6 +3120,7 @@ export default function TableList() {
         onSubmit={async () => {
           // handleMessage();
           getData(selectedTable?.code, false);
+          console.log("Message")
         }}
       />
       <Modal show={show} onHide={handleClose}>

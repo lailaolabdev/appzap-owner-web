@@ -14,6 +14,8 @@ export const useStoreStore = create(
         // Action to set loading state
         setLoading: (isLoading) => set({ loading: isLoading }),
 
+        setServiceCharge: (serviceChargeManual) => set({ serviceChargeManual }),
+
         // Action to set error state
         setError: (error) => set({ error }),
 

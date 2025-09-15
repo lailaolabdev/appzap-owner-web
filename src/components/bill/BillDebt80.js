@@ -1,21 +1,25 @@
-import styled from "styled-components";
-import React, { useState, useEffect } from "react";
-import { moneyCurrency } from "../../helpers/index";
-import QRCode from "react-qr-code";
-import moment from "moment";
+import React from 'react'
+import styled from 'styled-components'
+import moment from 'moment'
+import { moneyCurrency } from '../../helpers'
+import { useTranslation } from 'react-i18next'
 
-import { useStoreStore } from "../../zustand/storeStore";
-
-export default function BillFark80({
-  menuDebtData,
-  expirDate,
-  customerName,
-  customerPhone,
-  code,
+export default function BillDebt80({
+  storeDetail,
+  billDebtData,
+  customerData,
+  paymentData
 }) {
-  const {
-    storeDetail
-  } = useStoreStore()
+  const { t } = useTranslation()
+
+  if (!billDebtData) {
+    return <div>No debt data available</div>
+  }
+
+  const formatDate = (date) => {
+    return moment(date).format('DD/MM/YYYY')
+  }
+
   return (
     <Container>
       <div
@@ -23,18 +27,26 @@ export default function BillFark80({
           flexDirection: "column",
           alignItems: "start",
           width: "100%",
-          display: code ? "flex" : "none",
+          display: billDebtData?.code ? "flex" : "none",
         }}
       >
-        <div
-          style={{
-            fontSize: 22,
-            fontWeight: "bold",
-            textAlign: "center",
-            width: "100%",
-          }}
-        >
-          {storeDetail?.name}
+        <div className="text-center mb-4">
+          {storeDetail?.image && (
+            <div className="mb-3 flex justify-center">
+              <img
+                src={storeDetail.image}
+                alt="Store Logo"
+                style={{ width: '60px', height: '60px', objectFit: 'contain' }}
+              />
+            </div>
+          )}
+          <div className="font-bold text-lg text-center w-full">{storeDetail?.name || 'Store Name'}</div>
+          {storeDetail?.phone && (
+            <div className="text-sm mt-1 text-center w-full">{t('phone')}: {storeDetail.phone}</div>
+          )}
+        </div>
+        <div className="w-full pr-3">
+          <hr style={{ borderBottom: "1px dotted #000", width: "100%" }} />
         </div>
         <div
           style={{
@@ -42,73 +54,143 @@ export default function BillFark80({
             fontWeight: "bold",
             textAlign: "center",
             width: "100%",
+            marginBottom: 15,
           }}
         >
-          ບິນຕິດໜີ້
+          {t('bill_debt') || 'Bill Debt'}
         </div>
-        <div>ຊື່ລູກຄ້າ: {customerName}</div>
-        <div>ເບີໂທລູກຄ້າ: {customerPhone}</div>
-        <div>ມື້ຝາກ: {moment(moment()).format("DD-MM-YYYY")}</div>
-        <div>ມື້ໝົດກຳນົດ: {expirDate}</div>
-        <div style={{ marginBottom: 5 }}>
-          ລະຫັດບິນ:
-          <span
-            style={{
-              backgroundColor: "#000",
-              color: "#fff",
-              padding: "2px 10px",
-              fontWeight: "bold",
-            }}
-          >
-            {code}
-          </span>
+        <div className="w-full pr-3">
+          <hr style={{ borderBottom: "1px dotted #000", width: "100%" }} />
         </div>
-        <div style={{ width: "100%" }}>
+        <div className="mb-4 w-full pr-2">
+          <InfoRow>
+            <span>{t('bill_no') || 'Bill No'}:</span>
+            <span>{billDebtData?.code}</span>
+          </InfoRow>
+          <InfoRow>
+            <span>{t('start_date') || 'Start Date'}:</span>
+            <span>{formatDate(billDebtData?.startDate || new Date())}</span>
+          </InfoRow>
+          <InfoRow>
+            <span>{t('end_date') || 'End Date'}:</span>
+            <span>{formatDate(billDebtData?.endDate || new Date())}</span>
+          </InfoRow>
+          <InfoRow>
+            <span>{t('customer') || 'Customer'}:</span>
+            <span>{billDebtData?.customerName || ""}</span>
+          </InfoRow>
+          <InfoRow>
+            <span>{t('customer_phone') || 'Phone'}:</span>
+            <span>{billDebtData?.customerPhone || ""}</span>
+          </InfoRow>
+
+          {billDebtData?.tableNo && (
+            <InfoRow>
+              <span>{t('table') || 'Table'}:</span>
+              <span>{billDebtData.tableNo}</span>
+            </InfoRow>
+          )}
+        </div>
+        <div className='w-full pr-2'>
           <Table>
             <tr>
-              <th>ຊື່ເມນູ</th>
-              <th style={{ textAlign: "center" }}>ຈຳນວນ</th>
+              <th style={{ textAlign: "left" }}>{t('menu')}</th>
+              <th style={{ textAlign: "center" }}>{t('price')}</th>
+              <th style={{ textAlign: "right" }}>{t('quantity')}</th>
             </tr>
-            {menuDebtData?.orderId?.map((e) => (
+            {billDebtData?.billId?.orderId?.map((e) => (
               <tr>
-                <td style={{ textAlign: "start" }}>{e?.name}</td>
-                <td>{e?.quantity}</td>
+                <td style={{ textAlign: "start" }}>{e?.name || e?.nameMenu}</td>
+                <td style={{ textAlign: "center" }}>{e?.quantity || e?.amount}</td>
+                <td style={{ textAlign: "right" }}>{e?.price || 0}</td>
               </tr>
             ))}
           </Table>
         </div>
-        <hr style={{ borderBottom: "1px dotted #000", width: "100%" }} />
-        <div>ກະລຸນາເກັບບິນໄວໃຫ້ຫ່າງຈາກນ້ຳແລະຄວາມຮ້ອນ</div>
+        {/* <hr style={{ borderBottom: "1px dotted #000", width: "100%" }} /> */}
+        <div className="w-full pr-3 mt-4">
+          <hr style={{ borderBottom: "1px dotted #000", width: "100%" }} />
+        </div>
       </div>
+      {/* <hr className="w-full border-b border-dotted border-black pr-2 py-4"/> */}
+      <div className="mb-4 w-full pr-2">
+        <InfoRow>
+          <span>{t('original_amount') || 'Original Amount'}:</span>
+          <span>{moneyCurrency(billDebtData?.amount || 0)} {storeDetail?.firstCurrency}</span>
+        </InfoRow>
+
+        <InfoRow>
+          <span>{t('paid_amount') || 'Paid Amount'}:</span>
+          <span>{moneyCurrency(billDebtData?.payAmount || 0)} {storeDetail?.firstCurrency}</span>
+        </InfoRow>
+
+        <InfoRow className="font-bold">
+          <span>{t('remaining_amount') || 'Remaining Amount'}:</span>
+          <span>{moneyCurrency(billDebtData?.remainingAmount || (billDebtData?.originalAmount - billDebtData?.paidAmount) || 0)} {storeDetail?.firstCurrency}</span>
+        </InfoRow>
+      </div>
+      <div className="w-full pr-3">
+        <hr style={{ borderBottom: "1px dotted #000", width: "100%" }} />
+      </div>
+      {/* QR Code (if available) */}
+      {storeDetail?.printer?.qr && (
+        <div className="flex justify-center text-center mt-4">
+          <img
+            src={`https://app-api.appzap.la/qr-gennerate/qr?data=${storeDetail.printer.qr}`}
+            style={{ width: '100px', height: '100px' }}
+            alt="QR Code"
+          />
+        </div>
+      )}
     </Container>
-  );
+  )
 }
+
 const Container = styled.div`
-  color: #000;
+  margin: 10px;
   width: 100%;
   max-width: 330px;
-  padding-bottom: 30px;
-  display: flex;
-  flex-direction: column;
+  font-size: 12px;
+  color: #000;
+  font-family: 'Courier New', monospace;
   align-items: center;
-`;
-const Img = styled.div`
-  width: 200px;
-  height: 200px;
-  font-size: 14px;
-  border: 2px dotted #000;
-`;
+`
+
+const InfoRow = styled.div`
+  display: flex;
+  width: 100%;
+  padding: 4px;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  &.font-bold {
+    font-weight: bold;
+  }
+`
 
 const Table = styled("table")({
   width: "100%",
   th: {
     border: "1px solid #fff",
     padding: "2px 4px",
-    backgroundColor: "#000",
-    color: "#fff",
+    // backgroundColor: "#000",
+    color: "#000",
     fontWeight: "bold",
   },
   td: {
     padding: "2px 2px",
+    content: "center",
+    textAlign: "center",
   },
 });
+
+const OrderItem = styled.div`
+  margin-bottom: 8px;
+  padding: 4px 0;
+  border-bottom: 1px dotted #ccc;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+`
+
+
