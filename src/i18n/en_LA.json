@@ -1425,5 +1425,10 @@
   "print_bill_to_kitcher":"ພີມບີນໄປຄົວ",
   "print_bill_sticker":"ພີມ sticker",
   "counter_menu_management":"counter ຈັດການເມນູ",
-  "disable_menu_pricing": "ປິດລາຄາອໍເດີ"
+  "disable_menu_pricing": "ປິດລາຄາອໍເດີ",
+  "bill_debt": "ບີນຕິດໝີ້",
+  "bill_debt_amount": "ຕິດໝີ້ຈຳນວນເງິນ",
+  "bill_debt_payment": "ເງິນເອົາ",
+  "bill_debt_remaining": "ເງິນຕິດໝີ້ທີ່ຍັງເຫຼືອ",
+  "bill_debt_paid": "ເງິນທີ່ຈ່າຍແລ້ວ"
 }

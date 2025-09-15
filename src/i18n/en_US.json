@@ -1425,5 +1425,10 @@
   "print_bill_to_kitcher":"Print bill to kitchen",
   "print_bill_sticker":"Print sticker",
   "counter_menu_management":"Counter menu management",
-  "disable_menu_pricing": "Disable menu pricing"
+  "disable_menu_pricing": "Disable menu pricing",
+  "bill_debt": "Bill debt",
+  "bill_debt_amount": "Bill debt amount",
+  "bill_debt_payment": "Bill debt payment",
+  "bill_debt_remaining": "Bill debt remaining",
+  "bill_debt_paid": "Bill debt paid"
 }

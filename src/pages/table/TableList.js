@@ -272,6 +272,8 @@ export default function TableList() {
     }, {});
   };
 
+  console.log("serviceChargePercent", serviceChargePercent);
+
   useEffect(() => {
     if (!pinStatus) return;
     setPinStatus(false);

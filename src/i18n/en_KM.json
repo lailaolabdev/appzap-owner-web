@@ -1289,5 +1289,10 @@
   "print_bill_to_kitcher":"បោះពុម្ពវិក្កយបត្រទៅងាយ",
   "print_bill_sticker":"បោះពុម្ពស្តុកផ្ទាល់ខ្លួន",
   "counter_menu_management":"ការគ្រប់គ្រងម៉ឺនុយក្នុងការគ្រប់គ្រង",
-  "disable_menu_pricing": "បិទការគ្រប់គ្រងតម្លៃម៉ឺនុយ"
+  "disable_menu_pricing": "បិទការគ្រប់គ្រងតម្លៃម៉ឺនុយ",
+  "bill_debt": "ការគ្រប់គ្រងតម្លៃ",
+  "bill_debt_amount": "ចំនួនទឹកប្រាក់ការគ្រប់គ្រង",
+  "bill_debt_payment": "ចំនួនទឹកប្រាក់ដែលបានទទួល",
+  "bill_debt_remaining": "ចំនួនទឹកប្រាក់ដែលមិនបានទទួល",
+  "bill_debt_paid": "ចំនួនទឹកប្រាក់ដែលបានទទួល"
 }
