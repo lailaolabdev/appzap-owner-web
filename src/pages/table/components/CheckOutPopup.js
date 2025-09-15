@@ -299,7 +299,7 @@ export default function CheckOutPopup({
 
   const serviceChangTotal = storeDetail?.isServiceChange
     ? serviceChargeRef.current
-    : storeDetail?.serviceChargePer;
+    : dataBill?.serviceChargeManual ? serviceCharge : storeDetail?.serviceChargePer;
 
   const serviceAmount = (totalAmount * serviceChangTotal) / 100;
   const totalBill = totalAmount + taxAmount + serviceAmount;

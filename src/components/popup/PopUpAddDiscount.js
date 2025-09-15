@@ -854,27 +854,13 @@ export default function PopUpAddDiscount({
               setButtonDisabled(true);
 
               // If category tab is active and a category with value.menuId is selected, call the category API
-              if (
-                activeTab === "category" &&
-                selectedCategoryButton !== "All"
-              ) {
-                const selectedCategoryData = categorysType.find(
-                  (cat) => cat._id === selectedCategoryButton
-                );
-                if (selectedCategoryData && selectedCategoryData.menuId) {
-                  try {
-                    await sendCategoryDiscountToAPI(selectedCategoryData);
-                  } catch (error) {
-                    console.log(
-                      "Error sending category discount to API:",
-                      error
-                    );
-                  }
-                }
-              }
+              
 
               if (activeTab === "general") {
                 await setDiscountBill();
+                console.log("general")
+              } else {
+                 await sendCategoryDiscountToAPI();
               }
               
               onSubmit().then(() => {

@@ -55,6 +55,8 @@ export default function BillForCheckOut80({
   const serviceChargeRef = useRef(serviceCharge);
   const enableServiceChangeRef = useRef(enableServiceChange);
 
+  console.log("serviceCharge", serviceCharge);
+
   const orders =
     orderPayBefore && orderPayBefore.length > 0
       ? orderPayBefore
@@ -83,7 +85,7 @@ export default function BillForCheckOut80({
     // If store has service charge enabled by default
     if (storeDetail?.isServiceChange === true) {
       return serviceChargeRef.current || 0;
-    }
+    } 
 
     // If service charge is explicitly enabled via prop (even if it was undefined before)
     if (
@@ -91,6 +93,8 @@ export default function BillForCheckOut80({
       enableServiceChangeRef.current === true
     ) {
       return serviceChargeRef.current || 0;
+    } else {
+      return serviceCharge;
     }
 
     // Default case: no service charge
@@ -122,6 +126,8 @@ export default function BillForCheckOut80({
       _total += _data?.quantity * itemPrice;
     }
 
+    console.log("dataBill123",dataBill)
+
     const totalAmountAll =
       orderPayBefore && orderPayBefore.length > 0
         ? _total
@@ -137,9 +143,9 @@ export default function BillForCheckOut80({
       } else {
         const ddiscount = parseInt((totalAmountAll * dataBill?.discount) / 100);
         setTotalAfterDiscount(totalAmountAll - ddiscount);
-      }
-    } else if (dataBill?.discountType === "PERCENT") {
-      setTotalAfterDiscount(totalAmountAll - dataBill?.discountAmount);
+      } 
+    } else if (dataBill?.discountCategoryAmount > 0) {
+      setTotalAfterDiscount(totalAmountAll - dataBill?.discountCategoryAmount);
     } else {
       setTotalAfterDiscount(totalAmountAll);
     }
@@ -156,7 +162,7 @@ export default function BillForCheckOut80({
 
   useEffect(() => {
     _calculateTotal();
-  }, [dataBill?.discount]);
+  }, [dataBill?.discount, dataBill?.discountCategoryAmount]);
 
   const getDataCurrency = async () => {
     try {

@@ -13,6 +13,7 @@ import { SettingsApplications } from "@material-ui/icons";
 
 import { useStoreStore } from "../../../zustand/storeStore";
 import { usePaymentStore } from "../../../zustand/paymentStore";
+import { billUpdate, getBills, getDataBill } from "../../../services/bill";
 
 const OrderCheckOut = ({
   data = { orderId: [] },
@@ -35,6 +36,7 @@ const OrderCheckOut = ({
   billDataLoading,
   printBillCalulate,
   setEnableServiceChange,
+  handleServiceChargeChange = () => {},
 }) => {
   const { t } = useTranslation();
   const {
@@ -45,7 +47,7 @@ const OrderCheckOut = ({
     setAudioSetting,
   } = useStore();
 
-  const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
+  const { storeDetail, setStoreDetail, setServiceCharge, updateStoreDetail } = useStoreStore();
 
   const [total, setTotal] = useState(0); // Initialize total to 0
   const [isServiceChargeEnabled, setIsServiceChargeEnabled] = useState(false);
@@ -65,7 +67,7 @@ const OrderCheckOut = ({
   }, [serviceCharge]);
   const TotalServiceChange = storeDetail?.isServiceChange
     ? serviceChargeRef.current
-    : storeDetail?.serviceChargePer;
+    : data?.serviceChargeManual ? serviceCharge : storeDetail?.serviceChargePer;
 
   const serviceChargeAmount = () => {
     return (total * TotalServiceChange) / 100;
@@ -77,6 +79,8 @@ const OrderCheckOut = ({
   useEffect(() => {
     setIsServiceChargeEnabled(false);
   }, []);
+
+  console.log("DATA23",data)
 
   const calculateDiscountedTotal = (
     total,
@@ -144,6 +148,8 @@ const OrderCheckOut = ({
     });
   };
 
+  
+
   const _calculateTotal = () => {
     const serviceChargeAmount =
       isServiceChargeEnabled || storeDetail?.isServiceChange
@@ -176,12 +182,14 @@ const OrderCheckOut = ({
   };
 
   const getToggleServiceCharge = (e) => {
-    setIsServiceChargeEnabled(e.target.checked);
-    setEnableServiceChange(e.target.checked);
-    setStoreDetail({
-      serviceChargePer: isServiceChargeEnabled ? 0 : serviceCharge,
-      isServiceCharge: e.target.checked,
-    });
+    handleServiceChargeChange(e.target.checked);
+    // setIsServiceChargeEnabled(e.target.checked);
+    // setEnableServiceChange(e.target.checked);
+    // setServiceCharge(e.target.checked);
+    // setStoreDetail({
+    //   serviceChargePer: isServiceChargeEnabled ? 0 : serviceCharge,
+    //   isServiceCharge: e.target.checked,
+    // });
   };
   const calculateTotalWithDiscount = (
     total,
@@ -257,13 +265,10 @@ const OrderCheckOut = ({
             <Form.Check
               style={{ margin: 2 }}
               type="switch"
-              disabled={storeDetail?.isServiceChange || storeDetail?.isServiceChange === false }
-              checked={
-                storeDetail?.isServiceCharge || storeDetail?.isServiceChange
-              }
+              disabled={storeDetail?.isServiceChange === true ? true : false }
+              checked={ storeDetail?.isServiceChange === true ? storeDetail?.isServiceChange  : data?.serviceChargeManual }
               id={"switch-audio"}
               onChange={(e) => getToggleServiceCharge(e)}
-              
             />
           </Row>
           <div style={{ margin: 8 }} />
@@ -308,6 +313,12 @@ const OrderCheckOut = ({
               </div>
             </div>
             {storeDetail?.isServiceChange && (
+              <div className="w-full flex justify-end items-center">
+                <div className="text-end">{t("service_charge")}:</div>
+                <div className="w-60 text-end">{`${serviceCharge} %`}</div>
+              </div>
+            )}
+            {data?.serviceChargeManual && (
               <div className="w-full flex justify-end items-center">
                 <div className="text-end">{t("service_charge")}:</div>
                 <div className="w-60 text-end">{`${serviceCharge} %`}</div>

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect} from "react";
 import { useTranslation } from "react-i18next";
-import { COLOR_APP } from "../../constants";
+import { BLUETOOTH_PRINTER_PORT, COLOR_APP, ETHERNET_PRINTER_PORT, USB_PRINTER_PORT } from "../../constants";
 import {
   Button,
   Form,
@@ -11,23 +11,31 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { FaCoins } from "react-icons/fa";
+import axios from "axios";
 import Box from "../../components/Box";
 import { getLocalData } from "../../constants/api";
 import { debtsRemainingAmount, getBillDebtDatas, getBilldebtReport } from "../../services/debt";
 import { getdebtHistory } from "../../services/debt";
 import moment from "moment";
-import { moneyCurrency } from "../../helpers";
+import { base64ToBlob, moneyCurrency } from "../../helpers";
 import PopUpDetaillBillDebt from "../../components/popup/PopUpDetaillBillDebt";
 import PopUpDebtExport from "../../components/popup/PopUpDebtExport";
 import PopUpSetStartAndEndDateDebt from "../../components/popup/PopUpSetStartAndEndDateDebt";
 import { useStoreStore } from "../../zustand/storeStore";
 import { DebtListAll } from "./DebtListAll";
+import { useStore } from "../../store";
 import { PayDebtListHistory } from "./PayDebtListHistory";
 import { useQuery } from "@tanstack/react-query";
+import BillDebt80 from "../../components/bill/BillDebt80";
+import html2canvas from "html2canvas";
+import Swal from "sweetalert2";
+import printFlutter from "../../helpers/printFlutter";
 
 export default function DebtPage() {
   const { t } = useTranslation();
   const { storeDetail } = useStoreStore();
+  const { printerCounter, printers } = useStore();
+
   const [isHovered, setIsHovered] = useState(false);
 
   // State
@@ -50,6 +58,16 @@ export default function DebtPage() {
     summary: null
   })
   const limitData = 50;
+  const [widthBill80, setWidthBill80] = useState(0);
+  const billDebt80Ref = useRef();
+
+   useEffect(() => {
+    const element = billDebt80Ref?.current;
+    console.log(element); // 👈️ element here
+  }, []);
+  useLayoutEffect(() => {
+    setWidthBill80(billDebt80Ref?.current?.offsetWidth);
+  }, [billDebt80Ref]);
 
   // On select tab
   const handleTabSelect = (key) => {
@@ -138,6 +156,120 @@ export default function DebtPage() {
       setTotalPagination(0);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const onPrintBillDebt = async () => {
+    try {
+      console.log("selectBillDebt");
+      // if (!tokenQR) {
+      //   return;
+      // }
+      // alert(tokenQR);
+      // setTokenForSmartOrder(tokenQR, (ee) => {
+      //   console.log(tokenForSmartOrder, "tokenForSmartOrder");
+      // });
+      // if (!tokenForSmartOrder) {
+      //   setTokenForSmartOrder(tokenQR);
+      //   await delay(1000);
+      //   return;
+      // }
+      // if (!tokenForSmartOrder) {
+      //   return;
+      // }
+      let urlForPrinter = "";
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
+      let dataImageForPrint;
+      console.log("check 1");
+      if (printerBillData?.width === "80mm") {
+        dataImageForPrint = await html2canvas(billDebt80Ref.current, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 530 / widthBill80,
+        });
+      }
+
+      if (printerBillData?.width === "58mm") {
+        dataImageForPrint = await html2canvas(billDebt80Ref.current, {
+          useCORS: true,
+          scrollX: 10,
+          scrollY: 0,
+          scale: 530 / widthBill80,
+        });
+      }
+      console.log("dataImageForPrint", dataImageForPrint);
+      console.log("check 2");
+
+      if (printerBillData?.type === "ETHERNET") {
+        urlForPrinter = ETHERNET_PRINTER_PORT;
+      }
+      if (printerBillData?.type === "BLUETOOTH") {
+        urlForPrinter = BLUETOOTH_PRINTER_PORT;
+      }
+      if (printerBillData?.type === "USB") {
+        urlForPrinter = USB_PRINTER_PORT;
+      }
+      console.log(dataImageForPrint.toDataURL());
+      const _file = await base64ToBlob(dataImageForPrint.toDataURL());
+      console.log("check 3");
+      var bodyFormData = new FormData();
+
+      bodyFormData.append("ip", printerBillData?.ip);
+      bodyFormData.append("isdrawer", false);
+      bodyFormData.append("port", "9100");
+      bodyFormData.append("image", _file);
+      bodyFormData.append("beep1", 1);
+      bodyFormData.append("beep2", 9);
+      bodyFormData.append("paper", printerBillData?.width === "58mm" ? 58 : 80);
+
+      console.log("check 4");
+      await printFlutter(
+        {
+          imageBuffer: dataImageForPrint.toDataURL(),
+          ip: printerBillData?.ip,
+          type: printerBillData?.type,
+          port: "9100",
+          width: printerBillData?.width === "58mm" ? 400 : 580,
+        },
+        async () => {
+          await axios({
+            method: "post",
+            url: urlForPrinter,
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
+      );
+      // await axios({
+      //   method: "post",
+      //   url: urlForPrinter,
+      //   data: bodyFormData,
+      //   headers: { "Content-Type": "multipart/form-data" },
+      // });
+      console.log("check 5");
+      // setCodeShortLink(null);
+      await Swal.fire({
+        icon: "success",
+        title: `${t("print_success")}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      // setPrintCode();
+      // navigate("../", { replace: true });
+      // setCodeShortLink(null);
+    } catch (err) {
+      // setCodeShortLink(null);
+      console.log("onprint:", err);
+      await Swal.fire({
+        icon: "error",
+        title: `${t("print_fail")}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
   };
 
@@ -320,6 +452,18 @@ export default function DebtPage() {
             </div>
           </Card.Body>
         </Card>
+        <div
+          style={{
+            width: "80mm",
+            padding: 10,
+          }}
+          // ref={billDebt80Ref}
+        >
+          <BillDebt80
+            storeDetail={storeDetail}
+            billDebtData={selectBillDebt}
+          />
+        </div>
       </Box>
 
       <Tabs
@@ -379,9 +523,22 @@ export default function DebtPage() {
             totalPagination={totalPagination}
           />
         </Tab>
-      </Tabs>
+        </Tabs>
 
-      {popup?.PopUpDetaillBillDebt && (
+        <div
+          style={{
+            width: "80mm",
+            padding: 10,
+          }}
+          ref={billDebt80Ref}
+        >
+          <BillDebt80
+            storeDetail={storeDetail}
+            billDebtData={selectBillDebt}
+            onPrintBillDebt={onPrintBillDebt}
+          />
+        </div>
+        
         <PopUpDetaillBillDebt
           open={popup?.PopUpDetaillBillDebt}
           onClose={() => {
@@ -390,6 +547,7 @@ export default function DebtPage() {
           }}
           billDebtData={selectBillDebt}
           handleTabSelect={handleTabSelect}
+          onPrintBillDebt={onPrintBillDebt}
           callback={async () => {
             setPopup();
             setSelectBillDebt();
@@ -398,7 +556,7 @@ export default function DebtPage() {
             await getDataHistory();
           }}
         />
-      )}
+      
 
       {popup?.PopUpDebtExport && (
         <PopUpDebtExport
