@@ -55,8 +55,8 @@ export default function BillForCheckOut80({
   const serviceChargeRef = useRef(serviceCharge);
   const enableServiceChangeRef = useRef(enableServiceChange);
 
-  console.log("serviceCharge11", serviceCharge);
-  console.log("dataBill22", dataBill);
+  
+  
 
 
   const orders =
@@ -85,7 +85,7 @@ export default function BillForCheckOut80({
     // Debug log to track values during calculation
 
     // If store has service charge enabled by default
-    if (storeDetail?.isServiceChange === true) {
+    if (storeDetail?.isServiceChange === true || dataBill?.serviceChargeManual === true) {
       return serviceChargeRef.current || 0;
     } 
 
@@ -95,13 +95,13 @@ export default function BillForCheckOut80({
       enableServiceChangeRef.current === true
     ) {
       return serviceChargeRef.current || 0;
-    } else if  (dataBill?.serviceChargeManual) {
-      return serviceCharge;
-    }
+    } 
 
     // Default case: no service charge
     return 0;
   })();
+
+  
 
   useEffect(() => {
     getDataCurrency();
@@ -128,7 +128,7 @@ export default function BillForCheckOut80({
       _total += _data?.quantity * itemPrice;
     }
 
-    console.log("dataBill123",dataBill)
+    
 
     const totalAmountAll =
       orderPayBefore && orderPayBefore.length > 0
@@ -147,7 +147,7 @@ export default function BillForCheckOut80({
         setTotalAfterDiscount(totalAmountAll - ddiscount);
       } 
     } else if (dataBill?.discountCategoryAmount > 0) {
-      setTotalAfterDiscount(totalAmountAll - dataBill?.discountCategoryAmount);
+      setTotalAfterDiscount(totalAmountAll - dataBill?.discountAmount);
     } else {
       setTotalAfterDiscount(totalAmountAll);
     }
@@ -164,7 +164,7 @@ export default function BillForCheckOut80({
 
   useEffect(() => {
     _calculateTotal();
-  }, [dataBill?.discount, dataBill?.discountCategoryAmount]);
+  }, [dataBill?.discount, dataBill?.discountCategoryAmount, dataBill?.serviceChargeManual]);
 
   const getDataCurrency = async () => {
     try {
