@@ -344,6 +344,10 @@ function Homecafe() {
     getDataTax();
   }, []);
 
+  useEffect(() => {
+    billCountCafe();
+  }, [bill]);
+
   const fetchPointsData = async () => {
     try {
       const data = await getAllStorePoints();
@@ -1068,7 +1072,7 @@ function Homecafe() {
 
         // Render "Queue no" at the top and center it
         context.textAlign = "center"; // Center align the text
-        context.fillText(`${t("queue no")} ${bill}`, width / 2, yPosition);
+        context.fillText(`${t("queue no")} ${bill + 1}`, width / 2, yPosition);
         yPosition += 40; // Add some space after "Queue no"
         // Render data.name below "Queue no"
         context.textAlign = "left"; // Reset alignment to left for other text
@@ -2462,6 +2466,7 @@ function Homecafe() {
           totalPointPrice={totalPointPrice}
           point={point}
           paymentMethod={paymentMethod}
+          isModalData={false}
         />
       </div>
       {SelectedMenus?.map((val, i) => {
