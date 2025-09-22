@@ -176,6 +176,12 @@ export default function ConfigPage() {
     // console.log("changePrintBillSticker", isType);
     await fetchStoreDetail(storeDetail?._id);
   };
+  const changePrintBothBill = async (e) => {
+    const isType = e.target.checked;
+    await updateStore({ isPrintBothBill: isType }, storeDetail?._id);
+    // console.log("changePrintBothBill", isType);
+    await fetchStoreDetail(storeDetail?._id);
+  };
   const changeCounterFilterShift = async (e) => {
     const isType = e.target.checked;
     await updateCounterFilterShift(profile?.data.storeId, { data: isType });
@@ -1027,6 +1033,38 @@ export default function ConfigPage() {
                   />
                 </div>
               </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>{t("print_both_bill")}</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Form.Label htmlFor="print_both_bill">
+                    {storeDetail?.isPrintBothBill
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.isPrintBothBill}
+                    id="print_both_bill"
+                    onChange={changePrintBothBill}
+                  />
+                </div>
+              </div>
+
             </Card.Body>
           </Card>
           <Card border="primary" style={{ margin: 0 }}>

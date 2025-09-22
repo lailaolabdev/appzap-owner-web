@@ -1430,5 +1430,6 @@
   "bill_debt_amount": "Bill debt amount",
   "bill_debt_payment": "Bill debt payment",
   "bill_debt_remaining": "Bill debt remaining",
-  "bill_debt_paid": "Bill debt paid"
+  "bill_debt_paid": "Bill debt paid",
+  "print_both_bill": "Print both bill"
 }
