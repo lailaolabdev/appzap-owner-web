@@ -12,6 +12,7 @@ import html2canvas from 'html2canvas';
 import Swal from 'sweetalert2';
 import printFlutter from '../../helpers/printFlutter';
 import { base64ToBlob } from '../../helpers';
+import { useStore } from "../../store";
 import {
   ETHERNET_PRINTER_PORT,
   BLUETOOTH_PRINTER_PORT,
@@ -24,6 +25,7 @@ export default function PopUpReciept({ open, onClose }) {
   const bill80Ref = useRef(null);
   const orderBillRef = useRef(null);
   const [printBillLoading, setPrintBillLoading] = useState(false);
+  const { printerCounter, printers } = useStore();
   const [activeTab, setActiveTab] = useState('receipt');
   const {
     businessName,
@@ -56,11 +58,19 @@ export default function PopUpReciept({ open, onClose }) {
     try {
       setPrintBillLoading(true);
       let urlForPrinter = "";
-      const printerBillData = {
-        type: "ETHERNET", 
-        ip: "192.168.1.100", 
-        width: "80mm",
-      };
+      const _printerCounters = JSON.parse(printerCounter?.prints);
+      const printerBillData = printers?.find(
+        (e) => e?._id === _printerCounters?.BILL
+      );
+      if (!printerBillData) {
+        await Swal.fire({
+          icon: "error",
+          title: `${t("no_printer_config")}`,
+          showConfirmButton: false,
+          timer: 1800,
+        });
+        return;
+      }
 
       let dataImageForPrint;
       const refToUse = isOrderBill ? orderBillRef : bill80Ref;
