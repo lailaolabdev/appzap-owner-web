@@ -36,7 +36,7 @@ import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
 import { getAllShift } from "./../../services/shift";
 import theme from "../../theme";
-
+import PopUpSetStartAndEndDate from "../../components/popup/PopUpSetStartAndEndDate";
 export default function IncomeExpendExport() {
   const { t } = useTranslation();
   const parame = useParams();
@@ -249,10 +249,10 @@ export default function IncomeExpendExport() {
       const _localData = await getLocalData();
       let findby = `accountId=${
         _localData?.DATA?.storeId
-      }&platform=APPZAPP&limit=${_limit}&skip=${(parame?.skip - 1) * _limit}`;
+      }&platform=APPZAPP&limit=40&skip=40`;
 
       if (dateStart && dateEnd)
-        findby += `&date_gte=${dateStart}&date_lt=${dateEnd}`;
+        findby += `&date_gte=${dateStart}&date_lt=${dateEnd}&startTime=${startTime}&endTime=${endTime}`;
 
       const header = await getHeadersAccount();
       const headers = {
@@ -480,7 +480,7 @@ export default function IncomeExpendExport() {
             </Form.Group>
           ) : (
             <div style={{ display: "flex", alignItems: "center" }}>
-              <Form.Label>{t("date")}</Form.Label>
+              {/* <Form.Label>{t("date")}</Form.Label>
               <Form.Control
                 type="date"
                 value={dateStart ? dateStart : ""}
@@ -493,7 +493,22 @@ export default function IncomeExpendExport() {
                 value={dateEnd ? dateEnd : ""}
                 onChange={(e) => setDateEnd(e.target.value)}
                 style={{ width: 150 }}
-              />
+              /> */}
+              <Button
+            variant="outline-primary"
+            size="small"
+            style={{ display: "flex", gap: 10, alignItems: "center" }}
+              onClick={() => setOpenGetDate({ popupfiltter: true })}
+          >
+            <BsFillCalendarWeekFill />
+            <div>
+              {dateStart} {startTime}
+            </div>{" "}
+            ~{" "}
+            <div>
+              {dateEnd} {endTime}
+            </div>
+          </Button>
             </div>
           )}
           {profile?.data?.role === "APPZAP_ADMIN"
@@ -698,7 +713,7 @@ export default function IncomeExpendExport() {
         </table>
       </div>
 
-      <PopUpManageCounter
+      {/* <PopUpManageCounter
         open={openGetDate?.popupfiltter}
         onClose={() => setOpenGetDate()}
         dateStart={dateStart}
@@ -707,7 +722,19 @@ export default function IncomeExpendExport() {
         setDateEnd={setDateEnd}
         days={days}
         handlePresetDate
-      />
+      /> */}
+      <PopUpSetStartAndEndDate
+        open={openGetDate?.popupfiltter}
+        onClose={() => setOpenGetDate()}
+        startDate={dateStart}
+        setStartDate={setDateStart}
+        setStartTime={setStartTime}
+        startTime={startTime}
+        setEndDate={setDateEnd}
+        setEndTime={setEndTime}
+        endTime={endTime}
+        endDate={dateEnd}
+      /> 
     </div>
   );
 }
