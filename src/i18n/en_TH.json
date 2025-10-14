@@ -1301,5 +1301,8 @@
   "bill_debt_payment": "จำนวนเงินที่ชำระ",
   "bill_debt_remaining": "จำนวนเงินติดดอกเบี้ยที่ยังไม่ชำระ",
   "bill_debt_paid": "จำนวนเงินที่ชำระแล้ว",
-  "print_both_bill": "พิมพ์บิล 2 บิล"
+  "print_both_bill": "พิมพ์บิล 2 บิล",
+  "customer_count": "จำนวนลูกค้า",
+  "open_time": "เวลาเปิด",
+  "close_time": "เวลาปิด"
 }

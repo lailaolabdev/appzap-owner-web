@@ -84,6 +84,7 @@ import CheckPopupDebt from "./components/CheckPopupDebt";
 import { IoQrCode } from "react-icons/io5";
 import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
+import PopUpCustomerCount from "../../components/popup/PopUpCustomerCount";
 import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
 import {
@@ -108,6 +109,7 @@ import { usePaymentStore } from "../../zustand/paymentStore";
 import { usePointStore } from "../../zustand/pointStore";
 import { useMenuStore } from "../../zustand/menuStore";
 import { useLanguageStore } from "../../zustand/languageStore";
+import { useCustomerStore } from "../../zustand/customerStore";
 
 import theme from "../../theme";
 import PopUpConfirms from "../../components/popup/PopUpConfirms";
@@ -217,6 +219,7 @@ export default function TableList() {
   const { setPointStore, PointStore } = usePointStore();
   const { clearMenus } = useMenuStore();
   const { selectLanguage } = useLanguageStore();
+  const { createCustomerCount, customer, setCustomer } = useCustomerStore();
 
   let updatedOrderItems = [];
 
@@ -230,7 +233,7 @@ export default function TableList() {
     }
   }, [reload]);
 
-  console.log("DATA567",dataBill)
+  console.log("selectedTable12", selectedTable);
 
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
   const [seletedOrderItem, setSeletedOrderItem] = useState();
@@ -367,6 +370,34 @@ export default function TableList() {
       `${END_POINT_SEVER_TABLE_MENU}/v4/service-charge/${DATA?.storeId}`
     );
     setServiceChargePercent(_res?.data?.serviceCharge);
+  };
+
+  const openCustomerCount = async (customer) => {
+    
+    try {
+      await openTable(customer);
+
+      console.log("selectedTable123", selectedTable);
+      const res = await createCustomerCount({
+        storeId: storeDetail?._id,
+        amountBeforeOpen: customer,
+        code: selectedTable.code,
+      });
+
+      console.log(customer, "customer00");
+      setPopup({ PopUpCustomerCount: false });
+      
+      setCustomer(0);
+    } catch (error) {
+      console.error("Error creating customer count:", error);
+      await Swal.fire({
+        icon: "error",
+        title: `${t("error")}`,
+        text: `${t("failed_to_create_customer_count")}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
   };
 
   function handleSetQuantity(int, seletedOrderItem) {
@@ -830,7 +861,6 @@ export default function TableList() {
           }
         }
       );
-
 
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
@@ -1313,16 +1343,18 @@ export default function TableList() {
         context.fillStyle = "#000";
         context.font = " 24px NotoSansLao, Arial, sans-serif";
         // let yPosition = 100;
-        yPosition = !storeDetail?.disableMenuPricing ? wrapText(
-          context,
-          `${t("total")} ${moneyCurrency(
-            data?.price + (data?.totalOptionPrice ?? 0)
-          )} ${t(storeDetail?.firstCurrency)}`,
-          10,
-          yPosition,
-          width - 20,
-          46
-        ) : yPosition;
+        yPosition = !storeDetail?.disableMenuPricing
+          ? wrapText(
+              context,
+              `${t("total")} ${moneyCurrency(
+                data?.price + (data?.totalOptionPrice ?? 0)
+              )} ${t(storeDetail?.firstCurrency)}`,
+              10,
+              yPosition,
+              width - 20,
+              46
+            )
+          : yPosition;
 
         // Set text properties
         context.fillStyle = "#000"; // Black text color
@@ -1389,7 +1421,7 @@ export default function TableList() {
     await _createHistoriesPrinter(_dataBill);
 
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
-    
+
     let _index = 0;
     const printDate = [...billForCherCancel80.current];
     let dataUrls = [];
@@ -1531,7 +1563,6 @@ export default function TableList() {
       });
       setOrderPayBefore({ ...orderPayBefore, _newOrderItems });
     }
-    
 
     setCheckedBox(!checkedBox);
     setOrderPayBefore(!checkedBox);
@@ -1601,11 +1632,8 @@ export default function TableList() {
           return updatedItem;
         });
 
-        
-
         setIsCheckedOrderItem(updatedOrderItems);
 
-        
         // 2. Update total price immediately for the served items
         await calculateTotalBillV7(updatedOrderItems);
         ableToCheckoutFunc(updatedOrderItems);
@@ -1646,7 +1674,7 @@ export default function TableList() {
         serviceChargeManual: isServiceChargeEnabled,
       });
       if (res?.status === 200) {
-        getData(dataBill?.code)
+        getData(dataBill?.code);
       }
     } catch (error) {
       Swal.fire({
@@ -1656,10 +1684,9 @@ export default function TableList() {
         timer: 2000,
       });
     }
-  }
+  };
 
   const calculateTotalBillV7 = async (updatedOrderItems) => {
-    
     setPrintBillCalulate(true);
 
     // We are now using the passed updatedOrderItems to avoid querying unnecessary state
@@ -1691,7 +1718,6 @@ export default function TableList() {
     } else {
       setTotalAfterDiscount(_total);
     }
-    
 
     setTotal(_total); // Set the total without discount
     setPrintBillCalulate(false);
@@ -1964,7 +1990,6 @@ export default function TableList() {
   };
 
   const calculateTotalBill = () => {
-    
     setPrintBillCalulate(true);
     let _total = 0;
     if (dataBill && dataBill?.orderId) {
@@ -1996,7 +2021,7 @@ export default function TableList() {
     } else {
       setTotalAfterDiscount(_total);
     }
-    
+
     setTotal(_total);
     setPrintBillCalulate(false);
   };
@@ -2442,7 +2467,10 @@ export default function TableList() {
                       <div className={cn("text-base", fontMap[language])}>
                         {t("discount")}:{" "}
                         <span className="font-bold text-color-app">
-                          {moneyCurrency(dataBill?.discount || dataBill?.discountCategoryAmount)}{" "}
+                          {moneyCurrency(
+                            dataBill?.discount ||
+                              dataBill?.discountCategoryAmount
+                          )}{" "}
                           {dataBill?.discountType === "PERCENT"
                             ? "%"
                             : storeDetail?.firstCurrency}
@@ -2464,6 +2492,14 @@ export default function TableList() {
                           {storeDetail?.firstCurrency}
                         </span>
                       </div>
+                      {storeDetail?.isCustomerCount && (
+                      <div className={cn("text-base", fontMap[language])}>
+                        {t("customer_count")}:{" "}
+                        <span className="font-bold text-color-app">
+                          {selectedTable?.amountBeforeOpen} {t("people")}
+                        </span>
+                      </div>
+                      )}
                       <div
                         className={cn("text-base", fontMap[language])}
                         style={{
@@ -2836,7 +2872,14 @@ export default function TableList() {
                     fontSize: 20,
                     padding: 20,
                   }}
-                  onClick={() => openTable()}
+                  onClick={() => {
+                    
+                    if (storeDetail.isCustomerCount) {
+                      setPopup({ PopUpCustomerCount: true });
+                    } else {
+                      openTable();
+                    }
+                  }}
                 >
                   <span className={fontMap[language]}>
                     {!selectedTable?.isOpened
@@ -3122,7 +3165,7 @@ export default function TableList() {
         onSubmit={async () => {
           // handleMessage();
           getData(selectedTable?.code, false);
-          console.log("Message")
+          console.log("Message");
         }}
       />
       <Modal show={show} onHide={handleClose}>
@@ -3398,6 +3441,11 @@ export default function TableList() {
         onClose={() => setPopup({ PopUpTranferTable: false })}
         onSubmit={reLoadData}
         tableList={tableList}
+      />
+      <PopUpCustomerCount
+        open={popup?.PopUpCustomerCount}
+        onClose={() => setPopup({ PopUpCustomerCount: false })}
+        onSubmit={(customer) => openCustomerCount(customer)}
       />
     </div>
   );

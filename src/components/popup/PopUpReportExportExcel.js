@@ -36,7 +36,9 @@ export default function PopUpReportExportExcel({
   deliveryData,
   debtData,
   billData,
+  customerCountData,
 }) {
+  const { t } = useTranslation();
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
   const { menuCategories, getMenuCategories, setMenuCategories } =
     useMenuStore();
@@ -60,7 +62,6 @@ export default function PopUpReportExportExcel({
   };
 
   const { profile } = useStore();
-  const { t } = useTranslation();
   const [category, setCategory] = useState("");
 
   const findByData = () => {
@@ -323,10 +324,12 @@ export default function PopUpReportExportExcel({
           change: totals.change,
           last_paid: totals.last_paid,
           before_paid: totals.before_paid,
-
-          date: "",
-          type_pay: "",
           order_no: totals.order_no,
+          order: "",
+          order_status: "",
+          type_name: "",
+          date: "",
+          staff: "",
         });
 
         totalRow.eachCell((cell, colNumber) => {
@@ -2480,6 +2483,249 @@ export default function PopUpReportExportExcel({
     }
   };
 
+  const customerCountExport = async () => {
+    setPopup({ ReportExport: false });
+    try {
+      if (!customerCountData || customerCountData.length === 0) {
+        errorAdd(t("no_data"));
+        return;
+      }
+
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet(t("customer_count"));
+
+      // Main customer count headers
+      const mainHeaders = [
+        t("no"),
+        t("table"),
+        t("code"),
+        t("customer_count"),
+        t("total"),
+        t("open_time"),
+        t("close_time"),
+      ];
+
+      // Set header row
+      sheet.getRow(2).values = mainHeaders;
+
+      // Format header row
+      for (let i = 1; i <= mainHeaders.length; i++) {
+        const cell = sheet.getRow(2).getCell(i);
+        cell.border = {
+          top: { style: "thin", color: { argb: "FFCC8400" } },
+          left: { style: "thin", color: { argb: "FFCC8400" } },
+          bottom: { style: "thin", color: { argb: "FFCC8400" } },
+          right: { style: "thin", color: { argb: "FFCC8400" } },
+        };
+
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFCC8400" },
+        };
+
+        cell.font = {
+          name: "Noto Sans Lao",
+          size: 14,
+          bold: true,
+          color: { argb: "FFFFFFFF" },
+        };
+
+        cell.alignment = {
+          horizontal: "center",
+          vertical: "middle",
+          wrapText: true,
+        };
+      }
+
+      // Set column widths
+      sheet.columns = [
+        { key: "no", width: 8 },
+        { key: "table_id", width: 20 },
+        { key: "code", width: 15 },
+        { key: "amount_customer", width: 15 },
+        { key: "total", width: 18 },
+        { key: "open_time", width: 20 },
+        { key: "close_time", width: 20 },
+      ];
+
+      let rowIndex = 3;
+      let totalSpentSum = 0;
+      let totalCustomers = 0;
+
+      // Add customer count data
+      customerCountData.forEach((item, index) => {
+        const formattedOpenDate = moment(item?.openTable).format(
+          "DD/MM/YYYY HH:mm"
+        );
+        const formattedCloseDate = moment(item?.closeTable).format(
+          "DD/MM/YYYY HH:mm"
+        );
+
+        totalSpentSum += item?.totalSpent || 0;
+        totalCustomers += item?.amountBeforeOpen || 0;
+
+        const row = sheet.addRow({
+          no: index + 1,
+          table_id: item?.tableName || "-",
+          code: item?.code || "-",
+          amount_customer: item?.amountBeforeOpen || 0,
+          total: moneyCurrency(item?.totalSpent || 0),
+          open_time: formattedOpenDate,
+          close_time: formattedCloseDate,
+        });
+
+        // Format data rows
+        row.eachCell((cell, colNumber) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+
+          cell.alignment = {
+            horizontal: colNumber === 1 ? "center" : "left",
+            vertical: "middle",
+            wrapText: true,
+          };
+
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+        });
+
+        rowIndex = row.number;
+
+        // Add order details if available
+        if (Array.isArray(item?.orderId) && item.orderId.length > 0) {
+          rowIndex++;
+          
+          // Add order details header
+          const orderHeaderRow = sheet.getRow(rowIndex);
+          orderHeaderRow.getCell(2).value = t("menu");
+          orderHeaderRow.getCell(3).value = t("quantity");
+          orderHeaderRow.getCell(4).value = t("price");
+          orderHeaderRow.getCell(5).value = t("total");
+
+          [2, 3, 4, 5].forEach((colNum) => {
+            const cell = orderHeaderRow.getCell(colNum);
+            cell.fill = {
+              type: "pattern",
+              pattern: "solid",
+              fgColor: { argb: "FFE9ECEF" },
+            };
+            cell.font = {
+              name: "Noto Sans Lao",
+              size: 11,
+              bold: true,
+            };
+            cell.alignment = {
+              horizontal: "center",
+              vertical: "middle",
+            };
+            cell.border = {
+              top: { style: "thin" },
+              left: { style: "thin" },
+              bottom: { style: "thin" },
+              right: { style: "thin" },
+            };
+          });
+
+          rowIndex++;
+
+          // Add each order item
+          item.orderId.forEach((order) => {
+            const orderRow = sheet.getRow(rowIndex);
+            orderRow.getCell(2).value = order?.name || "-";
+            orderRow.getCell(3).value = order?.quantity || 0;
+            orderRow.getCell(4).value = moneyCurrency(order?.price || 0);
+            orderRow.getCell(5).value = moneyCurrency(
+              (order?.price || 0) * (order?.quantity || 0)
+            );
+
+            [2, 3, 4, 5].forEach((colNum) => {
+              const cell = orderRow.getCell(colNum);
+              cell.font = {
+                name: "Noto Sans Lao",
+                size: 11,
+              };
+              cell.alignment = {
+                horizontal: colNum === 3 || colNum === 4 || colNum === 5 ? "right" : "left",
+                vertical: "middle",
+              };
+              cell.border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+              };
+            });
+
+            rowIndex++;
+          });
+
+          // Add spacing
+          rowIndex++;
+        }
+      });
+
+      // Add total row
+      rowIndex++;
+      const totalRow = sheet.getRow(rowIndex);
+      totalRow.getCell(1).value = t("total");
+      totalRow.getCell(4).value = totalCustomers;
+      totalRow.getCell(5).value = moneyCurrency(totalSpentSum);
+
+      [1, 4, 5].forEach((colNum) => {
+        const cell = totalRow.getCell(colNum);
+        cell.font = {
+          name: "Noto Sans Lao",
+          size: 14,
+          bold: true,
+        };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFEEEEEE" },
+        };
+        cell.alignment = {
+          horizontal: "center",
+          vertical: "middle",
+        };
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
+      });
+
+      // Set row heights
+      for (let i = 1; i <= rowIndex; i++) {
+        sheet.getRow(i).height = 35;
+      }
+
+      // Generate Excel file
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      // Download the file
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = downloadUrl;
+      anchor.download = `${storeDetail?.name} - ${t("customer_count")}.xlsx`;
+      anchor.click();
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (err) {
+      console.error("Export failed:", err);
+      errorAdd(`${t("export_fail")}`);
+    }
+  };
+
   const allExport = async () => {
     setPopup({ ReportExport: false });
     try {
@@ -3398,6 +3644,8 @@ export default function PopUpReportExportExcel({
     }
   };
 
+  
+
   return (
     <Modal show={open} onHide={onClose} size="md">
       <Modal.Header
@@ -3491,6 +3739,12 @@ export default function PopUpReportExportExcel({
             onClick={currencyExport}
           >
             <span>{t("all_curency")}</span>
+          </Button>
+          <Button
+            style={{ height: 100, padding: 20, width: 200 }}
+            onClick={customerCountExport}
+          >
+            <span>{t("customer_count")}</span>
           </Button>
         </div>
       </Modal.Body>

@@ -1431,5 +1431,8 @@
   "bill_debt_payment": "Bill debt payment",
   "bill_debt_remaining": "Bill debt remaining",
   "bill_debt_paid": "Bill debt paid",
-  "print_both_bill": "Print both bill"
+  "print_both_bill": "Print both bill",
+  "customer_count": "Customer count",
+  "open_time": "Open time",
+  "close_time": "Close time"
 }

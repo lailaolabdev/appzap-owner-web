@@ -1431,5 +1431,8 @@
   "bill_debt_payment": "ເງິນເອົາ",
   "bill_debt_remaining": "ເງິນຕິດໝີ້ທີ່ຍັງເຫຼືອ",
   "bill_debt_paid": "ເງິນທີ່ຈ່າຍແລ້ວ",
-  "print_both_bill": "ພີມບີນ 2 ບີນ"
+  "print_both_bill": "ພີມບີນ 2 ບີນ",
+  "customer_count": "ຈຳນວນລູກຄ້າ",
+  "open_time": "ເວລາເປີດ",
+  "close_time": "ເວລາປິດ"
 }

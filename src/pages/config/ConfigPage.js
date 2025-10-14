@@ -214,6 +214,12 @@ export default function ConfigPage() {
     await fetchStoreDetail(storeDetail?._id);
   };
 
+  const changeCustomerCount = async (e) => {
+    const isChecked = e.target.checked;
+    await updateStoreDetail({ isCustomerCount: isChecked }, storeDetail?._id);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+
   const changeCounterMenu = async (e) => {
     const isType = e.target.checked;
     await updateCounterMenu(profile?.data.storeId, { data: isType });
@@ -518,6 +524,15 @@ export default function ConfigPage() {
                       title: `${t("enable_booking")}`,
                       key: "fer",
                       disabled: false,
+                      state: storeDetail?.isReservable,
+                      handler: changeBooking,
+                    },
+                    {
+                      title: `${t("customer_count")}`,
+                      key: "customerCount",
+                      disabled: false,
+                      state: storeDetail?.isCustomerCount,
+                      handler: changeCustomerCount,
                     },
                   ].map((item, index) => (
                     <div
@@ -540,16 +555,16 @@ export default function ConfigPage() {
                         }}
                       >
                         <Form.Label htmlFor={"booking-" + item?.key}>
-                          {storeDetail?.isReservable
+                          {item?.state
                             ? `${t("oppen")}`
                             : `${t("close")}`}
                         </Form.Label>
                         <Form.Check
                           disabled={item?.disabled}
                           type="switch"
-                          checked={storeDetail?.isReservable}
+                          checked={item?.state}
                           id={"booking-" + item?.key}
-                          onChange={changeBooking}
+                          onChange={item?.handler}
                         />
                       </div>
                     </div>
