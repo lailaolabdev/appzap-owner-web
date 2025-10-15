@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { createCustomerCount } from "../services/customer";
+import { createCustomerCount, updateCustomerCount } from "../services/customer";
 
 export const useCustomerStore = create(
   (set) => ({
@@ -8,6 +8,11 @@ export const useCustomerStore = create(
     setCustomer: (customer) => set({ customer }),
     createCustomerCount: async (data) => {
       const res = await createCustomerCount(data);
+      set({ customerCount: res.data });
+      return res.data;
+    },
+    updateCustomerCount: async (data) => {
+      const res = await updateCustomerCount(data);
       set({ customerCount: res.data });
       return res.data;
     },

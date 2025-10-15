@@ -1303,6 +1303,13 @@
   "bill_debt_paid": "จำนวนเงินที่ชำระแล้ว",
   "print_both_bill": "พิมพ์บิล 2 บิล",
   "customer_count": "จำนวนลูกค้า",
+  "customer_update": "อัปเดต",
+  "update_customer_count": "อัปเดตจำนวนลูกค้า",
+  "current_customer_count": "จำนวนลูกค้าปัจจุบัน",
+  "new_customer_count": "จำนวนลูกค้าใหม่",
+  "enter_customer_count": "ใส่จำนวนลูกค้า",
+  "customer_count_updated_successfully": "อัปเดตจำนวนลูกค้าสำเร็จ",
+  "failed_to_update_customer_count": "อัปเดตจำนวนลูกค้าไม่สำเร็จ",
   "open_time": "เวลาเปิด",
   "close_time": "เวลาปิด"
 }

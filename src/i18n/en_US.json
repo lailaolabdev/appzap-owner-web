@@ -1433,6 +1433,13 @@
   "bill_debt_paid": "Bill debt paid",
   "print_both_bill": "Print both bill",
   "customer_count": "Customer count",
+  "customer_update": "Update",
+  "update_customer_count": "Update Customer Count",
+  "current_customer_count": "Current Customer Count",
+  "new_customer_count": "New Customer Count",
+  "enter_customer_count": "Enter customer count",
+  "customer_count_updated_successfully": "Customer count updated successfully",
+  "failed_to_update_customer_count": "Failed to update customer count",
   "open_time": "Open time",
   "close_time": "Close time"
 }

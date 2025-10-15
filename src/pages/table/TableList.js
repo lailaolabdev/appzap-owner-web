@@ -73,6 +73,7 @@ import {
   callPayBeforePrintBillOnly,
   callToUpdatePrintBillBefore,
   getCodes,
+  updateCode,
 } from "../../services/code";
 import { getAllStorePoints } from "../../services/member.service";
 import PopUpAddDiscount from "../../components/popup/PopUpAddDiscount";
@@ -85,6 +86,7 @@ import { IoQrCode } from "react-icons/io5";
 import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
 import PopUpCustomerCount from "../../components/popup/PopUpCustomerCount";
+import PopUpCustomerCountUpdate from "../../components/popup/PopUpCustomerCountUpdate";
 import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
 import {
@@ -219,7 +221,7 @@ export default function TableList() {
   const { setPointStore, PointStore } = usePointStore();
   const { clearMenus } = useMenuStore();
   const { selectLanguage } = useLanguageStore();
-  const { createCustomerCount, customer, setCustomer } = useCustomerStore();
+  const { createCustomerCount, updateCustomerCount, customer, setCustomer } = useCustomerStore();
 
   let updatedOrderItems = [];
 
@@ -233,7 +235,7 @@ export default function TableList() {
     }
   }, [reload]);
 
-  console.log("selectedTable12", selectedTable);
+  console.log("RELOAD DATA", reload);
 
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
   const [seletedOrderItem, setSeletedOrderItem] = useState();
@@ -394,6 +396,57 @@ export default function TableList() {
         icon: "error",
         title: `${t("error")}`,
         text: `${t("failed_to_create_customer_count")}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+  };
+
+  const handleUpdateCustomerCount = async (newCount) => {
+    try {
+      const res = await updateCode(selectedTable?._id, {
+        amountBeforeOpen: newCount,
+        isOpened: true,
+        isStaffConfirm: true,
+      });
+
+      if (res.status === 200) {
+        await Swal.fire({
+          icon: "success",
+          title: `${t("success")}`,
+          text: `${t("customer_count_updated_successfully")}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+
+        await updateCustomerCount({
+          amountBeforeOpen: newCount,
+          code: selectedTable.code,
+        });
+        
+        setPopup({ PopUpCustomerCountUpdate: false });
+        
+        // Update the selectedTable with new customer count
+        setSelectedTable((prev) => ({
+          ...prev,
+          amountBeforeOpen: newCount,
+        }));
+        
+        // Refresh table data to show updated count in the list
+        if (zoneId) {
+          await getTableDataStore({ zone: zoneId });
+        } else {
+          await getTableDataStore();
+        }
+        // Reload selected table orders data
+        reLoadData();
+      }
+    } catch (error) {
+      console.error("Error updating customer count:", error);
+      await Swal.fire({
+        icon: "error",
+        title: `${t("error")}`,
+        text: `${t("failed_to_update_customer_count")}`,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -2476,6 +2529,22 @@ export default function TableList() {
                             : storeDetail?.firstCurrency}
                         </span>
                       </div>
+                      {storeDetail?.isCustomerCount && (
+                      <div className={cn("text-base flex items-center gap-2", fontMap[language])}>
+                        {t("customer_count")}:{" "}
+                        <span className="font-bold text-color-app">
+                          {selectedTable?.amountBeforeOpen} {t("people")}
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline-primary"
+                          onClick={() => setPopup({ PopUpCustomerCountUpdate: true })}
+                          style={{ fontSize: '12px', padding: '2px 8px' }}
+                        >
+                          {t("customer_update")}
+                        </Button>
+                      </div>
+                      )}
                       <div className={cn("text-base", fontMap[language])}>
                         {t("total")}:{" "}
                         <span className="font-bold text-color-app">
@@ -2492,14 +2561,6 @@ export default function TableList() {
                           {storeDetail?.firstCurrency}
                         </span>
                       </div>
-                      {storeDetail?.isCustomerCount && (
-                      <div className={cn("text-base", fontMap[language])}>
-                        {t("customer_count")}:{" "}
-                        <span className="font-bold text-color-app">
-                          {selectedTable?.amountBeforeOpen} {t("people")}
-                        </span>
-                      </div>
-                      )}
                       <div
                         className={cn("text-base", fontMap[language])}
                         style={{
@@ -3446,6 +3507,12 @@ export default function TableList() {
         open={popup?.PopUpCustomerCount}
         onClose={() => setPopup({ PopUpCustomerCount: false })}
         onSubmit={(customer) => openCustomerCount(customer)}
+      />
+      <PopUpCustomerCountUpdate
+        open={popup?.PopUpCustomerCountUpdate}
+        onClose={() => setPopup({ PopUpCustomerCountUpdate: false })}
+        onSubmit={(newCount) => handleUpdateCustomerCount(newCount)}
+        currentCount={selectedTable?.amountBeforeOpen}
       />
     </div>
   );
