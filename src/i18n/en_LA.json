@@ -1433,6 +1433,13 @@
   "bill_debt_paid": "ເງິນທີ່ຈ່າຍແລ້ວ",
   "print_both_bill": "ພີມບີນ 2 ບີນ",
   "customer_count": "ຈຳນວນລູກຄ້າ",
+  "customer_update": "ອັບເດດ",
+  "update_customer_count": "ອັບເດດຈຳນວນລູກຄ້າ",
+  "current_customer_count": "ຈຳນວນລູກຄ້າປັດຈຸບັນ",
+  "new_customer_count": "ຈຳນວນລູກຄ້າໃໝ່",
+  "enter_customer_count": "ໃສ່ຈຳນວນລູກຄ້າ",
+  "customer_count_updated_successfully": "ອັບເດດຈຳນວນລູກຄ້າສຳເລັດ",
+  "failed_to_update_customer_count": "ອັບເດດຈຳນວນລູກຄ້າບໍ່ສຳເລັດ",
   "open_time": "ເວລາເປີດ",
   "close_time": "ເວລາປິດ"
 }

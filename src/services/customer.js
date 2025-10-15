@@ -25,3 +25,15 @@ export const createCustomerCount = async (data) => {
     return error;
   }
 };
+
+export const updateCustomerCount = async (data) => {
+  try {
+    const url = `${END_POINT_APP}/v7/customer/update`;
+    const res = await axios.put(url, data, {
+      headers: await getHeaders(),
+    });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};

@@ -1297,6 +1297,13 @@
   "bill_debt_paid": "ចំនួនទឹកប្រាក់ដែលបានទទួល",
   "print_both_bill": "បោះពុម្ពរាងរាងវិក្កយបត្រ",
   "customer_count": "ចំនួនអតិថិជន",
+  "customer_update": "ធ្វើបច្ចុប្បន្នភាព",
+  "update_customer_count": "ធ្វើបច្ចុប្បន្នភាពចំនួនអតិថិជន",
+  "current_customer_count": "ចំនួនអតិថិជនបច្ចុប្បន្ន",
+  "new_customer_count": "ចំនួនអតិថិជនថ្មី",
+  "enter_customer_count": "បញ្ចូលចំនួនអតិថិជន",
+  "customer_count_updated_successfully": "ធ្វើបច្ចុប្បន្នភាពចំនួនអតិថិជនបានជោគជ័យ",
+  "failed_to_update_customer_count": "ធ្វើបច្ចុប្បន្នភាពចំនួនអតិថិជនបរាជ័យ",
   "open_time": "ឝាស័យការបង់",
   "close_time": "ឝាស័យលុប"
 }
