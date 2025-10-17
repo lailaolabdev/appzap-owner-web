@@ -70,6 +70,8 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const { storeDetail } = useStoreStore();
   const { shiftCurrent, OpenShiftForCounter } = useShiftStore();
 
+  console.log("bills",bills)
+
   // useEffect
   useEffect(() => {
     // console.log("printers: ", billRef.current);
@@ -702,7 +704,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                         : 0}
                     </td>
                     <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.billAmount) || moneyCurrency(0)}
+                      {moneyCurrency(e?.billAmount || e?.deliveryAmount)} {storeDetail?.firstCurrency}
                     </td>
                   </tr>
                 ))}
