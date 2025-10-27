@@ -138,7 +138,12 @@ export default function TableList() {
   const [show1, setShow1] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const handleClose1 = () => setShow1(false);
+  const handleClose1 = () => {
+    setShow1(false);
+    setShowCustomReasonInput(false);
+    setCustomCancelReason("");
+    setSeletedCancelOrderItem("");
+  };
 
   const [disableCheckoutButton, setDisableCheckoutButton] = useState(false);
 
@@ -146,8 +151,17 @@ export default function TableList() {
     setShow1(true);
   };
 
-  const handleSelectedCancelOrder = (e) =>
-    setSeletedCancelOrderItem(e.target.value);
+  const handleSelectedCancelOrder = (e) => {
+    const value = e.target.value;
+    setSeletedCancelOrderItem(value);
+    // Show custom input if "Other" is selected
+    if (value === t("other")) {
+      setShowCustomReasonInput(true);
+    } else {
+      setShowCustomReasonInput(false);
+      setCustomCancelReason("");
+    }
+  };
 
   const [openModalSetting, setOpenModalSetting] = useState(false);
   const [dataSettingModal, setDataSettingModal] = useState();
@@ -240,6 +254,8 @@ export default function TableList() {
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
   const [seletedOrderItem, setSeletedOrderItem] = useState();
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
+  const [customCancelReason, setCustomCancelReason] = useState("");
+  const [showCustomReasonInput, setShowCustomReasonInput] = useState(false);
   const [checkedBox, setCheckedBox] = useState(false);
   const [taxPercent, setTaxPercent] = useState(0);
   const [serviceChargePercent, setServiceChargePercent] = useState(0);
@@ -1858,11 +1874,16 @@ export default function TableList() {
         };
       });
 
+    // Use custom reason if "Other" is selected and custom reason is provided
+    const finalCancelReason = showCustomReasonInput && customCancelReason.trim() 
+      ? customCancelReason.trim() 
+      : seletedCancelOrderItem;
+    
     const _resOrderUpdate = await updateOrderItemV7(
       _updateItems,
       storeId,
       menuId,
-      seletedCancelOrderItem,
+      finalCancelReason,
       selectedTable
     );
 
@@ -1911,11 +1932,16 @@ export default function TableList() {
       if (checkError?.error) {
         throw new Error(`${t("print_fial")}`);
       }
+      // Use custom reason if "Other" is selected and custom reason is provided
+      const finalCancelReason = showCustomReasonInput && customCancelReason.trim() 
+        ? customCancelReason.trim() 
+        : seletedCancelOrderItem;
+      
       const _resOrderUpdate = await updateOrderItem(
         _updateItems,
         storeId,
         menuId,
-        seletedCancelOrderItem,
+        finalCancelReason,
         selectedTable
       );
       if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
@@ -3358,8 +3384,26 @@ export default function TableList() {
               >
                 {t("table_no_food")}
               </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                {t("other")}
+              </option>
             </select>
           </Form.Group>
+          {showCustomReasonInput && (
+            <Form.Group className="mb-3" controlId="customReasonInput">
+              <Form.Label>{t("please_specify_reason")}</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder={t("enter_reason")}
+                value={customCancelReason}
+                onChange={(e) => setCustomCancelReason(e.target.value)}
+                style={{ fontSize: "18px" }}
+                autoFocus
+              />
+            </Form.Group>
+          )}
         </Modal.Body>
         <Modal.Footer className={fontMap[language]}>
           <Button variant="danger" onClick={() => handleClose1()}>
@@ -3368,6 +3412,26 @@ export default function TableList() {
           <Button
             variant="success"
             onClick={() => {
+              // Validate that a reason is selected
+              if (!seletedCancelOrderItem) {
+                Swal.fire({
+                  icon: "warning",
+                  title: t("please_select_reason"),
+                  showConfirmButton: true,
+                });
+                return;
+              }
+              
+              // If "Other" is selected, ensure custom reason is provided
+              if (showCustomReasonInput && !customCancelReason.trim()) {
+                Swal.fire({
+                  icon: "warning",
+                  title: t("please_enter_reason"),
+                  showConfirmButton: true,
+                });
+                return;
+              }
+              
               if (workAfterPin == "cancle_order_and_print") {
                 handleUpdateOrderStatusAndCallback("CANCELED", async () => {
                   const data = await onPrintForCherCancel();

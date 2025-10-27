@@ -63,7 +63,7 @@ export default function CreateMembers() {
                 fontWeight: "bold",
               }}
             >
-              {t("add_member_form")}
+              {t("add_member_form3")}
             </Card.Header>
             <Card.Body>
               <div>
