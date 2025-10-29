@@ -1458,5 +1458,6 @@
   "menus_added": "menus added",
   "failed": "failed",
   "order_report": "order report",
-  "stock_display": "stock display"
+  "stock_display": "stock display",
+  "use_phone_scan_and_pay":" Use your phone camera to scan and pay"
 }

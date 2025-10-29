@@ -31,7 +31,8 @@ export default function BillForCheckOut80({
   profile,
   paymentMethod,
   enableServiceChange,
-  language
+  language,
+  paymentLinkData
 }) {
   // state
   const [total, setTotal] = useState();
@@ -55,7 +56,15 @@ export default function BillForCheckOut80({
   const serviceChargeRef = useRef(serviceCharge);
   const enableServiceChangeRef = useRef(enableServiceChange);
 
-  
+  // for test debug paymentLinkData
+  useEffect(() => {
+    if(paymentLinkData && !_.isEmpty(paymentLinkData)){
+      console.log("paymentLinkData in BillForCheckOut80:", paymentLinkData);
+    }
+    if(storeDetail && !_.isEmpty(storeDetail)){
+      console.log("storeDetail in BillForCheckOut80:", storeDetail);
+    }
+  }, [paymentLinkData,storeDetail]);
   
 
 
@@ -289,7 +298,7 @@ export default function BillForCheckOut80({
               {moment(dataBill?.createdAt).format("DD-MM-YYYY") }
             </span>
           </div>
-          <div className="flex items-center items-center">
+          <div className="flex items-center">
             {t("time")}:{" "}
             {moment(dataBill?.createdAt).format("HH:mm:ss")}
             {" - "}
@@ -583,20 +592,58 @@ export default function BillForCheckOut80({
       <div
         style={{
           display: "flex",
-          justifyContent: "center",
+          flexDirection: "column",
+          alignItems: "center",
           padding: 10,
           marginTop: 10,
         }}
-        hidden={storeDetail?.printer?.qr ? false : true}
+        hidden={!storeDetail?.printer?.qr}
       >
-        <Img>
-          <img
-            src={`https://app-api.appzap.la/qr-gennerate/qr?data=${storeDetail?.printer?.qr}`}
-            style={{ width: "100%", height: "100%" }}
-            alt=""
-          />
-        </Img>
+        {paymentLinkData?.redirectURL ? (
+          <>
+            <div style={{
+              display:"flex",
+              justifyContent:'center',
+              alignItems:"center",
+              flexDirection: "column"
+            }}>
+              <div style={{ width: "200px", height: "200px", position: "relative",display:"flex",justifyContent:"center",alignItems:"center",border:"2px dotted #000",padding:30, }}>
+                <QRCode
+                  value={paymentLinkData?.redirectURL}
+                  size={180}
+                  style={{ width: "100%", height: "100%" }}
+                />
+                {/* <img
+                  src="https://www.phajay.co/_next/image?url=%2Fimages%2Flogo-phjay.png&w=128&q=75"
+                  alt="phajay logo"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    background: "white", // improves QR scannability
+                    borderRadius: "8px", // optional rounded look
+                    padding: "4px",
+                  }}
+                /> */}
+              </div>
+            <p style={{ marginTop: 8, fontSize: 11 }}>{t('use_phone_scan_and_pay')}</p>
+            </div>
+
+          </>
+        ) : (
+          <Img>
+            <img
+              src={`https://app-api.appzap.la/qr-gennerate/qr?data=${storeDetail?.printer?.qr}`}
+              style={{ width: "100%", height: "100%" }}
+              alt="QR Code"
+            />
+          </Img>
+        )}
       </div>
+
 
       {storeDetail?.textForBill?.trim().length > 0 && (
         <div>

@@ -7,7 +7,7 @@ import Select from "react-select";
 import Swal from "sweetalert2";
 import { BiTransfer } from "react-icons/bi";
 import { useTranslation } from "react-i18next";
-import _ from "lodash";
+import _, { set } from "lodash";
 import Box from "../../../components/Box";
 import { moneyCurrency } from "../../../helpers";
 import axios from "axios";
@@ -55,6 +55,9 @@ export default function CheckOutPopup({
   serviceCharge,
   billDataLoading,
   setPaymentMethod,
+  // for payment gateway
+  isGeneratingLink,
+  generatePaymentLink
 }) {
   const { t } = useTranslation();
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
@@ -69,6 +72,7 @@ export default function CheckOutPopup({
   const [point, setPoint] = useState();
   const [tab, setTab] = useState("cash");
   const [forcus, setForcus] = useState("CASH");
+  console.log("forcus:::", forcus);
   const [canCheckOut, setCanCheckOut] = useState(false);
   const [selectCurrency, setSelectCurrency] = useState("LAK");
   const [rateCurrency, setRateCurrency] = useState(1);
@@ -991,17 +995,17 @@ export default function CheckOutPopup({
 
     if (daysDiff > 0) {
       return (
-        <span className="text-green-500 font-semibold">
+        <span className="font-semibold text-green-500">
           ຍັງເຫຼືອອີກ {daysDiff} ມື້
         </span>
       );
     } else if (daysDiff === 0) {
       return (
-        <span className="text-yellow-500 font-semibold">ໝົດອາຍຸວັນນີ້</span>
+        <span className="font-semibold text-yellow-500">ໝົດອາຍຸວັນນີ້</span>
       );
     } else {
       return (
-        <span className="text-red-500 font-semibold">
+        <span className="font-semibold text-red-500">
           ໝົດອາຍຸແລ້ວ {Math.abs(daysDiff)} ວັນ
         </span>
       );
@@ -1145,7 +1149,7 @@ export default function CheckOutPopup({
                   <>
                     <div
                       hidden={tab === "point"}
-                      className="flxe flex-col gap-2"
+                      className="flex-col gap-2 flxe"
                     >
                       <div className="mb-2">
                         <InputGroup>
@@ -1202,7 +1206,7 @@ export default function CheckOutPopup({
 
                 {tab === "point" || tab === "cash_transfer_point" ? (
                   <div hidden={hasCRM} style={{ marginBottom: 10 }}>
-                    <div className="w-full flex flex-col md:flex-row justify-between gap-2 mb-3">
+                    <div className="flex flex-col justify-between w-full gap-2 mb-3 md:flex-row">
                       <div className="whitespace-nowrap flex-1 flex gap-1.5">
                         <div className="flex-1">
                           <Select
@@ -1229,11 +1233,11 @@ export default function CheckOutPopup({
                         </div>
                       </div>
 
-                      <div className="flex flex-col flex-1 justify-start md:justify-end gap-2">
-                        <div className="box-name flex-1">
+                      <div className="flex flex-col justify-start flex-1 gap-2 md:justify-end">
+                        <div className="flex-1 box-name">
                           <div className="border rounded p-2 bg-light w-full h-[38px] flex items-center">
                             <span className="font-medium">{t("name")}:</span>{" "}
-                            <span className="font-bold ml-1">
+                            <span className="ml-1 font-bold">
                               {SelectedDataBill?.Name
                                 ? `${SelectedDataBill?.Name} (${SelectedDataBill?.memberPhone})`
                                 : "-"}
@@ -1244,8 +1248,8 @@ export default function CheckOutPopup({
                     </div>
                     {SelectedDataBill?.Point > 0 ? (
                       <>
-                        <div className="flex flex-col md:flex-row justify-between items-start gap-3 mb-3">
-                          <div className="flex flex-col gap-2 flex-1 border bg-light rounded-lg p-3">
+                        <div className="flex flex-col items-start justify-between gap-3 mb-3 md:flex-row">
+                          <div className="flex flex-col flex-1 gap-2 p-3 border rounded-lg bg-light">
                             <div className="flex items-center">
                               <div className="border rounded-l p-2 bg-light h-[40px] flex items-center font-medium">
                                 {t("point")}
@@ -1277,19 +1281,19 @@ export default function CheckOutPopup({
                               <span className="font-medium">
                                 {t("money_amount")}:
                               </span>{" "}
-                              <span className="font-bold ml-1 text-orange-500">
+                              <span className="ml-1 font-bold text-orange-500">
                                 {convertNumber(calculatePointValue(point))}
                               </span>
                             </div>
                           </div>
 
-                          <div className="flex flex-col flex-1 border bg-light rounded-lg p-3">
-                            <div className="flex flex-col sm:flex-row gap-2">
+                          <div className="flex flex-col flex-1 p-3 border rounded-lg bg-light">
+                            <div className="flex flex-col gap-2 sm:flex-row">
                               <div className="rounded w-full h-[38px] flex items-center">
                                 <span className="font-medium">
                                   {t("total_point")}:
                                 </span>{" "}
-                                <span className="font-bold ml-1 text-orange-500">
+                                <span className="ml-1 font-bold text-orange-500">
                                   {point
                                     ? convertNumber(
                                         SelectedDataBill?.Point - point
@@ -1300,12 +1304,12 @@ export default function CheckOutPopup({
                                 </span>
                               </div>
                             </div>
-                            <div className="flex flex-col sm:flex-row gap-2 mt-2">
+                            <div className="flex flex-col gap-2 mt-2 sm:flex-row">
                               <div className="rounded w-full h-[38px] flex items-center">
                                 <span className="font-medium">
                                   {t("money_amount")}:
                                 </span>{" "}
-                                <span className="font-bold ml-1 text-orange-500">
+                                <span className="ml-1 font-bold text-orange-500">
                                   {convertNumber(
                                     (SelectedDataBill?.Point *
                                       PointStore?.data[0]?.moneyUse || 0) -
@@ -1318,7 +1322,7 @@ export default function CheckOutPopup({
                           </div>
                         </div>
 
-                        <div className="flex justify-start items-center mt-2 gap-2">
+                        <div className="flex items-center justify-start gap-2 mt-2">
                           <div className="text-[16px] font-medium">
                             {t("expire_date_debt")}:{" "}
                             <span className="font-bold">
@@ -1416,7 +1420,7 @@ export default function CheckOutPopup({
             )}
           </div>
           <div style={{ marginBottom: 10, padding: "10px 20px" }}>
-            <div className="flex flex-row flex-1 justify-between items-center mb-2">
+            <div className="flex flex-row items-center justify-between flex-1 mb-2">
               <div
                 hidden={tab === "point" || selectedTable?.isDeliveryTable}
                 style={{ marginBottom: 10 }}
@@ -1686,14 +1690,14 @@ export default function CheckOutPopup({
         </Box>
       </Modal.Body>
       <Modal.Footer>
-        <div className="flex flex-wrap items-start w-full justify-center">
-          <div className="flex flex-1 h-full whitespace-nowrap mb-2">
-            {t("cashier")}:{" "}
+        <div className="flex flex-wrap items-start justify-center w-full">
+          <div className="flex flex-1 h-full mb-2 whitespace-nowrap">
+            {t("cashier")}:{" "} 
             <b>
               {profile?.data?.firstname ?? "-"} {profile?.data?.lastname ?? "-"}
             </b>
           </div>
-          <div className="flex flex-col dmd:flex-row gap-2 items-end">
+          <div className="flex flex-col items-end gap-2 dmd:flex-row">
             <Button
               onClick={() => onSubmit()}
               disabled={
@@ -1704,14 +1708,21 @@ export default function CheckOutPopup({
             </Button>
 
             <Button
-              onClick={async () => {
+              onClick={
+                async () => {
                 setPrintBillLoading(true);
-                saveServiceChargeDetails();
-
+                // saveServiceChargeDetails();
                 try {
+                  if(forcus ==="TRANSFER" || "CASH"){
+                    console.log("Generating payment link...");
+                    await generatePaymentLink(totalBillMoney || 5);  // for payment gateway
+                  } 
+                  // console.log("Payment link generated.");
+                  console.log("Printing bill...");
                   await onPrintBill();
+                  console.log("Bill printed.");
                   await handleSubmit();
-                   // Run handleSubmit first
+               
                 } catch (error) {
                   Swal.fire({
                     icon: "error",
@@ -1723,7 +1734,7 @@ export default function CheckOutPopup({
                 }
               }}
               style={{ display: "flex", gap: "10px", alignItems: "center" }}
-              disabled={!canCheckOut || printBillLoading}
+              disabled={!canCheckOut || printBillLoading || isGeneratingLink}
             >
               {printBillLoading && (
                 <Spinner
@@ -1737,7 +1748,7 @@ export default function CheckOutPopup({
             </Button>
 
             <Button
-              className="dmd:w-fit w-full"
+              className="w-full dmd:w-fit"
               onClick={handleSubmit}
               disabled={!canCheckOut}
             >
