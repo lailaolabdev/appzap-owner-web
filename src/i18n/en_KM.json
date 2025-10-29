@@ -1305,5 +1305,6 @@
   "customer_count_updated_successfully": "ធ្វើបច្ចុប្បន្នភាពចំនួនអតិថិជនបានជោគជ័យ",
   "failed_to_update_customer_count": "ធ្វើបច្ចុប្បន្នភាពចំនួនអតិថិជនបរាជ័យ",
   "open_time": "ឝាស័យការបង់",
-  "close_time": "ឝាស័យលុប"
+  "close_time": "ឝាស័យលុប",
+  "use_phone_scan_and_pay": "ប្រើកាមេរ៉ាទូរសព្ទដើម្បីស្កេន និងបង់ប្រាក់"
 }

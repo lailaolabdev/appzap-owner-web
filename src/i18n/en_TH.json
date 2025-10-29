@@ -1311,5 +1311,6 @@
   "customer_count_updated_successfully": "อัปเดตจำนวนลูกค้าสำเร็จ",
   "failed_to_update_customer_count": "อัปเดตจำนวนลูกค้าไม่สำเร็จ",
   "open_time": "เวลาเปิด",
-  "close_time": "เวลาปิด"
+  "close_time": "เวลาปิด",
+   "use_phone_scan_and_pay":"ใช้ก้องโทรศัพท์สแกน และ ชำระเงิน"
 }

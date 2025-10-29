@@ -1441,5 +1441,6 @@
   "customer_count_updated_successfully": "Customer count updated successfully",
   "failed_to_update_customer_count": "Failed to update customer count",
   "open_time": "Open time",
-  "close_time": "Close time"
+  "close_time": "Close time",
+  "use_phone_scan_and_pay":" Use your phone camera to scan and pay"
 }

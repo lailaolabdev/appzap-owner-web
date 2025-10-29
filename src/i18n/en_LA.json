@@ -1441,5 +1441,6 @@
   "customer_count_updated_successfully": "ອັບເດດຈຳນວນລູກຄ້າສຳເລັດ",
   "failed_to_update_customer_count": "ອັບເດດຈຳນວນລູກຄ້າບໍ່ສຳເລັດ",
   "open_time": "ເວລາເປີດ",
-  "close_time": "ເວລາປິດ"
+  "close_time": "ເວລາປິດ",
+   "use_phone_scan_and_pay":"ໃຊ້ກ້ອງໂທລະສັບຂອງທ່ານສະແກນ ແລະ ຈ່າຍເງິນ"
 }
