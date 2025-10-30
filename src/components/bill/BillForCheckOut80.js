@@ -600,39 +600,50 @@ export default function BillForCheckOut80({
         hidden={!storeDetail?.printer?.qr}
       >
         {paymentLinkData?.redirectURL ? (
-          <>
-            <div style={{
-              display:"flex",
+          <div style={{
+             display:"flex",
               justifyContent:'center',
               alignItems:"center",
               flexDirection: "column"
-            }}>
-              <div style={{ width: "200px", height: "200px", position: "relative",display:"flex",justifyContent:"center",alignItems:"center",border:"2px dotted #000",padding:30, }}>
-                <QRCode
-                  value={paymentLinkData?.redirectURL}
-                  size={180}
-                  style={{ width: "100%", height: "100%" }}
-                />
-                {/* <img
-                  src="https://www.phajay.co/_next/image?url=%2Fimages%2Flogo-phjay.png&w=128&q=75"
-                  alt="phajay logo"
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    background: "white", // improves QR scannability
-                    borderRadius: "8px", // optional rounded look
-                    padding: "4px",
-                  }}
-                /> */}
-              </div>
+          }}>
+          <div style={{ 
+            width: "200px", 
+            height: "200px", 
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            border: "2px dotted #000",
+            padding: 22
+          }}>
+            <QRCode
+              value={paymentLinkData?.redirectURL}
+              size={180}
+               qrStyle="dots"
+               ecLevel="H"
+               style={{ width: "100%", height: "100%" }}
+              // qrStyle="squares"  // v2.x works better with squares
+            />
+            <img
+              src="https://www.phapay.com/_next/image?url=%2Fimages%2Flogo-phjay.png&w=128&q=75"
+              alt="phajay logo"
+              style={{
+                width: "35px",
+                height: "35px",
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                backgroundColor: "white",
+                borderRadius: "8px",
+                padding: "4px",
+                boxShadow: "0 0 0 2px white"
+              }}
+            />
+          </div>
             <p style={{ marginTop: 8, fontSize: 11 }}>{t('use_phone_scan_and_pay')}</p>
-            </div>
-
-          </>
+          </div>
         ) : (
           <Img>
             <img
