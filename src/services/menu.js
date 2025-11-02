@@ -195,3 +195,15 @@ export const getMenuOptionByStoreId = async (id) => {
     return error;
   }
 };
+
+export const createMenuWithDoc = async (body) => {
+  try {
+    const url = `${END_POINT_SEVER_TABLE_MENU}/v3/menu/create-many`;
+    const res = await axios.post(url, body, {
+      headers: await getHeaders(),
+    });
+    return res;
+  } catch (error) {
+    return error;
+  }
+}

@@ -1,5 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Formik } from "formik";
+import ExcelJS from "exceljs";
+import moment from "moment";
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -38,7 +42,7 @@ import { fontMap } from "../../utils/font-map";
 import { cn } from "../../utils/cn";
 import { useMenuStore } from "../../zustand/menuStore";
 import { useStoreStore } from "../../zustand/storeStore";
-import { createMenu } from "../../services/menu";
+import { createMenu, createMenuWithDoc } from "../../services/menu";
 
 export default function MenuList() {
   const {
@@ -102,6 +106,161 @@ export default function MenuList() {
   const location = useLocation();
   const pathParts = location.pathname.split("/");
   const defaultActiveKey = `/settingStore/${pathParts[2]}`;
+  const fileInputRef = useRef(null);
+  const handleFileUploadClick = () => fileInputRef?.current?.click();
+  const handleFileChange = async (e) => {
+    try {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+  
+      reader.onload = async (event) => {
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+  
+        console.log("logs rows:", rows);
+  
+        // ✅ Convert Excel rows into your desired structure
+        const menus = rows.map((row) => {
+          // Split "Menu Option Name" by commas and clean whitespace
+          const optionRaw = row["Menu Option Name"] || "";
+          const menuOptionName = optionRaw
+            .split(",")
+            .map((opt) => opt.trim())
+            .filter((opt) => opt !== "");
+  
+          return {
+            name: row["Menu Name"] || row["Name"] || "",
+            price: Number(row["Price"] || 0),
+            categoryName: row["Category"] || "",
+            menuOptionName,
+            images: [row["Images"] || ""],
+            menuStock: [],
+          };
+        });
+  
+        const formatted = {
+          storeId: storeDetail?._id, // fallback for testing
+          menus,
+        };
+  
+        console.log("Converted JSON:", formatted);
+  
+        // ✅ Upload to backend
+        const res = await createMenuWithDoc(formatted);
+        if (res?.status === 200) {
+          const _localData = await getLocalData();
+          if (_localData) {
+            setgetTokken(_localData);
+            getcategory(_localData?.DATA?.storeId);
+            getMenu(_localData?.DATA?.storeId);
+          }
+          successAdd(`${t("add_success")}`);
+        } else {
+          errorAdd(t("add_fail"));
+        }
+      };
+  
+      reader.readAsArrayBuffer(file);
+    } catch (err) {
+      console.error("❌ Upload error:", err);
+      errorAdd(t("add_fail"));
+    } finally {
+      // reset input so same file can be re-selected
+      if (e?.target) e.target.value = "";
+    }
+  };
+  
+
+  const downloadTemplate = async () => {
+    try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet("Menu Template");
+
+      // ✅ Define headers
+      worksheet.columns = [
+        { header: "Menu Name", key: "MenuName", width: 25 },
+        { header: "Price", key: "Price", width: 15 },
+        { header: "Category", key: "Category", width: 25 },
+        { header: "Menu Option Name", key: "MenuOptionName", width: 35 },
+      ];
+
+      // ✅ Define your menu data
+      const data = [
+        {
+          name: "Iced Black Coffee",
+          price: 28000,
+          category: "Coffee",
+          options: ["sugar", "milk", "lemon"],
+        },
+        {
+          name: "Hot Milk",
+          price: 30000,
+          category: "Milk",
+          options: ["honey", "ice"],
+        },
+        {
+          name: "Apple Juice",
+          price: 35000,
+          category: "Juice",
+          options: ["no ice", "extra sweet", "less sweet"],
+        },
+        {
+          name: "Green Tea",
+          price: 25000,
+          category: "Tea",
+          options: ["sugar", "milk"],
+        },
+      ];
+
+      // ✅ Convert to rows (join options into one cell)
+      const rows = data.map((item) => [
+        item.name,
+        item.price,
+        item.category,
+        item.options.join(", "),
+      ]);
+
+      // Add rows to worksheet
+      worksheet.addRows(rows);
+
+      // ✅ Style header row
+      const header = worksheet.getRow(1);
+      header.font = { bold: true };
+      header.alignment = { horizontal: "center", vertical: "middle" };
+      header.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFDCE6F1" },
+      };
+
+      // ✅ Add borders to all cells
+      worksheet.eachRow({ includeEmpty: true }, (row) => {
+        row.eachCell((cell) => {
+          cell.border = {
+            top: { style: "thin", color: { argb: "FFAAAAAA" } },
+            left: { style: "thin", color: { argb: "FFAAAAAA" } },
+            bottom: { style: "thin", color: { argb: "FFAAAAAA" } },
+            right: { style: "thin", color: { argb: "FFAAAAAA" } },
+          };
+        });
+      });
+
+      // ✅ Save Excel file
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      saveAs(blob, "Appzap_POS_Menu_Template.xlsx");
+
+      console.log("✅ Template created successfully");
+      return true;
+    } catch (error) {
+      console.error("❌ Error creating Excel template:", error);
+      return false;
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -734,7 +893,9 @@ export default function MenuList() {
 
         <Row>
           <Col sm="12">
-            <Row style={{ marginTop: 14, marginBottom: 14 }}>
+            <Row
+              style={{ marginTop: 14, marginBottom: 14, alignItems: "center" }}
+            >
               <Col md="4">
                 <label className={fontMap[language]}>{t("chose_type")}</label>
                 <select
@@ -753,49 +914,32 @@ export default function MenuList() {
                     })}
                 </select>
               </Col>
+
               <Col md="4">
                 <label className={fontMap[language]}>{t("search")}</label>
                 <Form.Control
                   type="text"
                   placeholder={t("search_food_name")}
                   value={filterName}
-                  onChange={(e) => {
-                    setFilterName(e.target.value);
-                  }}
+                  onChange={(e) => setFilterName(e.target.value)}
                   className={fontMap[language]}
                 />
               </Col>
+
+              {/* ✅ Button group aligned to end */}
               <Col
-                md="2"
+                md="4"
                 style={{
                   marginTop: 32,
                   display: "flex",
                   justifyContent: "end",
-                }}
-              >
-                {/* <Button
-                  style={{
-                    backgroundColor: COLOR_APP,
-                    color: "#ffff",
-                    border: 0,
-                  }}
-                  onClick={handleShowCaution}
-                >
-                  + ເພີ່ມເມນູຈຳນວນຫຼາຍ
-                </Button> */}
-              </Col>
-              <Col
-                md="2"
-                style={{
-                  marginTop: 32,
-                  display: "flex",
-                  justifyContent: "end",
+                  gap: 10,
                 }}
               >
                 <Button
                   style={{
                     backgroundColor: COLOR_APP,
-                    color: "#ffff",
+                    color: "#fff",
                     border: 0,
                   }}
                   onClick={handleShow}
@@ -803,6 +947,35 @@ export default function MenuList() {
                 >
                   + {t("add_menu")}
                 </Button>
+
+                <Button
+                  style={{
+                    backgroundColor: COLOR_APP,
+                    color: "#fff",
+                    border: 0,
+                  }}
+                  onClick={downloadTemplate}
+                >
+                  {t("download_example")}
+                </Button>
+
+                <Button
+                  style={{
+                    backgroundColor: COLOR_APP,
+                    color: "#fff",
+                    border: 0,
+                  }}
+                  onClick={handleFileUploadClick}
+                >
+                  {t("up_load")}
+                </Button>
+                <input
+                  type="file"
+                  accept=".xlsx,.xls"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  onChange={handleFileChange}
+                />
               </Col>
             </Row>
           </Col>

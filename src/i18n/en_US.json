@@ -1384,6 +1384,7 @@
   "you_selected" : "You selected",
   "enter_percentage_between_0_100": "Enter percentage between 0 and 100",
   "enter_amount_less_than_total": "Enter amount less than total",
-  "discount_of_bill" : " Discount Of bill"
-
+  "discount_of_bill" : " Discount Of bill",
+  "download_example": "Download Example",
+  "up_load": "Up Load"
 }
