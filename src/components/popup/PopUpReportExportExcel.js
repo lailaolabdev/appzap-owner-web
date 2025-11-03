@@ -82,16 +82,16 @@ export default function PopUpReportExportExcel({
         findBy += `endDate=${storeDetail?.endDayFilter}&`;
         findBy += `startTime=${storeDetail?.startTimeFilter}&`;
         findBy += `endTime=${storeDetail?.endTimeFilter}`;
-        if (shiftData) {
-          findBy += `&shiftId=${shiftData?._id}`;
+        if (shiftId) {
+          findBy += `&shiftId=${shiftId}`;
         }
       } else {
         findBy += `startDate=${storeDetail?.startDateReportExport}&`;
         findBy += `endDate=${storeDetail?.endDateReportExport}&`;
         findBy += `startTime=${storeDetail?.startTimeReportExport}&`;
         findBy += `endTime=${storeDetail?.endTimeReportExport}`;
-        if (shiftData) {
-          findBy += `&shiftId=${shiftData?._id}`;
+        if (shiftId) {
+          findBy += `&shiftId=${shiftId}`;
         }
       }
     } else {
@@ -105,16 +105,16 @@ export default function PopUpReportExportExcel({
         findBy += `endDate=${storeDetail?.endDayFilter}&`;
         findBy += `startTime=${storeDetail?.startTimeFilter}&`;
         findBy += `endTime=${storeDetail?.endTimeFilter}`;
-        if (shiftData) {
-          findBy += `&shiftId=${shiftData?._id}`;
+        if (shiftId) {
+          findBy += `&shiftId=${shiftId}`;
         }
       } else {
         findBy += `&startDate=${storeDetail?.startDateReportExport}&`;
         findBy += `endDate=${storeDetail?.endDateReportExport}&`;
         findBy += `startTime=${storeDetail?.startTimeReportExport}&`;
         findBy += `endTime=${storeDetail?.endTimeReportExport}&`;
-        if (shiftData) {
-          findBy += `&shiftId=${shiftData?._id}`;
+        if (shiftId) {
+          findBy += `&shiftId=${shiftId}`;
         }
       }
     }
