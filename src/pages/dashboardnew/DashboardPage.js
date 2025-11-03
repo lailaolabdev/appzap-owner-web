@@ -114,8 +114,6 @@ export default function DashboardPage() {
     fetchShift();
   }, []);
 
-  console.log("shiftData", shiftData);
-
   const fetchShift = async () => {
     await getAllShift()
       .then((res) => {
@@ -580,7 +578,7 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-2 whitespace-nowrap">
                   {/* <span>{t("chose_shift")} : </span> */}
                   <Select
-                    placeholder={t("chose_shiftຟ")}
+                    placeholder={t("chose_shift")}
                     className="w-40 border-1 border-orange-500"
                     options={optionsData}
                     onChange={handleSearchInput}
