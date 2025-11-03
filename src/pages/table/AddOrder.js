@@ -1763,13 +1763,13 @@ function AddOrder() {
                       </span>
 
                     )}
-                    <div className="flex items-end justify-end mt-2 flex-col space-y-1">
+                    {/* <div className="flex items-end justify-end mt-2 flex-col space-y-1">
                       {data?.stockId?.map((item, index) => (
                         <span key={index} className="font-bold text-red-500 text-[14px]">
                           {`${item?.name} x ${item?.quantity}`}
                         </span>
                       ))}
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               ))
