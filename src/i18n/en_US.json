@@ -1456,5 +1456,6 @@
   "file_processing_error": "Error processing file",
   "file_read_error": "Error reading file",
   "menus_added": "menus added",
-  "failed": "failed"
+  "failed": "failed",
+  "order_report": "order report"
 }

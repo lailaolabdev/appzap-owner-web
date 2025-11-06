@@ -1320,5 +1320,6 @@
   "file_processing_error": "កំហុសក្នុងការដំណើរការឯកសារ",
   "file_read_error": "កំហុសក្នុងការអានឯកសារ",
   "menus_added": "ម្ហូបដែលបានបន្ថែម",
-  "failed": "បរាជ័យ"
+  "failed": "បរាជ័យ",
+  "order_report": "របាយការណ៍លក់"
 }
