@@ -1452,13 +1452,14 @@ export default function DashboardFinance({
           )}
 
           {!storeDetail?.isStatusCafe &&
-            (profile?.data?.role === "APPZAP_ADMIN" ? (
+            (profile?.data?.role === "APPZAP_ADMIN" && storeDetail?.isEditBill === false ? (
               <Button
                 className="text-white font-bold"
                 disabled={
                   disabledEditBill ||
                   selectOrder?.status === "ACTIVE" ||
-                  profile?.data?.role !== "APPZAP_ADMIN" ||
+                  // profile?.data?.role !== "APPZAP_ADMIN" ||
+                  (profile?.data?.role !== "APPZAP_ADMIN" && storeDetail?.isEditBill === false)||
                   dataModal?.isDebtPayment === true ||
                   dataModal?.isDebtAndPay === true ||
                   dataModal?.isCafe === true
@@ -1475,7 +1476,7 @@ export default function DashboardFinance({
                 disabled={
                   disabledEditBill ||
                   selectOrder?.status === "ACTIVE" ||
-                  // profile?.data?.role !== "APPZAP_ADMIN" ||
+                  (profile?.data?.role !== "APPZAP_ADMIN" && storeDetail?.isEditBill === false) ||
                   dataModal?.isDebtPayment === true ||
                   dataModal?.isDebtAndPay === true ||
                   !counterRoleEditBill
@@ -1495,6 +1496,7 @@ export default function DashboardFinance({
             </Button>
             {dataModal?.isCafe === true && (
               <Button
+              disabled={profile?.data?.role !== "APPZAP_ADMIN" && storeDetail?.isEditBill === false}
               className="text-white font-bold"
               onClick={() => navigate(`/cafe/Edit/${dataModal?._id}`)}
             >
