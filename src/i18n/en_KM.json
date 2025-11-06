@@ -248,6 +248,9 @@
   "food_gone": "ម្ហូបអស់",
   "drink_gone": "ភេសជ្ជៈអស់",
   "table_no_food": "គ្មានម្ហូបបម្រើ",
+  "please_specify_reason": "សូមបញ្ជាក់មូលហេតុ",
+  "enter_reason": "បញ្ចូលមូលហេតុ",
+  "please_select_reason": "សូមជ្រើសរើសមូលហេតុ",
   "save": "រក្សាទុក",
   "edit_amount": "កែប្រែចំនួន",
   "setting_table": "ការកំណត់តុ",
@@ -1305,5 +1308,17 @@
   "customer_count_updated_successfully": "ធ្វើបច្ចុប្បន្នភាពចំនួនអតិថិជនបានជោគជ័យ",
   "failed_to_update_customer_count": "ធ្វើបច្ចុប្បន្នភាពចំនួនអតិថិជនបរាជ័យ",
   "open_time": "ឝាស័យការបង់",
-  "close_time": "ឝាស័យលុប"
+  "close_time": "ឝាស័យលុប",
+  "please_specify": "សូមបញ្ជាក់មូលហេតុ",
+  "edit_member": "កែសម្រួលសមាជិក",
+  "download_template": "ទាញយកគំរូ",
+  "upload_menu": "ផ្ទុកឡើងម្ហូប",
+  "download_success": "ទាញយកជោគជ័យ",
+  "upload_success": "ផ្ទុកឡើងជោគជ័យ",
+  "upload_failed": "ផ្ទុកឡើងបរាជ័យ",
+  "file_empty": "ឯកសារទទេ",
+  "file_processing_error": "កំហុសក្នុងការដំណើរការឯកសារ",
+  "file_read_error": "កំហុសក្នុងការអានឯកសារ",
+  "menus_added": "ម្ហូបដែលបានបន្ថែម",
+  "failed": "បរាជ័យ"
 }

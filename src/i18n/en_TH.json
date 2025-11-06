@@ -259,6 +259,9 @@
   "food_gone": "อาหารหมด",
   "drink_gone": "เครื่องดื่มหมด",
   "table_no_food": "ไม่มีอาหารเสิร์ฟ",
+  "please_specify_reason": "กรุณาระบุเหตุผล",
+  "enter_reason": "ป้อนเหตุผล",
+  "please_select_reason": "กรุณาเลือกเหตุผล",
   "save": "บันทึก",
   "edit_amount": "แก้ไขจำนวน",
   "setting_table": "ตั้งค่าโต๊ะ",
@@ -1311,5 +1314,17 @@
   "customer_count_updated_successfully": "อัปเดตจำนวนลูกค้าสำเร็จ",
   "failed_to_update_customer_count": "อัปเดตจำนวนลูกค้าไม่สำเร็จ",
   "open_time": "เวลาเปิด",
-  "close_time": "เวลาปิด"
+  "close_time": "เวลาปิด",
+  "please_specify": "กรุณาระบุข้อมูนเพิ่มเติม",
+  "edit_member": "แก้ไขสมาชิก",
+  "download_template": "ดาวน์โหลดแม่แบบ",
+  "upload_menu": "อัปโหลดเมนู",
+  "download_success": "ดาวน์โหลดสำเร็จ",
+  "upload_success": "อัปโหลดสำเร็จ",
+  "upload_failed": "อัปโหลดไม่สำเร็จ",
+  "file_empty": "ไฟล์ว่างเปล่า",
+  "file_processing_error": "เกิดข้อผิดพลาดในการประมวลผลไฟล์",
+  "file_read_error": "เกิดข้อผิดพลาดในการอ่านไฟล์",
+  "menus_added": "เมนูที่เพิ่มแล้ว",
+  "failed": "ไม่สำเร็จ"
 }

@@ -7,7 +7,7 @@ import {
   WAITING_STATUS,
 } from "../constants";
 import { getHeaders } from "./auth";
-import { END_POINT_SEVER_BILL_ORDER } from "../constants/api";
+import { END_POINT_APP, END_POINT_SEVER, END_POINT_SEVER_BILL_ORDER } from "../constants/api";
 
 export const getOrders = async (
   status = ACTIVE_STATUS,
@@ -217,5 +217,17 @@ export const updateOrder = async (data, status = CANCEL_STATUS) => {
     }
   } catch (error) {
     console.log("get orders error:", error);
+  }
+};
+
+export const getOrderReport = async (storeId, findBy) => {
+  try {
+    const url = `${END_POINT_APP}/v7/order-report/${storeId}${findBy}`;
+    const orderReport = await axios.post(url, {}, {
+      headers: await getHeaders(),
+    });
+    return orderReport?.data;
+  } catch (error) {
+    console.log("get order report error:", error);
   }
 };

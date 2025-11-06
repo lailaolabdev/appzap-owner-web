@@ -48,12 +48,12 @@ export default function CreateMembers() {
 
   return (
     <>
-      <div style={{ padding: 20 }}>
+      <div style={{ padding: 20, height: "100vh", overflowY: "auto" }}>
         <Breadcrumb>
           <Breadcrumb.Item>{t("report")}</Breadcrumb.Item>
           <Breadcrumb.Item active>{t("add_member")}</Breadcrumb.Item>
         </Breadcrumb>
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center", paddingBottom: 40 }}>
           <Card border="primary" style={{ width: 560 }}>
             <Card.Header
               style={{
@@ -65,7 +65,7 @@ export default function CreateMembers() {
             >
               {t("add_member_form")}
             </Card.Header>
-            <Card.Body>
+            <Card.Body style={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}>
               <div>
                 <div className="mb-3">
                   <Form.Label>{t("member_name")}</Form.Label>
@@ -116,6 +116,126 @@ export default function CreateMembers() {
                     />
                   </InputGroup>
                 </div>
+                <div className="mb-3">
+                  <Form.Label>ກິດຈະກໍາທີ່ມັກ (Activity you like)*</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={formData?.activity}
+                    onChange={(e) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        activity: e.target.value,
+                      }));
+                    }}
+                  >
+                    <option value="">-- {t("select")} --</option>
+                    <option value="ຍ່າງ/ແລ່ນ">ຍ່າງ/ແລ່ນ (Walking/Running)</option>
+                    <option value="ເຕະບານ">ເຕະບານ (Football)</option>
+                    <option value="ຕີດອກ">ຕີດອກ (Badminton)</option>
+                    <option value="ລອຍນ້ຳ">ລອຍນ້ຳ (Swimming)</option>
+                    <option value="ຂີ່ລົດຖີບ">ຂີ່ລົດຖີບ (Cycling)</option>
+                    <option value="ໂຍຄະ/ນັ່ງສະມາທິ">ໂຍຄະ/ນັ່ງສະມາທິ (Yoga/Meditation)</option>
+                    <option value="ອ່ານຫນັງສື">ອ່ານຫນັງສື (Reading)</option>
+                    <option value="ເພງ/ຄອນເສີດ">ເພງ/ຄອນເສີດ (Music/Concerts)</option>
+                    <option value="ປຸງອາຫານ/ອົບເຂົ້າໝົມ">ປຸງອາຫານ/ອົບເຂົ້າໝົມ (Cooking/Baking)</option>
+                    <option value="ທ່ອງທ່ຽວ">ທ່ອງທ່ຽວ (Traveling)</option>
+                  </Form.Control>
+                </div>
+                <div className="mb-3">
+                  <Form.Label>ເຄື່ອງດື່ມປະເພດທີ່ທ່ານມັກ? (what is your favorite drink?)*</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={formData?.favoriteDrinkSelect || formData?.favoriteDrink}
+                    onChange={(e) => {
+                      if (e.target.value === "Other") {
+                        setFormData((prev) => ({
+                          ...prev,
+                          favoriteDrinkSelect: "Other",
+                          favoriteDrink: "",
+                        }));
+                      } else {
+                        setFormData((prev) => ({
+                          ...prev,
+                          favoriteDrinkSelect: e.target.value,
+                          favoriteDrink: e.target.value,
+                        }));
+                      }
+                    }}
+                  >
+                    <option value="">-- {t("select")} --</option>
+                    <option value="ລາເຕຮ້ອນ">ລາເຕຮ້ອນ (Hot Latte)</option>
+                    <option value="ລາເຕເຢັນ">ລາເຕເຢັນ (Iced Latte)</option>
+                    <option value="ອາເມຣິກາໂນ">ອາເມຣິກາໂນ (ຮ້ອນ/ເຢັນ) (Americano (Hot/Iced))</option>
+                    <option value="ກາປູຊີໂນ">ກາປູຊີໂນ (Cappuccino)</option>
+                    <option value="ຊານົມໄທ">ຊານົມໄທ (Thai Milk Tea)</option>
+                    <option value="ຊາຂຽວ">ຊາຂຽວ (Green Tea)</option>
+                    <option value="ຊາມະນາວ">ຊາມະນາວ (Lemon Tea)</option>
+                    <option value="ສມູດຕີ">ສມູດຕີ (ມ່ວງ/ສະເບີຮີ) - Smoothie (Mango/Strawberry)</option>
+                    <option value="ນ້ຳສົ້ມ/ນ້ຳແຕງໂມໃໝ່">ນ້ຳສົ້ມ/ນ້ຳແຕງໂມໃໝ່ (Fresh Juice, Orange/Watermelon)</option>
+                    <option value="ໂຊດາ">ໂຊດາ (Soda)</option>
+                    <option value="Other">Other</option>
+                  </Form.Control>
+                </div>
+                {formData?.favoriteDrinkSelect === "Other" && (
+                  <div className="mb-3">
+                    <Form.Control
+                      placeholder={t("please_specify")}
+                      value={formData?.favoriteDrink}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          favoriteDrink: e.target.value,
+                        }));
+                      }}
+                    />
+                  </div>
+                )}
+                <div className="mb-3">
+                  <Form.Label>ອາຫານປະເພດໃດທີ່ທ່ານມັກ ? (what is your favorite food?)*</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={formData?.favoriteFoodSelect || formData?.favoriteFood}
+                    onChange={(e) => {
+                      if (e.target.value === "Other") {
+                        setFormData((prev) => ({
+                          ...prev,
+                          favoriteFoodSelect: "Other",
+                          favoriteFood: "",
+                        }));
+                      } else {
+                        setFormData((prev) => ({
+                          ...prev,
+                          favoriteFoodSelect: e.target.value,
+                          favoriteFood: e.target.value,
+                        }));
+                      }
+                    }}
+                  >
+                    <option value="">-- {t("select")} --</option>
+                    <option value="ເຂົ້າຜັດ">ເຂົ້າຜັດ (Fried Rice)</option>
+                    <option value="ຜັດໄທ">ຜັດໄທ (Pad Thai)</option>
+                    <option value="ກະເພົາ">ກະເພົາ (Stir-fried Basil (Kaprao))</option>
+                    <option value="ເຝີ">ເຝີ (Pho)</option>
+                    <option value="ສະປາກັດຕີ">ສະປາກັດຕີ (Spaghetti)</option>
+                    <option value="ສະເຕັກ">ສະເຕັກ (Steak)</option>
+                    <option value="ຕຳ/ຍຳ">ຕຳ/ຍຳ (Salad)</option>
+                    <option value="Other">Other</option>
+                  </Form.Control>
+                </div>
+                {formData?.favoriteFoodSelect === "Other" && (
+                  <div className="mb-3">
+                    <Form.Control
+                      placeholder={t("please_specify")}
+                      value={formData?.favoriteFood}
+                      onChange={(e) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          favoriteFood: e.target.value,
+                        }));
+                      }}
+                    />
+                  </div>
+                )}
                 {storeDetail?.isStatusCafe && (
                   <div className="mb-3">
                     <Form.Label>{t("percenDiscount")}</Form.Label>

@@ -36,6 +36,7 @@ export default function PopUpReportExportExcel({
   deliveryData,
   debtData,
   billData,
+  orderData,
   customerCountData,
 }) {
   const { t } = useTranslation();
@@ -2726,6 +2727,147 @@ export default function PopUpReportExportExcel({
     }
   };
 
+  const orderReportExport = async () => {
+    setPopup({ ReportExport: false });
+    try {
+      // Create a new workbook
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet(t("order_report"));
+
+      // Define column widths
+      sheet.columns = [
+        { width: 20 }, // Category
+        { width: 25 }, // Menu
+        { width: 15 }, // Order
+        { width: 15 }, // Amount
+        { width: 20 }, // Price
+        { width: 20 }, // Total
+      ];
+
+      // Add headers
+      const headerRow = sheet.addRow([
+        t("category"),
+        t("menu"),
+        t("order"),
+        t("amount"),
+        t("price"),
+        t("total"),
+      ]);
+
+      // Style header row
+      headerRow.eachCell((cell) => {
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFD3D3D3" },
+        };
+        cell.font = {
+          name: "Noto Sans Lao",
+          size: 14,
+          bold: true,
+        };
+        cell.alignment = {
+          vertical: "middle",
+          horizontal: "center",
+        };
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
+      });
+      headerRow.height = 35;
+
+      // Use orderData categoryWithItems
+      if (orderData?.categoryWithItems && orderData.categoryWithItems.length > 0) {
+        let currentRow = 2; // Start after header row
+
+        // Iterate through each category
+        orderData.categoryWithItems.forEach((category) => {
+          const startRow = currentRow;
+          const categoryName = category?.categoryName || t("unknown");
+          const items = category?.items || [];
+          
+          // Add each menu item in the category
+          items.forEach((item, index) => {
+            const row = sheet.addRow([
+              index === 0 ? categoryName : "", // Only show category name in first row
+              item?.menuName || t("unknown"),
+              item?.totalOrders || 0,
+              item?.totalQuantity || 0,
+              moneyCurrency(item?.price || 0),
+              moneyCurrency(item?.totalRevenue || 0),
+            ]);
+
+            // Style data cells
+            row.eachCell((cell, colNumber) => {
+              cell.font = {
+                name: "Noto Sans Lao",
+                size: 14,
+              };
+              cell.alignment = {
+                vertical: "middle",
+                horizontal: colNumber === 1 || colNumber === 2 ? "left" : "center",
+              };
+              cell.border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+              };
+            });
+            row.height = 35;
+            currentRow++;
+          });
+
+          // Merge category cells if there are multiple menu items
+          if (items.length > 1) {
+            sheet.mergeCells(`A${startRow}:A${currentRow - 1}`);
+            
+            // Center align the merged category cell
+            const mergedCell = sheet.getCell(`A${startRow}`);
+            mergedCell.alignment = {
+              vertical: "middle",
+              horizontal: "center",
+            };
+          }
+        });
+      } else {
+        // Add empty row with message if no data
+        const noDataRow = sheet.addRow([t("no_data")]);
+        sheet.mergeCells(`A2:F2`);
+        noDataRow.eachCell((cell) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+          cell.alignment = {
+            vertical: "middle",
+            horizontal: "center",
+          };
+        });
+      }
+
+      // Generate Excel file
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      // Download the file
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = downloadUrl;
+      anchor.download = `${storeDetail?.name} - ${t("order_report")}.xlsx`;
+      anchor.click();
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (err) {
+      console.error("Error exporting to Excel:", err);
+      errorAdd(`${t("export_fail")}`);
+    }
+  };
+
   const allExport = async () => {
     setPopup({ ReportExport: false });
     try {
@@ -3745,6 +3887,12 @@ export default function PopUpReportExportExcel({
             onClick={customerCountExport}
           >
             <span>{t("customer_count")}</span>
+          </Button>
+          <Button
+            style={{ height: 100, padding: 20, width: 200 }}
+            onClick={orderReportExport} 
+          >
+            <span>{t("order_report")}</span>
           </Button>
         </div>
       </Modal.Body>

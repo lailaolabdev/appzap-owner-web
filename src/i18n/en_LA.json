@@ -334,6 +334,9 @@
   "food_gone": "ອາຫານໝົດ",
   "drink_gone": "ເຄື່ອງດື່ມໝົດ",
   "table_no_food": "ບໍ່ມີອາຫານໃນໂຕະ",
+  "please_specify_reason": "ກະລຸນາລະບຸເຫດຜົນ",
+  "enter_reason": "ປ້ອນເຫດຜົນ",
+  "please_select_reason": "ກະລຸນາເລືອກເຫດຜົນ",
   "save": "ບັນທຶກ",
   "edit_amount": "ແກ້ໄຂຈຳນວນ",
   "setting_table": "ຕັ້ງຄ່າໂຕະ",
@@ -1441,5 +1444,17 @@
   "customer_count_updated_successfully": "ອັບເດດຈຳນວນລູກຄ້າສຳເລັດ",
   "failed_to_update_customer_count": "ອັບເດດຈຳນວນລູກຄ້າບໍ່ສຳເລັດ",
   "open_time": "ເວລາເປີດ",
-  "close_time": "ເວລາປິດ"
+  "close_time": "ເວລາປິດ",
+  "please_specify": "ກະລຸນາຣະບຸຂໍ້ມູນເພີ່ມເຕີມ",
+  "edit_member": "ແກ້ໄຂສະມາຊິກ",
+  "download_template": "ດາວໂຫລດແມ່ແບບ",
+  "upload_menu": "ອັບໂຫຼດເມນູ",
+  "download_success": "ດາວໂຫລດສຳເລັດ",
+  "upload_success": "ອັບໂຫຼດສຳເລັດ",
+  "upload_failed": "ອັບໂຫຼດບໍ່ສຳເລັດ",
+  "file_empty": "ໄຟລ໌ວ່າງເປົ່າ",
+  "file_processing_error": "ເກີດຂໍ້ຜິດພາດໃນການປະມວນຜົນໄຟລ໌",
+  "file_read_error": "ເກີດຂໍ້ຜິດພາດໃນການອ່ານໄຟລ໌",
+  "menus_added": "ເມນູທີ່ເພີ່ມແລ້ວ",
+  "failed": "ບໍ່ສຳເລັດ"
 }

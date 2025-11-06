@@ -288,6 +288,9 @@
   "food_gone": "Food Unavailable",
   "drink_gone": "Drink Unavailable",
   "table_no_food": "No Food Served",
+  "please_specify_reason": "Please Specify Reason",
+  "enter_reason": "Enter Reason",
+  "please_select_reason": "Please Select a Reason",
   "save": "Save",
   "edit_amount": "Edit Amount",
   "setting_table": "Table Settings",
@@ -1441,5 +1444,17 @@
   "customer_count_updated_successfully": "Customer count updated successfully",
   "failed_to_update_customer_count": "Failed to update customer count",
   "open_time": "Open time",
-  "close_time": "Close time"
+  "close_time": "Close time",
+  "please_specify": "Please specify",
+  "edit_member": "Edit member",
+  "download_template": "Download Template",
+  "upload_menu": "Upload Menu",
+  "download_success": "Download successful",
+  "upload_success": "Upload successful",
+  "upload_failed": "Upload failed",
+  "file_empty": "File is empty",
+  "file_processing_error": "Error processing file",
+  "file_read_error": "Error reading file",
+  "menus_added": "menus added",
+  "failed": "failed"
 }

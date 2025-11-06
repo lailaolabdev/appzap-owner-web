@@ -9,6 +9,7 @@ import {
   getMenuOptionByStoreId,
   getMenuOptions,
   getMenusByStoreId,
+  uploadMenuMany,
   updateCategoryMenu,
   updateMenu,
 } from "../services/menu"; // Import necessary API helpers
@@ -215,6 +216,18 @@ export const useMenuStore = create(
         } catch (error) {
           set({ isMenuLoading: false });
           throw new Error(`Error updating menu item: ${error.message}`);
+        }
+      },
+
+      createMenuItemMany: async (data) => {
+        set({ isMenuLoading: true });
+        try {
+          const res = await uploadMenuMany(data);
+          set({ menus: res, isMenuLoading: false });
+          return res;
+        } catch (error) {
+          set({ isMenuLoading: false });
+          throw new Error(`Error creating menu item many: ${error.message}`);
         }
       },
 

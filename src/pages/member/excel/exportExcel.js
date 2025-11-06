@@ -23,6 +23,7 @@ export const exportMembersToExcel = async (
     const columns = [
       { header: t("member_name") || "Member Name", key: "Name", width: 20 },
       { header: t("phone") || "Phone", key: "Phone", width: 15 },
+      { header: t("email") || "Email", key: "Email", width: 25 },
       { header: "ພ໋ອຍທັງໝົດ", key: "Point", width: 10 },
     ];
 
@@ -43,6 +44,26 @@ export const exportMembersToExcel = async (
 
     // Add remaining columns
     columns.push(
+      {
+        header: "ກິດຈະກໍາທີ່ມັກ (Activity)",
+        key: "Activity",
+        width: 25,
+      },
+      {
+        header: "ເຄື່ອງດື່ມທີ່ມັກ (Favorite Drink)",
+        key: "FavoriteDrink",
+        width: 25,
+      },
+      {
+        header: "ອາຫານທີ່ມັກ (Favorite Food)",
+        key: "FavoriteFood",
+        width: 25,
+      },
+      {
+        header: t("birth_date") || "Birthday",
+        key: "Birthday",
+        width: 15,
+      },
       {
         header: t("use_service") || "Service Usage",
         key: "bill",
@@ -70,7 +91,14 @@ export const exportMembersToExcel = async (
       const row = {
         Name: item.name || "",
         Phone: item.phone || "",
+        Email: item.email || "",
         Point: item.point || 0,
+        Activity: item.activity || "",
+        FavoriteDrink: item.favoriteDrink || "",
+        FavoriteFood: item.favoriteFood || "",
+        Birthday: item.birthday
+          ? moment(item.birthday).format("DD/MM/YYYY")
+          : "",
         bill: item.bill || 0,
         createdAt: item.createdAt
           ? moment(item.createdAt).format("DD/MM/YYYY")
@@ -123,7 +151,28 @@ export const exportTopMembersToExcel = async (
     worksheet.columns = [
       { header: t("member_name") || "Member Name", key: "Name", width: 20 },
       { header: t("phone") || "Phone", key: "Phone", width: 15 },
+      { header: t("email") || "Email", key: "Email", width: 25 },
       { header: t("point") || "Point", key: "Point", width: 10 },
+      {
+        header: "ກິດຈະກໍາທີ່ມັກ (Activity)",
+        key: "Activity",
+        width: 25,
+      },
+      {
+        header: "ເຄື່ອງດື່ມທີ່ມັກ (Favorite Drink)",
+        key: "FavoriteDrink",
+        width: 25,
+      },
+      {
+        header: "ອາຫານທີ່ມັກ (Favorite Food)",
+        key: "FavoriteFood",
+        width: 25,
+      },
+      {
+        header: t("birth_date") || "Birthday",
+        key: "Birthday",
+        width: 15,
+      },
       {
         header: t("use_service") || "Service Usage",
         key: "ServiceUsage",
@@ -149,7 +198,14 @@ export const exportTopMembersToExcel = async (
       worksheet.addRow({
         Name: item.name || "",
         Phone: item.phone || "",
+        Email: item.email || "",
         Point: item.point || 0,
+        Activity: item.activity || "",
+        FavoriteDrink: item.favoriteDrink || "",
+        FavoriteFood: item.favoriteFood || "",
+        Birthday: item.birthday
+          ? moment(item.birthday).format("DD/MM/YYYY")
+          : "",
         ServiceUsage: item.bill || 0,
         totalAmount: item.money || 0,
       });
