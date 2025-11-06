@@ -850,7 +850,7 @@ const buildQueryParams = (storeId, filters = {}) => {
               const menuData = {
                 name: row["Menu Name"],
                 price: row["Price"],
-                categoryId: category._id,
+                // categoryId: category._id,
                 categoryName: row["Category"],
                 isDeleteStock: false,
                 menuOptionId: [],
