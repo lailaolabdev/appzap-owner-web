@@ -1139,7 +1139,7 @@ export default function DashboardPage() {
                       {storeDetail?.firstCurrency}
                     </td> */}
                     <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.billAmount + moneyReport?.taxAmount)}
+                      {moneyCurrency(e?.billAmount)}
                       {storeDetail?.firstCurrency}
                     </td>
                   </tr>
@@ -1816,6 +1816,7 @@ export default function DashboardPage() {
         deliveryData={deliveryReports}
         billData={billReport}
         debtData={debtReport}
+        orderData={orderReport}
         customerCountData={customerCountList}
       />
 

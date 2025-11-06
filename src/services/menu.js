@@ -196,3 +196,16 @@ export const getMenuOptionByStoreId = async (id) => {
     return error;
   }
 };
+
+
+export const uploadMenuMany = async (data) => {
+  try {
+    const url = `${END_POINT_SEVER}/v3/menu/create-many`;
+    const res = await axios.post(url, data, {
+      headers: await getHeaders(),
+    });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
