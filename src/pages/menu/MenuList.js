@@ -852,6 +852,7 @@ const buildQueryParams = (storeId, filters = {}) => {
                 price: row["Price"],
                 // categoryId: category._id,
                 categoryName: row["Category"],
+                images: [row["Images"] || ""],
                 isDeleteStock: false,
                 menuOptionId: [],
                 menuStock: [],
