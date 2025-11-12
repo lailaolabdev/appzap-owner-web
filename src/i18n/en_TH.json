@@ -1327,5 +1327,6 @@
   "file_read_error": "เกิดข้อผิดพลาดในการอ่านไฟล์",
   "menus_added": "เมนูที่เพิ่มแล้ว",
   "failed": "ไม่สำเร็จ",
-  "order_report": "รายงานขาย"
+  "order_report": "รายงานขาย",
+  "stock_display": "แสดงสต็อก"
 }

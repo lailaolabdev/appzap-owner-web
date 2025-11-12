@@ -1321,5 +1321,6 @@
   "file_read_error": "កំហុសក្នុងការអានឯកសារ",
   "menus_added": "ម្ហូបដែលបានបន្ថែម",
   "failed": "បរាជ័យ",
-  "order_report": "របាយការណ៍លក់"
+  "order_report": "របាយការណ៍លក់",
+  "stock_display": "បង្ហាញស្តុក"
 }
