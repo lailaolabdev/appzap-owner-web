@@ -272,7 +272,7 @@ export default function Sidenav({ location, navigate, onToggle }) {
       key: "menu",
       typeStore: "",
       icon: faBoxOpen,
-      hidden: !storeDetail?.hasPOS,
+      hidden: storeDetail?.counterMenuManagement,
       system: "reservationManagement",
     },
   ]

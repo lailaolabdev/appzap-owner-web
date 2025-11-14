@@ -13,10 +13,14 @@ import _ from "lodash";
 import styled from "styled-components";
 import { useStore } from "../../store";
 import { useStoreStore } from "../../zustand/storeStore";
-import { COLOR_APP, END_POINT } from "../../constants";
+import { COLOR_APP, END_POINT, ETHERNET_PRINTER_PORT } from "../../constants";
 import { getHeaders } from "../../services/auth";
 import useQuery from "../../helpers/useQuery";
 import { useQueryClient } from "@tanstack/react-query";
+import html2canvas from "html2canvas";
+import printFlutter from "../../helpers/printFlutter";
+import { base64ToBlob } from "../../helpers";
+import BillDebt80 from "../bill/BillDebt80";
 
 
 export default function PopUpDetailBillDebt({
@@ -24,6 +28,7 @@ export default function PopUpDetailBillDebt({
   onClose,
   callback,
   billDebtData,
+  onPrintBillDebt,
 }) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -39,9 +44,10 @@ export default function PopUpDetailBillDebt({
   const { storeDetail } = useStoreStore()
   const { accessToken } = useQuery();
   const [disabledEditBill, setDisabledEditBill] = useState(false);
-  const [errorAdd, setErrorAdd] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isPaymentExceeded, setIsPaymentExceeded] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
 
 
 
@@ -49,7 +55,7 @@ export default function PopUpDetailBillDebt({
     if (open) {
       setTotalPayment(0);
       setNumericValue(0);
-      setErrorAdd("");
+      setErrorMessage("");
       setIsPaymentExceeded(false);
     }
   }, [open]);
@@ -82,7 +88,7 @@ export default function PopUpDetailBillDebt({
   //handle submit
   const handleSubmit = async () => {
     if (totalPayment === 0 && transfer === 0) {
-      setErrorAdd(t("please_enter_the_amount_you_wish_to_pay"));
+      setErrorMessage(t("please_enter_the_amount_you_wish_to_pay"));
       return;
     }
 
@@ -141,6 +147,85 @@ export default function PopUpDetailBillDebt({
       );
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const handlePrintBill = async () => {
+    setIsPrinting(true);
+    try {
+      // Create a temporary div to render the bill component
+      const tempDiv = document.createElement('div');
+      tempDiv.style.position = 'absolute';
+      tempDiv.style.left = '-9999px';
+      tempDiv.style.top = '-9999px';
+      tempDiv.style.width = '80mm';
+      tempDiv.style.backgroundColor = 'white';
+      document.body.appendChild(tempDiv);
+
+      // Render the BillDebt80 component
+      const React = require('react');
+      const ReactDOM = require('react-dom');
+      
+      const billElement = React.createElement(BillDebt80, {
+        store: storeDetail,
+        debt: billDebtData,
+        customer: billDebtData?.customer,
+        payment: {
+          cash: totalPayment,
+          transfer: transfer,
+          total: totalPayment + transfer,
+          remaining: remainingAmount
+        }
+      });
+
+      ReactDOM.render(billElement, tempDiv);
+
+      // Wait for rendering to complete
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Convert to canvas and get image data
+      const canvas = await html2canvas(tempDiv, {
+        width: 302, // 80mm in pixels (approximately)
+        height: tempDiv.scrollHeight,
+        backgroundColor: 'white',
+        scale: 2
+      });
+
+      const imageData = canvas.toDataURL('image/png');
+      const blob = base64ToBlob(imageData.split(',')[1], 'image/png');
+      
+      // Convert blob to base64 for printing
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64Data = reader.result.split(',')[1];
+        
+        // Print using the existing printer system
+        await printFlutter({
+          imageBuffer: base64Data,
+          ip: storeDetail?.printerIp || '192.168.1.100',
+          type: 'ETHERNET',
+          port: ETHERNET_PRINTER_PORT,
+          width: 80,
+          beep: true,
+          drawer: false
+        }, async () => {
+          // Fallback callback if needed
+          console.log('Print completed');
+        });
+        
+        successAdd(t('bill_printed_successfully'));
+      };
+      
+      reader.readAsDataURL(blob);
+      
+      // Clean up
+      document.body.removeChild(tempDiv);
+      
+    } catch (error) {
+      console.error('Print error:', error);
+      //  errorAdd(t('print_failed'));
+    } finally {
+      setIsPrinting(false);
     }
   };
 
@@ -246,7 +331,7 @@ export default function PopUpDetailBillDebt({
                   }}
                   placeholder="0"
                 />
-                <div style={{ color: "red" }}>{errorAdd}</div>
+                <div style={{ color: "red" }}>{errorMessage}</div>
               </Form.Group>
 
               <Form.Group hidden={paymentMethod !== "TRANSFER" && paymentMethod !== "TRANSFER_CASH"}>
@@ -313,8 +398,9 @@ export default function PopUpDetailBillDebt({
             <table style={{ width: "100%" }}>
               <thead>
                 <tr>
-                  <th>{t("name")}</th>
-                  <th style={{ textAlign: "center" }}>{t("count")}</th>
+                  <th style={{ textAlign: "start" }}>{t("name")}</th>
+                  <th style={{ textAlign: "center" }}>{t("quantity")}</th>
+                  <th style={{ textAlign: "end" }}>{t("price")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -322,6 +408,7 @@ export default function PopUpDetailBillDebt({
                   <tr key={e?.id}>
                     <td style={{ textAlign: "start" }}>{e?.name}</td>
                     <td style={{ textAlign: "center" }}>{e?.quantity}</td>
+                    <td style={{ textAlign: "end" }}>{moneyCurrency(e?.price)} {storeDetail?.firstCurrency}</td>
                   </tr>
                 ))}
               </tbody>
@@ -360,11 +447,32 @@ export default function PopUpDetailBillDebt({
                 `${t("confirm")}`
               )}
             </Button>
-            <Button variant="secondary" onClick={() => setDisabledEditBill(false)}>
+            <Button  onClick={() => setDisabledEditBill(false)}>
               {t("cancel")}
             </Button>
           </>
         )}
+        <Button 
+          variant="danger" 
+          onClick={onPrintBillDebt}
+          disabled={isPrinting}
+        >
+          {isPrinting ? (
+            <>
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+                style={{ marginRight: "8px" }}
+              />
+              {t("printing")}
+            </>
+          ) : (
+            t("print_bill")
+          )}
+        </Button>
       </Modal.Footer>
     </Modal>
   );

@@ -80,3 +80,22 @@ export const callToUpdatePrintBillBefore = async (id, body) => {
     return error;
   }
 };
+
+export const updateCode = async (id, data) => {
+  try {
+    const url = `${END_POINT_APP}/v7/code/update`;
+    const res = await axios.put(
+      url,
+      {
+        id: id,
+        data: data,
+      },
+      {
+        headers: await getHeaders(),
+      }
+    );
+    return res;
+  } catch (error) {
+    return error;
+  }
+};

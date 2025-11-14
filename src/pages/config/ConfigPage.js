@@ -21,6 +21,8 @@ import {
   updateSettingShift,
   updateSettingServiceChange,
   updateSettingShowAmountCafe,
+  updateSettingPrintBillToKitchen,
+  updateSettingPrintBillSticker,
   updateCounterFilterShift,
   updateCounterBill,
   updateCounterMenu,
@@ -160,6 +162,26 @@ export default function ConfigPage() {
     // console.log("changeSericeChange", isType);
     await fetchStoreDetail(storeDetail?._id);
   };
+
+  const changePrintBillToKitchen = async (e) => {
+    const isType = e.target.checked;
+    await updateStore({ isPrintBillToKitchen: isType }, storeDetail?._id);
+    // console.log("changePrintBillToKitchen", isType);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+
+  const changePrintBillSticker = async (e) => {
+    const isType = e.target.checked;
+    await updateStore({ isPrintBillSticker: isType }, storeDetail?._id);
+    // console.log("changePrintBillSticker", isType);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+  const changePrintBothBill = async (e) => {
+    const isType = e.target.checked;
+    await updateStore({ isPrintBothBill: isType }, storeDetail?._id);
+    // console.log("changePrintBothBill", isType);
+    await fetchStoreDetail(storeDetail?._id);
+  };
   const changeCounterFilterShift = async (e) => {
     const isType = e.target.checked;
     await updateCounterFilterShift(profile?.data.storeId, { data: isType });
@@ -192,6 +214,12 @@ export default function ConfigPage() {
     await fetchStoreDetail(storeDetail?._id);
   };
 
+  const changeCustomerCount = async (e) => {
+    const isChecked = e.target.checked;
+    await updateStoreDetail({ isCustomerCount: isChecked }, storeDetail?._id);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+
   const changeCounterMenu = async (e) => {
     const isType = e.target.checked;
     await updateCounterMenu(profile?.data.storeId, { data: isType });
@@ -209,6 +237,20 @@ export default function ConfigPage() {
   const changeCounterReport = async (e) => {
     const isType = e.target.checked;
     const response = await updateStore({counterDisableReport: isType}, storeDetail?._id);
+    // await updateCounterBill(profile?.data.storeId, { data: isType });
+    console.log("response", response);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+  const changeCounterMenuManagement = async (e) => {
+    const isType = e.target.checked;
+    const response = await updateStore({counterMenuManagement: isType}, storeDetail?._id);
+    // await updateCounterBill(profile?.data.storeId, { data: isType });
+    console.log("response", response);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+  const changeDisableMenuPricing = async (e) => {
+    const isType = e.target.checked;
+    const response = await updateStore({disableMenuPricing: isType}, storeDetail?._id);
     // await updateCounterBill(profile?.data.storeId, { data: isType });
     console.log("response", response);
     await fetchStoreDetail(storeDetail?._id);
@@ -422,7 +464,7 @@ export default function ConfigPage() {
                     //   disabled: true,
                     // },
                     {
-                      title: `${t("stock_is_missing")}`,
+                      title: `${t("stock_display")}`,
                       key: "stockMissing",
                       default: false,
                       // disabled: true,
@@ -482,6 +524,15 @@ export default function ConfigPage() {
                       title: `${t("enable_booking")}`,
                       key: "fer",
                       disabled: false,
+                      state: storeDetail?.isReservable,
+                      handler: changeBooking,
+                    },
+                    {
+                      title: `${t("customer_count")}`,
+                      key: "customerCount",
+                      disabled: false,
+                      state: storeDetail?.isCustomerCount,
+                      handler: changeCustomerCount,
                     },
                   ].map((item, index) => (
                     <div
@@ -504,16 +555,16 @@ export default function ConfigPage() {
                         }}
                       >
                         <Form.Label htmlFor={"booking-" + item?.key}>
-                          {storeDetail?.isReservable
+                          {item?.state
                             ? `${t("oppen")}`
                             : `${t("close")}`}
                         </Form.Label>
                         <Form.Check
                           disabled={item?.disabled}
                           type="switch"
-                          checked={storeDetail?.isReservable}
+                          checked={item?.state}
                           id={"booking-" + item?.key}
-                          onChange={changeBooking}
+                          onChange={item?.handler}
                         />
                       </div>
                     </div>
@@ -904,45 +955,131 @@ export default function ConfigPage() {
               {t("show_amount")}
             </Card.Header>
             <Card.Body>
-              {[
-                {
-                  title: t("show_amount_open"),
-                  key: "show_amount_cafe",
-                },
-              ].map((item) => (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>{t("show_amount_open")}</div>
                 <div
                   style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr auto",
+                    display: "flex",
+                    alignItems: "center",
                     gap: 10,
-                    padding: "10px 0",
-                    borderBottom: `1px dotted ${COLOR_APP}`,
+                    justifyContent: "center",
                   }}
-                  key={item?.key}
                 >
-                  <div>{item?.title}</div>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Form.Label htmlFor={`show_amount_cafe-${item?.key}`}>
-                      {storeDetail?.isShowAmountCafe
-                        ? `${t("oppen")}`
-                        : `${t("close")}`}
-                    </Form.Label>
-                    <Form.Check
-                      type="switch"
-                      checked={storeDetail?.isShowAmountCafe}
-                      id={`show_amount_cafe-${item?.key}`}
-                      onChange={changeShowAmountCafe}
-                    />
-                  </div>
+                  <Form.Label htmlFor="show_amount_cafe">
+                    {storeDetail?.isShowAmountCafe
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.isShowAmountCafe}
+                    id="show_amount_cafe"
+                    onChange={changeShowAmountCafe}
+                  />
                 </div>
-              ))}
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>{t("print_bill_to_kitcher")}</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Form.Label htmlFor="print_bill_to_kitchen">
+                    {storeDetail?.isPrintBillToKitchen
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.isPrintBillToKitchen}
+                    id="print_bill_to_kitchen"
+                    onChange={changePrintBillToKitchen}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>{t("print_bill_sticker")}</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Form.Label htmlFor="print_bill_sticker">
+                    {storeDetail?.isPrintBillSticker
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.isPrintBillSticker}
+                    id="print_bill_sticker"
+                    onChange={changePrintBillSticker}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>{t("print_both_bill")}</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Form.Label htmlFor="print_both_bill">
+                    {storeDetail?.isPrintBothBill
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.isPrintBothBill}
+                    id="print_both_bill"
+                    onChange={changePrintBothBill}
+                  />
+                </div>
+              </div>
+
             </Card.Body>
           </Card>
           <Card border="primary" style={{ margin: 0 }}>
@@ -1047,6 +1184,68 @@ export default function ConfigPage() {
                     checked={storeDetail?.counterDisableReport}
                     id={`counter-disable-report`}
                     onChange={changeCounterReport}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0",
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>{t("counter_menu_management")}</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Form.Label htmlFor={`counter-menu-management`}>
+                    {storeDetail?.counterMenuManagement
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.counterMenuManagement}
+                    id={`counter-menu-management`}
+                    onChange={changeCounterMenuManagement}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr auto",
+                  gap: 10,
+                  padding: "10px 0", 
+                  borderBottom: `1px dotted ${COLOR_APP}`,
+                }}
+              >
+                <div>{t("disable_menu_pricing")}</div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    justifyContent: "center",
+                  }}
+                >
+                  <Form.Label htmlFor={`disable-menu-pricing`}>
+                    {storeDetail?.disableMenuPricing
+                      ? `${t("oppen")}`
+                      : `${t("close")}`}
+                  </Form.Label>
+                  <Form.Check
+                    type="switch"
+                    checked={storeDetail?.disableMenuPricing}
+                    id={`disable-menu-pricing`}
+                    onChange={changeDisableMenuPricing}
                   />
                 </div>
               </div>

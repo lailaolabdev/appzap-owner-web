@@ -17,6 +17,7 @@ import html2canvas from "html2canvas";
 import { base64ToBlob, orderStatusTranslate } from "../../helpers";
 import { Checkbox } from "@material-ui/core";
 import Box from "../../components/Box";
+import { Buffer } from "buffer";
 import PopUpQRToken from "../../components/popup/PopUpQRToken";
 
 import { SiAirtable } from "react-icons/si";
@@ -61,7 +62,7 @@ import {
 import { successAdd, errorAdd, warningAlert } from "../../helpers/sweetalert";
 import { getHeaders, tokenSelfOrderingPost } from "../../services/auth";
 import { useNavigate, useParams } from "react-router-dom";
-import { getBills } from "../../services/bill";
+import { billUpdate, getBills } from "../../services/bill";
 import {
   getCountOrderWaiting,
   updateOrderItem,
@@ -73,6 +74,7 @@ import {
   callPayBeforePrintBillOnly,
   callToUpdatePrintBillBefore,
   getCodes,
+  updateCode,
 } from "../../services/code";
 import { getAllStorePoints } from "../../services/member.service";
 import PopUpAddDiscount from "../../components/popup/PopUpAddDiscount";
@@ -84,6 +86,8 @@ import CheckPopupDebt from "./components/CheckPopupDebt";
 import { IoQrCode } from "react-icons/io5";
 import BillForChefCancel80 from "../../components/bill/BillForChefCancel80";
 import PopUpTranferTable from "../../components/popup/PopUpTranferTable";
+import PopUpCustomerCount from "../../components/popup/PopUpCustomerCount";
+import PopUpCustomerCountUpdate from "../../components/popup/PopUpCustomerCountUpdate";
 import { printItems } from "./printItems";
 import CombinedBillForChefNoCut from "../../components/bill/CombinedBillForChefNoCut";
 import {
@@ -108,6 +112,7 @@ import { usePaymentStore } from "../../zustand/paymentStore";
 import { usePointStore } from "../../zustand/pointStore";
 import { useMenuStore } from "../../zustand/menuStore";
 import { useLanguageStore } from "../../zustand/languageStore";
+import { useCustomerStore } from "../../zustand/customerStore";
 
 import theme from "../../theme";
 import PopUpConfirms from "../../components/popup/PopUpConfirms";
@@ -115,6 +120,7 @@ import { set } from "lodash";
 import { MapPin } from "lucide-react";
 
 export default function TableList() {
+
   const navigate = useNavigate();
   const { state } = useLocation();
   const params = useParams();
@@ -134,7 +140,12 @@ export default function TableList() {
   const [show1, setShow1] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const handleClose1 = () => setShow1(false);
+  const handleClose1 = () => {
+    setShow1(false);
+    setShowCustomReasonInput(false);
+    setCustomCancelReason("");
+    setSeletedCancelOrderItem("");
+  };
 
   const [disableCheckoutButton, setDisableCheckoutButton] = useState(false);
 
@@ -142,8 +153,17 @@ export default function TableList() {
     setShow1(true);
   };
 
-  const handleSelectedCancelOrder = (e) =>
-    setSeletedCancelOrderItem(e.target.value);
+  const handleSelectedCancelOrder = (e) => {
+    const value = e.target.value;
+    setSeletedCancelOrderItem(value);
+    // Show custom input if "Other" is selected
+    if (value === t("other")) {
+      setShowCustomReasonInput(true);
+    } else {
+      setShowCustomReasonInput(false);
+      setCustomCancelReason("");
+    }
+  };
 
   const [openModalSetting, setOpenModalSetting] = useState(false);
   const [dataSettingModal, setDataSettingModal] = useState();
@@ -217,6 +237,7 @@ export default function TableList() {
   const { setPointStore, PointStore } = usePointStore();
   const { clearMenus } = useMenuStore();
   const { selectLanguage } = useLanguageStore();
+  const { createCustomerCount, updateCustomerCount, customer, setCustomer } = useCustomerStore();
 
   let updatedOrderItems = [];
 
@@ -230,9 +251,13 @@ export default function TableList() {
     }
   }, [reload]);
 
+  console.log("RELOAD DATA", reload);
+
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
   const [seletedOrderItem, setSeletedOrderItem] = useState();
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
+  const [customCancelReason, setCustomCancelReason] = useState("");
+  const [showCustomReasonInput, setShowCustomReasonInput] = useState(false);
   const [checkedBox, setCheckedBox] = useState(false);
   const [taxPercent, setTaxPercent] = useState(0);
   const [serviceChargePercent, setServiceChargePercent] = useState(0);
@@ -245,6 +270,9 @@ export default function TableList() {
   const [printBillLoading, setPrintBillLoading] = useState(false);
   const [serviceChangeAmount, setServiceChangeAmount] = useState(0);
   const [printBillCalulate, setPrintBillCalulate] = useState(false);
+  // for payment gateway
+  const [paymentLinkData, setPaymentLinkData] = useState(null);
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
 
   useEffect(() => {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
@@ -269,6 +297,8 @@ export default function TableList() {
       return groups;
     }, {});
   };
+
+  console.log("serviceChargePercent", serviceChargePercent);
 
   useEffect(() => {
     if (!pinStatus) return;
@@ -357,12 +387,126 @@ export default function TableList() {
     // setIsLoading(false);
   };
 
+
+  const generatePaymentLink = async (totalAmount) => {
+    const PAYMRNT_URL = "https://payment-gateway.lailaolab.com";
+    const SECRET_KEY ='$2b$10$eWx58YM6sr1CQ/esAh3OUO1ut.JmBcVRkVf3LghYYz2MHVe2vs3E2'
+    // -------------------------------------------------------------------------------
+    const authHeader = `Basic ${Buffer.from(`${SECRET_KEY}`).toString("base64")}`;
+    const newData = {
+      orderNo:`ORDER-${Date.now()}`,
+      amount: totalAmount || 1,    // amount
+      description: "APPZAP-PAY-BILL-CHECKOUT",  // description for payment purpose
+      tag1:storeDetail?._id,  // store id
+      tag2:""     ,// shopName,
+      tag3: selectedTable?.code,
+      // tag2:selectedTable?.code, // table code
+    };
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authHeader,
+      },
+    };
+    try {
+      setIsGeneratingLink(true);
+     const response = await axios.post(`${PAYMRNT_URL}/v1/api/link/payment-link`, newData, config);
+     if(response.status === 200){
+      console.log("Payment link response:", response.data);
+       setPaymentLinkData(response.data);
+       setIsGeneratingLink(false);
+     }
+    }catch (error) {
+      console.error("Error generating payment link:", error);
+      setIsGeneratingLink(false);
+  }
+}
+
   const getDataServiceCharge = async () => {
     const { DATA } = await getLocalData();
     const _res = await axios.get(
       `${END_POINT_SEVER_TABLE_MENU}/v4/service-charge/${DATA?.storeId}`
     );
     setServiceChargePercent(_res?.data?.serviceCharge);
+  };
+
+  const openCustomerCount = async (customer) => {
+    
+    try {
+      await openTable(customer);
+
+      console.log("selectedTable123", selectedTable);
+      const res = await createCustomerCount({
+        storeId: storeDetail?._id,
+        amountBeforeOpen: customer,
+        code: selectedTable.code,
+      });
+
+      console.log(customer, "customer00");
+      setPopup({ PopUpCustomerCount: false });
+      
+      setCustomer(0);
+    } catch (error) {
+      console.error("Error creating customer count:", error);
+      await Swal.fire({
+        icon: "error",
+        title: `${t("error")}`,
+        text: `${t("failed_to_create_customer_count")}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+  };
+
+  const handleUpdateCustomerCount = async (newCount) => {
+    try {
+      const res = await updateCode(selectedTable?._id, {
+        amountBeforeOpen: newCount,
+        isOpened: true,
+        isStaffConfirm: true,
+      });
+
+      if (res.status === 200) {
+        await Swal.fire({
+          icon: "success",
+          title: `${t("success")}`,
+          text: `${t("customer_count_updated_successfully")}`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+
+        await updateCustomerCount({
+          amountBeforeOpen: newCount,
+          code: selectedTable.code,
+        });
+        
+        setPopup({ PopUpCustomerCountUpdate: false });
+        
+        // Update the selectedTable with new customer count
+        setSelectedTable((prev) => ({
+          ...prev,
+          amountBeforeOpen: newCount,
+        }));
+        
+        // Refresh table data to show updated count in the list
+        if (zoneId) {
+          await getTableDataStore({ zone: zoneId });
+        } else {
+          await getTableDataStore();
+        }
+        // Reload selected table orders data
+        reLoadData();
+      }
+    } catch (error) {
+      console.error("Error updating customer count:", error);
+      await Swal.fire({
+        icon: "error",
+        title: `${t("error")}`,
+        text: `${t("failed_to_update_customer_count")}`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
   };
 
   function handleSetQuantity(int, seletedOrderItem) {
@@ -758,8 +902,13 @@ export default function TableList() {
   };
 
   const onPrintBill = async (isPrintBill) => {
+    console.log("onPrintBill isPrintBill>>>>", isPrintBill);
+    console.log("dataBill onPrintBill>>>>", paymentLinkData);
     try {
       setPrintBillLoading(true);
+      // request to payment gateway before print bill
+      console.log("isPrintBill", isPrintBill);
+
       let _dataBill = {
         ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
@@ -787,8 +936,9 @@ export default function TableList() {
       if (printerBillData?.type === "USB") {
         urlForPrinter = USB_PRINTER_PORT;
       }
-
+      
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
+
       var bodyFormData = new FormData();
       bodyFormData.append("ip", printerBillData?.ip);
       bodyFormData.append("port", "9100");
@@ -826,7 +976,6 @@ export default function TableList() {
           }
         }
       );
-
 
       callCheckOutPrintBillOnly(selectedTable?._id);
       setSelectedTable();
@@ -1309,16 +1458,18 @@ export default function TableList() {
         context.fillStyle = "#000";
         context.font = " 24px NotoSansLao, Arial, sans-serif";
         // let yPosition = 100;
-        yPosition = wrapText(
-          context,
-          `${t("total")} ${moneyCurrency(
-            data?.price + (data?.totalOptionPrice ?? 0)
-          )} ${t(storeDetail?.firstCurrency)}`,
-          10,
-          yPosition,
-          width - 20,
-          46
-        );
+        yPosition = !storeDetail?.disableMenuPricing
+          ? wrapText(
+              context,
+              `${t("total")} ${moneyCurrency(
+                data?.price + (data?.totalOptionPrice ?? 0)
+              )} ${t(storeDetail?.firstCurrency)}`,
+              10,
+              yPosition,
+              width - 20,
+              46
+            )
+          : yPosition;
 
         // Set text properties
         context.fillStyle = "#000"; // Black text color
@@ -1385,7 +1536,7 @@ export default function TableList() {
     await _createHistoriesPrinter(_dataBill);
 
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
-    
+
     let _index = 0;
     const printDate = [...billForCherCancel80.current];
     let dataUrls = [];
@@ -1527,7 +1678,6 @@ export default function TableList() {
       });
       setOrderPayBefore({ ...orderPayBefore, _newOrderItems });
     }
-    
 
     setCheckedBox(!checkedBox);
     setOrderPayBefore(!checkedBox);
@@ -1597,11 +1747,8 @@ export default function TableList() {
           return updatedItem;
         });
 
-        
-
         setIsCheckedOrderItem(updatedOrderItems);
 
-        
         // 2. Update total price immediately for the served items
         await calculateTotalBillV7(updatedOrderItems);
         ableToCheckoutFunc(updatedOrderItems);
@@ -1636,8 +1783,25 @@ export default function TableList() {
     }
   };
 
+  const handleServiceChargeChange = async (isServiceChargeEnabled) => {
+    try {
+      const res = await billUpdate(dataBill?._id, {
+        serviceChargeManual: isServiceChargeEnabled,
+      });
+      if (res?.status === 200) {
+        getData(dataBill?.code);
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: `${t("update_order_status_error")}`,
+        showConfirmButton: false,
+        timer: 2000,
+      });
+    }
+  };
+
   const calculateTotalBillV7 = async (updatedOrderItems) => {
-    
     setPrintBillCalulate(true);
 
     // We are now using the passed updatedOrderItems to avoid querying unnecessary state
@@ -1669,7 +1833,6 @@ export default function TableList() {
     } else {
       setTotalAfterDiscount(_total);
     }
-    
 
     setTotal(_total); // Set the total without discount
     setPrintBillCalulate(false);
@@ -1757,11 +1920,16 @@ export default function TableList() {
         };
       });
 
+    // Use custom reason if "Other" is selected and custom reason is provided
+    const finalCancelReason = showCustomReasonInput && customCancelReason.trim() 
+      ? customCancelReason.trim() 
+      : seletedCancelOrderItem;
+    
     const _resOrderUpdate = await updateOrderItemV7(
       _updateItems,
       storeId,
       menuId,
-      seletedCancelOrderItem,
+      finalCancelReason,
       selectedTable
     );
 
@@ -1810,11 +1978,16 @@ export default function TableList() {
       if (checkError?.error) {
         throw new Error(`${t("print_fial")}`);
       }
+      // Use custom reason if "Other" is selected and custom reason is provided
+      const finalCancelReason = showCustomReasonInput && customCancelReason.trim() 
+        ? customCancelReason.trim() 
+        : seletedCancelOrderItem;
+      
       const _resOrderUpdate = await updateOrderItem(
         _updateItems,
         storeId,
         menuId,
-        seletedCancelOrderItem,
+        finalCancelReason,
         selectedTable
       );
       if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
@@ -1942,7 +2115,6 @@ export default function TableList() {
   };
 
   const calculateTotalBill = () => {
-    
     setPrintBillCalulate(true);
     let _total = 0;
     if (dataBill && dataBill?.orderId) {
@@ -1974,7 +2146,7 @@ export default function TableList() {
     } else {
       setTotalAfterDiscount(_total);
     }
-    
+
     setTotal(_total);
     setPrintBillCalulate(false);
   };
@@ -2050,8 +2222,8 @@ export default function TableList() {
         }}
       />
 
-      <div className="flex overflow-hidden h-full">
-        <div className="flex-1 h-full flex flex-col">
+      <div className="flex h-full overflow-hidden">
+        <div className="flex flex-col flex-1 h-full">
           <div
             className={cn(
               "items-center justify-between p-2 grid gap-1.5",
@@ -2181,9 +2353,9 @@ export default function TableList() {
           )}
 
           {profile?.data.role === "APPZAP_STAFF" && (
-            <div className="text-end px-3 pb-3">
+            <div className="px-3 pb-3 text-end">
               {t("itemNotServed")}{" "}
-              <span className="text-blue-400 font-semibold text-xl">
+              <span className="text-xl font-semibold text-blue-400">
                 {order.length}
               </span>{" "}
               {t("order")}
@@ -2287,7 +2459,7 @@ export default function TableList() {
                         </div>
                       </div>
                     </div>
-                    <div className="block md:hidden h-full">
+                    <div className="block h-full md:hidden">
                       <div
                         className={cn(
                           "w-full h-full rounded-md bg-white flex text-center justify-center border-collapse border-[.156rem] border-white",
@@ -2318,7 +2490,7 @@ export default function TableList() {
                           }
                         }}
                       >
-                        <div className="flex gap-4 items-center justify-center h-full p-3">
+                        <div className="flex items-center justify-center h-full gap-4 p-3">
                           <div className="w-full">
                             <div
                               className={cn(
@@ -2380,7 +2552,7 @@ export default function TableList() {
               selectedTable?.isStaffConfirm &&
               selectedTable?.isOpened && (
                 <div className="w-full bg-white overflow-y-scroll h-full min-h-[calc(100dvh-64px)] max-h-[calc(100dvh-64px)]">
-                  <div className="w-full h-full relative">
+                  <div className="relative w-full h-full">
                     <Button
                       variant="outlined"
                       className="flex justify-center items-center !text-[#909090] absolute top-0 left-0 p-2"
@@ -2420,12 +2592,31 @@ export default function TableList() {
                       <div className={cn("text-base", fontMap[language])}>
                         {t("discount")}:{" "}
                         <span className="font-bold text-color-app">
-                          {moneyCurrency(dataBill?.discount || dataBill?.discountCategoryAmount)}{" "}
+                          {moneyCurrency(
+                            dataBill?.discount ||
+                              dataBill?.discountCategoryAmount
+                          )}{" "}
                           {dataBill?.discountType === "PERCENT"
                             ? "%"
                             : storeDetail?.firstCurrency}
                         </span>
                       </div>
+                      {storeDetail?.isCustomerCount && (
+                      <div className={cn("text-base flex items-center gap-2", fontMap[language])}>
+                        {t("customer_count")}:{" "}
+                        <span className="font-bold text-color-app">
+                          {selectedTable?.amountBeforeOpen} {t("people")}
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline-primary"
+                          onClick={() => setPopup({ PopUpCustomerCountUpdate: true })}
+                          style={{ fontSize: '12px', padding: '2px 8px' }}
+                        >
+                          {t("customer_update")}
+                        </Button>
+                      </div>
+                      )}
                       <div className={cn("text-base", fontMap[language])}>
                         {t("total")}:{" "}
                         <span className="font-bold text-color-app">
@@ -2766,7 +2957,7 @@ export default function TableList() {
                   padding: 10,
                 }}
               >
-                <div className="flex flex-col justify-center items-center pt-4 text-2xl font-bold">
+                <div className="flex flex-col items-center justify-center pt-4 text-2xl font-bold">
                   <SiAirtable />
                   <span className={fontMap[language]}>
                     {selectedTable?.tableName}
@@ -2814,7 +3005,14 @@ export default function TableList() {
                     fontSize: 20,
                     padding: 20,
                   }}
-                  onClick={() => openTable()}
+                  onClick={() => {
+                    
+                    if (storeDetail.isCustomerCount) {
+                      setPopup({ PopUpCustomerCount: true });
+                    } else {
+                      openTable();
+                    }
+                  }}
                 >
                   <span className={fontMap[language]}>
                     {!selectedTable?.isOpened
@@ -2872,6 +3070,7 @@ export default function TableList() {
           </div>
         )}
       </div>
+
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
         <BillForCheckOut80
           orderPayBefore={orderPayBefore}
@@ -2885,6 +3084,8 @@ export default function TableList() {
           paymentMethod={paymentMethod}
           enableServiceChange={enableServiceChange}
           language={selectLanguage}
+          // new for payment link QR code
+          paymentLinkData={paymentLinkData}
         />
       </div>
       <div style={{ width: "80mm", padding: 10 }} ref={qrSmartOrder80Ref}>
@@ -3016,6 +3217,9 @@ export default function TableList() {
         setDataBill={setDataBill}
         taxPercent={taxPercent}
         billDataLoading={billDataLoading}
+                      // for payment link QR code
+        isGeneratingLink={isGeneratingLink}
+        generatePaymentLink={generatePaymentLink}
       />
 
       <OrderCheckOut
@@ -3043,6 +3247,10 @@ export default function TableList() {
         printBillLoading={printBillLoading}
         billDataLoading={billDataLoading}
         setEnableServiceChange={setEnableServiceChange}
+        handleServiceChargeChange={handleServiceChargeChange}
+              // for payment link QR code
+        isGeneratingLink={isGeneratingLink}
+        generatePaymentLink={generatePaymentLink}
       />
 
       <PopUpPin
@@ -3099,6 +3307,7 @@ export default function TableList() {
         onSubmit={async () => {
           // handleMessage();
           getData(selectedTable?.code, false);
+          console.log("Message");
         }}
       />
       <Modal show={show} onHide={handleClose}>
@@ -3230,8 +3439,26 @@ export default function TableList() {
               >
                 {t("table_no_food")}
               </option>
+              <option
+                style={{ borderBottom: "1px #ccc solid", padding: "10px 0" }}
+              >
+                {t("other")}
+              </option>
             </select>
           </Form.Group>
+          {showCustomReasonInput && (
+            <Form.Group className="mb-3" controlId="customReasonInput">
+              <Form.Label>{t("please_specify_reason")}</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder={t("enter_reason")}
+                value={customCancelReason}
+                onChange={(e) => setCustomCancelReason(e.target.value)}
+                style={{ fontSize: "18px" }}
+                autoFocus
+              />
+            </Form.Group>
+          )}
         </Modal.Body>
         <Modal.Footer className={fontMap[language]}>
           <Button variant="danger" onClick={() => handleClose1()}>
@@ -3240,6 +3467,26 @@ export default function TableList() {
           <Button
             variant="success"
             onClick={() => {
+              // Validate that a reason is selected
+              if (!seletedCancelOrderItem) {
+                Swal.fire({
+                  icon: "warning",
+                  title: t("please_select_reason"),
+                  showConfirmButton: true,
+                });
+                return;
+              }
+              
+              // If "Other" is selected, ensure custom reason is provided
+              if (showCustomReasonInput && !customCancelReason.trim()) {
+                Swal.fire({
+                  icon: "warning",
+                  title: t("please_enter_reason"),
+                  showConfirmButton: true,
+                });
+                return;
+              }
+              
               if (workAfterPin == "cancle_order_and_print") {
                 handleUpdateOrderStatusAndCallback("CANCELED", async () => {
                   const data = await onPrintForCherCancel();
@@ -3374,6 +3621,17 @@ export default function TableList() {
         onClose={() => setPopup({ PopUpTranferTable: false })}
         onSubmit={reLoadData}
         tableList={tableList}
+      />
+      <PopUpCustomerCount
+        open={popup?.PopUpCustomerCount}
+        onClose={() => setPopup({ PopUpCustomerCount: false })}
+        onSubmit={(customer) => openCustomerCount(customer)}
+      />
+      <PopUpCustomerCountUpdate
+        open={popup?.PopUpCustomerCountUpdate}
+        onClose={() => setPopup({ PopUpCustomerCountUpdate: false })}
+        onSubmit={(newCount) => handleUpdateCustomerCount(newCount)}
+        currentCount={selectedTable?.amountBeforeOpen}
       />
     </div>
   );

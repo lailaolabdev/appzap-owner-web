@@ -44,6 +44,7 @@ import { createMenu, getMenuDatas } from "../../services/menu";
 import { useStore } from "../../store";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import useScrollRestoration from "../../hooks/useScrollRestoration";
+import * as XLSX from "xlsx";
 
 export default function MenuList() {
   const {
@@ -108,7 +109,7 @@ export default function MenuList() {
   // =====> getCategory
   const [Categorys, setCategorys] = useState();
   const [Menus, setMenus] = useState([]);
-  const { updateMenuItem, createMenuItem, deleteMenuItem, getMenus } = useMenuStore();
+  const { updateMenuItem, createMenuItem, deleteMenuItem, getMenus, createMenuItemMany } = useMenuStore();
   const { storeDetail } = useStoreStore();
   const { counterRoleEditMenu } = useCounterRoleStore();
   const { profile } = useStore();
@@ -751,7 +752,163 @@ const buildQueryParams = (storeId, filters = {}) => {
   };
 
   const [categoriesRestaurant, setCategoriesRestaurant] = useState([]);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
 
+  // Download template function
+  const downloadTemplate = () => {
+    const template = [
+      {
+        "Menu Name": "Iced Black Coffee",
+        "Price": 28000,
+        "Category": "Coffee",
+        "Menu Option Name": "sugar, milk, lemon"
+      },
+      {
+        "Menu Name": "Hot Milk",
+        "Price": 30000,
+        "Category": "Milk",
+        "Menu Option Name": "honey, ice"
+      },
+      {
+        "Menu Name": "Apple Juice",
+        "Price": 35000,
+        "Category": "Juice",
+        "Menu Option Name": "no ice, extra sweet, less sweet"
+      },
+      {
+        "Menu Name": "Green Tea",
+        "Price": 25000,
+        "Category": "Tea",
+        "Menu Option Name": "sugar, milk"
+      }
+    ];
+
+    const worksheet = XLSX.utils.json_to_sheet(template);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Menu Template");
+
+    // Set column widths
+    worksheet['!cols'] = [
+      { wch: 20 }, // Menu Name
+      { wch: 10 }, // Price
+      { wch: 15 }, // Category
+      { wch: 30 }  // Menu Option Name
+    ];
+
+    XLSX.writeFile(workbook, "Appzap_POS_Menu_Template.xlsx");
+    successAdd(t("download_success") || "Template downloaded successfully!");
+  };
+
+  // Handle file upload
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setUploadingFile(true);
+
+    try {
+      const reader = new FileReader();
+      
+      reader.onload = async (e) => {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: "array" });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+          if (jsonData.length === 0) {
+            errorAdd(t("file_empty") || "File is empty!");
+            setUploadingFile(false);
+            return;
+          }
+
+          // Collect all menus into an array
+          const menusArray = [];
+          let errorCount = 0;
+
+          for (const row of jsonData) {
+            try {
+              // Find category by name
+              const category = Categorys?.find(
+                cat => cat.name.toLowerCase() === row["Category"]?.toLowerCase()
+              );
+
+              if (!category) {
+                console.warn(`Category not found: ${row["Category"]}`);
+                errorCount++;
+                continue;
+              }
+
+              // Parse menu options - extract just the names as comma-separated string
+              const menuOptionNames = row["Menu Option Name"] 
+                ? row["Menu Option Name"]
+                : "";
+
+              // Create menu data in the required format
+              const menuData = {
+                name: row["Menu Name"],
+                price: row["Price"],
+                // categoryId: category._id,
+                categoryName: row["Category"],
+                images: [row["Images"] || ""],
+                isDeleteStock: false,
+                menuOptionId: [],
+                menuStock: [],
+                menuOptionName: menuOptionNames
+              };
+
+              menusArray.push(menuData);
+            } catch (error) {
+              console.error("Error processing menu row:", error);
+              errorCount++;
+            }
+          }
+
+          // Upload all menus at once
+          if (menusArray.length > 0) {
+            try {
+              const payload = {
+                storeId: getTokken?.DATA?.storeId,
+                menus: menusArray
+              };
+
+              await createMenuItemMany(payload);
+
+              successAdd(
+                `${t("upload_success") || "Upload successful"}: ${menusArray.length} ${t("menus_added") || "menus added"}${
+                  errorCount > 0 ? `, ${errorCount} ${t("failed") || "failed"}` : ""
+                }`
+              );
+              queryClient.refetchQueries({ queryKey: ['menu_management'] });
+            } catch (error) {
+              console.error("Error uploading menus:", error);
+              errorAdd(t("upload_failed") || "Upload failed!");
+            }
+          } else {
+            errorAdd(t("upload_failed") || "Upload failed! No valid menus found.");
+          }
+
+          setUploadingFile(false);
+          setShowUploadModal(false);
+        } catch (error) {
+          console.error("Error processing file:", error);
+          errorAdd(t("file_processing_error") || "Error processing file!");
+          setUploadingFile(false);
+        }
+      };
+
+      reader.readAsArrayBuffer(file);
+    } catch (error) {
+      console.error("Error reading file:", error);
+      errorAdd(t("file_read_error") || "Error reading file!");
+      setUploadingFile(false);
+    }
+
+    // Reset input
+    event.target.value = null;
+  };
 
   return (
     <div style={BODY}>
@@ -804,7 +961,7 @@ const buildQueryParams = (storeId, filters = {}) => {
         <Row>
           <Col sm="12">
             <Row style={{ marginTop: 14, marginBottom: 14 }}>
-              <Col md="4">
+              <Col md="3">
                 <label className={fontMap[language]}>{t("chose_type")}</label>
                 <select
                   className={cn(fontMap[language], "form-control")}
@@ -822,7 +979,7 @@ const buildQueryParams = (storeId, filters = {}) => {
                     })}
                 </select>
               </Col>
-              <Col md="4">
+              <Col md="3">
                 <label className={fontMap[language]}>{t("search")}</label>
                 <Form.Control
                   type="text"
@@ -835,32 +992,53 @@ const buildQueryParams = (storeId, filters = {}) => {
                 />
               </Col>
               <Col
-                md="2"
+                md="6"
                 style={{
                   marginTop: 32,
                   display: "flex",
                   justifyContent: "end",
+                  gap: 10,
                 }}
               >
+                {/* Download Template Button */}
                 {/* <Button
                   style={{
-                    backgroundColor: COLOR_APP,
+                    backgroundColor: "#28a745",
                     color: "#ffff",
                     border: 0,
                   }}
-                  onClick={handleShowCaution}
+                  onClick={downloadTemplate}
+                  className={fontMap[language]}
                 >
-                  + ເພີ່ມເມນູຈຳນວນຫຼາຍ
+                  📥 {t("download_template") || "Download Template"}
                 </Button> */}
-              </Col>
-              <Col
-                md="2"
-                style={{
-                  marginTop: 32,
-                  display: "flex",
-                  justifyContent: "end",
-                }}
-              >
+
+                {/* Upload File Button */}
+                {/* <Button
+                  style={{
+                    backgroundColor: "#17a2b8",
+                    color: "#ffff",
+                    border: 0,
+                  }}
+                  onClick={() => document.getElementById("menu-file-upload").click()}
+                  disabled={uploadingFile}
+                  className={fontMap[language]}
+                >
+                  {uploadingFile ? (
+                    <Spinner animation="border" size="sm" />
+                  ) : (
+                    <>📤 {t("upload_menu") || "Upload Menu"}</>
+                  )}
+                </Button>
+                <input
+                  id="menu-file-upload"
+                  type="file"
+                  accept=".xlsx,.xls"
+                  style={{ display: "none" }}
+                  onChange={handleFileUpload}
+                /> */}
+
+                {/* Add Menu Button */}
                 {profile?.data?.role === "APPZAP_ADMIN" ? (
                   <Button
                     style={{

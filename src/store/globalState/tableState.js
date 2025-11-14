@@ -161,7 +161,7 @@ export const useTableState = (storeDetail) => {
    * ເປີດໂຕະ
    */
 
-  const openTable = async () => {
+  const openTable = async (customer) => {
     try {
       let findby = "?";
       findby += "storeId=" + selectedTable?.storeId;
@@ -170,6 +170,7 @@ export const useTableState = (storeDetail) => {
 
       const codesData = await getCodes(findby);
       const code = codesData[0];
+      console.log(customer, "customer01");
 
       let resData = await axios.put(
         END_POINT_SEVER_TABLE_MENU + `/v7/code/update`,
@@ -178,6 +179,7 @@ export const useTableState = (storeDetail) => {
           data: {
             isOpened: true,
             isStaffConfirm: true,
+            amountBeforeOpen: customer,
             shiftId: shiftCurrent ? shiftCurrent[0]?._id : null,
             createdAt: new Date(),
           },

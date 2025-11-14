@@ -536,7 +536,7 @@ function AddOrder() {
         context.fillStyle = "#000";
         context.font = " 24px NotoSansLao, Arial, sans-serif";
         // let yPosition = 100;
-        yPosition = wrapText(
+        yPosition = !storeDetail?.disableMenuPricing ? wrapText(
           context,
           `${t("total")} ${moneyCurrency(
             data?.price + (data?.totalOptionPrice ?? 0)
@@ -545,7 +545,7 @@ function AddOrder() {
           yPosition,
           width - 20,
           46
-        );
+        ) : yPosition;
 
         // Set text properties
         context.fillStyle = "#000"; // Black text color
@@ -1763,13 +1763,15 @@ function AddOrder() {
                       </span>
 
                     )}
-                    <div className="flex items-end justify-end mt-2 flex-col space-y-1">
+                    {storeDetail?.isStockMissing && (
+                     <div className="flex items-end justify-end mt-2 flex-col space-y-1">
                       {data?.stockId?.map((item, index) => (
                         <span key={index} className="font-bold text-red-500 text-[14px]">
                           {`${item?.name} x ${item?.quantity}`}
                         </span>
                       ))}
                     </div>
+                    )}
                   </div>
                 </div>
               ))

@@ -93,3 +93,28 @@ export const billCancelCafe = async (data) => {
     return error;
   }
 };
+export const billUpdate = async (id,data) => {
+  try {
+    const _header = await getHeaders();
+    const url = `${END_POINT_APP}/v7/bill-update`;
+    const res = await axios.put(url,
+      {
+        id: id,
+        data: data,
+      }, { headers: _header });
+    return res;
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getDataBill = async (code) => {
+    try {
+      const _header = await getHeaders();
+      const url = `${END_POINT_APP}/v7/bill-group/${code}`;
+      const res = await axios.get(url, { headers: _header });
+      return res.data;
+    } catch (err) {
+      return err;
+    }
+  };

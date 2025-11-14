@@ -1,6 +1,6 @@
 {
   "name": "admin.selfordering",
-  "version": "7.1.45",
+  "version": "7.1.56",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.16.0",
@@ -44,6 +44,7 @@
     "bfj": "^7.0.2",
     "bootstrap": "^4.5.2",
     "browserslist": "^4.18.1",
+    "buffer": "^6.0.3",
     "camelcase": "^6.2.1",
     "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "chart.js": "^3.7.1",
@@ -170,11 +171,11 @@
   },
   "scripts": {
     "start": "node scripts/start.js",
-    "build": "GENERATE_SOURCEMAP=false node scripts/build.js",
-    "build-thai": "GENERATE_SOURCEMAP=false REACT_APP_THEME=thai node scripts/build.js",
-    "winBuild": "set \"GENERATE_SOURCEMAP=false\" && node scripts/build.js",
-    "build:prod": "GENERATE_SOURCEMAP=false node scripts/build.js && aws s3 sync ./build s3://restaurant.appzap.la && aws s3 sync ./build s3://n2.restaurant.appzap.la",
-    "build:staging": "GENERATE_SOURCEMAP=false node scripts/build.js && aws s3 sync ./build s3://staging.restaurant.appzap.la",
+    "build": "GENERATE_SOURCEMAP=false node --max-old-space-size=4096 scripts/build.js",
+    "build-thai": "GENERATE_SOURCEMAP=false REACT_APP_THEME=thai node --max-old-space-size=4096 scripts/build.js",
+    "winBuild": "set \"GENERATE_SOURCEMAP=false\" && node --max-old-space-size=4096 scripts/build.js",
+    "build:prod": "GENERATE_SOURCEMAP=false node --max-old-space-size=4096 scripts/build.js && aws s3 sync ./build s3://restaurant.appzap.la && aws s3 sync ./build s3://n2.restaurant.appzap.la",
+    "build:staging": "GENERATE_SOURCEMAP=false node --max-old-space-size=4096 scripts/build.js && aws s3 sync ./build s3://staging.restaurant.appzap.la",
     "test": "node scripts/test.js",
     "lint": "eslint . --max-warnings=0",
     "ionic:build": "npm run build",
@@ -198,6 +199,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@locator/babel-jsx": "^0.4.4",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "postcss-preset-env": "^10.1.1",
@@ -258,5 +260,6 @@
     "presets": [
       "react-app"
     ]
-  }
+  },
+  "packageManager": "pnpm@10.18.3+sha512.bbd16e6d7286fd7e01f6b3c0b3c932cda2965c06a908328f74663f10a9aea51f1129eea615134bf992831b009eabe167ecb7008b597f40ff9bc75946aadfb08d"
 }

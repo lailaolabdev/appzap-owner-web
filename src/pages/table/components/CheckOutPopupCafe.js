@@ -490,9 +490,14 @@ export default function CheckOutPopupCafe({
           // setIsLoading(false);
           setIsDelivery(false);
 
+          if (storeDetail?.isPrintBothBill === true) {
+            await onPrintBill();
+          }
+
           onQueue();
           setTotalPointPrice();
-          if (!storeDetail?.isStatusCafe) {
+          if (storeDetail?.isPrintBillToKitchen === true) {
+            console.log("storeDetail?.isPrintBillToKitchen", storeDetail?.isPrintBillToKitchen);
             await onPrintForCher();
           }
 

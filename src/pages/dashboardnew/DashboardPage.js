@@ -59,6 +59,8 @@ import { useShiftStore } from "../../zustand/ShiftStore";
 import PopUpPrintPromotion from "../../components/popup/PopUpPrintPromotion";
 
 import matchRoundNumber from "../../helpers/matchRound";
+import { getCustomers } from "../../services/customer";
+import { getOrderReport } from "../../services/order";
 
 export default function DashboardPage() {
   const { t } = useTranslation();
@@ -80,10 +82,12 @@ export default function DashboardPage() {
   const [tableList, setTableList] = useState([]);
   const [bankList, setBankList] = useState([]);
   const [currencyList, setCurrencyList] = useState([]);
+  const [orderReport, setOrderReport] = useState([]);
   const [selectedTableIds, setSelectedTableIds] = useState([]);
   const [loadingExportCsv, setLoadingExportCsv] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deliveryReport, setDeliveryReport] = useState([]);
+  const [customerCountList, setCustomerCountList] = useState([]);
   const [billReport, setBillReport] = useState([]);
   const [debtReport, setDebtReport] = useState(null);
 
@@ -99,6 +103,8 @@ export default function DashboardPage() {
 
   const [shiftData, setShiftData] = useState([]);
   const [shiftId, setShiftId] = useState([]);
+  const [expandedCustomerIndex, setExpandedCustomerIndex] = useState(null);
+  const [expandedOrderIndex, setExpandedOrderIndex] = useState(null);
 
   // provider
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
@@ -134,6 +140,8 @@ export default function DashboardPage() {
     getDeliveryReports();
     getPromotionDiscountAndFreeReportData();
     getBillReportData();
+    getCustomerCountData();
+    getOrderReportData();
   }, [endDate, startDate, endTime, startTime, selectedTableIds, shiftId]);
 
   // function
@@ -154,7 +162,6 @@ export default function DashboardPage() {
 
   const findByData = () => {
     let findBy = "?";
-
     if (profile?.data?.role === "APPZAP_ADMIN") {
       findBy += `startDate=${startDate}&`;
       findBy += `endDate=${endDate}&`;
@@ -280,6 +287,8 @@ export default function DashboardPage() {
     setLoading(false);
   };
 
+  console.log("shiftId23", shiftId);
+
   const getCurrencyName = async () => {
     setLoading(true);
     // const findBy = `?startDate=${startDate}&endDate=${endDate}&endTime=${endTime}&startTime=${startTime}`;
@@ -289,6 +298,12 @@ export default function DashboardPage() {
       selectedTableIds
     );
     setCurrencyList(data);
+    setLoading(false);
+  };
+  const getCustomerCountData = async () => {
+    setLoading(true);
+    const data = await getCustomers(storeDetail?._id, findByData());
+    setCustomerCountList(data);
     setLoading(false);
   };
   const getBankBillName = async () => {
@@ -310,6 +325,14 @@ export default function DashboardPage() {
     setLoading(true);
     const data = await getBillReport(storeDetail?._id, findByData());
     setBillReport(data);
+    setLoading(false);
+  };
+
+  const getOrderReportData = async () => {
+    setLoading(true);
+    const data = await getOrderReport(storeDetail?._id, findByData());
+    console.log("orderReport", data);
+    setOrderReport(data);
     setLoading(false);
   };
 
@@ -422,8 +445,10 @@ export default function DashboardPage() {
   ];
 
   const handleSearchInput = (option) => {
+    console.log("option23", option);
     if (option?.value?.shiftID === "ALL") {
       setShiftId(null);
+      // setShiftListCurrent([]);
       getReportData();
       getSalesInformationReportData();
       getUserReportData();
@@ -436,6 +461,7 @@ export default function DashboardPage() {
       getDeliveryReports();
       getPromotionDiscountAndFreeReportData();
       getBillReportData();
+      getCustomerCountData();
     } else {
       setShiftId(option?.value?.shiftID);
     }
@@ -1113,7 +1139,7 @@ export default function DashboardPage() {
                       {storeDetail?.firstCurrency}
                     </td> */}
                     <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.billAmount + moneyReport?.taxAmount)}
+                      {moneyCurrency(e?.billAmount)}
                       {storeDetail?.firstCurrency}
                     </td>
                   </tr>
@@ -1247,6 +1273,198 @@ export default function DashboardPage() {
                 ))}
               </table>
             </Card.Body>
+          </Card>
+          <Card border="primary" style={{ margin: 0 }}>
+            <Card.Header
+              className="text-sm sm:text-base md:text-lg"
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontWeight: "bold",
+                padding: "10px 15px",
+              }}
+            >
+              {t("customer_count")}
+            </Card.Header>
+            <Card.Body style={{ padding: "10px" }}>
+              <div className="text-md sm:text-md">
+                {customerCountList?.length > 0 ? (
+                  customerCountList?.map((e, index) => (
+                  <div key={e?._id} className="border rounded mb-2">
+                    <div
+                      onClick={() =>
+                        setExpandedCustomerIndex(
+                          expandedCustomerIndex === index ? null : index
+                        )
+                      }
+                      className="p-3 cursor-pointer hover:bg-gray-50"
+                      style={{ 
+                        backgroundColor: expandedCustomerIndex === index ? '#f8f9fa' : 'white',
+                        borderBottom: expandedCustomerIndex === index ? '1px solid #dee2e6' : 'none'
+                      }}
+                    >
+                      <div className="grid grid-cols-5 gap-2">
+                        <div className="text-left font-semibold">{e?.tableName || "-"}</div>
+                        <div className="text-center">
+                          {e?.amountBeforeOpen} {t("people")}
+                        </div>
+                        <div className="text-center font-semibold">{e?.code}</div>
+                        <div className="text-center">
+                          {Array.isArray(e?.orderId) ? e?.orderId.length : 0} {t("list")}
+                        </div>
+                        <div className="text-right font-semibold gap-2 " style={{ color: COLOR_APP }}>
+                          {moneyCurrency(Math.floor(e?.totalSpent))} {storeDetail?.firstCurrency}
+                        </div>
+                      </div>
+                    </div>
+                    {expandedCustomerIndex === index && (
+                      <div className="p-3" style={{ backgroundColor: '#f8f9fa', borderTop: '1px solid #dee2e6' }}>
+                        <div className="space-y-2">
+                          {Array.isArray(e?.orderId) && e?.orderId.length > 0 && (
+                            <div>
+                              <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                                <table className="table table-sm mb-0" style={{ fontSize: '0.85em' }}>
+                                  <thead>
+                                    <tr style={{ backgroundColor: '#e9ecef' }}>
+                                      <th style={{ padding: '6px' }}>{t("menu")}</th>
+                                      <th style={{ padding: '6px', textAlign: 'center' }}>{t("quantity")}</th>
+                                      <th style={{ padding: '6px', textAlign: 'right' }}>{t("price")}</th>
+                                      <th style={{ padding: '6px', textAlign: 'right' }}>{t("total")}</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {e?.orderId.map((order, idx) => (
+                                      <tr key={order?._id || idx}>
+                                        <td style={{ padding: '6px' }}>{order?.name || '-'}</td>
+                                        <td style={{ padding: '6px', textAlign: 'center' }}>{order?.quantity || 0}</td>
+                                        <td style={{ padding: '6px', textAlign: 'right' }}>
+                                          {moneyCurrency(order?.price || 0)}
+                                        </td>
+                                        <td style={{ padding: '6px', textAlign: 'right', fontWeight: 'bold' }}>
+                                          {moneyCurrency((order?.price || 0) * (order?.quantity || 0))}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))
+                ) : (
+                  <div className="flex justify-center py-10">
+                    <p className="text-[16px] font-bold text-gray-900 ">
+                      {t("no_data")}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </Card.Body>
+          </Card>
+          <Card>
+          <Card.Header
+              className="text-sm sm:text-base md:text-lg"
+              style={{
+                backgroundColor: COLOR_APP,
+                color: "#fff",
+                fontWeight: "bold",
+                padding: "10px 15px",
+              }}
+            >
+              {t("order")}
+          </Card.Header>
+          <Card.Body style={{ padding: "10px" }}>
+            <div className="text-md sm:text-md">
+              {orderReport?.categoryWithItems?.length > 0 ? (
+                orderReport?.categoryWithItems?.map((category, index) => (
+                  <div key={category._id} className="border rounded mb-2">
+                    <div
+                      onClick={() =>
+                        setExpandedOrderIndex(
+                          expandedOrderIndex === index ? null : index
+                        )
+                      }
+                      className="p-3 cursor-pointer hover:bg-gray-50"
+                      style={{ 
+                        backgroundColor: expandedOrderIndex === index ? '#f8f9fa' : 'white',
+                        borderBottom: expandedOrderIndex === index ? '1px solid #dee2e6' : 'none'
+                      }}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div className="font-bold text-base">{category.categoryName}</div>
+                        <div className="flex gap-4 text-sm">
+                          <span>{t("order")}: {category.totalOrders}</span>
+                          <span>{t("quantity")}: {category.totalQuantity}</span>
+                          <span className="font-semibold" style={{ color: COLOR_APP }}>
+                            {moneyCurrency(category.totalRevenue)} {storeDetail?.firstCurrency}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    {expandedOrderIndex === index && (
+                      <div className="p-3" style={{ backgroundColor: '#f8f9fa', borderTop: '1px solid #dee2e6' }}>
+                        <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                          <table className="table table-sm mb-0" style={{ fontSize: '0.85em' }}>
+                            <thead>
+                              <tr style={{ backgroundColor: '#e9ecef' }}>
+                                <th style={{ padding: '8px' }}>{t("no")}</th>
+                                <th style={{ padding: '8px' }}>{t("menu")}</th>
+                                <th style={{ padding: '8px', textAlign: 'center' }}>{t("order")}</th>
+                                <th style={{ padding: '8px', textAlign: 'center' }}>{t("quantity")}</th>
+                                <th style={{ padding: '8px', textAlign: 'right' }}>{t("price")}</th>
+                                <th style={{ padding: '8px', textAlign: 'right' }}>{t("total")}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {category?.items?.map((item, idx) => (
+                                <tr key={item.menuId}>
+                                  <td style={{ padding: '8px' }}>{idx + 1}</td>
+                                  <td style={{ padding: '8px' }}>
+                                    <div className="flex items-center gap-2">
+                                      <span>{item.menuName}</span>
+                                    </div>
+                                  </td>
+                                  <td style={{ padding: '8px', textAlign: 'center' }}>{item.totalOrders}</td>
+                                  <td style={{ padding: '8px', textAlign: 'center' }}>{item.totalQuantity}</td>
+                                  <td style={{ padding: '8px', textAlign: 'right' }}>
+                                    {moneyCurrency(item.averagePrice)} {storeDetail?.firstCurrency}
+                                  </td>
+                                  <td style={{ padding: '8px', textAlign: 'right', fontWeight: 'bold' }}>
+                                    {moneyCurrency(item.totalRevenue)} {storeDetail?.firstCurrency}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                            <tfoot style={{ backgroundColor: '#e9ecef', fontWeight: 'bold' }}>
+                              <tr>
+                                <td colSpan="2" style={{ padding: '8px' }}>{t("total")}</td>
+                                <td style={{ padding: '8px', textAlign: 'center' }}>{category.totalOrders}</td>
+                                <td style={{ padding: '8px', textAlign: 'center' }}>{category.totalQuantity}</td>
+                                <td style={{ padding: '8px' }}></td>
+                                <td style={{ padding: '8px', textAlign: 'right', color: COLOR_APP }}>
+                                  {moneyCurrency(category.totalRevenue)} {storeDetail?.firstCurrency}
+                                </td>
+                              </tr>
+                            </tfoot>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="flex justify-center py-10">
+                  <p className="text-[16px] font-bold text-gray-900">
+                    {t("no_data")}
+                  </p>
+                </div>
+              )}
+            </div>
+          </Card.Body>
           </Card>
         </Box>
       </Box>
@@ -1598,6 +1816,8 @@ export default function DashboardPage() {
         deliveryData={deliveryReports}
         billData={billReport}
         debtData={debtReport}
+        orderData={orderReport}
+        customerCountData={customerCountList}
       />
 
       <PopUpSetStartAndEndDateFilterExport
