@@ -1328,5 +1328,6 @@
   "menus_added": "เมนูที่เพิ่มแล้ว",
   "failed": "ไม่สำเร็จ",
   "order_report": "รายงานขาย",
-  "stock_display": "แสดงสต็อก"
+  "stock_display": "แสดงสต็อก",
+   "use_phone_scan_and_pay":"ใช้ก้องโทรศัพท์สแกน และ ชำระเงิน"
 }

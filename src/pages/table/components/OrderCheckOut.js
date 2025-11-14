@@ -36,8 +36,12 @@ const OrderCheckOut = ({
   billDataLoading,
   printBillCalulate,
   setEnableServiceChange,
+        // for payment link QR code
+  isGeneratingLink,
+  generatePaymentLink,
   handleServiceChargeChange = () => {},
 }) => {
+  // console.log(isGeneratingLink,"isGeneratingLink in OrderCheckOut")
   const { t } = useTranslation();
   const {
     orderPayBefore,
@@ -302,8 +306,8 @@ const OrderCheckOut = ({
               </tbody>
             </Table>
           </div>
-          <div className="flex flex-col gap-1 mt-3 font-medium px-2">
-            <div className="w-full flex justify-end">
+          <div className="flex flex-col gap-1 px-2 mt-3 font-medium">
+            <div className="flex justify-end w-full">
               <div className="text-end">{t("discount")}:</div>
               <div className="w-60 text-end">
                 {moneyCurrency(data?.discount || data?.discountCategoryAmount)}{" "}
@@ -313,25 +317,25 @@ const OrderCheckOut = ({
               </div>
             </div>
             {storeDetail?.isServiceChange && (
-              <div className="w-full flex justify-end items-center">
+              <div className="flex items-center justify-end w-full">
                 <div className="text-end">{t("service_charge")}:</div>
                 <div className="w-60 text-end">{`${serviceCharge} %`}</div>
               </div>
             )}
             {data?.serviceChargeManual && (
-              <div className="w-full flex justify-end items-center">
+              <div className="flex items-center justify-end w-full">
                 <div className="text-end">{t("service_charge")}:</div>
                 <div className="w-60 text-end">{`${serviceCharge} %`}</div>
               </div>
             )}
             
-            <div className="w-full flex justify-end items-center">
+            <div className="flex items-center justify-end w-full">
               <div className="text-end">{t("total_price")}:</div>
               <div className="w-60 text-end">
                 {moneyCurrency(total)} {storeDetail?.firstCurrency}
               </div>
             </div>
-            <div className="w-full flex justify-end items-center">
+            <div className="flex items-center justify-end w-full">
               <div className="text-end">
                 {t("total_price")} + {t("tax")} {taxPercent}%:
               </div>
@@ -347,10 +351,10 @@ const OrderCheckOut = ({
           </div>
         </Modal.Body>
         <CardFooterModal>
-          <Modal.Footer className="flex flex-wrap w-full flex-row">
+          <Modal.Footer className="flex flex-row flex-wrap w-full">
             <div className="flex flex-1 whitespace-nowrap">
               <div
-                className="p-2 col-example text-center"
+                className="p-2 text-center col-example"
                 style={{ fontSize: 20 }}
               >
                 {t("total_must_pay")}:
@@ -363,7 +367,7 @@ const OrderCheckOut = ({
                 />
               ) : (
                 <div
-                  className="p-2 col-example text-center"
+                  className="p-2 text-center col-example"
                   style={{
                     backgroundColor: "#F1F1F1",
                     fontSize: 20,
@@ -383,7 +387,7 @@ const OrderCheckOut = ({
             </div>
             <div className="flex flex-col dmd:flex-row gap-1.5 dmd:gap-1">
               <Button
-                className="ml-2 pl-4 pr-4"
+                className="pl-4 pr-4 ml-2"
                 style={{
                   backgroundColor: "#FB6E3B",
                   color: "#ffff",
@@ -414,7 +418,7 @@ const OrderCheckOut = ({
                 style={{ display: "flex", gap: 20, flexDirection: "column" }}
               >
                 <Button
-                  className="ml-2 pl-4 pr-4"
+                  className="pl-4 pr-4 ml-2"
                   disabled={
                     billDataLoading || printBillLoading || printBillCalulate
                   }

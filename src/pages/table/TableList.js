@@ -17,6 +17,7 @@ import html2canvas from "html2canvas";
 import { base64ToBlob, orderStatusTranslate } from "../../helpers";
 import { Checkbox } from "@material-ui/core";
 import Box from "../../components/Box";
+import { Buffer } from "buffer";
 import PopUpQRToken from "../../components/popup/PopUpQRToken";
 
 import { SiAirtable } from "react-icons/si";
@@ -119,6 +120,7 @@ import { set } from "lodash";
 import { MapPin } from "lucide-react";
 
 export default function TableList() {
+
   const navigate = useNavigate();
   const { state } = useLocation();
   const params = useParams();
@@ -268,6 +270,9 @@ export default function TableList() {
   const [printBillLoading, setPrintBillLoading] = useState(false);
   const [serviceChangeAmount, setServiceChangeAmount] = useState(0);
   const [printBillCalulate, setPrintBillCalulate] = useState(false);
+  // for payment gateway
+  const [paymentLinkData, setPaymentLinkData] = useState(null);
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
 
   useEffect(() => {
     const orderSelect = isCheckedOrderItem?.filter((e) => e?.isChecked);
@@ -381,6 +386,41 @@ export default function TableList() {
       .then((json) => setuserData(json));
     // setIsLoading(false);
   };
+
+
+  const generatePaymentLink = async (totalAmount) => {
+    const PAYMRNT_URL = "https://payment-gateway.lailaolab.com";
+    const SECRET_KEY ='$2b$10$eWx58YM6sr1CQ/esAh3OUO1ut.JmBcVRkVf3LghYYz2MHVe2vs3E2'
+    // -------------------------------------------------------------------------------
+    const authHeader = `Basic ${Buffer.from(`${SECRET_KEY}`).toString("base64")}`;
+    const newData = {
+      orderNo:`ORDER-${Date.now()}`,
+      amount: totalAmount || 1,    // amount
+      description: "APPZAP-PAY-BILL-CHECKOUT",  // description for payment purpose
+      tag1:storeDetail?._id,  // store id
+      tag2:""     ,// shopName,
+      tag3: selectedTable?.code,
+      // tag2:selectedTable?.code, // table code
+    };
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: authHeader,
+      },
+    };
+    try {
+      setIsGeneratingLink(true);
+     const response = await axios.post(`${PAYMRNT_URL}/v1/api/link/payment-link`, newData, config);
+     if(response.status === 200){
+      console.log("Payment link response:", response.data);
+       setPaymentLinkData(response.data);
+       setIsGeneratingLink(false);
+     }
+    }catch (error) {
+      console.error("Error generating payment link:", error);
+      setIsGeneratingLink(false);
+  }
+}
 
   const getDataServiceCharge = async () => {
     const { DATA } = await getLocalData();
@@ -862,8 +902,13 @@ export default function TableList() {
   };
 
   const onPrintBill = async (isPrintBill) => {
+    console.log("onPrintBill isPrintBill>>>>", isPrintBill);
+    console.log("dataBill onPrintBill>>>>", paymentLinkData);
     try {
       setPrintBillLoading(true);
+      // request to payment gateway before print bill
+      console.log("isPrintBill", isPrintBill);
+
       let _dataBill = {
         ...dataBill,
         typePrint: "PRINT_BILL_CHECKOUT",
@@ -891,8 +936,9 @@ export default function TableList() {
       if (printerBillData?.type === "USB") {
         urlForPrinter = USB_PRINTER_PORT;
       }
-
+      
       const _file = await base64ToBlob(dataImageForPrint.toDataURL());
+
       var bodyFormData = new FormData();
       bodyFormData.append("ip", printerBillData?.ip);
       bodyFormData.append("port", "9100");
@@ -2176,8 +2222,8 @@ export default function TableList() {
         }}
       />
 
-      <div className="flex overflow-hidden h-full">
-        <div className="flex-1 h-full flex flex-col">
+      <div className="flex h-full overflow-hidden">
+        <div className="flex flex-col flex-1 h-full">
           <div
             className={cn(
               "items-center justify-between p-2 grid gap-1.5",
@@ -2307,9 +2353,9 @@ export default function TableList() {
           )}
 
           {profile?.data.role === "APPZAP_STAFF" && (
-            <div className="text-end px-3 pb-3">
+            <div className="px-3 pb-3 text-end">
               {t("itemNotServed")}{" "}
-              <span className="text-blue-400 font-semibold text-xl">
+              <span className="text-xl font-semibold text-blue-400">
                 {order.length}
               </span>{" "}
               {t("order")}
@@ -2413,7 +2459,7 @@ export default function TableList() {
                         </div>
                       </div>
                     </div>
-                    <div className="block md:hidden h-full">
+                    <div className="block h-full md:hidden">
                       <div
                         className={cn(
                           "w-full h-full rounded-md bg-white flex text-center justify-center border-collapse border-[.156rem] border-white",
@@ -2444,7 +2490,7 @@ export default function TableList() {
                           }
                         }}
                       >
-                        <div className="flex gap-4 items-center justify-center h-full p-3">
+                        <div className="flex items-center justify-center h-full gap-4 p-3">
                           <div className="w-full">
                             <div
                               className={cn(
@@ -2506,7 +2552,7 @@ export default function TableList() {
               selectedTable?.isStaffConfirm &&
               selectedTable?.isOpened && (
                 <div className="w-full bg-white overflow-y-scroll h-full min-h-[calc(100dvh-64px)] max-h-[calc(100dvh-64px)]">
-                  <div className="w-full h-full relative">
+                  <div className="relative w-full h-full">
                     <Button
                       variant="outlined"
                       className="flex justify-center items-center !text-[#909090] absolute top-0 left-0 p-2"
@@ -2911,7 +2957,7 @@ export default function TableList() {
                   padding: 10,
                 }}
               >
-                <div className="flex flex-col justify-center items-center pt-4 text-2xl font-bold">
+                <div className="flex flex-col items-center justify-center pt-4 text-2xl font-bold">
                   <SiAirtable />
                   <span className={fontMap[language]}>
                     {selectedTable?.tableName}
@@ -3024,6 +3070,7 @@ export default function TableList() {
           </div>
         )}
       </div>
+
       <div style={{ width: "80mm", padding: 10 }} ref={bill80Ref}>
         <BillForCheckOut80
           orderPayBefore={orderPayBefore}
@@ -3037,6 +3084,8 @@ export default function TableList() {
           paymentMethod={paymentMethod}
           enableServiceChange={enableServiceChange}
           language={selectLanguage}
+          // new for payment link QR code
+          paymentLinkData={paymentLinkData}
         />
       </div>
       <div style={{ width: "80mm", padding: 10 }} ref={qrSmartOrder80Ref}>
@@ -3168,6 +3217,9 @@ export default function TableList() {
         setDataBill={setDataBill}
         taxPercent={taxPercent}
         billDataLoading={billDataLoading}
+                      // for payment link QR code
+        isGeneratingLink={isGeneratingLink}
+        generatePaymentLink={generatePaymentLink}
       />
 
       <OrderCheckOut
@@ -3196,6 +3248,9 @@ export default function TableList() {
         billDataLoading={billDataLoading}
         setEnableServiceChange={setEnableServiceChange}
         handleServiceChargeChange={handleServiceChargeChange}
+              // for payment link QR code
+        isGeneratingLink={isGeneratingLink}
+        generatePaymentLink={generatePaymentLink}
       />
 
       <PopUpPin
