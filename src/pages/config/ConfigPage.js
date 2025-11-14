@@ -195,6 +195,12 @@ export default function ConfigPage() {
     await fetchStoreDetail(storeDetail?._id);
   };
 
+  const changeQrPayment = async (e) => {
+    const isType = e.target.checked;
+    await updateStore({ isQrPayment: isType }, storeDetail?._id);
+    await fetchStoreDetail(storeDetail?._id);
+  };
+
   const BankPayment = async (e) => {
     const isChecked = e.target.checked;
 
@@ -643,8 +649,16 @@ export default function ConfigPage() {
                 {
                   title: t("enable_bank_payment"),
                   key: "fer",
+                  state: storeDetail?.isBankPaymentAvailable,
+                  handler: BankPayment,
                 },
-              ].map((item, index) => (
+                {
+                  title: t("enable_qr_payment"),
+                  key: "qr",
+                  state: storeDetail?.isQrPayment,
+                  handler: changeQrPayment,
+                },
+              ].map((item) => (
                 <div
                   style={{
                     display: "grid",
@@ -653,7 +667,7 @@ export default function ConfigPage() {
                     padding: "10px 0",
                     borderBottom: `1px dotted ${COLOR_APP}`,
                   }}
-                  key={index}
+                  key={item?.key}
                 >
                   <div>{item?.title}</div>
                   <div
@@ -665,16 +679,15 @@ export default function ConfigPage() {
                     }}
                   >
                     <Form.Label htmlFor={"transfer-payment-" + item?.key}>
-                      {storeDetail?.isBankPaymentAvailable
+                      {item?.state
                         ? `${t("oppen")}`
                         : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
-                      // disabled={true}
                       type="switch"
-                      checked={storeDetail?.isBankPaymentAvailable}
+                      checked={item?.state}
                       id={"transfer-payment-" + item?.key}
-                      onChange={BankPayment}
+                      onChange={item?.handler}
                     />
                   </div>
                 </div>
