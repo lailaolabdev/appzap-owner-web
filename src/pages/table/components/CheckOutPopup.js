@@ -57,7 +57,8 @@ export default function CheckOutPopup({
   setPaymentMethod,
   // for payment gateway
   isGeneratingLink,
-  generatePaymentLink
+  generatePaymentLink,
+  paymentLinkData,
 }) {
   const { t } = useTranslation();
   const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));

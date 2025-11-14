@@ -42,6 +42,10 @@ export const BLUETOOTH_PRINTER_PORT = "http://localhost:9150/bluetooth/image";
 export const USB_PRINTER_PORT = "http://localhost:9150/usb/image";
 export const USB_LABEL_PRINTER_PORT = "http://localhost:9150/usb/label";
 
+// Payment Gateway PhaJay
+export const PAYMRNT_URL = "https://payment-gateway.lailaolab.com";
+export const SECRET_KEY ='$2b$10$eWx58YM6sr1CQ/esAh3OUO1ut.JmBcVRkVf3LghYYz2MHVe2vs3E2'
+
 // No Cut Endpoint
 export const NOCUT_ETHERNET_PRINTER_PORT =
   "http://localhost:9150/nocut/ethernet/image";

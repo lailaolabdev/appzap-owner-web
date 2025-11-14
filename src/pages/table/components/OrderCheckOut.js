@@ -398,7 +398,10 @@ const OrderCheckOut = ({
                 disabled={
                   billDataLoading || printBillLoading || printBillCalulate
                 }
-                onClick={() => onPrintBill(false)}
+                onClick={ async () => {
+                  await generatePaymentLink(totalBillOrderCheckOut);
+                  onPrintBill(false);
+                }}
               >
                 {billDataLoading && (
                   <Spinner

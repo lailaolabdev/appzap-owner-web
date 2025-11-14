@@ -118,6 +118,7 @@ import theme from "../../theme";
 import PopUpConfirms from "../../components/popup/PopUpConfirms";
 import { set } from "lodash";
 import { MapPin } from "lucide-react";
+import { generatePaymentLinkPhaJay } from "../../services/paymentGetway";
 
 export default function TableList() {
 
@@ -251,8 +252,6 @@ export default function TableList() {
     }
   }, [reload]);
 
-  console.log("RELOAD DATA", reload);
-
   const [isCheckedOrderItem, setIsCheckedOrderItem] = useState([]);
   const [seletedOrderItem, setSeletedOrderItem] = useState();
   const [seletedCancelOrderItem, setSeletedCancelOrderItem] = useState("");
@@ -297,8 +296,6 @@ export default function TableList() {
       return groups;
     }, {});
   };
-
-  console.log("serviceChargePercent", serviceChargePercent);
 
   useEffect(() => {
     if (!pinStatus) return;
@@ -389,30 +386,19 @@ export default function TableList() {
 
 
   const generatePaymentLink = async (totalAmount) => {
-    const PAYMRNT_URL = "https://payment-gateway.lailaolab.com";
-    const SECRET_KEY ='$2b$10$eWx58YM6sr1CQ/esAh3OUO1ut.JmBcVRkVf3LghYYz2MHVe2vs3E2'
-    // -------------------------------------------------------------------------------
-    const authHeader = `Basic ${Buffer.from(`${SECRET_KEY}`).toString("base64")}`;
     const newData = {
       orderNo:`ORDER-${Date.now()}`,
       amount: totalAmount || 1,    // amount
       description: "APPZAP-PAY-BILL-CHECKOUT",  // description for payment purpose
       tag1:storeDetail?._id,  // store id
-      tag2:""     ,// shopName,
+      tag2: storeDetail?.name,// shopName,
       tag3: selectedTable?.code,
       // tag2:selectedTable?.code, // table code
     };
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: authHeader,
-      },
-    };
     try {
       setIsGeneratingLink(true);
-     const response = await axios.post(`${PAYMRNT_URL}/v1/api/link/payment-link`, newData, config);
+     const response = await generatePaymentLinkPhaJay(newData);
      if(response.status === 200){
-      console.log("Payment link response:", response.data);
        setPaymentLinkData(response.data);
        setIsGeneratingLink(false);
      }
@@ -435,14 +421,12 @@ export default function TableList() {
     try {
       await openTable(customer);
 
-      console.log("selectedTable123", selectedTable);
       const res = await createCustomerCount({
         storeId: storeDetail?._id,
         amountBeforeOpen: customer,
         code: selectedTable.code,
       });
 
-      console.log(customer, "customer00");
       setPopup({ PopUpCustomerCount: false });
       
       setCustomer(0);
@@ -902,12 +886,10 @@ export default function TableList() {
   };
 
   const onPrintBill = async (isPrintBill) => {
-    console.log("onPrintBill isPrintBill>>>>", isPrintBill);
-    console.log("dataBill onPrintBill>>>>", paymentLinkData);
     try {
       setPrintBillLoading(true);
       // request to payment gateway before print bill
-      console.log("isPrintBill", isPrintBill);
+      
 
       let _dataBill = {
         ...dataBill,
@@ -3307,7 +3289,6 @@ export default function TableList() {
         onSubmit={async () => {
           // handleMessage();
           getData(selectedTable?.code, false);
-          console.log("Message");
         }}
       />
       <Modal show={show} onHide={handleClose}>
