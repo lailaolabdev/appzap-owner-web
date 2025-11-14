@@ -16,9 +16,7 @@ export const generatePaymentLinkPhaJay = async (body) => {
       body,
       config
     );
-    if (response.status === 200) {
-      return response.data;
-    }
+    return response;
   } catch (error) {
     console.log("generate payment link error:", error);
   }
