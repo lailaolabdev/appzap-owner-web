@@ -1716,7 +1716,7 @@ export default function CheckOutPopup({
                 try {
                   if(forcus ==="TRANSFER" || "CASH"){
                     console.log("Generating payment link...");
-                    await generatePaymentLink(totalBillMoney || 5);  // for payment gateway
+                    // await generatePaymentLink(totalBillMoney || 5);  // for payment gateway
                   } 
                   // console.log("Payment link generated.");
                   console.log("Printing bill...");

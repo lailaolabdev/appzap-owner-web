@@ -3200,8 +3200,8 @@ export default function TableList() {
         taxPercent={taxPercent}
         billDataLoading={billDataLoading}
                       // for payment link QR code
-        isGeneratingLink={isGeneratingLink}
-        generatePaymentLink={generatePaymentLink}
+        // isGeneratingLink={isGeneratingLink}
+        // generatePaymentLink={generatePaymentLink}
       />
 
       <OrderCheckOut
@@ -3231,8 +3231,8 @@ export default function TableList() {
         setEnableServiceChange={setEnableServiceChange}
         handleServiceChargeChange={handleServiceChargeChange}
               // for payment link QR code
-        isGeneratingLink={isGeneratingLink}
-        generatePaymentLink={generatePaymentLink}
+        // isGeneratingLink={isGeneratingLink}
+        // generatePaymentLink={generatePaymentLink}
       />
 
       <PopUpPin

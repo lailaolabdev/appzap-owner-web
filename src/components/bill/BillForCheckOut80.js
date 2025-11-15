@@ -645,15 +645,7 @@ export default function BillForCheckOut80({
             <p style={{ marginTop: 8, fontSize: 11 }}>{t('use_phone_scan_and_pay')}</p>
           </div>
         ) :  */}
-        {storeDetail?.isQrPayment ? (
-          <Img>
-            <img
-              src={`https://app-api.appzap.la/qr-gennerate/qr?data=${paymentLinkData?.qrCode}`}
-              style={{ width: "100%", height: "100%" }}
-              alt="QR Code"
-            />
-          </Img>
-        ) : (
+        
           <Img>
             <img
               src={`https://app-api.appzap.la/qr-gennerate/qr?data=${storeDetail?.printer?.qr}`}
@@ -661,7 +653,7 @@ export default function BillForCheckOut80({
               alt="QR Code"
             />
           </Img>
-        )}
+        
       </div>
 
 

@@ -652,12 +652,12 @@ export default function ConfigPage() {
                   state: storeDetail?.isBankPaymentAvailable,
                   handler: BankPayment,
                 },
-                {
-                  title: t("enable_qr_payment"),
-                  key: "qr",
-                  state: storeDetail?.isQrPayment,
-                  handler: changeQrPayment,
-                },
+                // {
+                //   title: t("enable_qr_payment"),
+                //   key: "qr",
+                //   state: storeDetail?.isQrPayment,
+                //   handler: changeQrPayment,
+                // },
               ].map((item) => (
                 <div
                   style={{

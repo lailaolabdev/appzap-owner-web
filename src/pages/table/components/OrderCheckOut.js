@@ -399,7 +399,7 @@ const OrderCheckOut = ({
                   billDataLoading || printBillLoading || printBillCalulate
                 }
                 onClick={ async () => {
-                  await generatePaymentLink(totalBillOrderCheckOut);
+                  // await generatePaymentLink(totalBillOrderCheckOut);
                   onPrintBill(false);
                 }}
               >
