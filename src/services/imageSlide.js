@@ -1,7 +1,6 @@
 import { END_POINT_SEVER } from "../constants/api";
 import axios from "axios";
 import { getHeaders } from "./auth";
-import { values } from "lodash";
 
 export const getImageSlide = async (findby) => {
   try {
@@ -62,7 +61,7 @@ export const UpdateImageSlide = async (imageId, storeId, values) => {
 
 export const UseImageSlide = async (imageId, storeId, status) => {
   const url = `${END_POINT_SEVER}/v7/use-imageslide/${imageId}/${storeId}?status=${status}`;
-  return await axios.put(url, values, {
+  return await axios.put(url, {}, {
     headers: await getHeaders(),
   });
 };
@@ -74,7 +73,7 @@ export const UseShowSlide = async (storeId, status) => {
     findBy += `&status=${status}`;
   }
   const url = `${END_POINT_SEVER}/v7/show-slide${findBy}`;
-  return await axios.put(url, values, {
+  return await axios.put(url, {}, {
     headers: await getHeaders(),
   });
 };
@@ -85,7 +84,7 @@ export const UseShowTable = async (storeId, status) => {
     findBy += `&status=${status}`;
   }
   const url = `${END_POINT_SEVER}/v7/show-table${findBy}`;
-  return await axios.put(url, values, {
+  return await axios.put(url, {}, {
     headers: await getHeaders(),
   });
 };
@@ -96,7 +95,7 @@ export const UseShowTitle = async (storeId, status) => {
     findBy += `&status=${status}`;
   }
   const url = `${END_POINT_SEVER}/v7/show-title${findBy}`;
-  return await axios.put(url, values, {
+  return await axios.put(url, {}, {
     headers: await getHeaders(),
   });
 };
@@ -107,7 +106,7 @@ export const UseOpenTwoScreen = async (storeId, status) => {
     findBy += `&status=${status}`;
   }
   const url = `${END_POINT_SEVER}/v7/open-two-screen${findBy}`;
-  return await axios.put(url, values, {
+  return await axios.put(url, {}, {
     headers: await getHeaders(),
   });
 };

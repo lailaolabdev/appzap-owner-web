@@ -46,6 +46,8 @@ import {
 import { useStore } from "../../store";
 import UploadMultipleEdit from "../../components/UploadMutipleEdit";
 import PreviewSlide from "./PreviewSlide";
+import { useCFDStore, startHeartbeat, stopHeartbeat } from "../../zustand/cfdStore";
+import { getCFDSettings, updateCFDSettings, updateCFDSettingField } from "../../services/cfdSetting";
 
 const MainScreen = () => {
   const [screenDetails, setScreenDetails] = useState(null);
@@ -74,13 +76,29 @@ const MainScreen = () => {
   } = useCombinedToggleSlide();
 
   const { UseSlideImageData, UseSlideImage } = useSlideImageStore();
+  
+  // CFD Store
+  const {
+    connectionStatus,
+    lastHeartbeat,
+    screensDetected,
+    cfdSettings,
+    setScreensDetected,
+    setCFDSettings,
+    updateCFDSetting,
+    sendHeartbeat,
+  } = useCFDStore();
 
   useEffect(() => {
+    // Start heartbeat for connection monitoring
+    startHeartbeat();
+    
     if ("getScreenDetails" in window) {
       window
         .getScreenDetails()
         .then((details) => {
           setScreenDetails(details);
+          setScreensDetected(details.screens?.length || 0);
         })
         .catch((error) => {
           console.error("Error fetching screen details:", error);
@@ -93,12 +111,22 @@ const MainScreen = () => {
       errorAdd(
         "Your browser does not support the Window Management API. Please use a supported browser like Chrome or Edge."
       );
+      setScreensDetected(1);
     }
 
     const fetchData = async () => {
       const _localData = await getLocalData();
       if (_localData) {
         setgetTokken(_localData);
+        // Load CFD settings
+        try {
+          const settings = await getCFDSettings(_localData?.DATA?.storeId);
+          if (settings) {
+            setCFDSettings(settings);
+          }
+        } catch (error) {
+          console.error("Error loading CFD settings:", error);
+        }
       }
     };
     fetchData();
@@ -108,6 +136,11 @@ const MainScreen = () => {
     if (UseSlideImage[0]?.isOpenSecondScreen) {
       openSecondScreen();
     }
+    
+    // Cleanup on unmount
+    return () => {
+      stopHeartbeat();
+    };
   }, []);
 
   // close main screen and close second screen
@@ -416,6 +449,37 @@ const MainScreen = () => {
       errorAdd("ບໍ່ສາມາດເປິດໃຊ້ງໄດ້");
     }
   };
+  
+  // Refresh screen detection
+  const handleRefreshScreenDetection = () => {
+    if ("getScreenDetails" in window) {
+      window
+        .getScreenDetails()
+        .then((details) => {
+          setScreenDetails(details);
+          setScreensDetected(details.screens?.length || 0);
+          successAdd(t("refresh_detection") + ": " + details.screens?.length + " " + t("screens_detected"));
+        })
+        .catch((error) => {
+          console.error("Error fetching screen details:", error);
+          errorAdd(t("second_screen_not_detected"));
+        });
+    } else {
+      setScreensDetected(1);
+      errorAdd(t("second_screen_not_detected"));
+    }
+  };
+  
+  // Handle CFD setting changes
+  const handleCFDSettingChange = async (key, value) => {
+    try {
+      updateCFDSetting(key, value);
+      await updateCFDSettingField(getTokken?.DATA?.storeId, key, value);
+    } catch (error) {
+      console.error("Error updating CFD setting:", error);
+      errorAdd(t("edit_failed"));
+    }
+  };
 
   const openSecondScreen = () => {
     if ("getScreenDetails" in window) {
@@ -532,6 +596,308 @@ const MainScreen = () => {
             title={t("ex_manage")}
             style={{ paddingTop: 20 }}
           >
+            {/* Connection Status Card */}
+            <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
+              <Card.Header
+                style={{
+                  backgroundColor: COLOR_APP,
+                  color: "#fff",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                <div className="flex gap-2 items-center justify-between">
+                  <span>{t("connection_status")}</span>
+                  <Button
+                    variant="light"
+                    size="sm"
+                    onClick={handleRefreshScreenDetection}
+                  >
+                    {t("refresh_detection")}
+                  </Button>
+                </div>
+              </Card.Header>
+              <Card.Body>
+                <div style={{ display: "flex", flexDirection: "column", gap: 15 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "15px",
+                      backgroundColor: "#f8f9fa",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize: 16, fontWeight: "bold" }}>
+                        {connectionStatus === "connected" ? (
+                          <span style={{ color: "green" }}>✓ {t("connected")}</span>
+                        ) : (
+                          <span style={{ color: "red" }}>✗ {t("disconnected")}</span>
+                        )}
+                      </div>
+                      <div style={{ fontSize: 12, color: "#666", marginTop: 5 }}>
+                        {t("customer_display_control")}
+                      </div>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontSize: 14 }}>
+                        {isToggledOpenTwoScreen ? (
+                          <span style={{ color: "green" }}>{t("no_active_order")}</span>
+                        ) : (
+                          <span style={{ color: "#999" }}>{t("no_active_order")}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "12px",
+                      borderBottom: "1px solid #dee2e6",
+                    }}
+                  >
+                    <span style={{ fontSize: 14, fontWeight: 500 }}>
+                      {t("screen_detection")}
+                    </span>
+                    <span style={{ fontSize: 14, color: "#666" }}>
+                      {t("screens_detected")}: {screensDetected}
+                    </span>
+                  </div>
+                  
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "12px",
+                      borderBottom: "1px solid #dee2e6",
+                    }}
+                  >
+                    <span style={{ fontSize: 14, fontWeight: 500 }}>
+                      {t("second_screen")}
+                    </span>
+                    <span style={{ fontSize: 14, color: screensDetected > 1 ? "green" : "red" }}>
+                      {screensDetected > 1 ? t("connected") : t("not_detected")}
+                    </span>
+                  </div>
+                  
+                  {lastHeartbeat && (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        padding: "12px",
+                      }}
+                    >
+                      <span style={{ fontSize: 14, fontWeight: 500 }}>
+                        {t("last_checked")}
+                      </span>
+                      <span style={{ fontSize: 12, color: "#666" }}>
+                        {new Date(lastHeartbeat).toLocaleTimeString()}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </Card.Body>
+            </Card>
+
+            {/* Display Settings Card */}
+            {/* <Card border="primary" style={{ margin: 0, marginBottom: 20 }}>
+              <Card.Header
+                style={{
+                  backgroundColor: COLOR_APP,
+                  color: "#fff",
+                  fontSize: 18,
+                  fontWeight: "bold",
+                }}
+              >
+                {t("display_settings")}
+              </Card.Header>
+              <Card.Body>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: 10,
+                      padding: "10px 0",
+                      borderBottom: `1px dotted ${COLOR_APP}`,
+                    }}
+                  >
+                    <div>{t("show_item_images")}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <Form.Label htmlFor="switch-images">
+                        {cfdSettings?.showItemImages ? t("oppen") : t("close")}
+                      </Form.Label>
+                      <Form.Check
+                        type="switch"
+                        checked={cfdSettings?.showItemImages}
+                        id="switch-images"
+                        onChange={(e) =>
+                          handleCFDSettingChange("showItemImages", e.target.checked)
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: 10,
+                      padding: "10px 0",
+                      borderBottom: `1px dotted ${COLOR_APP}`,
+                    }}
+                  >
+                    <div>{t("show_prices")}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <Form.Label htmlFor="switch-prices">
+                        {cfdSettings?.showPrices ? t("oppen") : t("close")}
+                      </Form.Label>
+                      <Form.Check
+                        type="switch"
+                        checked={cfdSettings?.showPrices}
+                        id="switch-prices"
+                        onChange={(e) =>
+                          handleCFDSettingChange("showPrices", e.target.checked)
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: 10,
+                      padding: "10px 0",
+                      borderBottom: `1px dotted ${COLOR_APP}`,
+                    }}
+                  >
+                    <div>{t("show_taxes")}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <Form.Label htmlFor="switch-taxes">
+                        {cfdSettings?.showTaxes ? t("oppen") : t("close")}
+                      </Form.Label>
+                      <Form.Check
+                        type="switch"
+                        checked={cfdSettings?.showTaxes}
+                        id="switch-taxes"
+                        onChange={(e) =>
+                          handleCFDSettingChange("showTaxes", e.target.checked)
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: 10,
+                      padding: "10px 0",
+                      borderBottom: `1px dotted ${COLOR_APP}`,
+                    }}
+                  >
+                    <div>{t("show_discounts")}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <Form.Label htmlFor="switch-discounts">
+                        {cfdSettings?.showDiscounts ? t("oppen") : t("close")}
+                      </Form.Label>
+                      <Form.Check
+                        type="switch"
+                        checked={cfdSettings?.showDiscounts}
+                        id="switch-discounts"
+                        onChange={(e) =>
+                          handleCFDSettingChange("showDiscounts", e.target.checked)
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: 10,
+                      padding: "10px 0",
+                      borderBottom: `1px dotted ${COLOR_APP}`,
+                    }}
+                  >
+                    <div>{t("show_totals")}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <Form.Label htmlFor="switch-totals">
+                        {cfdSettings?.showTotals ? t("oppen") : t("close")}
+                      </Form.Label>
+                      <Form.Check
+                        type="switch"
+                        checked={cfdSettings?.showTotals}
+                        id="switch-totals"
+                        onChange={(e) =>
+                          handleCFDSettingChange("showTotals", e.target.checked)
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: 10,
+                      padding: "10px 0",
+                      borderBottom: `1px dotted ${COLOR_APP}`,
+                    }}
+                  >
+                    <div>{t("show_change_amount")}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <Form.Label htmlFor="switch-change">
+                        {cfdSettings?.showChange ? t("oppen") : t("close")}
+                      </Form.Label>
+                      <Form.Check
+                        type="switch"
+                        checked={cfdSettings?.showChange}
+                        id="switch-change"
+                        onChange={(e) =>
+                          handleCFDSettingChange("showChange", e.target.checked)
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr auto",
+                      gap: 10,
+                      padding: "10px 0",
+                    }}
+                  >
+                    <div>{t("show_promotions")}</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <Form.Label htmlFor="switch-promotions">
+                        {cfdSettings?.showPromotions ? t("oppen") : t("close")}
+                      </Form.Label>
+                      <Form.Check
+                        type="switch"
+                        checked={cfdSettings?.showPromotions}
+                        id="switch-promotions"
+                        onChange={(e) =>
+                          handleCFDSettingChange("showPromotions", e.target.checked)
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card> */}
+
             <div
               // style={{
               //   display: "grid",

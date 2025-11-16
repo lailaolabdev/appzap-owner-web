@@ -384,7 +384,7 @@ export default function TableList() {
     // setIsLoading(false);
   };
 
-
+  console.log("isCheckedOrderItem", isCheckedOrderItem);
   const generatePaymentLink = async (totalAmount) => {
     const newData = {
       orderNo:`ORDER-${Date.now()}`,
@@ -1624,6 +1624,10 @@ export default function TableList() {
     } else {
       setOrderPayBefore([]);
     }
+
+    console.log("dataRes", dataRes);
+    console.log("res", res);
+    console.log("_data", _data);
 
     setIsCheckedOrderItem(_data);
 

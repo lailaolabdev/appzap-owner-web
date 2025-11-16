@@ -207,6 +207,13 @@ export default function SettingList() {
       icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDesktop} />,
       path: "/setting-screen",
     },
+    {
+      id: "cfd-display-control-9a8b7c6d5e4f",
+      title: t("customer_display_control"),
+      subTitle: t("cfd_description"),
+      icon: <FontAwesomeIcon style={{ fontSize: "1.7rem" }} icon={faDesktop} />,
+      path: "/setting-screen",
+    },
     // {
     //   id: "64bf476a-cbb6-43e1-abe1-29d4bdce7689",
     //   title: "ຈັດການກະ",

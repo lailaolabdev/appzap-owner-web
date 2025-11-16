@@ -319,6 +319,7 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
                     <td style={{ textAlign: "center" }}>
                       {t("success_order")}
                     </td>
+                    <td style={{ textAlign: "center" }}>{t("PAID")}</td>
                     <td style={{ textAlign: "center" }}>{t("cancel")}</td>
                     <td style={{ textAlign: "right" }}>
                       {t("sale_price_amount")}
@@ -331,7 +332,7 @@ export default function PopUpPrintMenuAndCategoryHistoryComponent({
                         {e?.name || "%NULL%"}
                       </td>
                       <td style={{ textAlign: "center" }}>{e?.served || 0}</td>
-
+                      <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
                       <td style={{ textAlign: "center" }}>
                         {e?.canceled || 0}
                       </td>
