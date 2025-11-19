@@ -323,8 +323,14 @@ export default function CheckOutPopup({
         : 0;
 
     const cashAmount = Number.parseFloat(cash) || 0;
-    const transferAmount = Number.parseFloat(transfer) || 0;
-    const pointAmount = Number.parseFloat(point) || 0;
+    // Only include transfer if on a tab that uses transfer
+    const transferAmount = (tab === "transfer" || tab === "cash_transfer" || tab === "cash_transfer_point") 
+      ? Number.parseFloat(transfer) || 0 
+      : 0;
+    // Only include point if on a tab that uses point
+    const pointAmount = (tab === "point" || tab === "cash_transfer_point")
+      ? Number.parseFloat(point) || 0
+      : 0;
     const totalReceived = cashAmount + transferAmount + pointAmount;
 
     moneyReceived =
@@ -349,7 +355,7 @@ export default function CheckOutPopup({
       dataStaffConfirm:
         `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-",
     }));
-  }, [cash, transfer, selectCurrency?.name, point]);
+  }, [cash, transfer, selectCurrency?.name, point, tab]);
 
   useEffect(() => {
     if (!open) return;
@@ -425,7 +431,11 @@ export default function CheckOutPopup({
 
     const moneyChange = calculateReturnAmount();
 
-    const change = cash + transfer + serviceChargeAmount + taxAmount;
+    // Only include transfer if on a tab that uses transfer
+    const transferForCalc = (tab === "transfer" || tab === "cash_transfer" || tab === "cash_transfer_point")
+      ? (Number.parseFloat(transfer) || 0)
+      : 0;
+    const change = (Number.parseFloat(cash) || 0) + transferForCalc + serviceChargeAmount + taxAmount;
     const completeChange = change > totalBill ? cash - moneyChange : 0;
 
     const orderItem =
@@ -910,9 +920,15 @@ export default function CheckOutPopup({
   // cuaculate money change
   const calculateReturnAmount = () => {
     const parsedCash = Number.parseInt(cash) || 0;
-    const parsedTransfer = Number.parseInt(transfer) || 0;
+    // Only include transfer if on a tab that uses transfer
+    const parsedTransfer = (tab === "transfer" || tab === "cash_transfer" || tab === "cash_transfer_point")
+      ? Number.parseInt(transfer) || 0
+      : 0;
     const parsedDelivery = Number.parseInt(delivery) || 0;
-    const parsedPoint = Number.parseInt(point) || 0;
+    // Only include point if on a tab that uses point
+    const parsedPoint = (tab === "point" || tab === "cash_transfer_point")
+      ? Number.parseInt(point) || 0
+      : 0;
 
     const discountAmount =
       dataBill && dataBill?.discountType === "LAK"
@@ -1714,7 +1730,7 @@ export default function CheckOutPopup({
                 setPrintBillLoading(true);
                 // saveServiceChargeDetails();
                 try {
-                  if(forcus ==="TRANSFER" || "CASH"){
+                  if(forcus === "TRANSFER" || forcus === "CASH"){
                     console.log("Generating payment link...");
                     // await generatePaymentLink(totalBillMoney || 5);  // for payment gateway
                   } 
