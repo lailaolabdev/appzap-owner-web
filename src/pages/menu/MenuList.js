@@ -828,19 +828,10 @@ const buildQueryParams = (storeId, filters = {}) => {
           const menusArray = [];
           let errorCount = 0;
 
+          console.log("jsonData", jsonData);
+
           for (const row of jsonData) {
             try {
-              // Find category by name
-              const category = Categorys?.find(
-                cat => cat.name.toLowerCase() === row["Category"]?.toLowerCase()
-              );
-
-              if (!category) {
-                console.warn(`Category not found: ${row["Category"]}`);
-                errorCount++;
-                continue;
-              }
-
               // Parse menu options - extract just the names as comma-separated string
               const menuOptionNames = row["Menu Option Name"] 
                 ? row["Menu Option Name"]
@@ -848,16 +839,18 @@ const buildQueryParams = (storeId, filters = {}) => {
 
               // Create menu data in the required format
               const menuData = {
-                name: row["Menu Name"],
-                price: row["Price"],
+                name: row["Menu Name"] || row["Name"] || "",
+                price: row["Price"] || 0,
                 // categoryId: category._id,
-                categoryName: row["Category"],
-                images: [row["Images"] || ""],
+                categoryName: row["Category"] || "",
+                images: [row["Images"] || "" || []],
                 isDeleteStock: false,
-                menuOptionId: [],
-                menuStock: [],
-                menuOptionName: menuOptionNames
-              };
+                menuOptionId: [] || [],
+                menuStock: [] || [],
+                menuOptionName: menuOptionNames || []
+              } || {};
+
+              console.log("menuData", menuData);
 
               menusArray.push(menuData);
             } catch (error) {
@@ -874,14 +867,18 @@ const buildQueryParams = (storeId, filters = {}) => {
                 menus: menusArray
               };
 
-              await createMenuItemMany(payload);
-
-              successAdd(
-                `${t("upload_success") || "Upload successful"}: ${menusArray.length} ${t("menus_added") || "menus added"}${
-                  errorCount > 0 ? `, ${errorCount} ${t("failed") || "failed"}` : ""
-                }`
-              );
-              queryClient.refetchQueries({ queryKey: ['menu_management'] });
+              const res = await createMenuItemMany(payload);
+              
+              if (res?.status === 200) {
+                successAdd(
+                  `${t("upload_success") || "Upload successful"}: ${menusArray.length} ${t("menus_added") || "menus added"}${
+                    errorCount > 0 ? `, ${errorCount} ${t("failed") || "failed"}` : ""
+                  }`
+                );
+                queryClient.refetchQueries({ queryKey: ['menu_management'] });
+              } else {
+                errorAdd(t("upload_failed") || "Upload failed!");
+              }
             } catch (error) {
               console.error("Error uploading menus:", error);
               errorAdd(t("upload_failed") || "Upload failed!");

@@ -231,3 +231,16 @@ export const getOrderReport = async (storeId, findBy) => {
     console.log("get order report error:", error);
   }
 };
+
+
+export const exportBill = async (storeId, findBy) => {
+  try {
+    const url = `${END_POINT_APP}/export/bill?storeId=${storeId}${findBy}`;
+    const res = await axios.get(url, {}, {
+      headers: await getHeaders(),
+    });
+    return res?.data?.bills;
+  } catch (error) {
+    console.log("export bill error:", error);
+  }
+};

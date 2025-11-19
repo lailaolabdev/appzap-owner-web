@@ -38,6 +38,7 @@ export default function PopUpReportExportExcel({
   billData,
   orderData,
   customerCountData,
+  exportData,
 }) {
   const { t } = useTranslation();
   const { storeDetail, setStoreDetail, updateStoreDetail } = useStoreStore();
@@ -1353,6 +1354,297 @@ export default function PopUpReportExportExcel({
         }
       }
     } catch (err) {
+      errorAdd(`${t("export_fail")}`);
+    }
+  };
+
+  const exportBill = async () => {
+    setPopup({ ReportExport: false });
+    try {
+      // Create a new workbook
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet(t("bill_detial"));
+
+      // Define column widths
+      sheet.columns = [
+        { width: 20 }, // Date
+        { width: 15 }, // Bill Code
+        { width: 12 }, // Table
+        { width: 30 }, // Menu Items
+        { width: 12 }, // Quantity
+        { width: 15 }, // Price
+        { width: 15 }, // Total Amount
+        { width: 18 }, // Payment Type
+        { width: 15 }, // Status
+        { width: 15 }, // Cash
+        { width: 15 }, // Transfer
+        { width: 15 }, // Debt/Credit
+        { width: 15 }, // Delivery
+        { width: 15 }, // Discount
+        { width: 18 }, // Discount Type
+      ];
+
+      // Add headers
+      const headerRow = sheet.addRow([
+        t("date"),
+        t("code"),
+        t("table"),
+        t("order"),
+        t("amount"),
+        t("price"),
+        t("total"),
+        t("payment_type"),
+        t("status"),
+        t("cash"),
+        t("e_money"),
+        t("debt"),
+        t("delivery"),
+        t("discount"),
+        t("discount_type"),
+      ]);
+
+      // Style header row
+      headerRow.eachCell((cell) => {
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFD3D3D3" },
+        };
+        cell.font = {
+          name: "Noto Sans Lao",
+          size: 14,
+          bold: true,
+        };
+        cell.alignment = {
+          vertical: "middle",
+          horizontal: "center",
+        };
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
+        };
+      });
+      headerRow.height = 35;
+
+      // Add bill data rows
+      if (exportData && exportData.length > 0) {
+        let currentRow = 2; // Start after header row
+
+        exportData.forEach((billItem) => {
+          const formattedDate = billItem?.createdAt 
+            ? moment(billItem.createdAt).format("DD/MM/YYYY HH:mm")
+            : "";
+          
+          const billCode = billItem?.code || billItem?._id || "";
+          const tableName = billItem?.tableId?.name || billItem?.tableId || "";
+          const orders = billItem?.orderId || [];
+          
+          const startRow = currentRow;
+
+          if (orders.length > 0) {
+            // Add each menu item in separate row
+            orders.forEach((order, index) => {
+              const row = sheet.addRow([
+                index === 0 ? formattedDate : "", // Only show date in first row
+                index === 0 ? billCode : "", // Only show bill code in first row
+                index === 0 ? tableName : "", // Only show table in first row
+                order?.name || t("unknown"),
+                order?.quantity || 0,
+                moneyCurrency(order?.price || 0), // Price for each item
+                index === 0 ? moneyCurrency(billItem?.billAmount || 0) : "", // Only show total in first row
+                index === 0 ? billItem?.paymentMethod || "" : "",
+                index === 0 ? billItem?.status || "" : "",
+                index === 0 ? moneyCurrency(billItem?.payAmount || 0) : "",
+                index === 0 ? moneyCurrency(billItem?.transferAmount || 0) : "",
+                index === 0 ? moneyCurrency(billItem?.debt || 0) : "",
+                index === 0 ? moneyCurrency(billItem?.deliveryAmount || 0) : "",
+                index === 0 ? moneyCurrency(billItem?.discount || 0) : "",
+                index === 0 ? billItem?.discountType || "" : "",
+              ]);
+
+              // Style data cells
+              row.eachCell((cell, colNumber) => {
+                cell.font = {
+                  name: "Noto Sans Lao",
+                  size: 12,
+                };
+                cell.alignment = {
+                  vertical: "middle",
+                  horizontal: colNumber === 4 ? "left" : "center", // Only menu name is left-aligned
+                };
+                cell.border = {
+                  top: { style: "thin" },
+                  left: { style: "thin" },
+                  bottom: { style: "thin" },
+                  right: { style: "thin" },
+                };
+              });
+              row.height = 30;
+              currentRow++;
+            });
+
+            // Merge cells for bill info if there are multiple orders
+            if (orders.length > 1) {
+              sheet.mergeCells(`A${startRow}:A${currentRow - 1}`); // Date
+              sheet.mergeCells(`B${startRow}:B${currentRow - 1}`); // Bill Code
+              sheet.mergeCells(`C${startRow}:C${currentRow - 1}`); // Table
+              sheet.mergeCells(`G${startRow}:G${currentRow - 1}`); // Total
+              sheet.mergeCells(`H${startRow}:H${currentRow - 1}`); // Payment Type
+              sheet.mergeCells(`I${startRow}:I${currentRow - 1}`); // Status
+              sheet.mergeCells(`J${startRow}:J${currentRow - 1}`); // Cash
+              sheet.mergeCells(`K${startRow}:K${currentRow - 1}`); // Transfer
+              sheet.mergeCells(`L${startRow}:L${currentRow - 1}`); // Debt
+              sheet.mergeCells(`M${startRow}:M${currentRow - 1}`); // Delivery
+              sheet.mergeCells(`N${startRow}:N${currentRow - 1}`); // Discount
+              sheet.mergeCells(`O${startRow}:O${currentRow - 1}`); // Discount Type
+
+              // Center align merged cells
+              const mergedCells = ['A', 'B', 'C', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
+              mergedCells.forEach(col => {
+                const cell = sheet.getCell(`${col}${startRow}`);
+                cell.alignment = {
+                  vertical: "middle",
+                  horizontal: "center",
+                };
+              });
+            }
+          } else {
+            // No orders, just add bill info
+            const row = sheet.addRow([
+              formattedDate,
+              billCode,
+              tableName,
+              t("no_data"),
+              0,
+              0, // Price
+              moneyCurrency(billItem?.billAmount || 0),
+              billItem?.paymentMethod || "",
+              billItem?.status || "",
+              moneyCurrency(billItem?.payAmount || 0),
+              moneyCurrency(billItem?.transferAmount || 0),
+              moneyCurrency(billItem?.debt || 0),
+              moneyCurrency(billItem?.deliveryAmount || 0),
+              moneyCurrency(billItem?.discount || 0),
+              billItem?.discountType || "",
+            ]);
+
+            row.eachCell((cell, colNumber) => {
+              cell.font = {
+                name: "Noto Sans Lao",
+                size: 12,
+              };
+              cell.alignment = {
+                vertical: "middle",
+                horizontal: colNumber === 4 ? "left" : "center", // Only menu name is left-aligned
+              };
+              cell.border = {
+                top: { style: "thin" },
+                left: { style: "thin" },
+                bottom: { style: "thin" },
+                right: { style: "thin" },
+              };
+            });
+            row.height = 30;
+            currentRow++;
+          }
+        });
+
+        // Add summary row
+        const totals = exportData.reduce(
+          (acc, bill) => {
+            acc.billAmount += bill?.billAmount || 0;
+            acc.payAmount += bill?.payAmount || 0;
+            acc.transferAmount += bill?.transferAmount || 0;
+            acc.debt += bill?.debt || 0;
+            acc.deliveryAmount += bill?.deliveryAmount || 0;
+            acc.discount += bill?.discount || 0;
+            return acc;
+          },
+          {
+            billAmount: 0,
+            payAmount: 0,
+            transferAmount: 0,
+            debt: 0,
+            deliveryAmount: 0,
+            discount: 0,
+          }
+        );
+
+        const summaryRow = sheet.addRow([
+          t("total"),
+          "",
+          "",
+          "",
+          "",
+          "", // Price column (empty in summary)
+          moneyCurrency(totals.billAmount),
+          "",
+          "",
+          moneyCurrency(totals.payAmount),
+          moneyCurrency(totals.transferAmount),
+          moneyCurrency(totals.debt),
+          moneyCurrency(totals.deliveryAmount),
+          moneyCurrency(totals.discount),
+          "",
+        ]);
+
+        // Style summary row
+        summaryRow.eachCell((cell) => {
+          cell.fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFF0F0F0" },
+          };
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 14,
+            bold: true,
+          };
+          cell.alignment = {
+            vertical: "middle",
+            horizontal: "center",
+          };
+          cell.border = {
+            top: { style: "thin" },
+            left: { style: "thin" },
+            bottom: { style: "thin" },
+            right: { style: "thin" },
+          };
+        });
+        summaryRow.height = 35;
+      } else {
+        // Add empty row with message if no data
+        const noDataRow = sheet.addRow([t("no_data")]);
+        sheet.mergeCells(`A2:O2`);
+        noDataRow.eachCell((cell) => {
+          cell.font = {
+            name: "Noto Sans Lao",
+            size: 12,
+          };
+          cell.alignment = {
+            vertical: "middle",
+            horizontal: "center",
+          };
+        });
+      }
+
+      // Generate Excel file
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      // Download the file
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = downloadUrl;
+      anchor.download = `${storeDetail?.name} - ${t("bill_detial")}.xlsx`;
+      anchor.click();
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (err) {
+      console.error("Error exporting to Excel:", err);
       errorAdd(`${t("export_fail")}`);
     }
   };
@@ -3821,8 +4113,8 @@ export default function PopUpReportExportExcel({
           ) : (
             <Button
               style={{ height: 100, padding: 20, width: 200 }}
-              // onClick={Promotions}
-              disabled
+              onClick={exportBill}
+              // disabled
             >
               <span>{t("sales_info")}</span>
             </Button>
