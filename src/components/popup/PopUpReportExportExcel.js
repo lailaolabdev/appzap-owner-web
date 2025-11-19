@@ -1370,12 +1370,13 @@ export default function PopUpReportExportExcel({
         { width: 20 }, // Date
         { width: 15 }, // Bill Code
         { width: 12 }, // Table
-        { width: 30 }, // Menu Items
+        { width: 35 }, // Menu Items (with options)
+        { width: 12 }, // Order Status
         { width: 12 }, // Quantity
         { width: 15 }, // Price
         { width: 15 }, // Total Amount
         { width: 18 }, // Payment Type
-        { width: 15 }, // Status
+        { width: 15 }, // Bill Status
         { width: 15 }, // Cash
         { width: 15 }, // Transfer
         { width: 15 }, // Debt/Credit
@@ -1390,6 +1391,7 @@ export default function PopUpReportExportExcel({
         t("code"),
         t("table"),
         t("order"),
+        t("order_status"),
         t("amount"),
         t("price"),
         t("total"),
@@ -1446,16 +1448,35 @@ export default function PopUpReportExportExcel({
           if (orders.length > 0) {
             // Add each menu item in separate row
             orders.forEach((order, index) => {
+              // Format menu name with options
+              let menuName = order?.name || t("unknown");
+              if (order?.options && order.options.length > 0) {
+                const optionNames = order.options
+                  .map(opt => {
+                    if (opt?.name) {
+                      const quantity = opt?.quantity || 1;
+                      return `${opt.name} (x${quantity})`;
+                    }
+                    return null;
+                  })
+                  .filter(Boolean)
+                  .join(", ");
+                if (optionNames) {
+                  menuName = `${menuName}[${optionNames}]`;
+                }
+              }
+
               const row = sheet.addRow([
                 index === 0 ? formattedDate : "", // Only show date in first row
                 index === 0 ? billCode : "", // Only show bill code in first row
                 index === 0 ? tableName : "", // Only show table in first row
-                order?.name || t("unknown"),
+                menuName, // Menu name with options
+                order?.status || "", // Order status (SERVED, etc.)
                 order?.quantity || 0,
                 moneyCurrency(order?.price || 0), // Price for each item
                 index === 0 ? moneyCurrency(billItem?.billAmount || 0) : "", // Only show total in first row
                 index === 0 ? billItem?.paymentMethod || "" : "",
-                index === 0 ? billItem?.status || "" : "",
+                index === 0 ? billItem?.status || "" : "", // Bill status
                 index === 0 ? moneyCurrency(billItem?.payAmount || 0) : "",
                 index === 0 ? moneyCurrency(billItem?.transferAmount || 0) : "",
                 index === 0 ? moneyCurrency(billItem?.debt || 0) : "",
@@ -1490,18 +1511,18 @@ export default function PopUpReportExportExcel({
               sheet.mergeCells(`A${startRow}:A${currentRow - 1}`); // Date
               sheet.mergeCells(`B${startRow}:B${currentRow - 1}`); // Bill Code
               sheet.mergeCells(`C${startRow}:C${currentRow - 1}`); // Table
-              sheet.mergeCells(`G${startRow}:G${currentRow - 1}`); // Total
-              sheet.mergeCells(`H${startRow}:H${currentRow - 1}`); // Payment Type
-              sheet.mergeCells(`I${startRow}:I${currentRow - 1}`); // Status
-              sheet.mergeCells(`J${startRow}:J${currentRow - 1}`); // Cash
-              sheet.mergeCells(`K${startRow}:K${currentRow - 1}`); // Transfer
-              sheet.mergeCells(`L${startRow}:L${currentRow - 1}`); // Debt
-              sheet.mergeCells(`M${startRow}:M${currentRow - 1}`); // Delivery
-              sheet.mergeCells(`N${startRow}:N${currentRow - 1}`); // Discount
-              sheet.mergeCells(`O${startRow}:O${currentRow - 1}`); // Discount Type
+              sheet.mergeCells(`H${startRow}:H${currentRow - 1}`); // Total
+              sheet.mergeCells(`I${startRow}:I${currentRow - 1}`); // Payment Type
+              sheet.mergeCells(`J${startRow}:J${currentRow - 1}`); // Bill Status
+              sheet.mergeCells(`K${startRow}:K${currentRow - 1}`); // Cash
+              sheet.mergeCells(`L${startRow}:L${currentRow - 1}`); // Transfer
+              sheet.mergeCells(`M${startRow}:M${currentRow - 1}`); // Debt
+              sheet.mergeCells(`N${startRow}:N${currentRow - 1}`); // Delivery
+              sheet.mergeCells(`O${startRow}:O${currentRow - 1}`); // Discount
+              sheet.mergeCells(`P${startRow}:P${currentRow - 1}`); // Discount Type
 
               // Center align merged cells
-              const mergedCells = ['A', 'B', 'C', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
+              const mergedCells = ['A', 'B', 'C', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'];
               mergedCells.forEach(col => {
                 const cell = sheet.getCell(`${col}${startRow}`);
                 cell.alignment = {
@@ -1517,7 +1538,8 @@ export default function PopUpReportExportExcel({
               billCode,
               tableName,
               t("no_data"),
-              0,
+              "", // Order Status
+              0, // Quantity
               0, // Price
               moneyCurrency(billItem?.billAmount || 0),
               billItem?.paymentMethod || "",
@@ -1577,6 +1599,7 @@ export default function PopUpReportExportExcel({
           "",
           "",
           "",
+          "", // Order Status column (empty in summary)
           "",
           "", // Price column (empty in summary)
           moneyCurrency(totals.billAmount),
@@ -1617,7 +1640,7 @@ export default function PopUpReportExportExcel({
       } else {
         // Add empty row with message if no data
         const noDataRow = sheet.addRow([t("no_data")]);
-        sheet.mergeCells(`A2:O2`);
+        sheet.mergeCells(`A2:P2`);
         noDataRow.eachCell((cell) => {
           cell.font = {
             name: "Noto Sans Lao",

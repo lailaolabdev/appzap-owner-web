@@ -998,7 +998,7 @@ const buildQueryParams = (storeId, filters = {}) => {
                 }}
               >
                 {/* Download Template Button */}
-                <Button
+                {/* <Button
                   style={{
                     backgroundColor: "#28a745",
                     color: "#ffff",
@@ -1008,10 +1008,10 @@ const buildQueryParams = (storeId, filters = {}) => {
                   className={fontMap[language]}
                 >
                   📥 {t("download_template") || "Download Template"}
-                </Button>
+                </Button> */}
 
                 {/* Upload File Button */}
-                <Button
+                {/* <Button
                   style={{
                     backgroundColor: "#17a2b8",
                     color: "#ffff",
@@ -1033,7 +1033,7 @@ const buildQueryParams = (storeId, filters = {}) => {
                   accept=".xlsx,.xls"
                   style={{ display: "none" }}
                   onChange={handleFileUpload}
-                />
+                /> */}
 
                 {/* Add Menu Button */}
                 {profile?.data?.role === "APPZAP_ADMIN" ? (
