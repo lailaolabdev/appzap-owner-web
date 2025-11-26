@@ -35,7 +35,7 @@ const SecondScreen = () => {
   const { isToggled, isToggledSlide, isToggledTable } =
     useCombinedToggleSlide(); // Get current state
   const { ChangeAmount } = useChangeMoney();
-  
+
   // CFD Store
   const { cfdSettings, setConnectionStatus } = useCFDStore();
 
@@ -85,16 +85,16 @@ const SecondScreen = () => {
       const newState = JSON.parse(storedState);
       setSelectedMenus(newState.state.SelectedMenus);
     }
-    
+
     // Mark as connected when screen loads
     setConnectionStatus("connected");
-    
+
     // Clean up the event listener
     return () => {
       window.removeEventListener("message", handleMessage);
     };
   }, []);
-  
+
   // Heartbeat response mechanism
   useEffect(() => {
     const handleHeartbeat = (event) => {
@@ -108,9 +108,9 @@ const SecondScreen = () => {
         setConnectionStatus("connected");
       }
     };
-    
+
     connectionBroadcast.addEventListener("message", handleHeartbeat);
-    
+
     return () => {
       connectionBroadcast.removeEventListener("message", handleHeartbeat);
     };
@@ -255,10 +255,22 @@ const SecondScreen = () => {
                                     <img
                                       src={`${URL_PHOTO_AW3}${data.image}`}
                                       alt={data.name}
-                                      style={{ width: 50, height: 50, objectFit: "cover", borderRadius: 4 }}
+                                      style={{
+                                        width: 50,
+                                        height: 50,
+                                        objectFit: "cover",
+                                        borderRadius: 4,
+                                      }}
                                     />
                                   ) : (
-                                    <div style={{ width: 50, height: 50, backgroundColor: "#f0f0f0", borderRadius: 4 }} />
+                                    <div
+                                      style={{
+                                        width: 50,
+                                        height: 50,
+                                        backgroundColor: "#f0f0f0",
+                                        borderRadius: 4,
+                                      }}
+                                    />
                                   )}
                                 </td>
                               )}
@@ -302,7 +314,8 @@ const SecondScreen = () => {
                     <div className="flex justify-between">
                       <span>{t("totalAmount")}:</span>
                       <span className="font-bold">
-                        {Array.isArray(SelectedMenus) && SelectedMenus.length > 0
+                        {Array.isArray(SelectedMenus) &&
+                        SelectedMenus.length > 0
                           ? moneyCurrency(total + ChangeAmount)
                           : 0}{" "}
                         {storeDetail?.firstCurrency}
@@ -313,7 +326,8 @@ const SecondScreen = () => {
                     <div className="flex justify-between">
                       <span>{t("change")}:</span>
                       <span className="font-bold">
-                        {Array.isArray(SelectedMenus) && SelectedMenus.length > 0
+                        {Array.isArray(SelectedMenus) &&
+                        SelectedMenus.length > 0
                           ? moneyCurrency(ChangeAmount)
                           : 0}{" "}
                         {storeDetail?.firstCurrency}
@@ -324,7 +338,8 @@ const SecondScreen = () => {
                     <div className="flex justify-between text-[25px] font-bold">
                       <span>{t("totals")}:</span>
                       <span>
-                        {Array.isArray(SelectedMenus) && SelectedMenus.length > 0
+                        {Array.isArray(SelectedMenus) &&
+                        SelectedMenus.length > 0
                           ? moneyCurrency(total)
                           : 0}{" "}
                         {storeDetail?.firstCurrency}
@@ -392,14 +407,26 @@ const SecondScreen = () => {
                               </td>
                               {cfdSettings?.showItemImages && (
                                 <td className="py-2 px-4 text-center">
-                                  {data?.image ? (
+                                  {data?.menuImage ? (
                                     <img
-                                      src={`${URL_PHOTO_AW3}${data.image}`}
+                                      src={`${URL_PHOTO_AW3}${data.menuImage}`}
                                       alt={data.name}
-                                      style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 4 }}
+                                      style={{
+                                        width: 40,
+                                        height: 40,
+                                        objectFit: "cover",
+                                        borderRadius: 4,
+                                      }}
                                     />
                                   ) : (
-                                    <div style={{ width: 40, height: 40, backgroundColor: "#f0f0f0", borderRadius: 4 }} />
+                                    <div
+                                      style={{
+                                        width: 40,
+                                        height: 40,
+                                        backgroundColor: "#f0f0f0",
+                                        borderRadius: 4,
+                                      }}
+                                    />
                                   )}
                                 </td>
                               )}
@@ -448,7 +475,9 @@ const SecondScreen = () => {
                     </div>
                     {cfdSettings?.showPrices && (
                       <div className="flex justify-between items-center border-b border-gray-200 py-2">
-                        <span className="text-gray-700">{t("totalAmount")}:</span>
+                        <span className="text-gray-700">
+                          {t("totalAmount")}:
+                        </span>
                         <span className="font-bold text-gray-900">
                           {SelectedMenus?.length > 0
                             ? moneyCurrency(total + ChangeAmount)
@@ -533,10 +562,22 @@ const SecondScreen = () => {
                                   <img
                                     src={`${URL_PHOTO_AW3}${data.image}`}
                                     alt={data.name}
-                                    style={{ width: 50, height: 50, objectFit: "cover", borderRadius: 4 }}
+                                    style={{
+                                      width: 50,
+                                      height: 50,
+                                      objectFit: "cover",
+                                      borderRadius: 4,
+                                    }}
                                   />
                                 ) : (
-                                  <div style={{ width: 50, height: 50, backgroundColor: "#f0f0f0", borderRadius: 4 }} />
+                                  <div
+                                    style={{
+                                      width: 50,
+                                      height: 50,
+                                      backgroundColor: "#f0f0f0",
+                                      borderRadius: 4,
+                                    }}
+                                  />
                                 )}
                               </td>
                             )}

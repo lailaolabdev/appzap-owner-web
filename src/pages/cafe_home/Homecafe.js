@@ -515,6 +515,8 @@ function Homecafe() {
     const isExchangeActive =
       menu?.exchangePointStoreId?.[0]?.status === "active";
 
+    console.log("menu123", menu);
+
     const mainMenuData = {
       id: menu._id,
       name: menu.name,

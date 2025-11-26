@@ -46,8 +46,16 @@ import {
 import { useStore } from "../../store";
 import UploadMultipleEdit from "../../components/UploadMutipleEdit";
 import PreviewSlide from "./PreviewSlide";
-import { useCFDStore, startHeartbeat, stopHeartbeat } from "../../zustand/cfdStore";
-import { getCFDSettings, updateCFDSettings, updateCFDSettingField } from "../../services/cfdSetting";
+import {
+  useCFDStore,
+  startHeartbeat,
+  stopHeartbeat,
+} from "../../zustand/cfdStore";
+import {
+  getCFDSettings,
+  updateCFDSettings,
+  updateCFDSettingField,
+} from "../../services/cfdSetting";
 
 const MainScreen = () => {
   const [screenDetails, setScreenDetails] = useState(null);
@@ -76,7 +84,7 @@ const MainScreen = () => {
   } = useCombinedToggleSlide();
 
   const { UseSlideImageData, UseSlideImage } = useSlideImageStore();
-  
+
   // CFD Store
   const {
     connectionStatus,
@@ -92,7 +100,7 @@ const MainScreen = () => {
   useEffect(() => {
     // Start heartbeat for connection monitoring
     startHeartbeat();
-    
+
     if ("getScreenDetails" in window) {
       window
         .getScreenDetails()
@@ -136,7 +144,7 @@ const MainScreen = () => {
     if (UseSlideImage[0]?.isOpenSecondScreen) {
       openSecondScreen();
     }
-    
+
     // Cleanup on unmount
     return () => {
       stopHeartbeat();
@@ -449,7 +457,7 @@ const MainScreen = () => {
       errorAdd("ບໍ່ສາມາດເປິດໃຊ້ງໄດ້");
     }
   };
-  
+
   // Refresh screen detection
   const handleRefreshScreenDetection = () => {
     if ("getScreenDetails" in window) {
@@ -458,7 +466,13 @@ const MainScreen = () => {
         .then((details) => {
           setScreenDetails(details);
           setScreensDetected(details.screens?.length || 0);
-          successAdd(t("refresh_detection") + ": " + details.screens?.length + " " + t("screens_detected"));
+          successAdd(
+            t("refresh_detection") +
+              ": " +
+              details.screens?.length +
+              " " +
+              t("screens_detected")
+          );
         })
         .catch((error) => {
           console.error("Error fetching screen details:", error);
@@ -469,7 +483,7 @@ const MainScreen = () => {
       errorAdd(t("second_screen_not_detected"));
     }
   };
-  
+
   // Handle CFD setting changes
   const handleCFDSettingChange = async (key, value) => {
     try {
@@ -618,7 +632,9 @@ const MainScreen = () => {
                 </div>
               </Card.Header>
               <Card.Body>
-                <div style={{ display: "flex", flexDirection: "column", gap: 15 }}>
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 15 }}
+                >
                   <div
                     style={{
                       display: "flex",
@@ -632,26 +648,36 @@ const MainScreen = () => {
                     <div>
                       <div style={{ fontSize: 16, fontWeight: "bold" }}>
                         {connectionStatus === "connected" ? (
-                          <span style={{ color: "green" }}>✓ {t("connected")}</span>
+                          <span style={{ color: "green" }}>
+                            ✓ {t("connected")}
+                          </span>
                         ) : (
-                          <span style={{ color: "red" }}>✗ {t("disconnected")}</span>
+                          <span style={{ color: "red" }}>
+                            ✗ {t("disconnected")}
+                          </span>
                         )}
                       </div>
-                      <div style={{ fontSize: 12, color: "#666", marginTop: 5 }}>
+                      <div
+                        style={{ fontSize: 12, color: "#666", marginTop: 5 }}
+                      >
                         {t("customer_display_control")}
                       </div>
                     </div>
                     <div style={{ textAlign: "right" }}>
                       <div style={{ fontSize: 14 }}>
                         {isToggledOpenTwoScreen ? (
-                          <span style={{ color: "green" }}>{t("no_active_order")}</span>
+                          <span style={{ color: "green" }}>
+                            {t("no_active_order")}
+                          </span>
                         ) : (
-                          <span style={{ color: "#999" }}>{t("no_active_order")}</span>
+                          <span style={{ color: "#999" }}>
+                            {t("no_active_order")}
+                          </span>
                         )}
                       </div>
                     </div>
                   </div>
-                  
+
                   <div
                     style={{
                       display: "flex",
@@ -668,7 +694,7 @@ const MainScreen = () => {
                       {t("screens_detected")}: {screensDetected}
                     </span>
                   </div>
-                  
+
                   <div
                     style={{
                       display: "flex",
@@ -681,11 +707,16 @@ const MainScreen = () => {
                     <span style={{ fontSize: 14, fontWeight: 500 }}>
                       {t("second_screen")}
                     </span>
-                    <span style={{ fontSize: 14, color: screensDetected > 1 ? "green" : "red" }}>
+                    <span
+                      style={{
+                        fontSize: 14,
+                        color: screensDetected > 1 ? "green" : "red",
+                      }}
+                    >
                       {screensDetected > 1 ? t("connected") : t("not_detected")}
                     </span>
                   </div>
-                  
+
                   {lastHeartbeat && (
                     <div
                       style={{
@@ -974,7 +1005,7 @@ const MainScreen = () => {
                       </Form.Label>
                       <Form.Check
                         type="switch"
-                        disabled={profile?.data?.role !== "APPZAP_ADMIN"}
+                        // disabled={profile?.data?.role !== "APPZAP_ADMIN"}
                         checked={isToggled}
                         id={"switch-title"}
                         // onChange={toggle}
@@ -1005,7 +1036,7 @@ const MainScreen = () => {
                       </Form.Label>
                       <Form.Check
                         type="switch"
-                        disabled={profile?.data?.role !== "APPZAP_ADMIN"}
+                        // disabled={profile?.data?.role !== "APPZAP_ADMIN"}
                         checked={isToggledSlide}
                         id={"slide"}
                         // onChange={toggleSlide}
@@ -1036,7 +1067,7 @@ const MainScreen = () => {
                       </Form.Label>
                       <Form.Check
                         // disabled={true}
-                        disabled={profile?.data?.role !== "APPZAP_ADMIN"}
+                        // disabled={profile?.data?.role !== "APPZAP_ADMIN"}
                         type="switch"
                         checked={isToggledTable}
                         id={"table"}
@@ -1092,13 +1123,11 @@ const MainScreen = () => {
                   <BsImages />
                   <span>{t("list_slide_second_screen")}</span>
                 </div>
-                {profile?.data?.role === "APPZAP_ADMIN" && (
-                  <Button variant="dark" bg="dark" onClick={handleShowAdd}>
-                    <span className="flex gap-2 items-center">
-                      <MdAssignmentAdd /> <span>{t("add_banner")}</span>
-                    </span>
-                  </Button>
-                )}
+                <Button variant="dark" bg="dark" onClick={handleShowAdd}>
+                  <span className="flex gap-2 items-center">
+                    <MdAssignmentAdd /> <span>{t("add_banner")}</span>
+                  </span>
+                </Button>
               </Card.Header>
               <Card.Body style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%" }}>

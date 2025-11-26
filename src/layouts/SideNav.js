@@ -380,6 +380,14 @@ export default function Sidenav({ location, navigate, onToggle }) {
       typeStore: "",
       system: "audioManagement",
     },
+    {
+      title: `${t("second_screen_manage")}`,
+      key: "setting-screen",
+      icon: faDesktop,
+      typeStore: "",
+      system: "secondScreenManagement",
+      // hidden: !storeDetail?.isSecondScreen,
+    },
   ]
     .filter((e) => {
       const verify = role(profile?.data?.role, profile?.data);
@@ -458,6 +466,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
             selected = selected;
           }
           if (selected === "stock") {
+            selected = selected;
+          }
+          if (selected === "setting-screen") {
             selected = selected;
           }
           if (selected === "songlist") {
@@ -640,7 +651,9 @@ export default function Sidenav({ location, navigate, onToggle }) {
               ))}
             <hr />
 
-            { itemReports?.length !== 0 && (profileRole === "APPZAP_ADMIN" || storeDetail?.counterDisableReport !== true) ? (
+            {itemReports?.length !== 0 &&
+            (profileRole === "APPZAP_ADMIN" ||
+              storeDetail?.counterDisableReport !== true) ? (
               <NavItem
                 eventKey="reportGroups"
                 style={{

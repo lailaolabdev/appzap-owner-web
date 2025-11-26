@@ -147,6 +147,7 @@ const role = (role, user, storeDetail, shiftCurrent, path) => {
         report: true,
         stockManagement: true,
         farkManagement: true,
+        secondScreenManagement: true,
       };
     default:
       return {};
