@@ -1185,7 +1185,7 @@ export default function DashboardPage() {
                       <td style={{ textAlign: "left" }}>{e?.name}</td>
                       <td style={{ textAlign: "center" }}>{e?.served || 0}</td>
                       <td style={{ textAlign: "center" }}>
-                        {e?.cenceled || 0}
+                        {e?.canceled || 0}
                       </td>
                       <td style={{ textAlign: "center" }}>{e?.paid || 0}</td>
                       <td style={{ textAlign: "right" }}>
