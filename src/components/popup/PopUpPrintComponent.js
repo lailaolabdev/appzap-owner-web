@@ -2,7 +2,7 @@ import moment from "moment";
 import Select from "react-select";
 import styled from "styled-components";
 import React, { useEffect, useState, useRef } from "react";
-import { Modal, Button, InputGroup, Form } from "react-bootstrap";
+import { Modal, Button, InputGroup, Form, Spinner } from "react-bootstrap";
 import { BsPrinter } from "react-icons/bs";
 import Swal from "sweetalert2";
 import html2canvas from "html2canvas";
@@ -53,6 +53,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const [moneyReport, setMoneyReport] = useState([]);
   const [debtReport, setDebtReport] = useState(null);
   const [categoryReport, setCategoryReport] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [reportBill, setReportBill] = useState({
     totalAmount: 0,
     billCount: 0,
@@ -70,7 +71,8 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
   const { storeDetail } = useStoreStore();
   const { shiftCurrent, OpenShiftForCounter } = useShiftStore();
 
-  console.log("bills",bills)
+  console.log("bills", bills);
+  console.log("startDate", startDate);
 
   // useEffect
   useEffect(() => {
@@ -79,7 +81,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
     getMoneyReportData(startDate);
     getDebtReportData(startDate);
     getCategoryReportData(startDate);
-  }, [startDate, endDate, shiftId,]);
+  }, [startDate, endDate, shiftId]);
 
   const fetchShift = async () => {
     await getAllShift()
@@ -272,6 +274,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
 
   const getDataBillReport = async (startDate) => {
     try {
+      setLoading(true);
       const data = await getBillReport(storeDetail._id, findByData());
       const activeBillData = await getActiveBillReport(
         storeDetail._id,
@@ -286,6 +289,8 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       // const findByData() = `?startDate=${startDate}&endDate=${endDate}`;
       const Delivery = await getDeliveryReport(storeDetail?._id, findByData());
       setDelivery(Delivery.response);
+
+      console.log("Delivery", Delivery);
 
       setBank(bankReport);
       setcurrency(currencyReport);
@@ -362,8 +367,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
       });
 
       setBill(data); // Set bill data for rendering
+      setLoading(false);
     } catch (err) {
       console.error("Error in getDataBillReport:", err);
+      setLoading(false);
     }
   };
 
@@ -409,7 +416,6 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
               onChange={(e) => {
                 const newStartDate = e.target.value;
                 setStartDate(newStartDate);
-                // If end date is earlier than new start date, update end date to match start date
                 if (endDate < newStartDate) {
                   setEndDate(newStartDate);
                 }
@@ -430,11 +436,10 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
               }}
             />
           </div>
-          
         </div>
 
         <div className="mt-2 items-start flex gap-2 justify-start">
-        {profile?.data?.role === "APPZAP_ADMIN"
+          {profile?.data?.role === "APPZAP_ADMIN"
             ? storeDetail?.isShift && (
                 <div className="flex items-center gap-2 whitespace-nowrap">
                   <Select
@@ -476,115 +481,170 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
               {shiftDate ? shiftDate?.endTime : "23:59:59"}
             </div>
             <hr style={{ borderBottom: "1px dotted #000" }} />
-            {[
-              {
-                name: `${t("bill_amount")}:`,
-                value: moneyReport?.successAmount?.numberOfBills || 0,
-              },
-              {
-                name: `${t("total_amount")}:`,
-                value:
-                  (moneyReport?.successAmount?.payByCash || 0) +
-                  (moneyReport?.successAmount?.transferPayment || 0),
-                type: storeDetail?.firstCurrency,
-              },
-              {
-                name: `${t("pay_cash")}:`,
-                value: moneyReport?.successAmount?.payByCash || 0,
-                type: storeDetail?.firstCurrency,
-              },
-              {
-                name: `${t("pay_transfer")}:`,
-                value: moneyReport?.successAmount?.transferPayment || 0,
-                type: storeDetail?.firstCurrency,
-              },
-              {
-                name: `${t("total_debt")}:`,
-                value: debtReport?.totalRemainingAmount,
-                type: storeDetail?.firstCurrency,
-              },
-
-              ...(Array.isArray(deliveryReports) && deliveryReports.length > 0
-                ? deliveryReports.map((e, idx) => ({
-                    name: (
-                      <div
-                        style={{ fontWeight: 700 }}
-                      >{`delivery (${e?.name})`}</div>
-                    ),
-                    value: Math.floor(e?.amount || 0),
-                    type: storeDetail?.firstCurrency,
-                  }))
-                : []),
-              {
-                name: `${t("point")}:`,
-                value: moneyReport?.successAmount?.point || 0,
-              },
-              {
-                name: `${t("discount_bill")}:`,
-                value: reportBill?.discountBills,
-              },
-              {
-                name: `${t("service_charge")}:`,
-                value: moneyReport?.serviceAmount,
-                type: storeDetail?.firstCurrency,
-              },
-              {
-                name: `${t("tax")}:`,
-                value: moneyReport?.taxAmount,
-                type: storeDetail?.firstCurrency,
-              },
-              {
-                name: `${t("discount")}:`,
-                value: reportBill?.discounts,
-                type: storeDetail?.firstCurrency,
-              },
-              {
-                name: `${t("active_bill")}:`,
-                value: reportBill?.pendingBills,
-              },
-
-              // {
-              //   name: "ເງິນຄ້າງ:",
-              //   value: reportBill["ເງິນຄ້າງ"],
-              //   type: storeDetail?.firstCurrency,
-              // },
-            ].map((e) => (
-              <div
-                key={e?.name}
-                style={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <span style={{ textAlign: "left", fontWeight: "bold" }}>
-                  {e?.name}
-                </span>
-                <span style={{ textAlign: "right", fontWeight: "bold" }}>
-                  {moneyCurrency(e?.value)} {e?.type}
-                </span>
+            {loading ? (
+              <div className="flex justify-center items-center h-full mx-4">
+                <Spinner animation="border" role="status" variant="primary">
+                  <span className="visually-hidden"></span>
+                </Spinner>
+                <span className="visually-hidden">Loading...</span>
               </div>
-            ))}
+            ) : (
+              <>
+                {[
+                  {
+                    name: `${t("bill_amount")}:`,
+                    value: moneyReport?.successAmount?.numberOfBills || 0,
+                  },
+                  {
+                    name: `${t("total_amount")}:`,
+                    value:
+                      (moneyReport?.successAmount?.payByCash || 0) +
+                      (moneyReport?.successAmount?.transferPayment || 0),
+                    type: storeDetail?.firstCurrency,
+                  },
+                  {
+                    name: `${t("pay_cash")}:`,
+                    value: moneyReport?.successAmount?.payByCash || 0,
+                    type: storeDetail?.firstCurrency,
+                  },
+                  {
+                    name: `${t("pay_transfer")}:`,
+                    value: moneyReport?.successAmount?.transferPayment || 0,
+                    type: storeDetail?.firstCurrency,
+                  },
+                  {
+                    name: `${t("total_debt")}:`,
+                    value: debtReport?.totalRemainingAmount,
+                    type: storeDetail?.firstCurrency,
+                  },
+
+                  {
+                    name: `${t("point")}:`,
+                    value: moneyReport?.successAmount?.point || 0,
+                  },
+                  {
+                    name: `${t("discount_bill")}:`,
+                    value: reportBill?.discountBills,
+                  },
+                  {
+                    name: `${t("service_charge")}:`,
+                    value: moneyReport?.serviceAmount,
+                    type: storeDetail?.firstCurrency,
+                  },
+                  {
+                    name: `${t("tax")}:`,
+                    value: moneyReport?.taxAmount,
+                    type: storeDetail?.firstCurrency,
+                  },
+                  {
+                    name: `${t("discount")}:`,
+                    value: reportBill?.discounts,
+                    type: storeDetail?.firstCurrency,
+                  },
+                  {
+                    name: `${t("active_bill")}:`,
+                    value: reportBill?.pendingBills,
+                  },
+
+                  // {
+                  //   name: "ເງິນຄ້າງ:",
+                  //   value: reportBill["ເງິນຄ້າງ"],
+                  //   type: storeDetail?.firstCurrency,
+                  // },
+                ].map((e) => (
+                  <div
+                    key={e?.name}
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <span style={{ textAlign: "left", fontWeight: "bold" }}>
+                      {e?.name}
+                    </span>
+                    <span style={{ textAlign: "right", fontWeight: "bold" }}>
+                      {moneyCurrency(e?.value)} {e?.type}
+                    </span>
+                  </div>
+                ))}
+              </>
+            )}
+            {delivery.revenueByPlatform.length > 0 && (
+              <>
+                <hr style={{ borderBottom: "1px dotted #000" }} />
+                <div>
+                  {loading ? (
+                    <div className="flex justify-center items-center h-full mx-4">
+                      <Spinner
+                        animation="border"
+                        role="status"
+                        variant="primary"
+                      >
+                        <span className="visually-hidden"></span>
+                      </Spinner>
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  ) : (
+                    <TableComponent>
+                      <tr style={{ fontWeight: "bold" }}>
+                        <td style={{ textAlign: "left" }}>{t("no")}</td>
+                        <td style={{ textAlign: "center" }}>{t("delivery")}</td>
+                        <td style={{ textAlign: "center" }}>{t("qty")}</td>
+                        <td style={{ textAlign: "right" }}>{t("total")}</td>
+                      </tr>
+                      {delivery.revenueByPlatform.map((e, index) => (
+                        <tr key={e?._id}>
+                          <td style={{ textAlign: "left" }}>{index + 1}</td>
+                          <td style={{ textAlign: "center" }}>{e?._id}</td>
+                          <td style={{ textAlign: "center" }}>
+                            {e?.totalOrders}
+                          </td>
+                          <td style={{ textAlign: "right" }}>
+                            {moneyCurrency(e?.totalRevenue)}
+                          </td>
+                        </tr>
+                      ))}
+                    </TableComponent>
+                  )}
+                </div>
+              </>
+            )}
             {bank?.data?.length > 0 && (
               <>
                 <hr style={{ borderBottom: "1px dotted #000" }} />
                 <div>
-                  <TableComponent>
-                    <tr style={{ fontWeight: "bold" }}>
-                      <td style={{ textAlign: "left" }}>{t("no")}</td>
-                      <td style={{ textAlign: "center" }}>{t("bank_Name")}</td>
-                      <td style={{ textAlign: "right" }}>{t("amount")}</td>
-                    </tr>
-                    {bank?.data?.map((e, index) => {
-                      return (
-                        <tr key={e?._id}>
-                          <td style={{ textAlign: "left" }}>{index + 1}</td>
-                          <td style={{ textAlign: "center" }}>
-                            {e?.bankDetails?.bankName}
-                          </td>
-                          <td style={{ textAlign: "right" }}>
-                            {moneyCurrency(e?.bankTotalAmount)}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </TableComponent>
+                  {loading ? (
+                    <div className="flex justify-center items-center h-full mx-4">
+                      <Spinner
+                        animation="border"
+                        role="status"
+                        variant="primary"
+                      >
+                        <span className="visually-hidden"></span>
+                      </Spinner>
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  ) : (
+                    <TableComponent>
+                      <tr style={{ fontWeight: "bold" }}>
+                        <td style={{ textAlign: "left" }}>{t("no")}</td>
+                        <td style={{ textAlign: "center" }}>
+                          {t("bank_Name")}
+                        </td>
+                        <td style={{ textAlign: "right" }}>{t("amount")}</td>
+                      </tr>
+                      {bank?.data?.map((e, index) => {
+                        return (
+                          <tr key={e?._id}>
+                            <td style={{ textAlign: "left" }}>{index + 1}</td>
+                            <td style={{ textAlign: "center" }}>
+                              {e?.bankDetails?.bankName}
+                            </td>
+                            <td style={{ textAlign: "right" }}>
+                              {moneyCurrency(e?.bankTotalAmount)}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </TableComponent>
+                  )}
                 </div>
               </>
             )}
@@ -592,157 +652,191 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
               <>
                 <hr style={{ borderBottom: "1px dotted #000" }} />
                 <div>
-                  <TableComponent>
-                    <tr style={{ fontWeight: "bold" }}>
-                      <td style={{ textAlign: "left" }}>{t("no")}</td>
-                      <td style={{ textAlign: "center" }}>{t("ccrc")}</td>
-                      <td style={{ textAlign: "right" }}>{t("amount")}</td>
-                    </tr>
-                    {currency?.data?.map((e, index) => (
-                      <tr key={e?._id}>
-                        <td style={{ textAlign: "left" }}>{index + 1}</td>
-                        <td style={{ textAlign: "center" }}>
-                          {e?.currency?.currencyName}
-                        </td>
-                        <td style={{ textAlign: "right" }}>
-                          {moneyCurrency(Math.floor(e?.currencyTotal))}
-                        </td>
+                  {loading ? (
+                    <div className="flex justify-center items-center h-full mx-4">
+                      <Spinner
+                        animation="border"
+                        role="status"
+                        variant="primary"
+                      >
+                        <span className="visually-hidden"></span>
+                      </Spinner>
+                      <span className="visually-hidden">Loading...</span>
+                    </div>
+                  ) : (
+                    <TableComponent>
+                      <tr style={{ fontWeight: "bold" }}>
+                        <td style={{ textAlign: "left" }}>{t("no")}</td>
+                        <td style={{ textAlign: "center" }}>{t("ccrc")}</td>
+                        <td style={{ textAlign: "right" }}>{t("amount")}</td>
                       </tr>
-                    ))}
-                  </TableComponent>
+                      {currency?.data?.map((e, index) => (
+                        <tr key={e?._id}>
+                          <td style={{ textAlign: "left" }}>{index + 1}</td>
+                          <td style={{ textAlign: "center" }}>
+                            {e?.currency?.currencyName}
+                          </td>
+                          <td style={{ textAlign: "right" }}>
+                            {moneyCurrency(Math.floor(e?.currencyTotal))}
+                          </td>
+                        </tr>
+                      ))}
+                    </TableComponent>
+                  )}
                 </div>
               </>
             )}
             <hr style={{ borderBottom: "1px dotted #000" }} />
             <div>
-              <TableComponent>
-                <tr>
-                  <td style={{ textAlign: "left" }}>#</td>
-                  <th style={{ textAlign: "center" }}>{t("menu_type")}</th>
-                  <th style={{ textAlign: "center" }}>{t("success_order")}</th>
-                  <th style={{ textAlign: "center" }}>{t("cancel")}</th>
-                  <th style={{ textAlign: "right" }}>
-                    {t("sale_price_amount")}
-                  </th>
-                </tr>
-                {categoryReport
-                  ?.sort((x, y) => {
-                    return y.served - x.served;
-                  })
-                  ?.map((e, i) => (
-                    <tr>
+              {loading ? (
+                <div className="flex justify-center items-center h-full mx-4">
+                  <Spinner animation="border" role="status" variant="primary">
+                    <span className="visually-hidden"></span>
+                  </Spinner>
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              ) : (
+                <TableComponent>
+                  <tr>
+                    <td style={{ textAlign: "left" }}>#</td>
+                    <th style={{ textAlign: "center" }}>{t("menu_type")}</th>
+                    <th style={{ textAlign: "center" }}>
+                      {t("success_order")}
+                    </th>
+                    <th style={{ textAlign: "center" }}>{t("cancel")}</th>
+                    <th style={{ textAlign: "right" }}>
+                      {t("sale_price_amount")}
+                    </th>
+                  </tr>
+                  {categoryReport
+                    ?.sort((x, y) => {
+                      return y.served - x.served;
+                    })
+                    ?.map((e, i) => (
+                      <tr>
+                        <td style={{ textAlign: "left" }}>{i + 1}</td>
+                        <td style={{ textAlign: "center" }}>{e?.name}</td>
+                        <td style={{ textAlign: "center" }}>{e?.served}</td>
+                        <td style={{ textAlign: "center" }}>{e?.cenceled}</td>
+                        <td style={{ textAlign: "right" }}>
+                          {e?.totalPointAmount > 0
+                            ? moneyCurrency(
+                                e?.totalSaleAmount - e?.totalPointAmount
+                              )
+                            : moneyCurrency(e?.totalSaleAmount)}
+                          {storeDetail?.firstCurrency}
+                        </td>
+                      </tr>
+                    ))}
+
+                  {/* Summary row */}
+                  <tr className="font-bold pt-2">
+                    <td style={{ textAlign: "left" }}></td>
+                    <td style={{ textAlign: "center" }}>{t("total")}</td>
+                    <td style={{ textAlign: "center" }}>
+                      {categoryReport?.reduce(
+                        (sum, item) => sum + (item?.served || 0),
+                        0
+                      )}
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      {categoryReport?.reduce(
+                        (sum, item) => sum + (item?.cenceled || 0),
+                        0
+                      )}
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      {moneyCurrency(
+                        categoryReport?.reduce(
+                          (sum, item) => sum + (item?.totalSaleAmount || 0),
+                          0
+                        ) -
+                          categoryReport?.reduce(
+                            (sum, item) => sum + (item?.totalPointAmount || 0),
+                            0
+                          )
+                      )}
+                      {storeDetail?.firstCurrency}
+                    </td>
+                  </tr>
+                </TableComponent>
+              )}
+            </div>
+            <hr style={{ borderBottom: "1px dotted #000" }} />
+            <div>
+              {loading ? (
+                <div className="flex justify-center items-center h-full mx-4">
+                  <Spinner animation="border" role="status" variant="primary">
+                    <span className="visually-hidden"></span>
+                  </Spinner>
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+              ) : (
+                <TableComponent>
+                  <tr style={{ fontWeight: "bold" }}>
+                    <td style={{ textAlign: "left" }}>#</td>
+                    <td style={{ textAlign: "center" }}>{t("no")}</td>
+                    <td style={{ textAlign: "center" }}>{t("order")}</td>
+                    <td style={{ textAlign: "center" }}>{t("discount")}</td>
+                    <td style={{ textAlign: "right" }}>{t("total_bill")}</td>
+                  </tr>
+
+                  {bills?.map((e, i) => (
+                    <tr key={e?._id}>
                       <td style={{ textAlign: "left" }}>{i + 1}</td>
-                      <td style={{ textAlign: "center" }}>{e?.name}</td>
-                      <td style={{ textAlign: "center" }}>{e?.served}</td>
-                      <td style={{ textAlign: "center" }}>{e?.cenceled}</td>
+                      <td style={{ textAlign: "center" }}>
+                        {e?.code || "%NULL%"}
+                      </td>
+                      <td style={{ textAlign: "center" }}>
+                        {e?.orderId?.length || 0}
+                      </td>
+                      <td style={{ textAlign: "center" }}>
+                        {e?.discount !== 0
+                          ? moneyCurrency(e?.billAmount - e?.billAmountBefore)
+                          : 0}
+                      </td>
                       <td style={{ textAlign: "right" }}>
-                        {e?.totalPointAmount > 0
-                          ? moneyCurrency(
-                              e?.totalSaleAmount - e?.totalPointAmount
-                            )
-                          : moneyCurrency(e?.totalSaleAmount)}
+                        {moneyCurrency(e?.billAmount || e?.deliveryAmount)}{" "}
                         {storeDetail?.firstCurrency}
                       </td>
                     </tr>
                   ))}
 
-                {/* Summary row */}
-                <tr className="font-bold pt-2">
-                  <td style={{ textAlign: "left" }}></td>
-                  <td style={{ textAlign: "center" }}>{t("total")}</td>
-                  <td style={{ textAlign: "center" }}>
-                    {categoryReport?.reduce(
-                      (sum, item) => sum + (item?.served || 0),
-                      0
-                    )}
-                  </td>
-                  <td style={{ textAlign: "center" }}>
-                    {categoryReport?.reduce(
-                      (sum, item) => sum + (item?.cenceled || 0),
-                      0
-                    )}
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    {moneyCurrency(
-                      categoryReport?.reduce(
-                        (sum, item) => sum + (item?.totalSaleAmount || 0),
+                  {/* Total Row */}
+                  <tr style={{ fontWeight: "bold" }}>
+                    <td colSpan="2" style={{ textAlign: "right" }}>
+                      {t("total")}:
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      {bills?.reduce(
+                        (sum, bill) => sum + (bill?.orderId?.length || 0),
                         0
-                      ) -
-                        categoryReport?.reduce(
-                          (sum, item) => sum + (item?.totalPointAmount || 0),
+                      )}
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      {moneyCurrency(
+                        bills?.reduce(
+                          (sum, bill) =>
+                            sum +
+                            (bill?.discount !== 0
+                              ? bill?.billAmount - bill?.billAmountBefore
+                              : 0),
                           0
                         )
-                    )}
-                    {storeDetail?.firstCurrency}
-                  </td>
-                </tr>
-              </TableComponent>
-            </div>
-            <hr style={{ borderBottom: "1px dotted #000" }} />
-            <div>
-              <TableComponent>
-                <tr style={{ fontWeight: "bold" }}>
-                  <td style={{ textAlign: "left" }}>#</td>
-                  <td style={{ textAlign: "center" }}>{t("no")}</td>
-                  <td style={{ textAlign: "center" }}>{t("order")}</td>
-                  <td style={{ textAlign: "center" }}>{t("discount")}</td>
-                  <td style={{ textAlign: "right" }}>{t("total_bill")}</td>
-                </tr>
-
-                {bills?.map((e, i) => (
-                  <tr key={e?._id}>
-                    <td style={{ textAlign: "left" }}>{i + 1}</td>
-                    <td style={{ textAlign: "center" }}>
-                      {e?.code || "%NULL%"}
-                    </td>
-                    <td style={{ textAlign: "center" }}>
-                      {e?.orderId?.length || 0}
-                    </td>
-                    <td style={{ textAlign: "center" }}>
-                      {e?.discount !== 0
-                        ? moneyCurrency(e?.billAmount - e?.billAmountBefore)
-                        : 0}
+                      )}
                     </td>
                     <td style={{ textAlign: "right" }}>
-                      {moneyCurrency(e?.billAmount || e?.deliveryAmount)} {storeDetail?.firstCurrency}
+                      {moneyCurrency(
+                        bills?.reduce(
+                          (sum, bill) => sum + (bill?.billAmount || 0),
+                          0
+                        )
+                      )}
+                      <span> {storeDetail?.firstCurrency}</span>
                     </td>
                   </tr>
-                ))}
-
-                {/* Total Row */}
-                <tr style={{ fontWeight: "bold" }}>
-                  <td colSpan="2" style={{ textAlign: "right" }}>
-                    {t("total")}:
-                  </td>
-                  <td style={{ textAlign: "center" }}>
-                    {bills?.reduce(
-                      (sum, bill) => sum + (bill?.orderId?.length || 0),
-                      0
-                    )}
-                  </td>
-                  <td style={{ textAlign: "center" }}>
-                    {moneyCurrency(
-                      bills?.reduce(
-                        (sum, bill) =>
-                          sum +
-                          (bill?.discount !== 0
-                            ? bill?.billAmount - bill?.billAmountBefore
-                            : 0),
-                        0
-                      )
-                    )}
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    {moneyCurrency(
-                      bills?.reduce(
-                        (sum, bill) => sum + (bill?.billAmount || 0),
-                        0
-                      )
-                    )}
-                    <span> {storeDetail?.firstCurrency}</span>
-                  </td>
-                </tr>
-              </TableComponent>
+                </TableComponent>
+              )}
             </div>
           </Container>
         </div>
