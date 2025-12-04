@@ -566,7 +566,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                 ))}
               </>
             )}
-            {delivery.revenueByPlatform.length > 0 && (
+            {delivery?.revenueByPlatform?.length > 0 && (
               <>
                 <hr style={{ borderBottom: "1px dotted #000" }} />
                 <div>
@@ -589,7 +589,7 @@ export default function PopUpPrintComponent({ open, onClose, children }) {
                         <td style={{ textAlign: "center" }}>{t("qty")}</td>
                         <td style={{ textAlign: "right" }}>{t("total")}</td>
                       </tr>
-                      {delivery.revenueByPlatform.map((e, index) => (
+                      {delivery?.revenueByPlatform?.map((e, index) => (
                         <tr key={e?._id}>
                           <td style={{ textAlign: "left" }}>{index + 1}</td>
                           <td style={{ textAlign: "center" }}>{e?._id}</td>
