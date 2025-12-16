@@ -242,26 +242,45 @@ export default function ConfigPage() {
 
   const changeCounterReport = async (e) => {
     const isType = e.target.checked;
-    const response = await updateStore({counterDisableReport: isType}, storeDetail?._id);
+    const response = await updateStore(
+      { counterDisableReport: isType },
+      storeDetail?._id
+    );
     // await updateCounterBill(profile?.data.storeId, { data: isType });
     console.log("response", response);
     await fetchStoreDetail(storeDetail?._id);
   };
   const changeCounterMenuManagement = async (e) => {
     const isType = e.target.checked;
-    const response = await updateStore({counterMenuManagement: isType}, storeDetail?._id);
+    const response = await updateStore(
+      { counterMenuManagement: isType },
+      storeDetail?._id
+    );
     // await updateCounterBill(profile?.data.storeId, { data: isType });
     console.log("response", response);
     await fetchStoreDetail(storeDetail?._id);
   };
   const changeDisableMenuPricing = async (e) => {
     const isType = e.target.checked;
-    const response = await updateStore({disableMenuPricing: isType}, storeDetail?._id);
+    const response = await updateStore(
+      { disableMenuPricing: isType },
+      storeDetail?._id
+    );
     // await updateCounterBill(profile?.data.storeId, { data: isType });
     console.log("response", response);
     await fetchStoreDetail(storeDetail?._id);
   };
 
+  const changeEnableMusic = async (e) => {
+    const isType = e.target.checked;
+    const response = await updateStore(
+      { isEnableMusic: isType },
+      storeDetail?._id
+    );
+    // await updateCounterBill(profile?.data.storeId, { data: isType });
+    console.log("response", response);
+    await fetchStoreDetail(storeDetail?._id);
+  };
 
   const TooltipFunc = ({ id, children, title }) => (
     <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
@@ -495,7 +514,9 @@ export default function ConfigPage() {
                           justifyContent: "center",
                         }}
                       >
-                        <Form.Label htmlFor={"switch-stockMissing-" + item?.key}>
+                        <Form.Label
+                          htmlFor={"switch-stockMissing-" + item?.key}
+                        >
                           {storeDetail?.isStockMissing
                             ? `${t("oppen")}`
                             : `${t("close")}`}
@@ -540,6 +561,13 @@ export default function ConfigPage() {
                       state: storeDetail?.isCustomerCount,
                       handler: changeCustomerCount,
                     },
+                    {
+                      title: `${t("enable_music")}`,
+                      key: "enableMusic",
+                      disabled: false,
+                      state: storeDetail?.isEnableMusic,
+                      handler: changeEnableMusic,
+                    },
                   ].map((item, index) => (
                     <div
                       style={{
@@ -561,9 +589,7 @@ export default function ConfigPage() {
                         }}
                       >
                         <Form.Label htmlFor={"booking-" + item?.key}>
-                          {item?.state
-                            ? `${t("oppen")}`
-                            : `${t("close")}`}
+                          {item?.state ? `${t("oppen")}` : `${t("close")}`}
                         </Form.Label>
                         <Form.Check
                           disabled={item?.disabled}
@@ -679,9 +705,7 @@ export default function ConfigPage() {
                     }}
                   >
                     <Form.Label htmlFor={"transfer-payment-" + item?.key}>
-                      {item?.state
-                        ? `${t("oppen")}`
-                        : `${t("close")}`}
+                      {item?.state ? `${t("oppen")}` : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
                       type="switch"
@@ -884,12 +908,8 @@ export default function ConfigPage() {
                       justifyContent: "center",
                     }}
                   >
-                    <Form.Label
-                      htmlFor={`switch-CounterFilter-${item?.key}`}
-                    >
-                      {item?.state
-                        ? `${t("oppen")}`
-                        : `${t("close")}`}
+                    <Form.Label htmlFor={`switch-CounterFilter-${item?.key}`}>
+                      {item?.state ? `${t("oppen")}` : `${t("close")}`}
                     </Form.Label>
                     <Form.Check
                       type="switch"
@@ -1092,7 +1112,6 @@ export default function ConfigPage() {
                   />
                 </div>
               </div>
-
             </Card.Body>
           </Card>
           <Card border="primary" style={{ margin: 0 }}>
@@ -1236,7 +1255,7 @@ export default function ConfigPage() {
                   display: "grid",
                   gridTemplateColumns: "1fr auto",
                   gap: 10,
-                  padding: "10px 0", 
+                  padding: "10px 0",
                   borderBottom: `1px dotted ${COLOR_APP}`,
                 }}
               >
