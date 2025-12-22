@@ -426,7 +426,7 @@ export default function HistoryBankTransferClaim() {
     const existingIndex = unique.findIndex((obj) => obj.billId === item.billId);
 
     if (existingIndex === -1) {
-      // Add new entry with initial amount
+      // Add new entry with initial amount, preserving all relevant fields from API response
       unique.push({
         billId: item.billId,
         tableName: item.tableName,
@@ -434,10 +434,25 @@ export default function HistoryBankTransferClaim() {
         totalAmount: item.totalAmount || 0,
         currency: item.currency,
         isPaidConfirm: item.isPaidConfirm,
+        storeId: item.storeId,
+        transactionId: item.transactionId,
+        transactionIds: item.transactionId ? [item.transactionId] : [],
+        _id: item._id,
+        paymentMethod: item.paymentMethod,
+        status: item.status,
       });
-    } else if (item.totalAmount) {
-      // Add to existing entry's total
-      unique[existingIndex].totalAmount += item.totalAmount;
+    } else {
+      if (item.totalAmount) {
+        // Add to existing entry's total
+        unique[existingIndex].totalAmount += item.totalAmount;
+      }
+      // Add transactionId if it exists and not already in the array
+      if (
+        item.transactionId &&
+        !unique[existingIndex].transactionIds.includes(item.transactionId)
+      ) {
+        unique[existingIndex].transactionIds.push(item.transactionId);
+      }
     }
 
     return unique;
@@ -473,6 +488,8 @@ export default function HistoryBankTransferClaim() {
             `${profile?.data?.firstname} ${profile?.data?.lastname}` ??
             "-" /* cspell:ignore firstname lastname */,
           staffCheckOutId: profile?.data?.id,
+          storeId: table.storeId,
+          transactionId: table.transactionId || null,
         };
 
         // First request - separated with its own try-catch
@@ -504,6 +521,8 @@ export default function HistoryBankTransferClaim() {
             {
               billId: table.billId,
               code: table.code,
+              storeId: table.storeId,
+              transactionId: table.transactionId || null,
             },
             {
               headers,
