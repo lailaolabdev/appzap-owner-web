@@ -208,15 +208,66 @@ export default function HistoryBankTransferClaim() {
 
       clearTimeout(timeoutId);
 
-      // Update state with new data
+      // Transform API response data to match expected structure
+      const transformData = (data) => {
+        if (!data || !Array.isArray(data)) return [];
+
+        return data.map((item) => {
+          // If item already has the expected structure (from other endpoints), return as is
+          if (item.tableName !== undefined || item.billId !== undefined) {
+            return item;
+          }
+
+          // Transform items with paymentData structure
+          if (item.paymentData) {
+            const payment = item.paymentData;
+            return {
+              _id: item._id || payment._id || item.transactionId,
+              transactionId: item.transactionId || payment.transactionId,
+              billId: payment.tag1 || payment._id, // tag1 appears to be the bill/store ID
+              totalAmount: payment.amount || 0,
+              currency: payment.currency || "LAK",
+              status: payment.status || "PAYMENT_COMPLETED",
+              createdAt: payment.createdAt || payment.updatedAt,
+              updatedAt: payment.updatedAt || payment.createdAt,
+              tableName: item.tableName || payment.tableName || "-", // May not exist if checkoutFound: false
+              code: item.code || payment.code || "-", // May not exist if checkoutFound: false
+              isPaidConfirm:
+                item.isPaidConfirm || payment.status === "PAYMENT_COMPLETED",
+              storeId: payment.tag1 || item.storeId,
+              paymentMethod: payment.paymentMethod || "APPZAP_TRANSFER",
+              paymentData: payment, // Preserve original paymentData for claim function
+              checkoutFound:
+                item.checkoutFound !== undefined ? item.checkoutFound : true,
+              claimStatus: "UNCLAIMED",
+            };
+          }
+
+          // Fallback: return item as is if structure is unknown
+          return item;
+        });
+      };
+
+      const transformedData = transformData(response.data.data);
+
+      // Update state with transformed data
       setClaimData((prevData) => ({
         ...prevData,
-        [type]: response.data.data || [],
+        [type]: transformedData,
       }));
+
+      // Calculate totalAmount from transformed data if API returns 0 or for UNCLAIMED status
+      const calculatedTotalAmount =
+        response.data.totalAmount > 0
+          ? response.data.totalAmount
+          : transformedData.reduce(
+              (sum, item) => sum + (item.totalAmount || 0),
+              0
+            );
 
       setAmountData((prevAmounts) => ({
         ...prevAmounts,
-        [type]: response.data.totalAmount || 0,
+        [type]: calculatedTotalAmount,
       }));
 
       console.log("rest", response.data);
@@ -852,7 +903,10 @@ export default function HistoryBankTransferClaim() {
           <div className="flex flex-col items-center text-lg">
             <div className="text-color-app text-2xl font-bold">
               {selectedPayment
-                .reduce((total, payment) => total + payment.totalAmount, 0)
+                .reduce(
+                  (total, payment) => total + (payment.totalAmount || 0),
+                  0
+                )
                 .toLocaleString()}{" "}
               {selectedPayment[0]?.currency ?? "LAK"}
             </div>
@@ -877,7 +931,7 @@ export default function HistoryBankTransferClaim() {
                   >
                     <span>{`${payment.tableName} (${payment.code})`}</span>
                     <span className="text-color-app">
-                      {payment.totalAmount.toLocaleString()}{" "}
+                      {(payment.totalAmount || 0).toLocaleString()}{" "}
                       {payment.currency === "LAK" ? "ກີບ" : payment.currency}
                     </span>
                   </div>
@@ -889,7 +943,10 @@ export default function HistoryBankTransferClaim() {
                 <span className="text-color-app">
                   {uniquePaymentData
                     .filter((payment) => !payment.isPaidConfirm)
-                    .reduce((total, payment) => total + payment.totalAmount, 0)
+                    .reduce(
+                      (total, payment) => total + (payment.totalAmount || 0),
+                      0
+                    )
                     .toLocaleString()}{" "}
                   {uniquePaymentData[0]?.currency === "LAK"
                     ? "ກີບ"
