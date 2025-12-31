@@ -2,7 +2,7 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 import { Pagination } from "react-bootstrap";
 
-const PaginationControls = ({ pageCount, onPageChange, t }) => (
+const PaginationControls = ({ pageCount, onPageChange, forcePage, t }) => (
   <ReactPaginate
     previousLabel={
       <span className="glyphicon glyphicon-chevron-left">{t("previous")}</span>
@@ -16,6 +16,7 @@ const PaginationControls = ({ pageCount, onPageChange, t }) => (
     marginPagesDisplayed={1}
     pageRangeDisplayed={3}
     onPageChange={onPageChange}
+    forcePage={forcePage !== undefined ? forcePage : undefined}
     containerClassName={"pagination justify-content-center"}
     pageClassName={"page-item"}
     pageLinkClassName={"page-link"}

@@ -105,51 +105,17 @@ export default function HistoryBankTransferClaim() {
     [CLAIM_STATUSES.CLAIMED]: 0,
     [CLAIM_STATUSES.REJECTED]: 0,
   });
+  const [totalPages, setTotalPages] = useState({
+    [CLAIM_STATUSES.UNCLAIMED]: 0,
+    [CLAIM_STATUSES.CLAIMING]: 0,
+    [CLAIM_STATUSES.CLAIMED]: 0,
+    [CLAIM_STATUSES.REJECTED]: 0,
+  });
 
   const { setTotalAmountClaim } = useClaimDataStore();
   const { profile, setSelectedTable, getTableDataStore } = useStore();
   const { storeDetail } = useStoreStore();
   const { shiftCurrent } = useShiftStore();
-
-  // Transform API response data to match expected structure
-  const transformData = (data) => {
-    if (!data || !Array.isArray(data)) return [];
-
-    return data.map((item) => {
-      // If item already has the expected structure (from other endpoints), return as is
-      if (item.tableName !== undefined || item.billId !== undefined) {
-        return item;
-      }
-
-      // Transform items with paymentData structure
-      if (item.paymentData) {
-        const payment = item.paymentData;
-        return {
-          _id: item._id || payment._id || item.transactionId,
-          transactionId: item.transactionId || payment.transactionId,
-          billId: payment.tag1 || payment._id, // tag1 appears to be the bill/store ID
-          totalAmount: payment.amount || 0,
-          currency: payment.currency || "LAK",
-          status: payment.status || "PAYMENT_COMPLETED",
-          createdAt: payment.createdAt || payment.updatedAt,
-          updatedAt: payment.updatedAt || payment.createdAt,
-          tableName: item.tableName || payment.tableName || "-", // May not exist if checkoutFound: false
-          code: item.code || payment.code || "-", // May not exist if checkoutFound: false
-          isPaidConfirm:
-            item.isPaidConfirm || payment.status === "PAYMENT_COMPLETED",
-          storeId: payment.tag1 || item.storeId,
-          paymentMethod: payment.paymentMethod || "APPZAP_TRANSFER",
-          paymentData: payment, // Preserve original paymentData for claim function
-          checkoutFound:
-            item.checkoutFound !== undefined ? item.checkoutFound : true,
-          claimStatus: "UNCLAIMED",
-        };
-      }
-
-      // Fallback: return item as is if structure is unknown
-      return item;
-    });
-  };
 
   useEffect(() => {
     fetchData(selectedType, currentPage);
@@ -159,7 +125,7 @@ export default function HistoryBankTransferClaim() {
 
   const getClaimAmountData = async () => {
     try {
-      const { DATA, TOKEN } = await getLocalData();
+      const { DATA } = await getLocalData();
       // Add timeout and cancel token for better network handling
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -170,69 +136,9 @@ export default function HistoryBankTransferClaim() {
       );
 
       clearTimeout(timeoutId);
-
-      let unclaimedAmount = response?.data?.unclaimedAmount || 0;
-
-      // If API returns 0, calculate from actual checkout data
-      // This handles cases where payments exist but checkoutFound is false
-      if (unclaimedAmount === 0) {
-        try {
-          const checkoutController = new AbortController();
-          const checkoutTimeoutId = setTimeout(
-            () => checkoutController.abort(),
-            10000
-          );
-
-          const checkoutResponse = await axios.get(
-            `${END_POINT_SERVER_JUSTCAN}/v6/checkouts?storeId=${DATA?.storeId}&status=PAYMENT_COMPLETED&startPrice=1&endPrice=100000000&skip=0&limit=40`, // Ignore spellcheck: JUSTCAN
-            { headers: TOKEN, signal: checkoutController.signal }
-          );
-
-          clearTimeout(checkoutTimeoutId);
-
-          // Transform and calculate from checkout data
-          // Safety check for response data
-          if (
-            checkoutResponse?.data?.data &&
-            Array.isArray(checkoutResponse.data.data)
-          ) {
-            const transformedData = transformData(checkoutResponse.data.data);
-            const calculatedAmount = transformedData.reduce(
-              (sum, item) => sum + (item.totalAmount || 0),
-              0
-            );
-
-            console.log(
-              "Calculated unclaimed amount from checkout data:",
-              calculatedAmount
-            );
-            console.log("Transformed data count:", transformedData.length);
-            if (transformedData.length > 0) {
-              console.log("Sample transformed item:", transformedData[0]);
-            }
-
-            // Use calculated amount if it's greater than 0
-            if (calculatedAmount > 0) {
-              unclaimedAmount = calculatedAmount;
-              console.log("Updated unclaimedAmount to:", unclaimedAmount);
-            }
-          } else {
-            console.log("No checkout data available for calculation");
-          }
-        } catch (calcErr) {
-          console.log(
-            "Error calculating unclaimed amount from checkout data:",
-            calcErr.message
-          );
-        }
-      } else {
-        console.log("Using API unclaimedAmount:", unclaimedAmount);
-      }
-
-      console.log("Final unclaimedAmount being set:", unclaimedAmount);
-      setTotalAmountClaim(unclaimedAmount);
+      setTotalAmountClaim(response?.data?.unclaimedAmount);
     } catch (err) {
-      console.log("Error fetching claim amount data:", err.message);
+      // Silently handle error - unclaimed amount will remain at previous value
     }
   };
 
@@ -304,13 +210,57 @@ export default function HistoryBankTransferClaim() {
         signal: controller.signal,
       });
 
-      console.log("Response data:", response.data);
-
       clearTimeout(timeoutId);
 
-      // Safety check for response data
-      const responseData = response?.data?.data;
-      const transformedData = transformData(responseData || []);
+      // Transform API response data to match expected structure
+      // Only transform UNCLAIMED endpoint data (with paymentData structure)
+      // CLAIMING/CLAIMED/REJECTED endpoints already return correct structure (billNo, totalPrice, etc.)
+      const transformData = (data, endpointType) => {
+        if (!data || !Array.isArray(data)) return [];
+
+        return data.map((item) => {
+          // For /v6/checkout/claims endpoint (CLAIMING, CLAIMED, REJECTED)
+          // Items already have correct structure: billNo, totalPrice, currency, etc.
+          if (item.billNo !== undefined || item.totalPrice !== undefined) {
+            return item;
+          }
+
+          // For /v6/checkouts endpoint (UNCLAIMED) - transform paymentData structure
+          if (item.paymentData) {
+            const payment = item.paymentData;
+            return {
+              _id: item._id || payment._id || item.transactionId,
+              transactionId: item.transactionId || payment.transactionId,
+              billId: payment.tag1 || payment._id, // tag1 appears to be the bill/store ID
+              totalAmount: payment.amount || 0,
+              currency: payment.currency || "LAK",
+              status: payment.status || "PAYMENT_COMPLETED",
+              createdAt: payment.createdAt || payment.updatedAt,
+              updatedAt: payment.updatedAt || payment.createdAt,
+              tableName: item.tableName || payment.tableName || "-", // May not exist if checkoutFound: false
+              code: item.code || payment.code || "-", // May not exist if checkoutFound: false
+              isPaidConfirm:
+                item.isPaidConfirm || payment.status === "PAYMENT_COMPLETED",
+              storeId: payment.tag1 || item.storeId,
+              paymentMethod: payment.paymentMethod || "APPZAP_TRANSFER",
+              paymentData: payment, // Preserve original paymentData for claim function
+              checkoutFound:
+                item.checkoutFound !== undefined ? item.checkoutFound : true,
+              claimStatus: "UNCLAIMED",
+            };
+          }
+
+          // If item already has expected structure (tableName, billId), return as is
+          if (item.tableName !== undefined || item.billId !== undefined) {
+            return item;
+          }
+
+          // Fallback: return item as is if structure is unknown
+          return item;
+        });
+      };
+
+      const transformedData = transformData(response.data.data, type);
 
       // Update state with transformed data
       setClaimData((prevData) => ({
@@ -318,32 +268,65 @@ export default function HistoryBankTransferClaim() {
         [type]: transformedData,
       }));
 
-      // Calculate totalAmount from transformed data if API returns 0 or for UNCLAIMED status
-      const apiTotalAmount = response?.data?.totalAmount || 0;
-      const calculatedTotalAmount =
-        apiTotalAmount > 0
-          ? apiTotalAmount
-          : transformedData.reduce(
-              (sum, item) => sum + (item.totalAmount || 0),
-              0
-            );
+      // Calculate totalAmount based on endpoint type
+      let calculatedTotalAmount = response.data.totalAmount || 0;
+
+      // For UNCLAIMED endpoint, calculate from transformed data if API returns 0
+      if (type === CLAIM_STATUSES.UNCLAIMED && calculatedTotalAmount === 0) {
+        calculatedTotalAmount = transformedData.reduce(
+          (sum, item) => sum + (item.totalAmount || 0),
+          0
+        );
+      }
+      // For CLAIMING/CLAIMED/REJECTED endpoints, use totalPrice field
+      else if (
+        [
+          CLAIM_STATUSES.CLAIMING,
+          CLAIM_STATUSES.CLAIMED,
+          CLAIM_STATUSES.REJECTED,
+        ].includes(type) &&
+        calculatedTotalAmount === 0
+      ) {
+        calculatedTotalAmount = transformedData.reduce(
+          (sum, item) => sum + (item.totalPrice || 0),
+          0
+        );
+      }
 
       setAmountData((prevAmounts) => ({
         ...prevAmounts,
         [type]: calculatedTotalAmount,
       }));
 
-      console.log("rest", response.data);
+      // Store pagination data from API response
+      const pagination = response.data.pagination || {};
+      const totalCount = pagination.totalCount || 0;
+      const apiTotalPages = pagination.totalPages;
 
       // Store total count for pagination
       setTotalItems((prev) => ({
         ...prev,
-        [type]: response?.data?.pagination?.totalCount || 0,
+        [type]: totalCount,
       }));
+
+      // Store total pages from API if available (for /v6/checkout/claims endpoint)
+      // Otherwise it will be calculated in calculateTotalPages
+      // Note: apiTotalPages can be 0 when there are no items, which is valid
+      if (apiTotalPages !== undefined && apiTotalPages !== null) {
+        setTotalPages((prev) => ({
+          ...prev,
+          [type]: apiTotalPages,
+        }));
+      } else {
+        // Reset to undefined if API doesn't provide it (for /v6/checkouts endpoint)
+        setTotalPages((prev) => ({
+          ...prev,
+          [type]: undefined,
+        }));
+      }
     } catch (error) {
-      console.error("Error fetching data:", error.message);
-      if (axios.isCancel(error)) {
-        console.log("Request cancelled:", error.message);
+      if (!axios.isCancel(error)) {
+        console.error("Error fetching data:", error.message);
       }
     } finally {
       setIsLoading(false);
@@ -517,19 +500,16 @@ export default function HistoryBankTransferClaim() {
         }
       );
 
-      console.log("claim payment response:", claimResponse.data);
-
       clearTimeout(timeoutId);
 
       setSelectedPayment([]);
       successAdd(`ສຳເລັດແລ້ວ`); // Ignore spellcheck: ສຳເລັດແລ້ວ
 
       // Refresh data for both tabs
-      fetchData(CLAIM_STATUSES.UNCLAIMED, currentPage);
-      fetchData(CLAIM_STATUSES.CLAIMING, currentPage);
+      await fetchData(CLAIM_STATUSES.UNCLAIMED, currentPage);
+      await fetchData(CLAIM_STATUSES.CLAIMING, currentPage);
     } catch (error) {
       errorAdd(`ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່`); // Ignore spellcheck: ມີຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່
-      console.error("Error claiming payment:", error.message);
     } finally {
       setIsLoading(false);
     }
@@ -619,12 +599,7 @@ export default function HistoryBankTransferClaim() {
               signal: controller.signal,
             }
           );
-          console.log(`First request succeeded for table ${table.tableName}`);
         } catch (firstErr) {
-          console.error(
-            `First request failed for table ${table.tableName}:`,
-            firstErr
-          );
           // Continue to the second request even if the first fails
         }
 
@@ -643,12 +618,8 @@ export default function HistoryBankTransferClaim() {
               signal: controller.signal,
             }
           );
-          console.log(`Second request succeeded for table ${table.tableName}`);
         } catch (secondErr) {
-          console.error(
-            `Second request failed for table ${table.tableName}:`,
-            secondErr
-          );
+          // Log error but continue processing other tables
         }
 
         clearTimeout(timeoutId);
@@ -683,8 +654,20 @@ export default function HistoryBankTransferClaim() {
   };
 
   // Calculate proper pagination values
+  // Use API's totalPages if available (from /v6/checkout/claims endpoint)
+  // Otherwise calculate from totalCount
   const calculateTotalPages = (type) => {
-    return Math.ceil(totalItems[type] / rowsPerPage) || 1;
+    // If API provided totalPages directly (including 0), use it
+    // This is for /v6/checkout/claims endpoint which provides pagination.totalPages
+    if (totalPages[type] !== undefined && totalPages[type] !== null) {
+      return totalPages[type];
+    }
+
+    // Fallback: calculate from totalCount (for /v6/checkouts endpoint)
+    // This endpoint doesn't provide totalPages, so we calculate it
+    const total = totalItems[type] || 0;
+    if (total === 0) return 0; // No pages if no items
+    return Math.ceil(total / rowsPerPage);
   };
 
   // Prepare data for each tab based on selected type
