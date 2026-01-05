@@ -1,6 +1,11 @@
-import React, { useEffect, useState, useRef, useLayoutEffect} from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { BLUETOOTH_PRINTER_PORT, COLOR_APP, ETHERNET_PRINTER_PORT, USB_PRINTER_PORT } from "../../constants";
+import {
+  BLUETOOTH_PRINTER_PORT,
+  COLOR_APP,
+  ETHERNET_PRINTER_PORT,
+  USB_PRINTER_PORT,
+} from "../../constants";
 import {
   Button,
   Form,
@@ -14,7 +19,11 @@ import { FaCoins } from "react-icons/fa";
 import axios from "axios";
 import Box from "../../components/Box";
 import { getLocalData } from "../../constants/api";
-import { debtsRemainingAmount, getBillDebtDatas, getBilldebtReport } from "../../services/debt";
+import {
+  debtsRemainingAmount,
+  getBillDebtDatas,
+  getBilldebtReport,
+} from "../../services/debt";
 import { getdebtHistory } from "../../services/debt";
 import moment from "moment";
 import { base64ToBlob, moneyCurrency } from "../../helpers";
@@ -30,11 +39,13 @@ import BillDebt80 from "../../components/bill/BillDebt80";
 import html2canvas from "html2canvas";
 import Swal from "sweetalert2";
 import printFlutter from "../../helpers/printFlutter";
+import { useLanguageStore } from "../../zustand/languageStore";
 
 export default function DebtPage() {
   const { t } = useTranslation();
   const { storeDetail } = useStoreStore();
   const { printerCounter, printers } = useStore();
+  const { selectLanguage } = useLanguageStore();
 
   const [isHovered, setIsHovered] = useState(false);
 
@@ -51,17 +62,17 @@ export default function DebtPage() {
   const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
   const [startTime, setStartTime] = useState("00:00:00");
   const [endTime, setEndTime] = useState("23:59:59");
-  const [exportType, setExportType] = useState('');
-  const [activeTab, setActiveTab] = useState('billDebt-list');
+  const [exportType, setExportType] = useState("");
+  const [activeTab, setActiveTab] = useState("billDebt-list");
   const [reportData, setReportData] = useState({
     isLoadingReport: false,
-    summary: null
-  })
+    summary: null,
+  });
   const limitData = 50;
   const [widthBill80, setWidthBill80] = useState(0);
   const billDebt80Ref = useRef();
 
-   useEffect(() => {
+  useEffect(() => {
     const element = billDebt80Ref?.current;
     console.log(element); // 👈️ element here
   }, []);
@@ -73,17 +84,17 @@ export default function DebtPage() {
   const handleTabSelect = (key) => {
     setActiveTab(key);
     switch (key) {
-      case 'billDebt-list':
-        setExportType('');
+      case "billDebt-list":
+        setExportType("");
         break;
-      case 'Pay-debt-list':
-        setExportType('payment');
+      case "Pay-debt-list":
+        setExportType("payment");
         break;
-      case 'Incress-debt-list':
-        setExportType('increase');
+      case "Incress-debt-list":
+        setExportType("increase");
         break;
       default:
-        setExportType('');
+        setExportType("");
     }
   };
 
@@ -102,17 +113,16 @@ export default function DebtPage() {
       const baseParams = new URLSearchParams({
         skip: ((pagination - 1) * limitData).toString(),
         limit: limitData.toString(),
-        storeId: storeDetail?._id || ''
+        storeId: storeDetail?._id || "",
       });
 
       // Add date range parameters if they exist
       if (startDate && endDate) {
-        const formattedStartDate = `${startDate}T${startTime || '00:00:00'}`;
-        const formattedEndDate = `${endDate}T${endTime || '23:59:59'}`;
-        baseParams.append('startDate', formattedStartDate);
-        baseParams.append('endDate', formattedEndDate);
+        const formattedStartDate = `${startDate}T${startTime || "00:00:00"}`;
+        const formattedEndDate = `${endDate}T${endTime || "23:59:59"}`;
+        baseParams.append("startDate", formattedStartDate);
+        baseParams.append("endDate", formattedEndDate);
       }
-
 
       // Create the final query string
       const queryString = `?${baseParams.toString()}`;
@@ -127,11 +137,11 @@ export default function DebtPage() {
         setTotalPagination(Math.ceil(response.totalCount / limitData));
       } else if (Array.isArray(response)) {
         // If the API returns all data, we need to handle pagination on the client side
-        const filteredData = response.filter(item => {
+        const filteredData = response.filter((item) => {
           // Filter by date range
           const itemDate = new Date(item.updatedAt || item.createdAt);
-          const start = new Date(`${startDate}T${startTime || '00:00:00'}`);
-          const end = new Date(`${endDate}T${endTime || '23:59:59'}`);
+          const start = new Date(`${startDate}T${startTime || "00:00:00"}`);
+          const end = new Date(`${endDate}T${endTime || "23:59:59"}`);
           return itemDate >= start && itemDate <= end;
         });
 
@@ -144,12 +154,14 @@ export default function DebtPage() {
 
         // Calculate pagination
         const startIndex = (pagination - 1) * limitData;
-        const paginatedData = sortedData.slice(startIndex, startIndex + limitData);
+        const paginatedData = sortedData.slice(
+          startIndex,
+          startIndex + limitData
+        );
 
         setDebtHistoryData(paginatedData);
         setTotalPagination(Math.ceil(sortedData.length / limitData));
       }
-
     } catch (err) {
       console.error("Error fetching debt history:", err);
       setDebtHistoryData([]);
@@ -274,12 +286,18 @@ export default function DebtPage() {
   };
 
   // Fecth for report
-  const fetchReportDebtBill = async ({ storeId, startDate, endDate, startTime, endTime }) => {
+  const fetchReportDebtBill = async ({
+    storeId,
+    startDate,
+    endDate,
+    startTime,
+    endTime,
+  }) => {
     let findby = `?storeId=${storeId}`;
 
     if (startDate && endDate) {
-      const startDateTime = `${startDate}T${startTime || '00:00:00'}`;
-      const endDateTime = `${endDate}T${endTime || '23:59:59'}`;
+      const startDateTime = `${startDate}T${startTime || "00:00:00"}`;
+      const endDateTime = `${endDate}T${endTime || "23:59:59"}`;
       findby += `&startDate=${startDateTime}&endDate=${endDateTime}`;
     }
 
@@ -289,12 +307,18 @@ export default function DebtPage() {
   };
 
   // Fetch for data list
-  const fetchBillDebtion = async ({ storeId, startDate, endDate, startTime, endTime }) => {
+  const fetchBillDebtion = async ({
+    storeId,
+    startDate,
+    endDate,
+    startTime,
+    endTime,
+  }) => {
     let findby = `?storeId=${storeId}`;
 
     if (startDate && endDate) {
-      const startDateTime = `${startDate}T${startTime || '00:00:00'}`;
-      const endDateTime = `${endDate}T${endTime || '23:59:59'}`;
+      const startDateTime = `${startDate}T${startTime || "00:00:00"}`;
+      const endDateTime = `${endDate}T${endTime || "23:59:59"}`;
       findby += `&startDate=${startDateTime}&endDate=${endDateTime}`;
     }
 
@@ -303,37 +327,46 @@ export default function DebtPage() {
   };
 
   // Query bill report
-  const {
-    data: reportSummary,
-    isLoading: isLoadingReport,
-  } = useQuery({
-    queryKey: ['reportDebtBill', storeDetail?._id, startDate, endDate, startTime, endTime],
-    queryFn: () => fetchReportDebtBill({
-      storeId: storeDetail?._id,
+  const { data: reportSummary, isLoading: isLoadingReport } = useQuery({
+    queryKey: [
+      "reportDebtBill",
+      storeDetail?._id,
       startDate,
       endDate,
       startTime,
-      endTime
-    }),
+      endTime,
+    ],
+    queryFn: () =>
+      fetchReportDebtBill({
+        storeId: storeDetail?._id,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+      }),
     // enabled: !!storeDetail?._id, // Only run query when storeId exists
   });
 
   // Query bill data lists
-  const {
-    data: billDebtionData,
-    isLoading: isLoadingBilldebtion,
-  } = useQuery({
-    queryKey: ['bill_debtion_data', storeDetail?._id, startDate, endDate, startTime, endTime],
-    queryFn: () => fetchBillDebtion({
-      storeId: storeDetail?._id,
+  const { data: billDebtionData, isLoading: isLoadingBilldebtion } = useQuery({
+    queryKey: [
+      "bill_debtion_data",
+      storeDetail?._id,
       startDate,
       endDate,
       startTime,
-      endTime
-    }),
+      endTime,
+    ],
+    queryFn: () =>
+      fetchBillDebtion({
+        storeId: storeDetail?._id,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+      }),
     // enabled: !!storeDetail?._id, // Only run query when storeId exists
   });
-
 
   return (
     <div style={{ padding: 20 }}>
@@ -392,7 +425,6 @@ export default function DebtPage() {
                 // fontWeight: 700
               }}
             >
-
               {moneyCurrency(reportSummary?.totalPrice || 0)} ກີບ
             </div>
           </Card.Body>
@@ -419,7 +451,12 @@ export default function DebtPage() {
               }}
             >
               {/* {moneyCurrency(totalPayment)} ກີບ */}
-              {moneyCurrency(reportSummary?.totalPaied > 0 ? reportSummary?.totalPaied : reportSummary?.totalTransfer || 0)} ກີບ
+              {moneyCurrency(
+                reportSummary?.totalPaied > 0
+                  ? reportSummary?.totalPaied
+                  : reportSummary?.totalTransfer || 0
+              )}{" "}
+              ກີບ
             </div>
           </Card.Body>
         </Card>
@@ -462,6 +499,7 @@ export default function DebtPage() {
           <BillDebt80
             storeDetail={storeDetail}
             billDebtData={selectBillDebt}
+            language={selectLanguage}
           />
         </div>
       </Box>
@@ -471,12 +509,10 @@ export default function DebtPage() {
         activeKey={activeTab}
         onSelect={handleTabSelect}
       >
-
         <Tab
           eventKey="billDebt-list"
           title={t("debt_list_all")}
           style={{ paddingTop: 20 }}
-
         >
           {isLoadingBilldebtion || isLoadingReport ? (
             <Spinner animation="border" variant="warning" />
@@ -523,40 +559,40 @@ export default function DebtPage() {
             totalPagination={totalPagination}
           />
         </Tab>
-        </Tabs>
+      </Tabs>
 
-        <div
-          style={{
-            width: "80mm",
-            padding: 10,
-          }}
-          ref={billDebt80Ref}
-        >
-          <BillDebt80
-            storeDetail={storeDetail}
-            billDebtData={selectBillDebt}
-            onPrintBillDebt={onPrintBillDebt}
-          />
-        </div>
-        
-        <PopUpDetaillBillDebt
-          open={popup?.PopUpDetaillBillDebt}
-          onClose={() => {
-            setPopup();
-            setSelectBillDebt();
-          }}
+      <div
+        style={{
+          width: "80mm",
+          padding: 10,
+        }}
+        ref={billDebt80Ref}
+      >
+        <BillDebt80
+          storeDetail={storeDetail}
           billDebtData={selectBillDebt}
-          handleTabSelect={handleTabSelect}
           onPrintBillDebt={onPrintBillDebt}
-          callback={async () => {
-            setPopup();
-            setSelectBillDebt();
-            // await getReportDebtBill()
-            // await getData();
-            await getDataHistory();
-          }}
+          language={selectLanguage}
         />
-      
+      </div>
+
+      <PopUpDetaillBillDebt
+        open={popup?.PopUpDetaillBillDebt}
+        onClose={() => {
+          setPopup();
+          setSelectBillDebt();
+        }}
+        billDebtData={selectBillDebt}
+        handleTabSelect={handleTabSelect}
+        onPrintBillDebt={onPrintBillDebt}
+        callback={async () => {
+          setPopup();
+          setSelectBillDebt();
+          // await getReportDebtBill()
+          // await getData();
+          await getDataHistory();
+        }}
+      />
 
       {popup?.PopUpDebtExport && (
         <PopUpDebtExport
@@ -597,4 +633,3 @@ export default function DebtPage() {
     </div>
   );
 }
-

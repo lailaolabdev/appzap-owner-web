@@ -20,14 +20,14 @@ export default function PopUpDetaillBillFark({
   billFarkData,
   onPrintBillFark,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   // state
   const [isLoading, setIsLoading] = useState(false);
   const [inputSearch, setInputSearch] = useState("");
   const [menusData, setMenusData] = useState();
   const [Data, setData] = useState([]);
   // store
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
 
   // useEffect
   useEffect(() => {
@@ -129,7 +129,17 @@ export default function PopUpDetaillBillFark({
             </tr>
             {Data?.map((e) => (
               <tr>
-                <td style={{ textAlign: "start" }}>{e?.nameMenu}</td>
+                <td style={{ textAlign: "start" }}>
+                  {i18n.language === "la"
+                    ? e?.name || e?.nameMenu
+                    : i18n.language === "en"
+                    ? e?.name_en || e?.name || e?.nameMenu
+                    : i18n.language === "kr"
+                    ? e?.name_kr || e?.name || e?.nameMenu
+                    : i18n.language === "cn"
+                    ? e?.name_cn || e?.name || e?.nameMenu
+                    : e?.name || e?.nameMenu}
+                </td>
                 <td style={{ textAlign: "center" }}>{e?.amount}</td>
               </tr>
             ))}
@@ -150,7 +160,7 @@ export default function PopUpDetaillBillFark({
           ຍືນຍັນ
         </Button>
         <Button
-          onClick={() => {  
+          onClick={() => {
             onPrintBillFark();
             onClose();
           }}

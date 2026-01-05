@@ -22,7 +22,6 @@ import printFlutter from "../../helpers/printFlutter";
 import { base64ToBlob } from "../../helpers";
 import BillDebt80 from "../bill/BillDebt80";
 
-
 export default function PopUpDetailBillDebt({
   open,
   onClose,
@@ -30,7 +29,7 @@ export default function PopUpDetailBillDebt({
   billDebtData,
   onPrintBillDebt,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
   const [numericValue, setNumericValue] = useState(0);
@@ -41,15 +40,13 @@ export default function PopUpDetailBillDebt({
   const [tab, setTab] = useState("cash_transfer");
   const [paymentMethod, setPaymentMethod] = useState("CASH");
   const { profile } = useStore();
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   const { accessToken } = useQuery();
   const [disabledEditBill, setDisabledEditBill] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isPaymentExceeded, setIsPaymentExceeded] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
-
-
 
   useEffect(() => {
     if (open) {
@@ -71,7 +68,13 @@ export default function PopUpDetailBillDebt({
 
   useEffect(() => {
     calculateAmounts();
-  }, [transfer, totalPayment, paymentMethod, remainingAmount, disabledEditBill]);
+  }, [
+    transfer,
+    totalPayment,
+    paymentMethod,
+    remainingAmount,
+    disabledEditBill,
+  ]);
 
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
@@ -98,8 +101,8 @@ export default function PopUpDetailBillDebt({
       await billReset(billDebtData?.billId?._id, storeDetail?._id);
       await handleClickConfirmDebt();
       await _checkBill();
-      queryClient.refetchQueries({ queryKey: ['reportDebtBill'] });
-      queryClient.refetchQueries({ queryKey: ['bill_debtion_data'] });
+      queryClient.refetchQueries({ queryKey: ["reportDebtBill"] });
+      queryClient.refetchQueries({ queryKey: ["bill_debtion_data"] });
 
       successAdd(t("paymentCompleted"));
     } catch (error) {
@@ -123,7 +126,7 @@ export default function PopUpDetailBillDebt({
     } catch (err) {
       console.log(err);
     }
-  }
+  };
 
   const handleClickConfirmDebt = async () => {
     try {
@@ -154,81 +157,83 @@ export default function PopUpDetailBillDebt({
     setIsPrinting(true);
     try {
       // Create a temporary div to render the bill component
-      const tempDiv = document.createElement('div');
-      tempDiv.style.position = 'absolute';
-      tempDiv.style.left = '-9999px';
-      tempDiv.style.top = '-9999px';
-      tempDiv.style.width = '80mm';
-      tempDiv.style.backgroundColor = 'white';
+      const tempDiv = document.createElement("div");
+      tempDiv.style.position = "absolute";
+      tempDiv.style.left = "-9999px";
+      tempDiv.style.top = "-9999px";
+      tempDiv.style.width = "80mm";
+      tempDiv.style.backgroundColor = "white";
       document.body.appendChild(tempDiv);
 
       // Render the BillDebt80 component
-      const React = require('react');
-      const ReactDOM = require('react-dom');
-      
+      const React = require("react");
+      const ReactDOM = require("react-dom");
+
       const billElement = React.createElement(BillDebt80, {
-        store: storeDetail,
-        debt: billDebtData,
-        customer: billDebtData?.customer,
-        payment: {
+        storeDetail: storeDetail,
+        billDebtData: billDebtData,
+        customerData: billDebtData?.customer,
+        paymentData: {
           cash: totalPayment,
           transfer: transfer,
           total: totalPayment + transfer,
-          remaining: remainingAmount
-        }
+          remaining: remainingAmount,
+        },
+        language: i18n.language,
       });
 
       ReactDOM.render(billElement, tempDiv);
 
       // Wait for rendering to complete
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Convert to canvas and get image data
       const canvas = await html2canvas(tempDiv, {
         width: 302, // 80mm in pixels (approximately)
         height: tempDiv.scrollHeight,
-        backgroundColor: 'white',
-        scale: 2
+        backgroundColor: "white",
+        scale: 2,
       });
 
-      const imageData = canvas.toDataURL('image/png');
-      const blob = base64ToBlob(imageData.split(',')[1], 'image/png');
-      
+      const imageData = canvas.toDataURL("image/png");
+      const blob = base64ToBlob(imageData.split(",")[1], "image/png");
+
       // Convert blob to base64 for printing
       const reader = new FileReader();
       reader.onloadend = async () => {
-        const base64Data = reader.result.split(',')[1];
-        
+        const base64Data = reader.result.split(",")[1];
+
         // Print using the existing printer system
-        await printFlutter({
-          imageBuffer: base64Data,
-          ip: storeDetail?.printerIp || '192.168.1.100',
-          type: 'ETHERNET',
-          port: ETHERNET_PRINTER_PORT,
-          width: 80,
-          beep: true,
-          drawer: false
-        }, async () => {
-          // Fallback callback if needed
-          console.log('Print completed');
-        });
-        
-        successAdd(t('bill_printed_successfully'));
+        await printFlutter(
+          {
+            imageBuffer: base64Data,
+            ip: storeDetail?.printerIp || "192.168.1.100",
+            type: "ETHERNET",
+            port: ETHERNET_PRINTER_PORT,
+            width: 80,
+            beep: true,
+            drawer: false,
+          },
+          async () => {
+            // Fallback callback if needed
+            console.log("Print completed");
+          }
+        );
+
+        successAdd(t("bill_printed_successfully"));
       };
-      
+
       reader.readAsDataURL(blob);
-      
+
       // Clean up
       document.body.removeChild(tempDiv);
-      
     } catch (error) {
-      console.error('Print error:', error);
+      console.error("Print error:", error);
       //  errorAdd(t('print_failed'));
     } finally {
       setIsPrinting(false);
     }
   };
-
 
   const _checkBill = async () => {
     const staffConfirm = JSON.parse(localStorage.getItem("STAFFCONFIRM_DATA"));
@@ -254,13 +259,15 @@ export default function PopUpDetailBillDebt({
             fullnameStaffCheckOut:
               `${profile?.data?.firstname} ${profile?.data?.lastname}` ?? "-",
             staffCheckOutId: staffConfirm?.id,
-            debtPaymentDateTime: [{
-              payAmount: totalPayment,
-              transferAmount: transfer,
-              billAmount: totalPayment + transfer,
-              billAmountBefore: totalPayment + transfer,
-              dateTime: currentDateTime
-            }]
+            debtPaymentDateTime: [
+              {
+                payAmount: totalPayment,
+                transferAmount: transfer,
+                billAmount: totalPayment + transfer,
+                billAmountBefore: totalPayment + transfer,
+                dateTime: currentDateTime,
+              },
+            ],
           },
         },
         {
@@ -293,31 +300,60 @@ export default function PopUpDetailBillDebt({
         }}
       >
         <div>
-          <div>{t("table_code")}: {billDebtData?.code}</div>
-          <div>{t("name")}: {billDebtData?.customerName}</div>
-          <div>{t("tel")}: {billDebtData?.customerPhone}</div>
-          <div style={{ color: `${billDebtData?.status === 'DEBT' ? "red" : billDebtData?.status === "PAY_DEBT" ? "green" : "orange"}`, fnWeight: "bold" }}>
-            <span style={{ color: 'black' }}>{t("status")}:</span>{billDebtData?.status === "DEBT" ? t("debt") : billDebtData?.status === "PAY_DEBT" ? t("debt_pay") : t("partial_payment")}
+          <div>
+            {t("table_code")}: {billDebtData?.code}
           </div>
           <div>
-            {moment(billDebtData?.createdAt).format("DD/MM/YYYY")}
+            {t("name")}: {billDebtData?.customerName}
           </div>
           <div>
-            {t("expiration_date")}: {moment(billDebtData?.endDate).format("DD/MM/YYYY")}
+            {t("tel")}: {billDebtData?.customerPhone}
+          </div>
+          <div
+            style={{
+              color: `${
+                billDebtData?.status === "DEBT"
+                  ? "red"
+                  : billDebtData?.status === "PAY_DEBT"
+                  ? "green"
+                  : "orange"
+              }`,
+              fnWeight: "bold",
+            }}
+          >
+            <span style={{ color: "black" }}>{t("status")}:</span>
+            {billDebtData?.status === "DEBT"
+              ? t("debt")
+              : billDebtData?.status === "PAY_DEBT"
+              ? t("debt_pay")
+              : t("partial_payment")}
+          </div>
+          <div>{moment(billDebtData?.createdAt).format("DD/MM/YYYY")}</div>
+          <div>
+            {t("expiration_date")}:{" "}
+            {moment(billDebtData?.endDate).format("DD/MM/YYYY")}
           </div>
           <div style={{ marginTop: "0.5rem" }}>
             {t("total_debt")}: {moneyCurrency(billDebtData?.amount)}
           </div>
           <div style={{ marginBottom: "2px" }}>
-            {t("paid_already")}: {moneyCurrency(billDebtData?.amount - billDebtData?.remainingAmount)}
+            {t("paid_already")}:{" "}
+            {moneyCurrency(
+              billDebtData?.amount - billDebtData?.remainingAmount
+            )}
           </div>
           <div style={{ marginBottom: "2px" }}>
-            {t("outstanding_money")}: {moneyCurrency(billDebtData?.remainingAmount)}
+            {t("outstanding_money")}:{" "}
+            {moneyCurrency(billDebtData?.remainingAmount)}
           </div>
 
           {disabledEditBill ? (
             <div>
-              <Form.Group hidden={paymentMethod !== "CASH" && paymentMethod !== "TRANSFER_CASH"}>
+              <Form.Group
+                hidden={
+                  paymentMethod !== "CASH" && paymentMethod !== "TRANSFER_CASH"
+                }
+              >
                 <Form.Label style={{ margin: "5px", color: "MidnightBlue" }}>
                   (-) {t("cash")}
                 </Form.Label>
@@ -334,7 +370,12 @@ export default function PopUpDetailBillDebt({
                 <div style={{ color: "red" }}>{errorMessage}</div>
               </Form.Group>
 
-              <Form.Group hidden={paymentMethod !== "TRANSFER" && paymentMethod !== "TRANSFER_CASH"}>
+              <Form.Group
+                hidden={
+                  paymentMethod !== "TRANSFER" &&
+                  paymentMethod !== "TRANSFER_CASH"
+                }
+              >
                 <Form.Label style={{ margin: "5px", color: "MidnightBlue" }}>
                   (-) {t("transfer")}
                 </Form.Label>
@@ -352,7 +393,7 @@ export default function PopUpDetailBillDebt({
               </Form.Group>
 
               <Form hidden={tab !== "cash_transfer"}>
-                {['radio'].map((type) => (
+                {["radio"].map((type) => (
                   <div key={`inline-${type}`} className="mb-3">
                     <CustomCheck
                       inline
@@ -377,13 +418,17 @@ export default function PopUpDetailBillDebt({
                       name="paymentMethod"
                       type={type}
                       id={`inline-${type}-2`}
-                      onChange={() => handlePaymentMethodChange("TRANSFER_CASH")}
+                      onChange={() =>
+                        handlePaymentMethodChange("TRANSFER_CASH")
+                      }
                     />
                   </div>
                 ))}
               </Form>
             </div>
-          ) : ""}
+          ) : (
+            ""
+          )}
           <div>
             {t("date_pay")}:{" "}
             {billDebtData?.outStockDate
@@ -406,9 +451,21 @@ export default function PopUpDetailBillDebt({
               <tbody>
                 {billDebtData?.billId?.orderId?.map((e) => (
                   <tr key={e?.id}>
-                    <td style={{ textAlign: "start" }}>{e?.name}</td>
+                    <td style={{ textAlign: "start" }}>
+                      {i18n.language === "la"
+                        ? e?.name || e?.nameMenu
+                        : i18n.language === "en"
+                        ? e?.name_en || e?.name || e?.nameMenu
+                        : i18n.language === "kr"
+                        ? e?.name_kr || e?.name || e?.nameMenu
+                        : i18n.language === "cn"
+                        ? e?.name_cn || e?.name || e?.nameMenu
+                        : e?.name || e?.nameMenu}
+                    </td>
                     <td style={{ textAlign: "center" }}>{e?.quantity}</td>
-                    <td style={{ textAlign: "end" }}>{moneyCurrency(e?.price)} {storeDetail?.firstCurrency}</td>
+                    <td style={{ textAlign: "end" }}>
+                      {moneyCurrency(e?.price)} {storeDetail?.firstCurrency}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -428,7 +485,8 @@ export default function PopUpDetailBillDebt({
               disabled={
                 (billDebtData?.status !== "DEBT" &&
                   billDebtData?.status !== "PARTIAL_PAYMENT") ||
-                isLoading || isPaymentExceeded
+                isLoading ||
+                isPaymentExceeded
               }
             >
               {isLoading ? (
@@ -447,13 +505,13 @@ export default function PopUpDetailBillDebt({
                 `${t("confirm")}`
               )}
             </Button>
-            <Button  onClick={() => setDisabledEditBill(false)}>
+            <Button onClick={() => setDisabledEditBill(false)}>
               {t("cancel")}
             </Button>
           </>
         )}
-        <Button 
-          variant="danger" 
+        <Button
+          variant="danger"
           onClick={onPrintBillDebt}
           disabled={isPrinting}
         >
