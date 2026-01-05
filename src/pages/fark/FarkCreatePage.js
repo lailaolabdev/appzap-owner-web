@@ -49,7 +49,7 @@ import { useShiftStore } from "./../../zustand/ShiftStore";
 const limitData = 50;
 
 export default function FarkCreatePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   // state
   const [isLoading, setIsLoading] = useState(true);
@@ -371,7 +371,17 @@ export default function FarkCreatePage() {
                           alt=""
                         />
                       </div>
-                      <div style={{ textWrap: "nowrap" }}>{e?.name}</div>
+                      <div style={{ textWrap: "nowrap" }}>
+                        {i18n.language === "la"
+                          ? e?.name
+                          : i18n.language === "en"
+                          ? e?.name_en || e?.name
+                          : i18n.language === "kr"
+                          ? e?.name_kr
+                          : i18n.language === "cn"
+                          ? e?.name_cn
+                          : e?.name}
+                      </div>
                       <Button
                         style={{ width: "100%" }}
                         disabled={e?.addToCart}
@@ -445,7 +455,17 @@ export default function FarkCreatePage() {
                   ?.filter((e) => e?.addToCart)
                   .map((e) => (
                     <tr>
-                      <td style={{ textAlign: "start" }}>{e?.name}</td>
+                      <td style={{ textAlign: "start" }}>
+                        {i18n.language === "la"
+                          ? e?.name
+                          : i18n.language === "en"
+                          ? e?.name_en || e?.name
+                          : i18n.language === "kr"
+                          ? e?.name_kr
+                          : i18n.language === "cn"
+                          ? e?.name_cn
+                          : e?.name}
+                      </td>
                       <td style={{ textAlign: "center" }}>
                         <div
                           style={{
@@ -480,6 +500,7 @@ export default function FarkCreatePage() {
                   customerName={customerName}
                   menuFarkData={menuFarkData?.filter((e) => e?.addToCart)}
                   code={printCode}
+                  language={i18n.language}
                 />
               </div>
             </div>

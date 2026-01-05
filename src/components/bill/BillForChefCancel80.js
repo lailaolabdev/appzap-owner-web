@@ -3,8 +3,14 @@ import styled from "styled-components";
 import moment from "moment";
 import { moneyCurrency } from "../../helpers";
 
-export default function BillForChefCancel80({ selectedTable, dataBill, val }) {
-  const optionsNames = val?.options?.map(option => `[${option.name}]`).join('') || '';
+export default function BillForChefCancel80({
+  selectedTable,
+  dataBill,
+  val,
+  language,
+}) {
+  const optionsNames =
+    val?.options?.map((option) => `[${option.name}]`).join("") || "";
   const totalOptionPrice = val?.totalOptionPrice || 0;
   const itemPrice = val?.price + totalOptionPrice;
 
@@ -55,7 +61,16 @@ export default function BillForChefCancel80({ selectedTable, dataBill, val }) {
                 padding: 5,
               }}
             >
-              {val?.name} {optionsNames} ({val?.quantity})
+              {language === "la"
+                ? val?.name
+                : language === "en"
+                ? val?.name_en || val?.name
+                : language === "kr"
+                ? val?.name_kr
+                : language === "cn"
+                ? val?.name_cn
+                : val?.name}{" "}
+              {optionsNames} ({val?.quantity})
             </td>
           </tr>
           <tr>

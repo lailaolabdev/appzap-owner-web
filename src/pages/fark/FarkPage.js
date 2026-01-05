@@ -57,7 +57,7 @@ import BillFark80 from "../../components/bill/BillFark80";
 // import BillFark80 from "../../components/bill/BillFark80";
 
 export default function FarkPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const limitData = 50;
   // state
@@ -539,6 +539,7 @@ export default function FarkPage() {
             customerName={selectBillFark?.customerName}
             menuFarkData={orderFarkData}
             code={selectBillFark?.code}
+            language={i18n.language}
           />
         </div>
       </div>
@@ -554,7 +555,6 @@ export default function FarkPage() {
           setPopup();
           setSelectBillFark();
           getData();
-          
         }}
       />
 

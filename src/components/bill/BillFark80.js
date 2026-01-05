@@ -12,8 +12,9 @@ export default function BillFark80({
   customerName,
   customerPhone,
   code,
+  language,
 }) {
-  const { storeDetail } = useStoreStore()
+  const { storeDetail } = useStoreStore();
   console.log("menuFarkData", menuFarkData);
   return (
     <Container>
@@ -70,7 +71,17 @@ export default function BillFark80({
             </tr>
             {menuFarkData?.map((e) => (
               <tr>
-                <td style={{ textAlign: "start" }}>{e?.name || e?.nameMenu}</td>
+                <td style={{ textAlign: "start" }}>
+                  {language === "la"
+                    ? e?.name || e?.nameMenu
+                    : language === "en"
+                    ? e?.name_en || e?.name || e?.nameMenu
+                    : language === "kr"
+                    ? e?.name_kr || e?.name || e?.nameMenu
+                    : language === "cn"
+                    ? e?.name_cn || e?.name || e?.nameMenu
+                    : e?.name || e?.nameMenu}
+                </td>
                 <td>{e?.cartCount || e?.amount}</td>
               </tr>
             ))}

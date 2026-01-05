@@ -3,7 +3,12 @@ import styled from "styled-components";
 import moment from "moment";
 import { moneyCurrency } from "../../helpers";
 
-export default function BillForChef80({ selectedTable, dataBill, val }) {
+export default function BillForChef80({
+  selectedTable,
+  dataBill,
+  val,
+  language,
+}) {
   const options =
     val?.options
       ?.map((option) => `[${option.name} x ${option.quantity || 1}]`)
@@ -57,7 +62,16 @@ export default function BillForChef80({ selectedTable, dataBill, val }) {
                 padding: 5,
               }}
             >
-              {val?.name} {options} ({val?.quantity})
+              {language === "la"
+                ? val?.name
+                : language === "en"
+                ? val?.name_en || val?.name
+                : language === "kr"
+                ? val?.name_kr
+                : language === "cn"
+                ? val?.name_cn
+                : val?.name}{" "}
+              {options} ({val?.quantity})
             </td>
           </tr>
           <tr>

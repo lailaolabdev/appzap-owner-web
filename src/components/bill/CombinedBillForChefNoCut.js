@@ -7,6 +7,7 @@ export default function CombinedBillForChefNoCut({
   selectedTable,
   table,
   selectedMenu,
+  language,
 }) {
   return (
     <div style={{ background: "#fff" }}>
@@ -59,7 +60,16 @@ export default function CombinedBillForChefNoCut({
                     padding: "0", // Reduced padding
                   }}
                 >
-                  {val?.name} (x {val?.quantity})
+                  {language === "la"
+                    ? val?.name
+                    : language === "en"
+                    ? val?.name_en || val?.name
+                    : language === "kr"
+                    ? val?.name_kr
+                    : language === "cn"
+                    ? val?.name_cn
+                    : val?.name}{" "}
+                  (x {val?.quantity})
                 </td>
               </tr>
               {val?.note && (
