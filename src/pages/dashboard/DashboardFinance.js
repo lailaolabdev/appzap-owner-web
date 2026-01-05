@@ -99,8 +99,6 @@ export default function DashboardFinance({
   const { selectLanguage } = useLanguageStore();
   const { counterRoleEditBill } = useCounterRoleStore();
 
-  
-
   const getPaginationCountData = async () => {
     try {
       const { TOKEN, DATA } = await getLocalData();
@@ -277,8 +275,6 @@ export default function DashboardFinance({
     getCurrency();
     _fetchFinanceData();
   }, []);
-
-  
 
   useEffect(() => {
     getPaginationCountData();
@@ -913,9 +909,9 @@ export default function DashboardFinance({
                   {item?.discountType === "LAK"
                     ? new Intl.NumberFormat("ja-JP", {
                         currency: "JPY",
-                      }).format(item?.discount || item?.discountAmount) + t("lak")
-                    : `${item?.discount || item?.discountCategoryAmount
-                    }%`}
+                      }).format(item?.discount || item?.discountAmount) +
+                      t("lak")
+                    : `${item?.discount || item?.discountCategoryAmount}%`}
                 </td>
                 <td>{item?.point ? moneyCurrency(item?.point) : 0}</td>
 
@@ -1286,7 +1282,11 @@ export default function DashboardFinance({
                     <span>{t("total_Amount_of_Money")} :</span>
                   </div>
                   <div className="flex flex-col">
-                    <span>{renderDiscount(dataModal?.discount || dataModal?.discountCategoryAmount)}</span>
+                    <span>
+                      {renderDiscount(
+                        dataModal?.discount || dataModal?.discountCategoryAmount
+                      )}
+                    </span>
                     <span>
                       {moneyCurrency(dataModal?.taxAmount)}{" "}
                       {storeDetail?.firstCurrency}
@@ -1478,7 +1478,8 @@ export default function DashboardFinance({
                   // profile?.data?.role !== "APPZAP_ADMIN" ||
                   dataModal?.isDebtPayment === true ||
                   dataModal?.isDebtAndPay === true ||
-                  !counterRoleEditBill
+                  !counterRoleEditBill ||
+                  storeDetail.isEditBill === true
                 }
                 onClick={handleEditBill}
               >
@@ -1487,21 +1488,25 @@ export default function DashboardFinance({
                   : t("billEditing")}
               </Button>
             ))}
-            <Button
+          <Button
             className="text-white font-bold"
             onClick={() => onPrintBill()}
-            >
-              {t("print_bill")}
-            </Button>
-            {dataModal?.isCafe === true && (
-              <Button
+          >
+            {t("print_bill")}
+          </Button>
+          {dataModal?.isCafe === true && (
+            <Button
+              disabled={
+                dataModal?.isDebtPayment === true ||
+                dataModal?.isDebtAndPay === true ||
+                storeDetail.isEditBill === true
+              }
               className="text-white font-bold"
               onClick={() => navigate(`/cafe/Edit/${dataModal?._id}`)}
             >
               {t("billEditing_cafe")}
             </Button>
-            )}
-            
+          )}
         </Modal.Footer>
       </Modal>
 
