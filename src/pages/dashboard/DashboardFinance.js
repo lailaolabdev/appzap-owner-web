@@ -1460,8 +1460,8 @@ export default function DashboardFinance({
                   selectOrder?.status === "ACTIVE" ||
                   profile?.data?.role !== "APPZAP_ADMIN" ||
                   dataModal?.isDebtPayment === true ||
-                  dataModal?.isDebtAndPay === true ||
-                  dataModal?.isCafe === true
+                  dataModal?.isDebtAndPay === true
+                  // dataModal?.isCafe === true
                 }
                 onClick={handleEditBill}
               >
@@ -1478,8 +1478,8 @@ export default function DashboardFinance({
                   // profile?.data?.role !== "APPZAP_ADMIN" ||
                   dataModal?.isDebtPayment === true ||
                   dataModal?.isDebtAndPay === true ||
-                  !counterRoleEditBill ||
-                  storeDetail.isEditBill === true
+                  // !counterRoleEditBill
+                  storeDetail.isEditBill === false
                 }
                 onClick={handleEditBill}
               >
@@ -1499,7 +1499,7 @@ export default function DashboardFinance({
               disabled={
                 dataModal?.isDebtPayment === true ||
                 dataModal?.isDebtAndPay === true ||
-                storeDetail.isEditBill === true
+                storeDetail.isEditBill === false
               }
               className="text-white font-bold"
               onClick={() => navigate(`/cafe/Edit/${dataModal?._id}`)}
