@@ -412,13 +412,13 @@ export default function ConfigPage() {
                       title: `${t("auto_oppen")}`,
                       key: "autoOpenTable",
                       tooltip: "",
-                      disabled: true,
+                      disabled: false,
                     },
                     {
                       title: `${t("table_qr")}`,
                       key: "tableQrEveryoneCanSelfOrdering",
                       tooltip: "",
-                      disabled: true,
+                      disabled: false,
                     },
                   ].map((item, index) => (
                     <div
