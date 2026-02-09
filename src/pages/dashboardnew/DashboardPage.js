@@ -596,27 +596,27 @@ export default function DashboardPage() {
           </div>
           {profile?.data?.role === "APPZAP_ADMIN"
             ? storeDetail?.isShift && (
-                <div className="flex items-center gap-2 whitespace-nowrap">
-                  {/* <span>{t("chose_shift")} : </span> */}
-                  <Select
-                    placeholder={t("chose_shift")}
-                    className="w-40 border-1 border-orange-500"
-                    options={optionsData}
-                    onChange={handleSearchInput}
-                  />
-                </div>
-              )
+              <div className="flex items-center gap-2 whitespace-nowrap">
+                {/* <span>{t("chose_shift")} : </span> */}
+                <Select
+                  placeholder={t("chose_shift")}
+                  className="w-40 border-1 border-orange-500"
+                  options={optionsData}
+                  onChange={handleSearchInput}
+                />
+              </div>
+            )
             : storeDetail?.isShift &&
-              OpenShiftForCounter && (
-                <div className="flex items-center gap-2 whitespace-nowrap">
-                  <Select
-                    placeholder={`${t("plachoder_shift")}...`}
-                    className="min-w-[170px] w-full border-orange-500"
-                    options={optionsData}
-                    onChange={handleSearchInput}
-                  />
-                </div>
-              )}
+            OpenShiftForCounter && (
+              <div className="flex items-center gap-2 whitespace-nowrap">
+                <Select
+                  placeholder={`${t("plachoder_shift")}...`}
+                  className="min-w-[170px] w-full border-orange-500"
+                  options={optionsData}
+                  onChange={handleSearchInput}
+                />
+              </div>
+            )}
           <div style={{ flex: 1 }} />
           <Button
             variant="outline-primary"
@@ -793,7 +793,7 @@ export default function DashboardPage() {
                 >
                   {moneyCurrency(
                     promotionDiscountAndFreeReport?.totalDiscountedItemCount ||
-                      0
+                    0
                   )}
                   <BsArrowDownRightSquare />
                 </div>
@@ -926,14 +926,14 @@ export default function DashboardPage() {
 
                     ...(deliveryReports?.length > 0
                       ? deliveryReports.map((e, idx) => ({
-                          method: (
-                            <div style={{ fontWeight: 700 }}>
-                              {`delivery (${e?.name || "Unknown"})`}
-                            </div>
-                          ),
-                          qty: e?.qty || 0,
-                          amount: Math.floor(e?.amount || 0),
-                        }))
+                        method: (
+                          <div style={{ fontWeight: 700 }}>
+                            {`delivery (${e?.name || "Unknown"})`}
+                          </div>
+                        ),
+                        qty: e?.qty || 0,
+                        amount: Math.floor(e?.amount || 0),
+                      }))
                       : []),
                     // Insert the point section after the "total_tsf"
 
@@ -982,7 +982,7 @@ export default function DashboardPage() {
                             (storeDetail?.isStatusCafe ? (
                               <div
                                 className=" text-orange-500 cursor-pointer"
-                                onKeyDown={() => {}}
+                                onKeyDown={() => { }}
                                 onClick={() =>
                                   handleGetDataExchangePoint(
                                     promotionDiscountAndFreeReport?.discountedMenus
@@ -994,7 +994,7 @@ export default function DashboardPage() {
                             ) : (
                               <div
                                 className=" text-orange-500 cursor-pointer"
-                                onKeyDown={() => {}}
+                                onKeyDown={() => { }}
                                 onClick={() => setOpenModalUsePoint(true)}
                               >
                                 <BsArrowDownRightSquare />
@@ -1084,12 +1084,12 @@ export default function DashboardPage() {
                       <td style={{ textAlign: "right" }}>
                         {moneyCurrency(
                           (e?.totalSaleAmount || 0) +
-                            (moneyReport?.serviceAmount || 0) +
-                            (moneyReport?.taxAmount || 0) -
-                            (promotionDiscountAndFreeReport?.totalDiscountValue ||
-                              0) -
-                            (e?.totalSaleDeliveryAmount || 0) -
-                            (e?.totalPointToMoney || 0)
+                          (moneyReport?.serviceAmount || 0) +
+                          (moneyReport?.taxAmount || 0) -
+                          (promotionDiscountAndFreeReport?.totalDiscountValue ||
+                            0) -
+                          (e?.totalSaleDeliveryAmount || 0) -
+                          (e?.totalPointToMoney || 0)
                         )}
                         {storeDetail?.firstCurrency}
                       </td>
@@ -1191,8 +1191,8 @@ export default function DashboardPage() {
                       <td style={{ textAlign: "right" }}>
                         {e?.totalPointAmount > 0
                           ? moneyCurrency(
-                              e?.totalSaleAmount - e?.totalPointAmount
-                            )
+                            e?.totalSaleAmount - e?.totalPointAmount
+                          )
                           : moneyCurrency(e?.totalSaleAmount)}
 
                         {storeDetail?.firstCurrency}
@@ -1217,6 +1217,7 @@ export default function DashboardPage() {
               <table style={{ width: "100%" }}>
                 <tr>
                   <th style={{ textAlign: "left" }}>{t("menu")}</th>
+                  <th style={{ textAlign: "left" }}>{t("menu_code")}</th>
                   <th style={{ textAlign: "center" }}>{t("order_success")}</th>
                   <th style={{ textAlign: "center" }}>{t("cancel")}</th>
                   <th style={{ textAlign: "center" }}>{t("order_paid")}</th>
@@ -1229,6 +1230,7 @@ export default function DashboardPage() {
                   ?.map((e) => (
                     <tr>
                       <td style={{ textAlign: "left" }}>{e?.name}</td>
+                      <td style={{ textAlign: "left" }}>{e?.menuCode}</td>
                       <td style={{ textAlign: "center" }}>{e?.served || 0}</td>
                       <td style={{ textAlign: "center" }}>
                         {e?.canceled || 0}
@@ -1237,8 +1239,8 @@ export default function DashboardPage() {
                       <td style={{ textAlign: "right" }}>
                         {e?.totalPointAmount > 0
                           ? moneyCurrency(
-                              e?.totalSaleAmount - e?.totalPointAmount
-                            )
+                            e?.totalSaleAmount - e?.totalPointAmount
+                          )
                           : moneyCurrency(e?.totalSaleAmount)}
                         {storeDetail?.firstCurrency}
                       </td>
@@ -1427,7 +1429,7 @@ export default function DashboardPage() {
                                             >
                                               {moneyCurrency(
                                                 (order?.price || 0) *
-                                                  (order?.quantity || 0)
+                                                (order?.quantity || 0)
                                               )}
                                             </td>
                                           </tr>
@@ -1751,10 +1753,10 @@ export default function DashboardPage() {
                     {item?.discountCategoryAmount
                       ? moneyCurrency(item?.discountAmount)
                       : moneyCurrency(
-                          item?.discountType === "PERCENT"
-                            ? (item?.billAmountBefore / 100) * item?.discount
-                            : item?.discount
-                        )}{" "}
+                        item?.discountType === "PERCENT"
+                          ? (item?.billAmountBefore / 100) * item?.discount
+                          : item?.discount
+                      )}{" "}
                     {storeDetail?.firstCurrency}
                   </td>
                 </tr>
@@ -2023,6 +2025,7 @@ export default function DashboardPage() {
         orderData={orderReport}
         customerCountData={customerCountList}
         exportData={exportData}
+        tableList={tableList}
       />
 
       <PopUpSetStartAndEndDateFilterExport

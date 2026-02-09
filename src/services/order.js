@@ -239,6 +239,7 @@ export const exportBill = async (storeId, findBy) => {
     const res = await axios.get(url, {}, {
       headers: await getHeaders(),
     });
+    console.log("Res", res);
     return res?.data?.bills;
   } catch (error) {
     console.log("export bill error:", error);

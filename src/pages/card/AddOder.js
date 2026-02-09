@@ -3,7 +3,7 @@ import { Tabs, Table, Tab } from "react-bootstrap";
 export default function AddOder() {
   return (
     <>
-      <h3 style={{ textAlign: "center", padding: "20px" }}>ເພີ່ມອໍເດີ</h3>
+      <h3 style={{ textAlign: "center", padding: "20px" }}> ເພີ່ມອໍເດີ</h3>
       <div className="order-left">
         <input
           type="text"

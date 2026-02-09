@@ -54,7 +54,7 @@ export default function MenuList() {
   const navigate = useNavigate();
   const params = useParams();
   const queryClient = useQueryClient()
- const { saveScrollPosition } = useScrollRestoration('product-table');
+  const { saveScrollPosition } = useScrollRestoration('product-table');
 
   const [showSetting, setShowSetting] = useState(false);
   const [showOptionSetting, setShowOptionSetting] = useState(false);
@@ -188,20 +188,20 @@ export default function MenuList() {
   };
 
   // Option 3: More flexible parameter building
-const buildQueryParams = (storeId, filters = {}) => {
-  const params = new URLSearchParams();
-  
-  params.append('storeId', storeId);
-  
-  if (filters.name) params.append('name', filters.name);
-  if (filters.categoryId && filters.categoryId !== 'All') {
-    params.append('categoryId', filters.categoryId);
-  }
-  if (filters.skip !== undefined) params.append('skip', filters.skip);
-  if (filters.limit !== undefined) params.append('limit', filters.limit);
-  
-  return `?${params.toString()}`;
-};
+  const buildQueryParams = (storeId, filters = {}) => {
+    const params = new URLSearchParams();
+
+    params.append('storeId', storeId);
+
+    if (filters.name) params.append('name', filters.name);
+    if (filters.categoryId && filters.categoryId !== 'All') {
+      params.append('categoryId', filters.categoryId);
+    }
+    if (filters.skip !== undefined) params.append('skip', filters.skip);
+    if (filters.limit !== undefined) params.append('limit', filters.limit);
+
+    return `?${params.toString()}`;
+  };
 
   // Query menu list
   const { data: menuDatas, isLoading: loadingMenu } = useQuery({
@@ -353,6 +353,7 @@ const buildQueryParams = (storeId, filters = {}) => {
         values.price = "";
         values.detail = "";
         values.unit = "";
+        values.menuCode = "";
       }
     } catch (err) {
       errorAdd(`${t("add_fail")}`);
@@ -379,6 +380,7 @@ const buildQueryParams = (storeId, filters = {}) => {
         storeId: getTokken?.DATA?.storeId,
         type: menuType,
         sort: values?.sort,
+        menuCode: values?.menuCode,
         menuOption: dataMenuOption,
       };
       if (connectMenuId && connectMenuId !== "" && menuType === "MENUOPTION")
@@ -474,6 +476,7 @@ const buildQueryParams = (storeId, filters = {}) => {
         images: [...values?.images],
         type: values?.type,
         sort: values?.sort,
+        menuCode: values?.menuCode,
         menuOption: dataUpdateMenuOption,
         storeId: storeDetail?._id,
       };
@@ -601,7 +604,7 @@ const buildQueryParams = (storeId, filters = {}) => {
 
       // Refetch menu data using React Query
       queryClient.refetchQueries({ queryKey: ['menu_management'] });
-      
+
       // Update the detail menu with the new data
       if (menuDatas && menuDatas[index]) {
         const updatedData = {
@@ -642,7 +645,7 @@ const buildQueryParams = (storeId, filters = {}) => {
 
       // Refetch menu data using React Query
       queryClient.refetchQueries({ queryKey: ['menu_management'] });
-      
+
       // Update the detail menu with the new data
       if (menuDatas && menuDatas[index]) {
         const updatedData = {
@@ -682,7 +685,7 @@ const buildQueryParams = (storeId, filters = {}) => {
 
       // Refetch menu data using React Query
       queryClient.refetchQueries({ queryKey: ['menu_management'] });
-      
+
       // Update the detail menu with the new data
       if (menuDatas && menuDatas[index]) {
         const updatedData = {
@@ -721,7 +724,7 @@ const buildQueryParams = (storeId, filters = {}) => {
 
       // Refetch menu data using React Query
       queryClient.refetchQueries({ queryKey: ['menu_management'] });
-      
+
       // Update the detail menu with the new data
       if (menuDatas && menuDatas[index]) {
         const updatedData = {
@@ -809,7 +812,7 @@ const buildQueryParams = (storeId, filters = {}) => {
 
     try {
       const reader = new FileReader();
-      
+
       reader.onload = async (e) => {
         try {
           const data = new Uint8Array(e.target.result);
@@ -833,7 +836,7 @@ const buildQueryParams = (storeId, filters = {}) => {
           for (const row of jsonData) {
             try {
               // Parse menu options - extract just the names as comma-separated string
-              const menuOptionNames = row["Menu Option Name"] 
+              const menuOptionNames = row["Menu Option Name"]
                 ? row["Menu Option Name"]
                 : "";
 
@@ -868,11 +871,10 @@ const buildQueryParams = (storeId, filters = {}) => {
               };
 
               const res = await createMenuItemMany(payload);
-              
+
               if (res?.status === 200) {
                 successAdd(
-                  `${t("upload_success") || "Upload successful"}: ${menusArray.length} ${t("menus_added") || "menus added"}${
-                    errorCount > 0 ? `, ${errorCount} ${t("failed") || "failed"}` : ""
+                  `${t("upload_success") || "Upload successful"}: ${menusArray.length} ${t("menus_added") || "menus added"}${errorCount > 0 ? `, ${errorCount} ${t("failed") || "failed"}` : ""
                   }`
                 );
                 queryClient.refetchQueries({ queryKey: ['menu_management'] });
@@ -1111,6 +1113,13 @@ const buildQueryParams = (storeId, filters = {}) => {
                   >
                     {t("menu_type")}
                   </th>
+                  {/* menu code column */}
+                  <th
+                    scope="col"
+                    className={cn("whitespace-nowrap", fontMap[language])}
+                  >
+                    {t("menu_code")}
+                  </th>
                   <th
                     scope="col"
                     className={cn("whitespace-nowrap", fontMap[language])}
@@ -1195,6 +1204,10 @@ const buildQueryParams = (storeId, filters = {}) => {
                         </td>
                         <td>{data?.categoryId?.name}</td>
                         <td>{data?.type}</td>
+                        {/* menu code */}
+                        <td className="whitespace-nowrap">
+                          {data?.menuCode}
+                        </td>
                         <td style={{ textAlign: "left" }}>
                           {data?.name ?? ""}
                           <br />
@@ -1457,6 +1470,7 @@ const buildQueryParams = (storeId, filters = {}) => {
               isOpened: true,
               type: "",
               sort: 0,
+              menuCode: "",
             }}
             validate={(values) => {
               const errors = {};
@@ -1652,7 +1666,18 @@ const buildQueryParams = (storeId, filters = {}) => {
                       </Form.Control>
                     </Form.Group>
                   )}
-
+                  {/* adding food id */}
+                  <Form.Group controlId="exampleForm.ControlInput1">
+                    <Form.Label>{t("Menu Code")}</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="menuCode"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.menuCode}
+                      placeholder={t("e. g. 000123")}
+                    />
+                  </Form.Group>
                   <Row>
                     <Col>
                       <Form.Group controlId="exampleForm.ControlInput1">
@@ -1985,6 +2010,7 @@ const buildQueryParams = (storeId, filters = {}) => {
               unit: dataUpdate?.unit,
               isOpened: dataUpdate?.isOpened,
               type: dataUpdate?.type,
+              menuCode: dataUpdate?.menuCode,
             }}
             validate={(values) => {
               const errors = {};

@@ -38,6 +38,7 @@ export default function PopUpReportExportExcel({
   billData,
   orderData,
   customerCountData,
+  tableList,
   exportData,
 }) {
   const { t } = useTranslation();
@@ -57,6 +58,8 @@ export default function PopUpReportExportExcel({
     };
     fetchData();
   }, [open]);
+
+  console.log("exportData", exportData);
 
   const findCategoryName = (categoryId, menuCategories) => {
     const category = menuCategories.find((cat) => cat._id === categoryId);
@@ -394,9 +397,8 @@ export default function PopUpReportExportExcel({
   const Promotions = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-promotion/${
-        storeDetail?._id
-      }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-promotion/${storeDetail?._id
+        }${findByData()}`;
       const _res = await axios.get(url);
       if (storeDetail?.isStatusCafe) {
         const dataExcel = _res?.data?.promotion[0];
@@ -532,9 +534,8 @@ export default function PopUpReportExportExcel({
   const bankTotalAmount = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-bank${findByData()}&storeId=${
-        storeDetail?._id
-      }`;
+      const url = `${END_POINT_EXPORT}/export/report-bank${findByData()}&storeId=${storeDetail?._id
+        }`;
 
       const _res = await axios.get(url);
 
@@ -647,9 +648,8 @@ export default function PopUpReportExportExcel({
   const currencyExport = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-currency${findByData()}&storeId=${
-        storeDetail?._id
-      }`;
+      const url = `${END_POINT_EXPORT}/export/report-currency${findByData()}&storeId=${storeDetail?._id
+        }`;
       const _res = await axios.get(url);
 
       if (_res?.data?.exportUrl) {
@@ -677,9 +677,8 @@ export default function PopUpReportExportExcel({
   const Billdetail = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-bill/${
-        storeDetail?._id
-      }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-bill/${storeDetail?._id
+        }${findByData()}`;
       const _res = await axios.post(url);
 
       if (storeDetail?.isStatusCafe) {
@@ -844,7 +843,7 @@ export default function PopUpReportExportExcel({
           saveAs(
             fileBlob,
             `${storeDetail?.name} ${t("bill_detial")}` + ".xlsx" ||
-              "export.xlsx"
+            "export.xlsx"
           );
         }
       }
@@ -855,9 +854,8 @@ export default function PopUpReportExportExcel({
   const StaffInfo = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-user/${
-        storeDetail?._id
-      }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-user/${storeDetail?._id
+        }${findByData()}`;
       const _res = await axios.get(url);
 
       if (storeDetail?.isStatusCafe) {
@@ -982,9 +980,8 @@ export default function PopUpReportExportExcel({
   const DialySales = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-daily/${
-        storeDetail?._id
-      }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-daily/${storeDetail?._id
+        }${findByData()}`;
       const _res = await axios.get(url);
       if (storeDetail?.isStatusCafe) {
         const dataExcel = _res?.data?.daily || [];
@@ -1114,9 +1111,8 @@ export default function PopUpReportExportExcel({
   const MenuType = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-category/${
-        storeDetail?._id
-      }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-category/${storeDetail?._id
+        }${findByData()}`;
       const _res = await axios.get(url);
 
       if (storeDetail?.isStatusCafe) {
@@ -1236,9 +1232,8 @@ export default function PopUpReportExportExcel({
   const MenuInfo = async () => {
     setPopup({ ReportExport: false });
     try {
-      const url = `${END_POINT_EXPORT}/export/report-menu-detail/${
-        storeDetail?._id
-      }${findByData()}`;
+      const url = `${END_POINT_EXPORT}/export/report-menu-detail/${storeDetail?._id
+        }${findByData()}`;
       const _res = await axios.get(url);
 
       if (storeDetail?.isStatusCafe) {
@@ -1372,6 +1367,7 @@ export default function PopUpReportExportExcel({
         { width: 12 }, // Table
         { width: 35 }, // Menu Items (with options)
         { width: 12 }, // Order Status
+        { width: 15 }, // Menu Code
         { width: 12 }, // Quantity
         { width: 15 }, // Price
         { width: 15 }, // Total Amount
@@ -1391,6 +1387,8 @@ export default function PopUpReportExportExcel({
         t("code"),
         t("table"),
         t("order"),
+        t("options"),
+        t("menu_code"),
         t("order_status"),
         t("amount"),
         t("price"),
@@ -1435,14 +1433,24 @@ export default function PopUpReportExportExcel({
         let currentRow = 2; // Start after header row
 
         exportData.forEach((billItem) => {
-          const formattedDate = billItem?.createdAt 
+          const formattedDate = billItem?.createdAt
             ? moment(billItem.createdAt).format("DD/MM/YYYY HH:mm")
             : "";
-          
+
           const billCode = billItem?.code || billItem?._id || "";
-          const tableName = billItem?.tableId?.name || billItem?.tableId || "";
+
+          let tableName = billItem?.tableId?.name || billItem?.tableId || "";
+          if (tableList && tableList.length > 0 && typeof billItem?.tableId === 'string' && !billItem?.tableId?.name) {
+            const foundTable = tableList.find(t => t._id === billItem.tableId);
+            if (foundTable) {
+              tableName = foundTable.name;
+            }
+          }
+
           const orders = billItem?.orderId || [];
-          
+
+
+
           const startRow = currentRow;
 
           if (orders.length > 0) {
@@ -1465,12 +1473,61 @@ export default function PopUpReportExportExcel({
                   menuName = `${menuName}[${optionNames}]`;
                 }
               }
+              // Format options
+              let optionsPlus = "";
+
+              // Create a formatter for Lao Kip
+              const laoCurrency = new Intl.NumberFormat('lo-LA', {
+                style: 'currency',
+                currency: 'LAK',
+                minimumFractionDigits: 0, // Kip usually doesn't use decimals
+              });
+
+              if (order?.options && order.options.length > 0) {
+                const optionNames = order.options
+                  .map(opt => {
+                    if (opt?.name) {
+                      const quantity = opt?.quantity || 1;
+                      const price = opt?.price || 0;
+
+                      // Calculate total for this option and format it
+                      // Example output: ₭15,000
+                      const formattedPrice = laoCurrency.format(price * quantity);
+
+                      return `${opt.name} (x${quantity}) - ${formattedPrice}`;
+                    }
+                    return null;
+                  })
+                  .filter(Boolean)
+                  .join(", ");
+
+                if (optionNames) {
+                  optionsPlus = optionNames;
+                }
+              }
+
+              if (!optionsPlus) {
+                optionsPlus = t("");
+              }
+
+              // Try to find menuCode from order or lookup in menuData
+              let menuCode = order?.menuCode || order?.menu?.menuCode || "";
+
+              if (!menuCode && menuData && menuData.length > 0) {
+                const menuItem = menuData.find(m => m._id === (typeof order?.menuId === 'object' ? order?.menuId?._id : order?.menuId));
+                if (menuItem) {
+                  menuCode = menuItem.menuCode;
+                }
+              }
 
               const row = sheet.addRow([
                 index === 0 ? formattedDate : "", // Only show date in first row
                 index === 0 ? billCode : "", // Only show bill code in first row
                 index === 0 ? tableName : "", // Only show table in first row
-                menuName, // Menu name with options
+                order?.name || "",
+                // menuName, // Menu name with options
+                optionsPlus,
+                menuCode || "",
                 order?.status || "", // Order status (SERVED, etc.)
                 order?.quantity || 0,
                 moneyCurrency(order?.price || 0), // Price for each item
@@ -1511,18 +1568,20 @@ export default function PopUpReportExportExcel({
               sheet.mergeCells(`A${startRow}:A${currentRow - 1}`); // Date
               sheet.mergeCells(`B${startRow}:B${currentRow - 1}`); // Bill Code
               sheet.mergeCells(`C${startRow}:C${currentRow - 1}`); // Table
-              sheet.mergeCells(`H${startRow}:H${currentRow - 1}`); // Total
-              sheet.mergeCells(`I${startRow}:I${currentRow - 1}`); // Payment Type
-              sheet.mergeCells(`J${startRow}:J${currentRow - 1}`); // Bill Status
-              sheet.mergeCells(`K${startRow}:K${currentRow - 1}`); // Cash
-              sheet.mergeCells(`L${startRow}:L${currentRow - 1}`); // Transfer
-              sheet.mergeCells(`M${startRow}:M${currentRow - 1}`); // Debt
-              sheet.mergeCells(`N${startRow}:N${currentRow - 1}`); // Delivery
-              sheet.mergeCells(`O${startRow}:O${currentRow - 1}`); // Discount
-              sheet.mergeCells(`P${startRow}:P${currentRow - 1}`); // Discount Type
+              sheet.mergeCells(`H${startRow}:H${currentRow - 1}`); // Quantity
+              sheet.mergeCells(`I${startRow}:I${currentRow - 1}`); // Price
+              sheet.mergeCells(`J${startRow}:J${currentRow - 1}`); // Total
+              sheet.mergeCells(`K${startRow}:K${currentRow - 1}`); // Payment Method
+              sheet.mergeCells(`L${startRow}:L${currentRow - 1}`); // Payment Status
+              sheet.mergeCells(`M${startRow}:M${currentRow - 1}`); // Cash
+              sheet.mergeCells(`N${startRow}:N${currentRow - 1}`); // Transfer
+              sheet.mergeCells(`O${startRow}:O${currentRow - 1}`); // Debt
+              sheet.mergeCells(`P${startRow}:P${currentRow - 1}`); // Delivery
+              sheet.mergeCells(`Q${startRow}:Q${currentRow - 1}`); // Discount
+              sheet.mergeCells(`R${startRow}:R${currentRow - 1}`); // Discount Type
 
               // Center align merged cells
-              const mergedCells = ['A', 'B', 'C', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P'];
+              const mergedCells = ['A', 'B', 'C', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R'];
               mergedCells.forEach(col => {
                 const cell = sheet.getCell(`${col}${startRow}`);
                 cell.alignment = {
@@ -1559,7 +1618,7 @@ export default function PopUpReportExportExcel({
               };
               cell.alignment = {
                 vertical: "middle",
-                horizontal: colNumber === 4 ? "left" : "center", // Only menu name is left-aligned
+                horizontal: colNumber === 4 || colNumber === 5 ? "left" : "center", // Only menu name is left-aligned and additional option column
               };
               cell.border = {
                 top: { style: "thin" },
@@ -2090,8 +2149,8 @@ export default function PopUpReportExportExcel({
             user?.paid || 0,
             user?.totalSaleExchangeAmount > 0
               ? moneyCurrency(
-                  user?.totalSaleAmount - user?.totalSaleExchangeAmount
-                )
+                user?.totalSaleAmount - user?.totalSaleExchangeAmount
+              )
               : moneyCurrency(user?.totalSaleAmount || 0),
           ]);
 
@@ -2246,8 +2305,8 @@ export default function PopUpReportExportExcel({
             category?.paid || 0,
             category?.totalPointAmount > 0
               ? moneyCurrency(
-                  category?.totalSaleAmount - category?.totalPointAmount
-                )
+                category?.totalSaleAmount - category?.totalPointAmount
+              )
               : moneyCurrency(category?.totalSaleAmount || 0),
           ]);
 
@@ -2917,15 +2976,16 @@ export default function PopUpReportExportExcel({
         // Add order details if available
         if (Array.isArray(item?.orderId) && item.orderId.length > 0) {
           rowIndex++;
-          
-          // Add order details header
-          const orderHeaderRow = sheet.getRow(rowIndex);
-          orderHeaderRow.getCell(2).value = t("menu");
-          orderHeaderRow.getCell(3).value = t("quantity");
-          orderHeaderRow.getCell(4).value = t("price");
-          orderHeaderRow.getCell(5).value = t("total");
 
-          [2, 3, 4, 5].forEach((colNum) => {
+          // Add order details header (include Food ID)
+          const orderHeaderRow = sheet.getRow(rowIndex);
+          orderHeaderRow.getCell(2).value = t("food_id");
+          orderHeaderRow.getCell(3).value = t("menu");
+          orderHeaderRow.getCell(4).value = t("quantity");
+          orderHeaderRow.getCell(5).value = t("price");
+          orderHeaderRow.getCell(6).value = t("total");
+
+          [2, 3, 4, 5, 6].forEach((colNum) => {
             const cell = orderHeaderRow.getCell(colNum);
             cell.fill = {
               type: "pattern",
@@ -2954,21 +3014,22 @@ export default function PopUpReportExportExcel({
           // Add each order item
           item.orderId.forEach((order) => {
             const orderRow = sheet.getRow(rowIndex);
-            orderRow.getCell(2).value = order?.name || "-";
-            orderRow.getCell(3).value = order?.quantity || 0;
-            orderRow.getCell(4).value = moneyCurrency(order?.price || 0);
-            orderRow.getCell(5).value = moneyCurrency(
+            orderRow.getCell(2).value = order?.foodId || order?.menuId || "-";
+            orderRow.getCell(3).value = order?.name || "-";
+            orderRow.getCell(4).value = order?.quantity || 0;
+            orderRow.getCell(5).value = moneyCurrency(order?.price || 0);
+            orderRow.getCell(6).value = moneyCurrency(
               (order?.price || 0) * (order?.quantity || 0)
             );
 
-            [2, 3, 4, 5].forEach((colNum) => {
+            [2, 3, 4, 5, 6].forEach((colNum) => {
               const cell = orderRow.getCell(colNum);
               cell.font = {
                 name: "Noto Sans Lao",
                 size: 11,
               };
               cell.alignment = {
-                horizontal: colNum === 3 || colNum === 4 || colNum === 5 ? "right" : "left",
+                horizontal: colNum === 4 || colNum === 5 || colNum === 6 ? "right" : "left",
                 vertical: "middle",
               };
               cell.border = {
@@ -3103,7 +3164,7 @@ export default function PopUpReportExportExcel({
           const startRow = currentRow;
           const categoryName = category?.categoryName || t("unknown");
           const items = category?.items || [];
-          
+
           // Add each menu item in the category
           items.forEach((item, index) => {
             const row = sheet.addRow([
@@ -3139,7 +3200,7 @@ export default function PopUpReportExportExcel({
           // Merge category cells if there are multiple menu items
           if (items.length > 1) {
             sheet.mergeCells(`A${startRow}:A${currentRow - 1}`);
-            
+
             // Center align the merged category cell
             const mergedCell = sheet.getCell(`A${startRow}`);
             mergedCell.alignment = {
@@ -3213,44 +3274,36 @@ export default function PopUpReportExportExcel({
       const billUrl = `${END_POINT_EXPORT}/export/bill?storeId=${storeDetail?._id}${findBy}`;
       const billRes = await axios.get(billUrl);
 
-      const promotionUrl = `${END_POINT_EXPORT}/export/report-promotion/${
-        storeDetail?._id
-      }${findByData()}`;
+      const promotionUrl = `${END_POINT_EXPORT}/export/report-promotion/${storeDetail?._id
+        }${findByData()}`;
       const promotionRes = await axios.get(promotionUrl);
 
-      const billDetailUrl = `${END_POINT_EXPORT}/export/report-bill/${
-        storeDetail?._id
-      }${findByData()}`;
+      const billDetailUrl = `${END_POINT_EXPORT}/export/report-bill/${storeDetail?._id
+        }${findByData()}`;
       const billDetailRes = await axios.post(billDetailUrl);
 
-      const bankUrl = `${END_POINT_EXPORT}/export/report-bank${findByData()}&storeId=${
-        storeDetail?._id
-      }`;
+      const bankUrl = `${END_POINT_EXPORT}/export/report-bank${findByData()}&storeId=${storeDetail?._id
+        }`;
       const bankRes = await axios.get(bankUrl);
 
-      const staffInfoUrl = `${END_POINT_EXPORT}/export/report-user/${
-        storeDetail?._id
-      }${findByData()}`;
+      const staffInfoUrl = `${END_POINT_EXPORT}/export/report-user/${storeDetail?._id
+        }${findByData()}`;
       const staffInfoRes = await axios.get(staffInfoUrl);
 
-      const dailySalesUrl = `${END_POINT_EXPORT}/export/report-daily/${
-        storeDetail?._id
-      }${findByData()}`;
+      const dailySalesUrl = `${END_POINT_EXPORT}/export/report-daily/${storeDetail?._id
+        }${findByData()}`;
       const dailySalesRes = await axios.get(dailySalesUrl);
 
-      const menuTypeUrl = `${END_POINT_EXPORT}/export/report-category/${
-        storeDetail?._id
-      }${findByData()}`;
+      const menuTypeUrl = `${END_POINT_EXPORT}/export/report-category/${storeDetail?._id
+        }${findByData()}`;
       const menuTypeRes = await axios.get(menuTypeUrl);
 
-      const menuInfoUrl = `${END_POINT_EXPORT}/export/report-menu-detail/${
-        storeDetail?._id
-      }${findByData()}`;
+      const menuInfoUrl = `${END_POINT_EXPORT}/export/report-menu-detail/${storeDetail?._id
+        }${findByData()}`;
       const menuInfoRes = await axios.get(menuInfoUrl);
 
-      const currencyUrl = `${END_POINT_EXPORT}/export/report-currency${findByData()}&storeId=${
-        storeDetail?._id
-      }`;
+      const currencyUrl = `${END_POINT_EXPORT}/export/report-currency${findByData()}&storeId=${storeDetail?._id
+        }`;
       const currencyRes = await axios.get(currencyUrl);
 
       const workbook = new ExcelJS.Workbook();
@@ -3332,8 +3385,9 @@ export default function PopUpReportExportExcel({
         t("sale_price_amount"),
       ];
 
-      // menudetail
+      // menudetail (include Food ID)
       const menuInfoHeaders = [
+        t("food_id"),
         t("menu"),
         t("order_success"),
         t("cancel"),
@@ -3985,6 +4039,7 @@ export default function PopUpReportExportExcel({
       // เพิ่มข้อมูลรายละเอียดเมนู
       menuInfoData.forEach((menu, index) => {
         const menuInfoRowData = [
+          menu?.foodId || "-",
           menu?.name || t("unknown"),
           menu?.served || 0,
           menu?.cenceled || 0,
@@ -4101,7 +4156,7 @@ export default function PopUpReportExportExcel({
     }
   };
 
-  
+
 
   return (
     <Modal show={open} onHide={onClose} size="md">
@@ -4137,7 +4192,7 @@ export default function PopUpReportExportExcel({
             <Button
               style={{ height: 100, padding: 20, width: 200 }}
               onClick={exportBill}
-              // disabled
+            // disabled
             >
               <span>{t("sales_info")}</span>
             </Button>
@@ -4205,7 +4260,7 @@ export default function PopUpReportExportExcel({
           </Button>
           <Button
             style={{ height: 100, padding: 20, width: 200 }}
-            onClick={orderReportExport} 
+            onClick={orderReportExport}
           >
             <span>{t("order_report")}</span>
           </Button>

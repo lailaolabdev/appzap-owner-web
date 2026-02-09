@@ -503,7 +503,7 @@ function AddOrder() {
         }
 
         // Options
-        
+
         if (data.options && data.options.length > 0) {
           context.fillStyle = "#000";
           context.font = "24px NotoSansLao, Arial, sans-serif";
@@ -845,7 +845,7 @@ function AddOrder() {
           icon: "warning",
           title: t("stock_is_missing"),
           showConfirmButton: false,
-          timer: 1500,  
+          timer: 1500,
         });
         return;
       }
@@ -1423,7 +1423,7 @@ function AddOrder() {
                   <div
                     key={"menu" + index}
                     onClick={() => addToCart(data)}
-                    className="rounded-lg border border-orange-400 shadow-sm cursor-pointer overflow-hidden"
+                    className="rounded-lg border-4 border-pink-500 shadow-sm cursor-pointer overflow-hidden"
                   >
                     <div className="relative w-full pt-[75%] overflow-hidden">
                       <img
@@ -1580,7 +1580,7 @@ function AddOrder() {
                   <div
                     key={"menu" + index}
                     onClick={() => addToCart(data)}
-                    className="rounded-lg border border-orange-400 shadow-sm cursor-pointer overflow-hidden"
+                    className="rounded-lg border-4 border-pink-500 shadow-sm cursor-pointer overflow-hidden"
                   >
                     <div className="relative w-full pt-[75%] overflow-hidden">
                       <img
@@ -1692,7 +1692,8 @@ function AddOrder() {
                     />
                   </div>
                   <div className="bg-white h-full text-gray-700 relative px-2 py-1">
-                    <span className="text-sm">{data?.name}</span>
+                    <span className="text-sm">{data?.name}</span><br />
+                    <span className="text-xs text-gray-500">Code: {data?.menuCode}</span><br />
 
                     <br />
                     {data?.promotionId?.length > 0 &&
@@ -1764,13 +1765,13 @@ function AddOrder() {
 
                     )}
                     {storeDetail?.isStockMissing && (
-                     <div className="flex items-end justify-end mt-2 flex-col space-y-1">
-                      {data?.stockId?.map((item, index) => (
-                        <span key={index} className="font-bold text-red-500 text-[14px]">
-                          {`${item?.name} x ${item?.quantity}`}
-                        </span>
-                      ))}
-                    </div>
+                      <div className="flex items-end justify-end mt-2 flex-col space-y-1">
+                        {data?.stockId?.map((item, index) => (
+                          <span key={index} className="font-bold text-red-500 text-[14px]">
+                            {`${item?.name} x ${item?.quantity}`}
+                          </span>
+                        ))}
+                      </div>
                     )}
                   </div>
                 </div>
