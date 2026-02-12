@@ -2918,14 +2918,15 @@ export default function PopUpReportExportExcel({
         if (Array.isArray(item?.orderId) && item.orderId.length > 0) {
           rowIndex++;
           
-          // Add order details header
+          // Add order details header (include Food ID)
           const orderHeaderRow = sheet.getRow(rowIndex);
-          orderHeaderRow.getCell(2).value = t("menu");
-          orderHeaderRow.getCell(3).value = t("quantity");
-          orderHeaderRow.getCell(4).value = t("price");
-          orderHeaderRow.getCell(5).value = t("total");
+          orderHeaderRow.getCell(2).value = t("food_id");
+          orderHeaderRow.getCell(3).value = t("menu");
+          orderHeaderRow.getCell(4).value = t("quantity");
+          orderHeaderRow.getCell(5).value = t("price");
+          orderHeaderRow.getCell(6).value = t("total");
 
-          [2, 3, 4, 5].forEach((colNum) => {
+          [2, 3, 4, 5, 6].forEach((colNum) => {
             const cell = orderHeaderRow.getCell(colNum);
             cell.fill = {
               type: "pattern",
@@ -2954,21 +2955,22 @@ export default function PopUpReportExportExcel({
           // Add each order item
           item.orderId.forEach((order) => {
             const orderRow = sheet.getRow(rowIndex);
-            orderRow.getCell(2).value = order?.name || "-";
-            orderRow.getCell(3).value = order?.quantity || 0;
-            orderRow.getCell(4).value = moneyCurrency(order?.price || 0);
-            orderRow.getCell(5).value = moneyCurrency(
+            orderRow.getCell(2).value = order?.foodId || order?.menuId || "-";
+            orderRow.getCell(3).value = order?.name || "-";
+            orderRow.getCell(4).value = order?.quantity || 0;
+            orderRow.getCell(5).value = moneyCurrency(order?.price || 0);
+            orderRow.getCell(6).value = moneyCurrency(
               (order?.price || 0) * (order?.quantity || 0)
             );
 
-            [2, 3, 4, 5].forEach((colNum) => {
+            [2, 3, 4, 5, 6].forEach((colNum) => {
               const cell = orderRow.getCell(colNum);
               cell.font = {
                 name: "Noto Sans Lao",
                 size: 11,
               };
               cell.alignment = {
-                horizontal: colNum === 3 || colNum === 4 || colNum === 5 ? "right" : "left",
+                horizontal: colNum === 4 || colNum === 5 || colNum === 6 ? "right" : "left",
                 vertical: "middle",
               };
               cell.border = {
@@ -3332,8 +3334,9 @@ export default function PopUpReportExportExcel({
         t("sale_price_amount"),
       ];
 
-      // menudetail
+      // menudetail (include Food ID)
       const menuInfoHeaders = [
+        t("food_id"),
         t("menu"),
         t("order_success"),
         t("cancel"),
@@ -3985,6 +3988,7 @@ export default function PopUpReportExportExcel({
       // เพิ่มข้อมูลรายละเอียดเมนู
       menuInfoData.forEach((menu, index) => {
         const menuInfoRowData = [
+          menu?.foodId || "-",
           menu?.name || t("unknown"),
           menu?.served || 0,
           menu?.cenceled || 0,

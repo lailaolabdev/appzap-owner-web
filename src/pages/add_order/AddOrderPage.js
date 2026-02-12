@@ -194,6 +194,9 @@ export default function AddOrderPage() {
                     )}
                   </div>
                   <div>{e?.name}</div>
+                  <div style={{ fontSize: 11, color: "gray" }}>
+                    {e?.menuCode}
+                  </div>
                   <div>
                     {moneyCurrency(e?.price)}
                     {storeDetail?.firstCurrency}
@@ -222,6 +225,9 @@ export default function AddOrderPage() {
               >
                 <div>
                   <div>{selectMenu?.name}</div>
+                  <div style={{ fontSize: 12, color: "gray" }}>
+                    {selectMenu?.menuCode}
+                  </div>
                   <div>{moneyCurrency(selectMenu?.price)}</div>
                 </div>
                 <div style={{ display: "flex", gap: "10px" }}>

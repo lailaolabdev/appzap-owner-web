@@ -150,7 +150,7 @@ function AddOrder() {
       if (
         data?.id === i?.id &&
         JSON.stringify(sortedDataOptionsForComparison) ===
-          JSON.stringify(sortedItemOptionsForComparison)
+        JSON.stringify(sortedItemOptionsForComparison)
       ) {
         _data = { ..._data, quantity: (_data?.quantity || 0) + int };
       }
@@ -487,7 +487,7 @@ function AddOrder() {
         return (
           item.id === selectedItem._id &&
           JSON.stringify(sortedItemOptionsForComparison) ===
-            JSON.stringify(sortedFilteredOptionsForComparison)
+          JSON.stringify(sortedFilteredOptionsForComparison)
         );
       });
 
@@ -503,7 +503,7 @@ function AddOrder() {
           );
         updatedMenu[existingMenuIndex].totalPrice =
           updatedMenu[existingMenuIndex].price *
-            updatedMenu[existingMenuIndex].quantity +
+          updatedMenu[existingMenuIndex].quantity +
           updatedMenu[existingMenuIndex].totalOptionPrice;
         return updatedMenu;
       } else {
@@ -955,19 +955,24 @@ function AddOrder() {
                         const optionsString =
                           data.options && data.options.length > 0
                             ? data.options
-                                .map((option) =>
-                                  option.quantity > 1
-                                    ? `[${option.quantity} x ${option.name}]`
-                                    : `[${option.name}]`
-                                )
-                                .join(" ")
+                              .map((option) =>
+                                option.quantity > 1
+                                  ? `[${option.quantity} x ${option.name}]`
+                                  : `[${option.name}]`
+                              )
+                              .join(" ")
                             : "";
 
                         return (
                           <tr key={"selectMenu" + index}>
                             <td style={{ width: 20 }}>{index + 1}</td>
                             <td style={{ textAlign: "left", paddingBottom: 0 }}>
-                              <p>{`${data.name} ${optionsString}`}</p>
+                              <p>
+                                {`${data.name} ${optionsString}`}
+                                <span style={{ fontSize: 11, color: "gray", marginLeft: 5 }}>
+                                  ({data?.menuCode})
+                                </span>
+                              </p>
                               <p style={{ fontSize: 12, marginTop: "-1.5em" }}>
                                 {data?.note ?? ""}
                               </p>
@@ -1232,10 +1237,10 @@ function AddOrder() {
                     (selectedOption) => selectedOption._id === option._id
                   )?.quantity >= 1
                     ? {
-                        backgroundColor: "#fd8b66",
-                        borderRadius: "5px",
-                        padding: 5,
-                      }
+                      backgroundColor: "#fd8b66",
+                      borderRadius: "5px",
+                      padding: 5,
+                    }
                     : {}
                 }
               >

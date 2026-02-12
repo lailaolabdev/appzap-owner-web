@@ -524,7 +524,7 @@ function HomecafeEdit() {
         pointExchange: checkedexchangePoint[0]?.exchangePoint || null,
         exchangePointStoreId:
           checkedexchangePoint.length > 0 &&
-          item?.menuId === checkedexchangePoint[0]?._id
+            item?.menuId === checkedexchangePoint[0]?._id
             ? checkedexchangePoint[0].exchangePointStoreId
             : null,
       })) ?? []
@@ -661,9 +661,9 @@ function HomecafeEdit() {
       exchangePointStoreId: isExchangeActive ? menu?.exchangePointStoreId : [],
       pointExchange: isExchangeActive
         ? menu?.exchangePointStoreId?.reduce(
-            (sum, promo) => sum + (promo.exchangePoint || 0),
-            0
-          )
+          (sum, promo) => sum + (promo.exchangePoint || 0),
+          0
+        )
         : "",
     };
 
@@ -725,9 +725,9 @@ function HomecafeEdit() {
                 : [],
               pointExchange: isExchangeActive
                 ? menu?.exchangePointStoreId?.reduce(
-                    (sum, promo) => sum + (promo.exchangePoint || 0),
-                    0
-                  )
+                  (sum, promo) => sum + (promo.exchangePoint || 0),
+                  0
+                )
                 : "",
             });
           }
@@ -859,9 +859,9 @@ function HomecafeEdit() {
         : [],
       pointExchange: isExchangeActive
         ? selectedItem?.exchangePointStoreId?.reduce(
-            (sum, promo) => sum + (promo.exchangePoint || 0),
-            0
-          )
+          (sum, promo) => sum + (promo.exchangePoint || 0),
+          0
+        )
         : "",
     };
 
@@ -875,7 +875,7 @@ function HomecafeEdit() {
         return (
           item.id === selectedItem._id &&
           JSON.stringify(sortedItemOptionsForComparison) ===
-            JSON.stringify(sortedFilteredOptionsForComparison)
+          JSON.stringify(sortedFilteredOptionsForComparison)
         );
       });
 
@@ -885,7 +885,7 @@ function HomecafeEdit() {
         updatedMenu[existingMenuIndex].totalOptionPrice = totalOptionPrice;
         updatedMenu[existingMenuIndex].totalPrice =
           updatedMenu[existingMenuIndex].price *
-            updatedMenu[existingMenuIndex].quantity +
+          updatedMenu[existingMenuIndex].quantity +
           totalOptionPrice;
       } else {
         updatedMenu.push(mainMenuData);
@@ -937,9 +937,9 @@ function HomecafeEdit() {
                   : [],
                 pointExchange: isExchangeActive
                   ? selectedItem?.exchangePointStoreId?.reduce(
-                      (sum, promo) => sum + (promo.exchangePoint || 0),
-                      0
-                    )
+                    (sum, promo) => sum + (promo.exchangePoint || 0),
+                    0
+                  )
                   : "",
               });
             }
@@ -1053,7 +1053,7 @@ function HomecafeEdit() {
   const updateOrderCancel = async (data) => {
     try {
       const res = await updateOrderCafeItemV7(data, storeDetail?._id);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const onConfirmRemoveItem = (item) => {
@@ -1240,9 +1240,8 @@ function HomecafeEdit() {
             const optionPriceText = option?.price
               ? ` - ${moneyCurrency(option?.price)}`
               : "";
-            const optionText = `- ${option?.name}${optionPriceText} x ${
-              option?.quantity || 1
-            }`;
+            const optionText = `- ${option?.name}${optionPriceText} x ${option?.quantity || 1
+              }`;
             yPosition = wrapText(
               context,
               optionText,
@@ -1782,7 +1781,7 @@ function HomecafeEdit() {
                 if (data?.type === "MENU") {
                   return (
                     <div
-                      onKeyDown={() => {}}
+                      onKeyDown={() => { }}
                       key={`menu${data?._id}`}
                       onClick={() => {
                         addToCart(data);
@@ -1803,11 +1802,13 @@ function HomecafeEdit() {
                       <div className="bg-white h-full text-gray-700 relative px-2 py-1">
                         <span className="text-sm">{data?.name}</span>
                         <br />
+                        <span className="text-sm">{data?.menuCode}</span>
+                        <br />
 
                         {data?.promotionId?.length > 0 &&
-                        data.promotionId.some(
-                          (promotion) => promotion?.status === "ACTIVE"
-                        ) ? (
+                          data.promotionId.some(
+                            (promotion) => promotion?.status === "ACTIVE"
+                          ) ? (
                           data.promotionId
                             .filter(
                               (promotion) => promotion?.status === "ACTIVE"
@@ -1848,7 +1849,7 @@ function HomecafeEdit() {
                                                 promotion?.discountValue
                                               )}{" "}
                                               {promotion?.discountType ===
-                                              "PERCENTAGE"
+                                                "PERCENTAGE"
                                                 ? "%"
                                                 : storeDetail?.firstCurrency}
                                             </span>
@@ -1865,11 +1866,9 @@ function HomecafeEdit() {
                                         {storeDetail?.firstCurrency}
                                       </span>
                                       <span className="flex flex-col font-bold text-red-500 text-[14px]">
-                                        {`${t("buy")} ${
-                                          promotion?.buyQuantity
-                                        } ${t("get")} ${
-                                          promotion?.getQuantity
-                                        } ${t("item")}`}
+                                        {`${t("buy")} ${promotion?.buyQuantity
+                                          } ${t("get")} ${promotion?.getQuantity
+                                          } ${t("item")}`}
                                       </span>
                                     </>
                                   )}
@@ -1889,7 +1888,7 @@ function HomecafeEdit() {
                             )}
                             {data?.exchangePointStoreId?.length > 0 &&
                               data?.exchangePointStoreId[0]?.status ===
-                                "active" && (
+                              "active" && (
                                 <p className="text-color-app font-bold text-sm text-start mt-1">
                                   {t("can_be_exchanged")}{" "}
                                   {moneyCurrency(
@@ -1938,15 +1937,15 @@ function HomecafeEdit() {
 
                           const optionsString =
                             item.options &&
-                            item.options.length > 0 &&
-                            item?.status !== "CANCELED"
+                              item.options.length > 0 &&
+                              item?.status !== "CANCELED"
                               ? item.options
-                                  .map((option) =>
-                                    option.quantity > 1
-                                      ? `[${option.quantity} x ${option.name}]`
-                                      : `[${option.name}]`
-                                  )
-                                  .join(" ")
+                                .map((option) =>
+                                  option.quantity > 1
+                                    ? `[${option.quantity} x ${option.name}]`
+                                    : `[${option.name}]`
+                                )
+                                .join(" ")
                               : "";
                           const totalOptionPrice = item?.totalOptionPrice || 0;
                           const itemPrice = item?.price + totalOptionPrice;
@@ -2031,7 +2030,7 @@ function HomecafeEdit() {
                                   />
                                 ) : item?.isWeightMenu ? (
                                   <div
-                                    onKeyDown={() => {}}
+                                    onKeyDown={() => { }}
                                     onClick={() =>
                                       setEditingRowId(item?._id || item?.id)
                                     }
@@ -2040,11 +2039,10 @@ function HomecafeEdit() {
                                       item.quantity.toString()
                                     ).toFixed(3)}`}
                                   >
-                                    {`${item?.quantity}/${
-                                      item?.unitWeightMenu !== undefined
-                                        ? item?.unitWeightMenu
-                                        : "-"
-                                    }`}
+                                    {`${item?.quantity}/${item?.unitWeightMenu !== undefined
+                                      ? item?.unitWeightMenu
+                                      : "-"
+                                      }`}
                                   </div>
                                 ) : (
                                   <div className="flex justify-center items-center w-10 h-8">
@@ -2086,8 +2084,8 @@ function HomecafeEdit() {
                           <span>
                             {dataBillEdit?.discount > 0
                               ? moneyCurrency(
-                                  total - (total * dataBillEdit?.discount) / 100
-                                )
+                                total - (total * dataBillEdit?.discount) / 100
+                              )
                               : moneyCurrency(total)}{" "}
                             {t("nameCurrency")}
                           </span>
@@ -2180,15 +2178,15 @@ function HomecafeEdit() {
 
                     const optionsString =
                       item.options &&
-                      item.options.length > 0 &&
-                      item?.status !== "CANCELED"
+                        item.options.length > 0 &&
+                        item?.status !== "CANCELED"
                         ? item.options
-                            .map((option) =>
-                              option.quantity > 1
-                                ? `[${option.quantity} x ${option.name}]`
-                                : `[${option.name}]`
-                            )
-                            .join(" ")
+                          .map((option) =>
+                            option.quantity > 1
+                              ? `[${option.quantity} x ${option.name}]`
+                              : `[${option.name}]`
+                          )
+                          .join(" ")
                         : "";
                     const totalOptionPrice = item?.totalOptionPrice || 0;
                     const itemPrice = item?.price + totalOptionPrice;
@@ -2260,7 +2258,7 @@ function HomecafeEdit() {
                             />
                           ) : item?.isWeightMenu ? (
                             <div
-                              onKeyDown={() => {}}
+                              onKeyDown={() => { }}
                               onClick={() =>
                                 setEditingRowId(item?._id || item?.id)
                               }
@@ -2269,11 +2267,10 @@ function HomecafeEdit() {
                                 item.quantity.toString()
                               ).toFixed(3)}`}
                             >
-                              {`${item?.quantity}/${
-                                item?.unitWeightMenu !== undefined
-                                  ? item?.unitWeightMenu
-                                  : "-"
-                              }`}
+                              {`${item?.quantity}/${item?.unitWeightMenu !== undefined
+                                ? item?.unitWeightMenu
+                                : "-"
+                                }`}
                             </div>
                           ) : (
                             <div className="flex justify-center items-center w-10 h-8">
@@ -2318,8 +2315,8 @@ function HomecafeEdit() {
                       <span>
                         {dataBillEdit?.discount > 0
                           ? moneyCurrency(
-                              total - (total * dataBillEdit?.discount) / 100
-                            )
+                            total - (total * dataBillEdit?.discount) / 100
+                          )
                           : moneyCurrency(total)}{" "}
                         {t("nameCurrency")}
                       </span>
@@ -2391,11 +2388,11 @@ function HomecafeEdit() {
                     (selectedOption) => selectedOption._id === option._id
                   )?.quantity >= 1
                     ? {
-                        backgroundColor: "#fd8b66",
-                        borderRadius: "5px",
-                        padding: 5,
-                        color: "white",
-                      }
+                      backgroundColor: "#fd8b66",
+                      borderRadius: "5px",
+                      padding: 5,
+                      color: "white",
+                    }
                     : {}
                 }
               >
@@ -2412,13 +2409,12 @@ function HomecafeEdit() {
                     }
                   >
                     <CircleMinus
-                      className={`${
-                        selectedOptionsArray[selectedItem?._id]?.find(
-                          (selectedOption) => selectedOption._id === option._id
-                        )?.quantity >= 1
-                          ? "text-white"
-                          : "text-color-app"
-                      }`}
+                      className={`${selectedOptionsArray[selectedItem?._id]?.find(
+                        (selectedOption) => selectedOption._id === option._id
+                      )?.quantity >= 1
+                        ? "text-white"
+                        : "text-color-app"
+                        }`}
                     />
                   </button>
                   <span className="mx-2">
@@ -2432,13 +2428,12 @@ function HomecafeEdit() {
                     onClick={() => handleAddOption(selectedItem?._id, option)}
                   >
                     <CirclePlus
-                      className={`${
-                        selectedOptionsArray[selectedItem?._id]?.find(
-                          (selectedOption) => selectedOption._id === option._id
-                        )?.quantity >= 1
-                          ? "text-white"
-                          : "text-color-app"
-                      }`}
+                      className={`${selectedOptionsArray[selectedItem?._id]?.find(
+                        (selectedOption) => selectedOption._id === option._id
+                      )?.quantity >= 1
+                        ? "text-white"
+                        : "text-color-app"
+                        }`}
                     />
                   </button>
                 </div>
@@ -2599,7 +2594,7 @@ function HomecafeEdit() {
           if (val?.isWeightMenu) {
             return val?.unitWeightMenu === "g"
               ? (price + totalOptionPrice) *
-                  convertUnitgramAndKilogram(quantity)
+              convertUnitgramAndKilogram(quantity)
               : (price + totalOptionPrice) * quantity;
           } else {
             return (price + totalOptionPrice) * quantity;

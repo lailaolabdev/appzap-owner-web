@@ -86,6 +86,7 @@ export default function EditMenu() {
       unit: "ຈອກ",
       isOpened: true,
       type: "MENU",
+      foodId: "",
     },
   });
 
@@ -129,6 +130,7 @@ export default function EditMenu() {
         images: [...formData?.images],
         type: formData?.type,
         sort: formData?.sort,
+        foodId: formData?.foodId,
         storeId: storeDetail?._id,
       };
 
@@ -235,6 +237,16 @@ export default function EditMenu() {
             className="w-full p-2 border rounded"
           />
           {errors.sort && <span className="text-red-500">ກະລຸນາປ້ອນລຳດັບ</span>}
+        </div>
+        
+        {/* Food Id */}
+        <div className="mb-4">
+          <label>{t("food_id")}</label>
+          <input
+            type="text"
+            {...register("foodId", { required: true })}
+            className="w-full p-2 border rounded"
+          />
         </div>
 
         {/* Category Selection */}
