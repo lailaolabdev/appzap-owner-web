@@ -3,11 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import moment from "moment";
 import { Card } from "../../../components/ui/Card";
 import { useTranslation } from "react-i18next";
-import {
-  MENUS,
-  getLocalData,
-  END_POINT_SEVER_TABLE_MENU,
-} from "../../../constants/api";
+import { MENUS, getLocalData } from "../../../constants/api";
 import { moneyCurrency } from "../../../helpers";
 import { useStoreStore } from "../../../zustand/storeStore";
 import { useMenuStore } from "../../../zustand/menuStore";
@@ -30,16 +26,11 @@ const DiscountDetail = () => {
   const navigate = useNavigate();
   const { promotionId } = useParams();
   const [menuData, setMenuData] = useState([]);
-  const [filterName, setFilterName] = useState("");
+  const [filterName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const {
-    getMenus,
-    getMenuCategories,
-    setMenus,
-    setMenuCategories,
-    isMenuLoading,
-  } = useMenuStore();
+  const { getMenus, getMenuCategories, setMenus, setMenuCategories } =
+    useMenuStore();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,7 +59,7 @@ const DiscountDetail = () => {
         }`,
         {
           method: "GET",
-        }
+        },
       )
         .then((response) => response.json())
         .then((json) => {
@@ -127,10 +118,11 @@ const DiscountDetail = () => {
 
   useEffect(() => {
     if (formData.selectedMenus.length > 0) {
-      const totalPrice = getTotalDiscountPrice();
+      getTotalDiscountPrice();
     }
   }, [formData.selectedMenus]);
 
+  // eslint-disable-next-line no-unused-vars
   const fetchData = async () => {
     if (storeDetail?._id) {
       const storeId = storeDetail?._id;

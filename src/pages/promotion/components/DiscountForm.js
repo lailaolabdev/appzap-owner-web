@@ -11,7 +11,7 @@ import {
   getLocalData,
   END_POINT_SEVER_TABLE_MENU,
 } from "../../../constants/api";
-import { COLOR_APP, COLOR_APP_CANCEL, COLOR_GRAY } from "../../../constants";
+import { COLOR_APP, COLOR_GRAY } from "../../../constants";
 import { moneyCurrency } from "../../../helpers";
 import { useStoreStore } from "../../../zustand/storeStore";
 import { useShiftStore } from "../../../zustand/ShiftStore";
@@ -20,7 +20,6 @@ import { errorAdd } from "../../../helpers/sweetalert";
 import Swal from "sweetalert2";
 import {
   CreateDiscountPromotion,
-  AddPromotionToMenu,
   UpdateDisCountPromotion,
 } from "../../../services/promotion";
 const DiscountForm = () => {
@@ -40,6 +39,7 @@ const DiscountForm = () => {
   const [menuData, setMenuData] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [filterName, setFilterName] = useState("");
+  // eslint-disable-next-line no-unused-vars
   const [isLoading, setIsLoading] = useState(false);
   const [selectAllChecked, setSelectAllChecked] = useState(false);
   const [Categorys, setCategorys] = useState([]);
@@ -47,15 +47,8 @@ const DiscountForm = () => {
   const [showListMenu, setShowListMenu] = useState(false);
 
   const { shiftCurrent } = useShiftStore();
-  const {
-    menus,
-    menuCategories,
-    getMenus,
-    getMenuCategories,
-    setMenus,
-    setMenuCategories,
-    isMenuLoading,
-  } = useMenuStore();
+  const { getMenus, getMenuCategories, setMenus, setMenuCategories } =
+    useMenuStore();
 
   const fetchDataMenu = async () => {
     if (storeDetail?._id) {
@@ -101,7 +94,7 @@ const DiscountForm = () => {
             }${filterName && filterName !== "" ? `&name=${filterName}` : ""}`,
             {
               method: "GET",
-            }
+            },
           )
             .then((response) => response.json())
             .then((json) => {
@@ -130,7 +123,7 @@ const DiscountForm = () => {
         `${END_POINT_SEVER_TABLE_MENU}/v3/categories?storeId=${id}&isDeleted=false`,
         {
           method: "GET",
-        }
+        },
       )
         .then((response) => response.json())
         .then((json) => setCategorys(json));
@@ -150,7 +143,7 @@ const DiscountForm = () => {
         }`,
         {
           method: "GET",
-        }
+        },
       )
         .then((response) => response.json())
         .then((json) => {
@@ -197,8 +190,7 @@ const DiscountForm = () => {
   useEffect(() => {
     // Whenever selectedMenus changes, calculate the total price
     if (formData.selectedMenus.length > 0) {
-      const totalPrice = getTotalDiscountPrice();
-      // console.log("Total after discount: ", totalPrice);
+      getTotalDiscountPrice();
     }
   }, [formData.selectedMenus]);
 
@@ -248,7 +240,7 @@ const DiscountForm = () => {
           const duplicateMenus = formData.selectedMenus
             .map((mId) => {
               const foundMenu = err?.response?.data?.data?.menuId.find(
-                (m) => m._id === mId
+                (m) => m._id === mId,
               );
               return foundMenu
                 ? { name: foundMenu.name, id: foundMenu._id }
@@ -285,7 +277,7 @@ const DiscountForm = () => {
             } else if (result.isDenied) {
               await UpdateDisCountPromotion(
                 err?.response?.data?.data?._id,
-                data
+                data,
               );
               // errorAdd("replace");
               navigate("/promotion");
@@ -610,7 +602,7 @@ const DiscountForm = () => {
                               type="checkbox"
                               value={menu._id}
                               checked={formData.selectedMenus.includes(
-                                menu._id
+                                menu._id,
                               )}
                               onChange={handleMenuSelect}
                             />
