@@ -1486,5 +1486,6 @@
   "close_customer_display": "ປິດຈໍລູກຄ້າ",
   "cfd_window_blocked": "ບຣາວເຊີຂັດຂວາງຫນ້າຕ່າງໃຫມ່ ກະລຸນາອະນຸຍາດ pop-ups",
   "configure_display_content": "ຕັ້ງຄ່າເນື້ອຫາທີ່ສະແດງ",
-  "enable_music": "ເປີດໃຊ້ງານສຽງເພງ"
+  "enable_music": "ເປີດໃຊ້ງານສຽງເພງ",
+  "food_id": "ລະຫັດອາຫານ"
 }

@@ -1461,5 +1461,6 @@
   "order_report": "order report",
   "stock_display": "stock display",
   "use_phone_scan_and_pay": " Use your phone camera to scan and pay",
-  "enable_music": "Enable music"
+  "enable_music": "Enable music",
+  "food_id": "Food Code"
 }

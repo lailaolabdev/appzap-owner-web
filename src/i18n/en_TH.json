@@ -1331,5 +1331,6 @@
   "order_report": "รายงานขาย",
   "stock_display": "แสดงสต็อก",
   "use_phone_scan_and_pay": "ใช้ก้องโทรศัพท์สแกน และ ชำระเงิน",
-  "enable_music": "เปิดใช้งานสังเพลง"
+  "enable_music": "เปิดใช้งานสังเพลง",
+  "food_id": "รหัสอาหาร"
 }
