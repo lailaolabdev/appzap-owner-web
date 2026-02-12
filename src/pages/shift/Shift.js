@@ -31,10 +31,8 @@ import Swal from "sweetalert2";
 import { useStoreStore } from "../../zustand/storeStore";
 import { useShiftStore } from "../../zustand/ShiftStore";
 import TimeShift from "../../components/TimeShift";
-import { values } from "lodash";
 import ButtonPrimary from "../../components/button/ButtonPrimary";
 import { errorAdd, successAdd } from "../../helpers/sweetalert";
-import convertNumber from "./../../helpers/convertNumber";
 import { useMenuSelectStore } from "../../zustand/menuSelectStore";
 
 export default function ShiftList() {
@@ -53,6 +51,7 @@ export default function ShiftList() {
   const [shiftHistory, setShiftHistory] = useState([]);
   const [edit, setEdit] = useState(null);
   const [shifData, setShifData] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [changeUi, setChangeUi] = useState("");
   const [startDate, setStartDate] = useState(moment().format("YYYY-MM-DD"));
   const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
@@ -583,7 +582,7 @@ export default function ShiftList() {
                             </td> */}
                             <td className="flex gap-2 justify-center">
                               {moment(data?.createdAt).format(
-                                "YYYY-MM-DD HH:ss A"
+                                "YYYY-MM-DD HH:ss A",
                               )}
                             </td>
                           </tr>
@@ -688,6 +687,7 @@ export default function ShiftList() {
             }}
           >
             {({
+              values,
               handleChange,
               handleSubmit,
               isSubmitting,
@@ -989,7 +989,8 @@ export default function ShiftList() {
                         </div>
                         <div className="mt-4">
                           <p>
-                            ທ່ານຕ້ອງການເປິດກະ {shifData?.shiftName} ແມ່ນບໍ່?{" "}
+                            ທ່ານຕ້ອງການເປິດກະ {shifData?.shiftName}{" "}
+                            ແມ່ນບໍ່?{" "}
                           </p>
                         </div>
                       </div>

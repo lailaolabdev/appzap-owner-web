@@ -1,29 +1,22 @@
 /* eslint-disable no-loop-func */
 import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
-import { Modal, Form, Container, Button, Spinner } from "react-bootstrap";
+import { Container, Button } from "react-bootstrap";
 import Swal from "sweetalert2";
 import moment from "moment";
-import { QRCode } from "react-qrcode-logo";
 import axios from "axios";
 import html2canvas from "html2canvas";
 import { base64ToBlob, orderStatusTranslate } from "../../helpers";
-import { Checkbox } from "@material-ui/core";
 import Box from "../../components/Box";
 import PopUpQRToken from "../../components/popup/PopUpQRToken";
 import { SiAirtable } from "react-icons/si";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faListAlt } from "@fortawesome/free-solid-svg-icons";
 import _ from "lodash";
 
 /**
  * component
  * */
 import Loading from "../../components/Loading";
-import UserCheckoutModal from "./components/UserCheckoutModal";
 import OrderCheckOut from "./components/OrderCheckOut";
-import UpdateDiscountOrder from "./components/UpdateDiscountOrder";
-import FeedbackOrder from "./components/FeedbackOrder";
-import { orderStatus, moneyCurrency } from "../../helpers";
+import { moneyCurrency } from "../../helpers";
 import BillForCheckOut80 from "../../components/bill/BillForCheckOut80";
 
 import BillForCheckOut58 from "../../components/bill/BillForCheckOut58";
@@ -149,8 +142,7 @@ export default function BillSplit() {
     tableChild,
   } = useStore();
 
-  const { storeDetail } = useStoreStore()
-
+  const { storeDetail } = useStoreStore();
 
   const reLoadData = () => {
     setReload(true);
@@ -253,7 +245,7 @@ export default function BillSplit() {
     const getDataTax = async () => {
       const { DATA } = await getLocalData();
       const _res = await axios.get(
-        END_POINT_SEVER + "/v4/tax/" + DATA?.storeId
+        END_POINT_SEVER + "/v4/tax/" + DATA?.storeId,
       );
       setTaxPercent(_res?.data?.taxPercent);
     };
@@ -270,7 +262,7 @@ export default function BillSplit() {
     (e) =>
       e?.status === "DOING" ||
       e?.status === "WAITING" ||
-      e?.tableOrderItems?.length === 0
+      e?.tableOrderItems?.length === 0,
   )?._id;
 
   /**
@@ -294,7 +286,7 @@ export default function BillSplit() {
   const _handlecheckout = async () => {
     setCheckoutModal(false);
     navigate(
-      `/tables/pagenumber/${number}/tableid/${activeTableId}/${params?.storeId}`
+      `/tables/pagenumber/${number}/tableid/${activeTableId}/${params?.storeId}`,
     );
   };
   const _onCheckOut = async () => {
@@ -478,7 +470,7 @@ export default function BillSplit() {
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
       const printerBillData = printers?.find(
-        (e) => e?._id === _printerCounters?.BILL
+        (e) => e?._id === _printerCounters?.BILL,
       );
       let dataImageForPrint;
       if (printerBillData?.width === "80mm") {
@@ -532,7 +524,7 @@ export default function BillSplit() {
             data: bodyFormData,
             headers: { "Content-Type": "multipart/form-data" },
           });
-        }
+        },
       );
 
       await Swal.fire({
@@ -590,7 +582,7 @@ export default function BillSplit() {
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
       const printerBillData = printers?.find(
-        (e) => e?._id === _printerCounters?.BILL
+        (e) => e?._id === _printerCounters?.BILL,
       );
       let dataImageForPrint;
       if (printerBillData?.width === "80mm") {
@@ -643,7 +635,7 @@ export default function BillSplit() {
             data: bodyFormData,
             headers: { "Content-Type": "multipart/form-data" },
           });
-        }
+        },
       );
       // await axios({
       //   method: "post",
@@ -676,7 +668,7 @@ export default function BillSplit() {
       let urlForPrinter = "";
       const _printerCounters = JSON.parse(printerCounter?.prints);
       const printerBillData = printers?.find(
-        (e) => e?._id === _printerCounters?.BILL
+        (e) => e?._id === _printerCounters?.BILL,
       );
 
       if (printerBillData?.type === "ETHERNET") {
@@ -835,7 +827,7 @@ export default function BillSplit() {
               data: bodyFormData,
               headers: { "Content-Type": "multipart/form-data" },
             });
-          }
+          },
         );
         // printFlutter({
         //   imageBuffer: dataUrl.toDataURL(),
@@ -935,7 +927,7 @@ export default function BillSplit() {
       storeId,
       menuId,
       seletedCancelOrderItem,
-      selectedBill
+      selectedBill,
     );
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       reLoadData();
@@ -969,7 +961,7 @@ export default function BillSplit() {
       storeId,
       menuId,
       seletedCancelOrderItem,
-      selectedBill
+      selectedBill,
     );
     if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
       reLoadData();
@@ -1013,7 +1005,7 @@ export default function BillSplit() {
         storeId,
         menuId,
         seletedCancelOrderItem,
-        selectedBill
+        selectedBill,
       );
       if (_resOrderUpdate?.data?.message === "UPADTE_ORDER_SECCESS") {
         reLoadData();
@@ -1072,7 +1064,7 @@ export default function BillSplit() {
 
     const totalBillDefualt = _.sumBy(
       billOrderItems[0]?.orderId?.filter((e) => e?.status === "SERVED"),
-      (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
+      (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity,
     );
     if (billOrderItems?.discount > 0) {
       if (
@@ -1082,7 +1074,7 @@ export default function BillSplit() {
         setTotalAfterDiscount(totalBillDefualt - billOrderItems?.discount);
       } else {
         const ddiscount = parseInt(
-          (totalBillDefualt * billOrderItems?.discount) / 100
+          (totalBillDefualt * billOrderItems?.discount) / 100,
         );
         setTotalAfterDiscount(totalBillDefualt - ddiscount);
       }
@@ -1188,8 +1180,8 @@ export default function BillSplit() {
                               ? table?.editBill
                                 ? "#CECE5A"
                                 : table?.statusBill === "CALL_TO_CHECKOUT"
-                                ? "#FFE17B"
-                                : "linear-gradient(360deg, rgba(251,110,15,0.8) 0%, rgba(255,102,0,1) 48%, rgba(255,102,10,1) 100%)"
+                                  ? "#FFE17B"
+                                  : "linear-gradient(360deg, rgba(251,110,15,0.8) 0%, rgba(255,102,0,1) 48%, rgba(255,102,10,1) 100%)"
                               : "white",
                             border:
                               selectedBill?.code === table?.code
@@ -1235,15 +1227,15 @@ export default function BillSplit() {
                                   ? table?.editBill
                                     ? ""
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? ""
-                                    : "bold"
+                                      ? ""
+                                      : "bold"
                                   : "",
                                 color: table?.isStaffConfirm
                                   ? table?.editBill
                                     ? "#616161"
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? "#616161"
-                                    : "white"
+                                      ? "#616161"
+                                      : "white"
                                   : "#616161",
                               }}
                             >
@@ -1373,8 +1365,8 @@ export default function BillSplit() {
                               ? table?.editBill
                                 ? "#CECE5A"
                                 : table?.statusBill === "CALL_TO_CHECKOUT"
-                                ? "#FFE17B"
-                                : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
+                                  ? "#FFE17B"
+                                  : "linear-gradient(360deg, rgba(251,110,59,1) 0%, rgba(255,146,106,1) 48%, rgba(255,146,106,1) 100%)"
                               : "white",
                             border:
                               selectedBill?.code === table?.code
@@ -1420,15 +1412,15 @@ export default function BillSplit() {
                                   ? table?.editBill
                                     ? ""
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? ""
-                                    : "bold"
+                                      ? ""
+                                      : "bold"
                                   : "",
                                 color: table?.isStaffConfirm
                                   ? table?.editBill
                                     ? "#616161"
                                     : table?.statusBill === "CALL_TO_CHECKOUT"
-                                    ? "#616161"
-                                    : "white"
+                                      ? "#616161"
+                                      : "white"
                                   : "#616161",
                               }}
                             >
@@ -1667,7 +1659,7 @@ export default function BillSplit() {
                               e?.status !== "SERVED" &&
                               e?.status !== "CANCELED" &&
                               e?.status !== "PAID" &&
-                              e?.status !== "FEEDBACK"
+                              e?.status !== "FEEDBACK",
                           )?.length
                             ? "block"
                             : "none",
@@ -1679,7 +1671,7 @@ export default function BillSplit() {
                               e?.status !== "SERVED" &&
                               e?.status !== "CANCELED" &&
                               e?.status !== "PAID" &&
-                              e?.status !== "FEEDBACK"
+                              e?.status !== "FEEDBACK",
                           )?.length
                         }{" "}
                         {t("itemNotServed")} !
@@ -1687,11 +1679,11 @@ export default function BillSplit() {
                       <div>
                         <p style={{ color: COLOR_APP, fontWeight: "bold" }}>
                           {isCheckedOrderItem?.filter(
-                            (e) => e?.status == "PAID"
+                            (e) => e?.status == "PAID",
                           )?.length
                             ? ` ${
                                 isCheckedOrderItem?.filter(
-                                  (e) => e?.status == "PAID"
+                                  (e) => e?.status == "PAID",
                                 )?.length
                               } ${t("ORDER_PAID")}`
                             : ""}
@@ -1727,7 +1719,7 @@ export default function BillSplit() {
                             _goToAddOrder(
                               billOrderItems[0]?.tableId?._id,
                               billOrderItems[0]?.code,
-                              billOrderItems?.isBillSplit
+                              billOrderItems?.isBillSplit,
                             )
                           }
                         >
@@ -1769,7 +1761,7 @@ export default function BillSplit() {
                               ?.map((option) =>
                                 option.quantity > 1
                                   ? `[${option.quantity} x ${option.name}]`
-                                  : `[${option.name}]`
+                                  : `[${option.name}]`,
                               )
                               .join(" ") || "";
                           return (
@@ -1804,10 +1796,10 @@ export default function BillSplit() {
                                     orderItem?.status === `SERVED`
                                       ? "green"
                                       : orderItem?.status === "PAID"
-                                      ? COLOR_APP
-                                      : orderItem?.status === "DOING"
-                                      ? ""
-                                      : "red",
+                                        ? COLOR_APP
+                                        : orderItem?.status === "DOING"
+                                          ? ""
+                                          : "red",
                                 }}
                               >
                                 {orderItem?.status
@@ -1818,7 +1810,7 @@ export default function BillSplit() {
                               <td>
                                 {orderItem?.createdAt
                                   ? moment(orderItem?.createdAt).format(
-                                      "HH:mm A"
+                                      "HH:mm A",
                                     )
                                   : "-"}
                               </td>
