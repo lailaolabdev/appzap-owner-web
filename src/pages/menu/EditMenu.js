@@ -87,6 +87,7 @@ export default function EditMenu() {
       isOpened: true,
       type: "MENU",
       foodId: "",
+      menuCode: "",
     },
   });
 
@@ -131,6 +132,7 @@ export default function EditMenu() {
         type: formData?.type,
         sort: formData?.sort,
         foodId: formData?.foodId,
+        menuCode: formData?.menuCode,
         storeId: storeDetail?._id,
       };
 
@@ -239,13 +241,14 @@ export default function EditMenu() {
           {errors.sort && <span className="text-red-500">ກະລຸນາປ້ອນລຳດັບ</span>}
         </div>
         
-        {/* Food Id */}
+        {/* Menu Code */}
         <div className="mb-4">
           <label>{t("food_id")}</label>
           <input
             type="text"
-            {...register("foodId", { required: true })}
+            {...register("menuCode")}
             className="w-full p-2 border rounded"
+            placeholder={t("e. g. 000123")}
           />
         </div>
 
