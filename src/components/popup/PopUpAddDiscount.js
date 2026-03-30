@@ -76,6 +76,8 @@ export default function PopUpAddDiscount({
     }
   };
 
+  console.log("discountCategory", discountCategory );
+
   useEffect(() => {
     if (selectedButtonCategory === "%") {
       const calculatedDiscount = (categoryTotal * discountCategory) / 100;
@@ -158,6 +160,7 @@ export default function PopUpAddDiscount({
         return {
           menuId: item.menuId,
           quantity: item.quantity,
+          option: item.options,
         }
       });
       const _body = {
@@ -167,10 +170,9 @@ export default function PopUpAddDiscount({
           discountType: selectedButtonCategory === "%" ? "PERCENT" : "LAK",
           // menuId: categoryData.menuId || []
           menuId: menuId,
-          
         },
       };
-      // console.log("body", _body);
+      console.log("body", _body);
       const url = END_POINT_SEVER + "/v3/bill-discount-category";
       const res = await axios.put(url, _body, { headers: _header });
 
@@ -189,58 +191,58 @@ export default function PopUpAddDiscount({
       setSelectedCategoryButton(categoryData._id);
       setSelectedCategory(categoryData._id);
 
-      // Filter menus based on categoryData.menuId array
+      if (categoryData._id === "All") {
+        setFilteredMenus([]);
+        setFilteredOrders([]);
+        return;
+      }
+
+      let ordersForTotal = [];
+
       if (categoryData.menuId && Array.isArray(categoryData.menuId)) {
+        // Use menuId-based filter as source of truth for both display and total
         const filteredMenusFromCategory = value.filter((menu) =>
           categoryData.menuId.includes(menu?.menuId)
         );
         setFilteredMenus(filteredMenusFromCategory);
+        setFilteredOrders(filteredMenusFromCategory);
+        ordersForTotal = filteredMenusFromCategory;
       } else {
         setFilteredMenus([]);
-      }
-
-      if (categoryData._id !== "All") {
         const filteredCategoriesType = filteredCategories.filter(
           (category) => category?.categoryTypeId?._id === categoryData._id
         );
-
         const checked = value.filter(
           (e) => e?.status === "SERVED" && e?.status !== "DOING"
         );
-
-        const filteredOrders = checked.filter((order) =>
+        const byCategory = checked.filter((order) =>
           filteredCategoriesType.some(
             (category) => category?._id === order?.categoryId?._id
           )
         );
-
-        setFilteredOrders(filteredOrders);
-        const totalForSelectedCategory = _.sumBy(
-          filteredOrders,
-          (o) => o.price * o.quantity
-        );
-
-        const _sumOptionPrice = filteredOrders.reduce((sum, item) => {
-          const optionSum = _.sumBy(
-            item.options,
-            (option) => option.price * option?.quantity ?? 1
-          );
-          return sum + optionSum;
-        }, 0);
-
-        const totalDiscount =
-          ((totalForSelectedCategory + _sumOptionPrice) * discountCategory) /
-          100;
-        setCategoryTotal(totalForSelectedCategory + _sumOptionPrice);
-        setDiscountOrder(totalDiscount);
-      } else {
-        // Reset filtered menus when "All" is selected
-        setFilteredMenus([]);
+        setFilteredOrders(byCategory);
+        ordersForTotal = byCategory;
       }
+
+      const totalForSelectedCategory = _.sumBy(
+        ordersForTotal,
+        (o) => o.price * o.quantity
+      );
+      const _sumOptionPrice = ordersForTotal.reduce((sum, item) => {
+        const optionSum = _.sumBy(
+          item.options,
+          (option) => option.price * (option?.quantity ?? 1)
+        );
+        return sum + optionSum;
+      }, 0);
+
+      const grandTotal = totalForSelectedCategory + _sumOptionPrice;
+      setCategoryTotal(grandTotal);
+      setDiscountOrder((grandTotal * discountCategory) / 100);
     } catch (error) {
       console.log("Error in category button selection:", error);
     }
-  };
+  }; 
 
   const getCategoryType = async (id) => {
     try {
@@ -413,39 +415,61 @@ export default function PopUpAddDiscount({
             <TableBody>
               {value
                 ? value?.map((orderItem, index) => (
-                    <TableRow
-                      key={"order" + index}
-                      style={{ borderBottom: "1px solid #eee" }}
-                    >
-                      <TableCell className="text-center">{index + 1}</TableCell>
-                      <TableCell className="text-center">
-                        {orderItem?.name}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {orderItem?.quantity}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge
-                          className={
-                            orderItem?.status === "SERVED"
-                              ? "bg-green-100 text-green-800"
-                              : orderItem?.status === "DOING"
-                              ? "bg-gray-100 text-gray-800"
-                              : "bg-red-100 text-red-800"
-                          }
-                        >
-                          {orderItem?.status
-                            ? orderStatus(orderItem?.status)
+                    <React.Fragment key={"order" + index}>
+                      <TableRow
+                        style={{ borderBottom: orderItem?.options?.length ? "none" : "1px solid #eee" }}
+                      >
+                        <TableCell className="text-center">{index + 1}</TableCell>
+                        <TableCell className="text-center">
+                          {orderItem?.name}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {orderItem?.quantity}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Badge
+                            className={
+                              orderItem?.status === "SERVED"
+                                ? "bg-green-100 text-green-800"
+                                : orderItem?.status === "DOING"
+                                ? "bg-gray-100 text-gray-800"
+                                : "bg-red-100 text-red-800"
+                            }
+                          >
+                            {orderItem?.status
+                              ? orderStatus(orderItem?.status)
+                              : "-"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{orderItem?.createdBy?.firstname}</TableCell>
+                        <TableCell className="text-right">
+                          {orderItem?.createdAt
+                            ? moment(orderItem?.createdAt).format("HH:mm A")
                             : "-"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{orderItem?.createdBy?.firstname}</TableCell>
-                      <TableCell className="text-right">
-                        {orderItem?.createdAt
-                          ? moment(orderItem?.createdAt).format("HH:mm A")
-                          : "-"}
-                      </TableCell>
-                    </TableRow>
+                        </TableCell>
+                      </TableRow>
+                      {orderItem?.options?.map((option, optIndex) => (
+                        <TableRow
+                          key={"option" + index + "-" + optIndex}
+                          style={{
+                            borderBottom: optIndex === orderItem.options.length - 1 ? "1px solid #eee" : "none",
+                            backgroundColor: "#f9f9f9",
+                          }}
+                        >
+                          <TableCell />
+                          <TableCell className="text-center" style={{ paddingLeft: "24px", color: "#888", fontSize: "12px" }}>
+                            ↳ {option?.name}
+                          </TableCell>
+                          <TableCell className="text-center" style={{ color: "#888", fontSize: "12px" }}>
+                            {option?.quantity ?? 1}
+                          </TableCell>
+                          <TableCell className="text-center" style={{ color: "#888", fontSize: "12px" }}>
+                            +{moneyCurrency(option?.price)} {storeDetail?.firstCurrency}
+                          </TableCell>
+                          <TableCell colSpan={2} />
+                        </TableRow>
+                      ))}
+                    </React.Fragment>
                   ))
                 : ""}
             </TableBody>

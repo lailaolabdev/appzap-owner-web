@@ -32,255 +32,257 @@ export default function PopupOrderHistoryExport({
  * @param {array} orderDetails - Optional: Additional order details with quantities
  * @returns {string} Formatted string with bullet points
  */
-const formatOrderItemsForDisplay = (orderItem, orderDetails = null) => {
-  if (!orderItem) return "--";
+  const formatOrderItemsForDisplay = (orderItem, orderDetails = null) => {
+    if (!orderItem) return "--";
 
-  try {
-    let items = [];
-
-    // Handle different data formats
-    if (typeof orderItem === 'string') {
-      // If it's a comma-separated string like "item1, item2, item3"
-      if (orderItem.includes(',')) {
-        const itemNames = orderItem.split(',').map(name => name.trim());
-        items = itemNames.map(name => ({ name, quantity: 1 }));
-      } else {
-        // Single item
-        items = [{ name: orderItem.trim(), quantity: 1 }];
-      }
-    } else if (Array.isArray(orderItem)) {
-      // If it's an array of objects or strings
-      items = orderItem.map(item => {
-        if (typeof item === 'string') {
-          return { name: item, quantity: 1 };
-        } else if (typeof item === 'object' && item.name) {
-          return { 
-            name: item.name || item.itemName || item.menuName || 'Unknown Item',
-            quantity: item.quantity || item.qty || 1
-          };
-        }
-        return { name: 'Unknown Item', quantity: 1 };
-      });
-    } else if (typeof orderItem === 'object') {
-      // If it's a single object
-      items = [{
-        name: orderItem.name || orderItem.itemName || orderItem.menuName || 'Unknown Item',
-        quantity: orderItem.quantity || orderItem.qty || 1
-      }];
-    }
-
-    // If we have additional order details, try to match quantities
-    if (orderDetails && Array.isArray(orderDetails)) {
-      items = items.map(item => {
-        const detail = orderDetails.find(detail => 
-          detail.name?.toLowerCase().includes(item.name.toLowerCase()) ||
-          detail.itemName?.toLowerCase().includes(item.name.toLowerCase())
-        );
-        return {
-          ...item,
-          quantity: detail?.quantity || detail?.qty || item.quantity
-        };
-      });
-    }
-
-    // Format as bullet points
-    return items
-      .filter(item => item.name && item.name !== 'Unknown Item')
-      .map(item => `• ${item.name} / ${item.quantity}`)
-      .join('\n');
-
-  } catch (error) {
-    console.error('Error formatting order items:', error);
-    return orderItem.toString() || "--";
-  }
-};
-
-/**
- * Enhanced function to format cancelled order data specifically
- * @param {object} logItem - The log item containing order information
- * @returns {string} Formatted cancelled orders
- */
-const formatCancelledOrdersForExcel = (logItem) => {
-  // Handle different possible data structures
-  const orderItem = logItem?.dataCancels;
-  const orderDetails = logItem?.orderDetails || logItem?.details;
-  // const orderAmount = logItem?.orderAmount || 0;
-
-  if (!orderItem) return "--";
-
-  // Try to parse if it's a JSON string
-  let parsedOrderItem = orderItem;
-  if (typeof orderItem === 'string') {
     try {
-      parsedOrderItem = JSON.parse(orderItem);
-    } catch (e) {
-      // Not JSON, keep as string
-      parsedOrderItem = orderItem;
+      let items = [];
+
+      // Handle different data formats
+      if (typeof orderItem === 'string') {
+        // If it's a comma-separated string like "item1, item2, item3"
+        if (orderItem.includes(',')) {
+          const itemNames = orderItem.split(',').map(name => name.trim());
+          items = itemNames.map(name => ({ name, quantity: 1 }));
+        } else {
+          // Single item
+          items = [{ name: orderItem.trim(), quantity: 1 }];
+        }
+      } else if (Array.isArray(orderItem)) {
+        // If it's an array of objects or strings
+        items = orderItem.map(item => {
+          if (typeof item === 'string') {
+            return { name: item, quantity: 1 };
+          } else if (typeof item === 'object' && item.name) {
+            return {
+              name: item.name || item.itemName || item.menuName || 'Unknown Item',
+              quantity: item.quantity || item.qty || 1,
+              menuCode: item.menuCode
+            };
+          }
+          return { name: 'Unknown Item', quantity: 1 };
+        });
+      } else if (typeof orderItem === 'object') {
+        // If it's a single object
+        items = [{
+          name: orderItem.name || orderItem.itemName || orderItem.menuName || 'Unknown Item',
+          quantity: orderItem.quantity || orderItem.qty || 1,
+          menuCode: orderItem.menuCode
+        }];
+      }
+
+      // If we have additional order details, try to match quantities
+      if (orderDetails && Array.isArray(orderDetails)) {
+        items = items.map(item => {
+          const detail = orderDetails.find(detail =>
+            detail.name?.toLowerCase().includes(item.name.toLowerCase()) ||
+            detail.itemName?.toLowerCase().includes(item.name.toLowerCase())
+          );
+          return {
+            ...item,
+            quantity: detail?.quantity || detail?.qty || item.quantity
+          };
+        });
+      }
+
+      // Format as bullet points
+      return items
+        .filter(item => item.name && item.name !== 'Unknown Item')
+        .map(item => `• ${item.name}${item.menuCode ? ` [${item.menuCode}]` : ''} / ${item.quantity}`)
+        .join('\n');
+
+    } catch (error) {
+      console.error('Error formatting order items:', error);
+      return orderItem.toString() || "--";
     }
-  }
-
-  return formatOrderItemsForDisplay(parsedOrderItem, orderDetails);
-};
-
-const exportToExcel = async () => {
-  const workbook = new ExcelJS.Workbook();
-  workbook.creator = "Your Application";
-  workbook.created = new Date();
-
-  const worksheet = workbook.addWorksheet("ລາຍງານອາຫານ", {
-    properties: { defaultRowHeight: 20 },
-  });
-
-  const defaultFont = { name: "Noto Sans Lao", size: 11, family: 2 };
-  const headerFont = { ...defaultFont, size: 20, bold: true };
-
-  // Header setup
-  const excelColor = COLOR_APP.replace("#", "FFFFFFFF");
-  worksheet.mergeCells("A1:H1");
-  const titleCell = worksheet.getCell("A1");
-  titleCell.value = [
-    t("order_history"),
-    filtterModele === "order_history" ? "" : "ທີ",
-    filtterModele === "order_history"
-      ? ""
-      : filtterModele === "served"
-        ? t("served")
-        : filtterModele === "doing"
-          ? t("cooking")
-          : t("cancel"),
-    t("all"),
-  ]
-    .map((text) => text.trim())
-    .join("");
-
-  titleCell.font = headerFont;
-  titleCell.alignment = { horizontal: "center", vertical: "middle" };
-  titleCell.height = 30;
-  titleCell.fill = {
-    type: "pattern",
-    pattern: "solid",
-    fgColor: { argb: excelColor },
   };
 
-  // Column headers
-  const headers = [
-    t("no"),
-    t("user"),
-    t("table"),
-    t("order_cancel"),
-    t("amount"),
-    t("detail"),
-    t("cause"),
-    t("date_time"),
-  ];
+  /**
+   * Enhanced function to format cancelled order data specifically
+   * @param {object} logItem - The log item containing order information
+   * @returns {string} Formatted cancelled orders
+   */
+  const formatCancelledOrdersForExcel = (logItem) => {
+    // Handle different possible data structures
+    const orderItem = logItem?.dataCancels;
+    const orderDetails = logItem?.orderDetails || logItem?.details;
+    // const orderAmount = logItem?.orderAmount || 0;
 
-  const headerRow = worksheet.addRow(headers);
-  headerRow.font = { ...defaultFont, bold: true };
-  headerRow.height = 25;
-  headerRow.alignment = { horizontal: "center", vertical: "middle" };
+    if (!orderItem) return "--";
 
-  // Style header row
-  headerRow.eachCell((cell) => {
-    cell.fill = {
+    // Try to parse if it's a JSON string
+    let parsedOrderItem = orderItem;
+    if (typeof orderItem === 'string') {
+      try {
+        parsedOrderItem = JSON.parse(orderItem);
+      } catch (e) {
+        // Not JSON, keep as string
+        parsedOrderItem = orderItem;
+      }
+    }
+
+    return formatOrderItemsForDisplay(parsedOrderItem, orderDetails);
+  };
+
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = "Your Application";
+    workbook.created = new Date();
+
+    const worksheet = workbook.addWorksheet("ລາຍງານອາຫານ", {
+      properties: { defaultRowHeight: 20 },
+    });
+
+    const defaultFont = { name: "Noto Sans Lao", size: 11, family: 2 };
+    const headerFont = { ...defaultFont, size: 20, bold: true };
+
+    // Header setup
+    const excelColor = COLOR_APP.replace("#", "FFFFFFFF");
+    worksheet.mergeCells("A1:H1");
+    const titleCell = worksheet.getCell("A1");
+    titleCell.value = [
+      t("order_history"),
+      filtterModele === "order_history" ? "" : "ທີ",
+      filtterModele === "order_history"
+        ? ""
+        : filtterModele === "served"
+          ? t("served")
+          : filtterModele === "doing"
+            ? t("cooking")
+            : t("cancel"),
+      t("all"),
+    ]
+      .map((text) => text.trim())
+      .join("");
+
+    titleCell.font = headerFont;
+    titleCell.alignment = { horizontal: "center", vertical: "middle" };
+    titleCell.height = 30;
+    titleCell.fill = {
       type: "pattern",
       pattern: "solid",
-      fgColor: { argb: "FFE0E0E0" },
+      fgColor: { argb: excelColor },
     };
-    cell.border = {
-      top: { style: "thin" },
-      left: { style: "thin" },
-      bottom: { style: "thin" },
-      right: { style: "thin" },
-    };
-  });
 
-  // Add data rows with improved formatting
-  data.forEach((item, index) => {
-    // Format the cancelled orders with improved display
-    const formattedOrderItems = formatCancelledOrdersForExcel(item);
-    
-    const rowData = [
-      (pagination - 1) * limitData + index + 1,
-      item?.user || "",
-      item?.table || "",
-      formattedOrderItems, // Improved formatted data for cancels
-      item?.orderAmount || 0,
-      item?.eventDetail || "",
-      item?.reason ? item.reason : "--",
-      item?.createdAt
-        ? moment(item.createdAt).format("DD/MM/YYYY - HH:mm:SS : a")
-        : "",
+    // Column headers
+    const headers = [
+      t("no"),
+      t("user"),
+      t("table"),
+      t("order_cancel"),
+      t("amount"),
+      t("detail"),
+      t("cause"),
+      t("date_time"),
     ];
 
-    const row = worksheet.addRow(rowData);
-    row.font = defaultFont;
-    
-    // Set dynamic row height based on content length
-    const orderItemsLength = formattedOrderItems.split('\n').length;
-    row.height = Math.max(20, orderItemsLength * 15);
-    
-    row.eachCell((cell, colNumber) => {
+    const headerRow = worksheet.addRow(headers);
+    headerRow.font = { ...defaultFont, bold: true };
+    headerRow.height = 25;
+    headerRow.alignment = { horizontal: "center", vertical: "middle" };
+
+    // Style header row
+    headerRow.eachCell((cell) => {
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFE0E0E0" },
+      };
       cell.border = {
         top: { style: "thin" },
         left: { style: "thin" },
         bottom: { style: "thin" },
         right: { style: "thin" },
       };
-      
-      // Special formatting for the order items column (column 4)
-      if (colNumber === 4) {
-        cell.alignment = { 
-          horizontal: "left", 
-          vertical: "top", 
-          wrapText: true 
+    });
+
+    // Add data rows with improved formatting
+    data.forEach((item, index) => {
+      // Format the cancelled orders with improved display
+      const formattedOrderItems = formatCancelledOrdersForExcel(item);
+
+      const rowData = [
+        (pagination - 1) * limitData + index + 1,
+        item?.user || "",
+        item?.table || "",
+        formattedOrderItems, // Improved formatted data for cancels
+        item?.orderAmount || 0,
+        item?.eventDetail || "",
+        item?.reason ? item.reason : "--",
+        item?.createdAt
+          ? moment(item.createdAt).format("DD/MM/YYYY - HH:mm:SS : a")
+          : "",
+      ];
+
+      const row = worksheet.addRow(rowData);
+      row.font = defaultFont;
+
+      // Set dynamic row height based on content length
+      const orderItemsLength = formattedOrderItems.split('\n').length;
+      row.height = Math.max(20, orderItemsLength * 15);
+
+      row.eachCell((cell, colNumber) => {
+        cell.border = {
+          top: { style: "thin" },
+          left: { style: "thin" },
+          bottom: { style: "thin" },
+          right: { style: "thin" },
         };
+
+        // Special formatting for the order items column (column 4)
+        if (colNumber === 4) {
+          cell.alignment = {
+            horizontal: "left",
+            vertical: "top",
+            wrapText: true
+          };
+        } else {
+          cell.alignment = {
+            horizontal: "center",
+            vertical: "middle"
+          };
+        }
+      });
+    });
+
+    // Auto-fit columns with special handling for order items column
+    worksheet.columns.forEach((column, index) => {
+      let maxLength = 0;
+
+      column.eachCell({ includeEmpty: true }, (cell) => {
+        const length = cell.value ? cell.value.toString().length : 0;
+        maxLength = Math.max(maxLength, length);
+      });
+
+      // Special width for order items column (column 4 - index 3)
+      if (index === 3) {
+        column.width = Math.max(25, Math.min(maxLength / 2, 40));
       } else {
-        cell.alignment = { 
-          horizontal: "center", 
-          vertical: "middle" 
-        };
+        column.width = Math.min(Math.max(maxLength + 2, 15), 30);
       }
     });
-  });
 
-  // Auto-fit columns with special handling for order items column
-  worksheet.columns.forEach((column, index) => {
-    let maxLength = 0;
-    
-    column.eachCell({ includeEmpty: true }, (cell) => {
-      const length = cell.value ? cell.value.toString().length : 0;
-      maxLength = Math.max(maxLength, length);
-    });
-    
-    // Special width for order items column (column 4 - index 3)
-    if (index === 3) {
-      column.width = Math.max(25, Math.min(maxLength / 2, 40));
-    } else {
-      column.width = Math.min(Math.max(maxLength + 2, 15), 30);
-    }
-  });
+    // Save file
+    const buffer = await workbook.xlsx.writeBuffer();
+    const fileDate = moment().format("YYYYMMDD_HHmmss");
+    const fileName = `ປະຫວັດອາຫານ_${filtterModele}_${fileDate}.xlsx`;
 
-  // Save file
-  const buffer = await workbook.xlsx.writeBuffer();
-  const fileDate = moment().format("YYYYMMDD_HHmmss");
-  const fileName = `ປະຫວັດອາຫານ_${filtterModele}_${fileDate}.xlsx`;
+    saveAs(
+      new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      }),
+      fileName
+    );
+  };
 
-  saveAs(
-    new Blob([buffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    }),
-    fileName
-  );
-};
+  // Alternative: If you want to format data before the forEach loop
+  const formatDataForExcel = (originalData) => {
+    return originalData.map(item => ({
+      ...item,
+      formattedOrderItems: formatCancelledOrdersForExcel(item)
+    }));
+  };
 
-// Alternative: If you want to format data before the forEach loop
-const formatDataForExcel = (originalData) => {
-  return originalData.map(item => ({
-    ...item,
-    formattedOrderItems: formatCancelledOrdersForExcel(item)
-  }));
-};
- 
 
   // const exportToExcel = async () => {
   //   const workbook = new ExcelJS.Workbook();
@@ -488,9 +490,9 @@ const formatDataForExcel = (originalData) => {
               ) : data.length > 0 ? (
                 data.map((e, i) => {
                   let _dataCancels = []
-                    if (e?.dataCancels) {
-                      _dataCancels = JSON.parse(e?.dataCancels);
-                    }
+                  if (e?.dataCancels) {
+                    _dataCancels = JSON.parse(e?.dataCancels);
+                  }
                   return (
                     <tr key={i}>
                       <td style={{ textAlign: "left" }}>

@@ -1802,7 +1802,11 @@ function HomecafeEdit() {
                       <div className="bg-white h-full text-gray-700 relative px-2 py-1">
                         <span className="text-sm">{data?.name}</span>
                         <br />
-                        <span className="text-sm">{data?.menuCode}</span>
+                        {data?.menuCode && (
+                          <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded w-fit mt-0.5 border border-gray-200 uppercase font-medium">
+                            {data?.menuCode}
+                          </span>
+                        )}
                         <br />
 
                         {data?.promotionId?.length > 0 &&
@@ -1977,6 +1981,11 @@ function HomecafeEdit() {
                                   <span className="font-medium text-sm">
                                     {item.name} {optionsString}
                                   </span>
+                                  {item?.menuCode && (
+                                    <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded w-fit mt-0.5 border border-gray-200 uppercase font-medium">
+                                      {item?.menuCode}
+                                    </span>
+                                  )}
                                   <span className="text-sm flex items-center text-color-app font-semibold">
                                     {moneyCurrency(itemPrice)}{" "}
                                     {storeDetail?.firstCurrency}
