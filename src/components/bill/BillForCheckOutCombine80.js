@@ -65,25 +65,27 @@ export default function BillForCheckOutCombine80({
       dataBill?.orderId?.filter((e) => e?.status === "SERVED"),
       (e) => (e?.price + (e?.totalOptionPrice ?? 0)) * e?.quantity
     );
+    let discountedAmount = totalBillDefualt;
     if (dataBill?.discount > 0) {
       if (
         dataBill?.discountType == "LAK" ||
         dataBill?.discountType == "MONEY"
       ) {
-        setTotalAfterDiscount(totalBillDefualt - dataBill?.discount);
+        discountedAmount = totalBillDefualt - dataBill?.discount;
       } else {
         const ddiscount = parseInt(
           (totalBillDefualt * dataBill?.discount) / 100
         );
-        setTotalAfterDiscount(totalBillDefualt - ddiscount);
+        discountedAmount = totalBillDefualt - ddiscount;
       }
-    } else {
-      setTotalAfterDiscount(totalBillDefualt);
     }
+    setTotalAfterDiscount(discountedAmount);
     setTotal(totalBillDefualt);
-    setTaxAmount((totalBillDefualt * taxPercent) / 100);
+    // Tax and service charge are calculated on the discounted amount
+    // so the printed receipt matches the dialog total.
+    setTaxAmount((discountedAmount * taxPercent) / 100);
     const serviceChargeTotal = Math.floor(
-      (totalBillDefualt * storeDetail?.serviceChargePer) / 100
+      (discountedAmount * storeDetail?.serviceChargePer) / 100
     );
     setServiceChargeAmount(serviceChargeTotal);
   };
