@@ -145,27 +145,28 @@ export default function BillForCheckOut80({
         : totalBillBillForCheckOut80 || _total;
 
     // Handle discount logic
+    let discountedAmount = totalAmountAll;
     if (dataBill?.discount > 0) {
       if (
         dataBill?.discountType === "LAK" ||
         dataBill?.discountType === "MONEY"
       ) {
-        setTotalAfterDiscount(totalAmountAll - dataBill?.discount);
+        discountedAmount = totalAmountAll - dataBill?.discount;
       } else {
         const ddiscount = parseInt((totalAmountAll * dataBill?.discount) / 100);
-        setTotalAfterDiscount(totalAmountAll - ddiscount);
-      } 
+        discountedAmount = totalAmountAll - ddiscount;
+      }
     } else if (dataBill?.discountCategoryAmount > 0) {
-      setTotalAfterDiscount(totalAmountAll - dataBill?.discountAmount);
-    } else {
-      setTotalAfterDiscount(totalAmountAll);
+      discountedAmount = totalAmountAll - dataBill?.discountAmount;
     }
+    setTotalAfterDiscount(discountedAmount);
 
-    setTaxAmount((totalAmountAll * taxPercent) / 100);
+    // Tax and service charge are calculated on the discounted amount
+    // so the printed receipt matches the dialog total.
+    setTaxAmount((discountedAmount * taxPercent) / 100);
 
-    // Service charge calculation using the improved TotalServiceChange
     const serviceChargeTotal = Math.floor(
-      (totalAmountAll * TotalServiceChange) / 100
+      (discountedAmount * TotalServiceChange) / 100
     );
     setServiceChargeAmount(serviceChargeTotal);
     setTotal(totalAmountAll);
