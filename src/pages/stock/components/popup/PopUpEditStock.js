@@ -59,7 +59,14 @@ export default function PopUpEditStock({
   };
 
   const handleSubmit = () => {
-    stockUpdate(data?._id, stockEdit).then(() => {
+    // The backend casts every field in the payload to its schema type. An
+    // empty-string stockCategoryId cannot be cast to an ObjectId and makes
+    // the whole update 500, so drop it when no category is selected.
+    const payload = { ...stockEdit };
+    if (!payload.stockCategoryId) {
+      delete payload.stockCategoryId;
+    }
+    stockUpdate(data?._id, payload).then(() => {
       onClose();
     });
   };
