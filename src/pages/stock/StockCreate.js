@@ -324,6 +324,19 @@ export default function StockCreate() {
                 <option value="ປ໋ອງ">{t("can")}</option>
                 <option value="ອັນ">{t("item")}</option>
                 <option value="ຕຸກ">{t("boxed")}</option>
+                <option value="ລັງ">{t("unit_crate")}</option>
+                <option value="ຖາດ">{t("unit_tray")}</option>
+                <option value="ໂຫຼ">{t("unit_dozen")}</option>
+                <option value="ຊິ້ນ">{t("unit_piece")}</option>
+                <option value="ຊຸດ">{t("unit_set")}</option>
+                <option value="ຄູ່">{t("unit_pair")}</option>
+                <option value="ກະປຸກ">{t("unit_jar")}</option>
+                <option value="ຈອກ">{t("unit_cup")}</option>
+                <option value="ກະສອບ">{t("unit_sack")}</option>
+                <option value="ມ້ວນ">{t("unit_roll")}</option>
+                <option value="ກາລອນ">{t("unit_gallon")}</option>
+                <option value="ມິລລິກຣາມ">{t("unit_milligram")}</option>
+                <option value="ຈານ">{t("unit_plate")}</option>
               </select>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -523,6 +536,19 @@ export default function StockCreate() {
                             <option value="ປ໋ອງ">{t("can")}</option>
                             <option value="ອັນ">{t("item")}</option>
                             <option value="ຕຸກ">{t("boxed")}</option>
+                            <option value="ລັງ">{t("unit_crate")}</option>
+                            <option value="ຖາດ">{t("unit_tray")}</option>
+                            <option value="ໂຫຼ">{t("unit_dozen")}</option>
+                            <option value="ຊິ້ນ">{t("unit_piece")}</option>
+                            <option value="ຊຸດ">{t("unit_set")}</option>
+                            <option value="ຄູ່">{t("unit_pair")}</option>
+                            <option value="ກະປຸກ">{t("unit_jar")}</option>
+                            <option value="ຈອກ">{t("unit_cup")}</option>
+                            <option value="ກະສອບ">{t("unit_sack")}</option>
+                            <option value="ມ້ວນ">{t("unit_roll")}</option>
+                            <option value="ກາລອນ">{t("unit_gallon")}</option>
+                            <option value="ມິລລິກຣາມ">{t("unit_milligram")}</option>
+                            <option value="ຈານ">{t("unit_plate")}</option>
                           </select>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
