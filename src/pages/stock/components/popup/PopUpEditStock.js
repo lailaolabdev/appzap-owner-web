@@ -59,7 +59,14 @@ export default function PopUpEditStock({
   };
 
   const handleSubmit = () => {
-    stockUpdate(data?._id, stockEdit).then(() => {
+    // The backend casts every field in the payload to its schema type. An
+    // empty-string stockCategoryId cannot be cast to an ObjectId and makes
+    // the whole update 500, so drop it when no category is selected.
+    const payload = { ...stockEdit };
+    if (!payload.stockCategoryId) {
+      delete payload.stockCategoryId;
+    }
+    stockUpdate(data?._id, payload).then(() => {
       onClose();
     });
   };
@@ -177,6 +184,19 @@ export default function PopUpEditStock({
                 <option value="ປ໋ອງ">{t("can")}</option>
                 <option value="ອັນ">{t("item")}</option>
                 <option value="ຕຸກ">{t("boxed")}</option>
+                <option value="ລັງ">{t("unit_crate")}</option>
+                <option value="ຖາດ">{t("unit_tray")}</option>
+                <option value="ໂຫຼ">{t("unit_dozen")}</option>
+                <option value="ຊິ້ນ">{t("unit_piece")}</option>
+                <option value="ຊຸດ">{t("unit_set")}</option>
+                <option value="ຄູ່">{t("unit_pair")}</option>
+                <option value="ກະປຸກ">{t("unit_jar")}</option>
+                <option value="ຈອກ">{t("unit_cup")}</option>
+                <option value="ກະສອບ">{t("unit_sack")}</option>
+                <option value="ມ້ວນ">{t("unit_roll")}</option>
+                <option value="ກາລອນ">{t("unit_gallon")}</option>
+                <option value="ມິລລິກຣາມ">{t("unit_milligram")}</option>
+                <option value="ຈານ">{t("unit_plate")}</option>
               </select>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
