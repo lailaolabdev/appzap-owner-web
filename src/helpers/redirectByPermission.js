@@ -74,7 +74,7 @@ export const redirectByPermission = (user, storeDetail) => {
         "https://dtf6wpulhnd0r.cloudfront.net/store/songs/61d8019f9d14fc92d015ee8e?token=...";
       return "";
     case "MANAGE_MARKETING":
-      window.location.href = "https://supplier.appzap.la/";
+      window.location.href = "https://supply.appzap.la/";
       return "";
     case "MANAGE_STAFF":
       return "user";
