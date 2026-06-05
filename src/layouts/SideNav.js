@@ -492,7 +492,10 @@ export default function Sidenav({ location, navigate, onToggle }) {
             return;
           }
           if (selected === "supplier") {
-            window.open("https://supplier.appzap.la", "_blank").focus();
+            // Old Link
+            // window.open("https://supplier.appzap.la", "_blank").focus();
+            // New Link
+            window.open("https://supply.appzap.la/", "_blank").focus();
             return;
           }
           const to = "/" + selected;
