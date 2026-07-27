@@ -337,6 +337,7 @@ export default function StockCreate() {
                 <option value="ກາລອນ">{t("unit_gallon")}</option>
                 <option value="ມິລລິກຣາມ">{t("unit_milligram")}</option>
                 <option value="ຈານ">{t("unit_plate")}</option>
+                <option value="ອໍເດີນ">{t("unit_order")}</option>
               </select>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
