@@ -5,11 +5,11 @@ const production_domain = "https://vercel.restaurant.appzap.la/"; // Production
 
 const now_domain = window.location.hostname;
 
-const dev = "https://api.appzap.la:7070"; // production
+const dev = "https://ai-cha-api.appzap.la"; // production
 // const dev = "https://0ihbqok863.execute-api.ap-southeast-1.amazonaws.com/dev"; //staging
 // const dev = "http://localhost:7070"; //locals
 
-const production2 = "https://api.appzap.la:7070"; // Production bill & order [7070 - 7075]
+const production2 = "https://ai-cha-api.appzap.la"; // Production bill & order [7070 - 7075]
 const production_socket = "https://api.appzap.la:8888"; // Production
 const dev_socket = "https://api.appzap.la:8888";
 const production_web_client = "https://client.appzap.la/store/";
