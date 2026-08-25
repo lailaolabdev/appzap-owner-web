@@ -26,8 +26,8 @@ const isProduction = production_domain === now_domain;
 // const isProduction = true;
 export const END_POINT_APP = isProduction ? production2 : dev;
 export const END_POINT_SEVER = isProduction ? production2 : dev; // endpoint report & other [7079 - 7080]
-export const END_POINT_SEVER_TABLE_MENU = isProduction ? production2 : dev1; // endpoint table & menu [7076 - 7078]
-export const END_POINT_SEVER_BILL_ORDER = isProduction ? production2 : dev2; // endpoint bill & order [7070 - 7075]
+export const END_POINT_SEVER_TABLE_MENU = isProduction ? production2 : dev; // endpoint table & menu [7076 - 7078]
+export const END_POINT_SEVER_BILL_ORDER = isProduction ? production2 : dev; // endpoint bill & order [7070 - 7075]
 export const END_POINT_SOCKET = isProduction ? production_socket : dev_socket;
 export const END_POINT_SOCKET_CUSTOMER = "http://localhost:9000";
 export const END_POINT_WEB_CLIENT = isProduction
