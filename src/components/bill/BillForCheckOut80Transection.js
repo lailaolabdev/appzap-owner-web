@@ -437,6 +437,20 @@ export default function BillForCheckOut80Transection({
             </div>
           </Col>
         </Row>
+        {taxPercent > 0 && (
+          <Row>
+            <Col xs={7}>
+              <div style={{ textAlign: "right" }}>
+                {t("vat")} {taxPercent}% ({storeDetail?.firstCurrency}):
+              </div>
+            </Col>
+            <Col>
+              <div style={{ textAlign: "right" }}>
+                {moneyCurrency(Math.floor(taxAmount))}
+              </div>
+            </Col>
+          </Row>
+        )}
         {SelectedDataBill?.memberPhone
           ? SelectedDataBill?.Point > 0 && (
               <Row>
