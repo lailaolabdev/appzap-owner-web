@@ -275,6 +275,20 @@ export default function BillForCheckOutCombine80({
             <div style={{ textAlign: "right" }}>{dataBill?.discount}</div>
           </Col>
         </Row>
+        {taxPercent > 0 && (
+          <Row>
+            <Col xs={8}>
+              <div style={{ textAlign: "right" }}>
+                {t("vat")} {taxPercent}% ({storeDetail?.firstCurrency}):
+              </div>
+            </Col>
+            <Col>
+              <div style={{ textAlign: "right" }}>
+                {moneyCurrency(Math.floor(taxAmount))}
+              </div>
+            </Col>
+          </Row>
+        )}
         {dataBill?.memberName ? (
           <Row>
             <Col xs={8}>
