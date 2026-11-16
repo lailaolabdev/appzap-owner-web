@@ -116,7 +116,7 @@ const cartPageJson = {
 														height: '100%',
 														objectFit: 'cover',
 													},
-													src: 'https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/[[item.images.[0]]]',
+													src: 'https://d1wo17ggkndrpl.cloudfront.net/resized/small/[[item.images.[0]]]',
 												},
 											},
 										},

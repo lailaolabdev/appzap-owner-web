@@ -202,7 +202,7 @@ const homePageJson = {
 																					{
 																						type: 'img',
 																						props: {
-																							src: 'https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/[[item.images.[0]]]',
+																							src: 'https://d1wo17ggkndrpl.cloudfront.net/resized/small/[[item.images.[0]]]',
 																							style: {
 																								width: '100%',
 																								height: '100%',
@@ -419,7 +419,7 @@ const homePageJson = {
 																				{
 																					type: 'img',
 																					props: {
-																						src: 'https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/[[item.images.[0]]]',
+																						src: 'https://d1wo17ggkndrpl.cloudfront.net/resized/small/[[item.images.[0]]]',
 																						style: {
 																							width: '100%',
 																							height: '100%',

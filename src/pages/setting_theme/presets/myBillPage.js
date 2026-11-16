@@ -110,7 +110,7 @@ const myBillPageJson = {
 											children: {
 												type: 'img',
 												props: {
-													src: 'https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/[[item.menuImage]]',
+													src: 'https://d1wo17ggkndrpl.cloudfront.net/resized/small/[[item.menuImage]]',
 													style: {
 														width: '100%',
 														height: '100%',

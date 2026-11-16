@@ -57,7 +57,7 @@ export default function BannerList() {
         setBannerData(data);
         const _images = data.map(
           (e) =>
-            "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/medium/" +
+            "https://d1wo17ggkndrpl.cloudfront.net/resized/medium/" +
             e?.image
         );
         setImages(_images);
@@ -262,7 +262,7 @@ export default function BannerList() {
                         >
                           <img
                             src={
-                              "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/medium/" +
+                              "https://d1wo17ggkndrpl.cloudfront.net/resized/medium/" +
                               data?.image
                             }
                             alt=""
