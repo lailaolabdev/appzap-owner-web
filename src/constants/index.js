@@ -4,7 +4,7 @@ import theme from "../theme";
 export const USER_KEY = "@userKey";
 export const VERSION = packageJson?.version;
 export const URL_PHOTO_AW3 =
-  "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/";
+  "https://d1wo17ggkndrpl.cloudfront.net/resized/small/";
 export const URL_PHOTO_AW3_01 =
   "https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/";
 // export const END_POINT = END_POINT_SEVER;

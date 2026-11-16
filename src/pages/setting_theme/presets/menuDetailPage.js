@@ -117,7 +117,7 @@ const menuDetailPageJson = {
 													src: {
 														isJS: true,
 														__key:
-															'"https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/small/"+defualtAppZap?.selectMenuDetail?.images?.[0]',
+															'"https://d1wo17ggkndrpl.cloudfront.net/resized/small/"+defualtAppZap?.selectMenuDetail?.images?.[0]',
 													},
 												},
 											},

@@ -278,7 +278,7 @@ const MainScreen = () => {
       const _images = data.flatMap((item) =>
         item.images.map(
           (e) =>
-            `https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/medium/${e}`
+            `https://d1wo17ggkndrpl.cloudfront.net/resized/medium/${e}`
         )
       );
 
@@ -316,7 +316,7 @@ const MainScreen = () => {
       const _images = data.flatMap((item) =>
         item.images.map(
           (e) =>
-            `https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/medium/${e}`
+            `https://d1wo17ggkndrpl.cloudfront.net/resized/medium/${e}`
         )
       );
 

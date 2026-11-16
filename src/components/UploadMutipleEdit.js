@@ -145,7 +145,7 @@ export default function UploadMultipleEdit({ src = [], onChange }) {
               className="rounded-md w-[160px] h-[160px] object-cover"
             />
             {/* <img
-              src={`https://appzapimglailaolab.s3-ap-southeast-1.amazonaws.com/resized/medium/${url}`}
+              src={`https://d1wo17ggkndrpl.cloudfront.net/resized/medium/${url}`}
               alt=""
               className="rounded-md w-[160px] h-[160px] object-cover"
             /> */}
