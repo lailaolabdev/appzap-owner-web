@@ -3,7 +3,7 @@ import { Formik } from "formik";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCubes, faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCubes, faEdit, faTrashAlt, faFileExport } from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
   Modal,
@@ -811,6 +811,74 @@ export default function MenuList() {
     successAdd(t("download_success") || "Template downloaded successfully!");
   };
 
+  // Export current menu list to Excel
+  const exportMenuToExcel = () => {
+    if (!menuDatas || menuDatas.length === 0) {
+      errorAdd(t("no_data_to_export") || "No menu data to export!");
+      return;
+    }
+
+    const categoryMap = {};
+    if (Categorys && Categorys.length > 0) {
+      Categorys.forEach((cat) => {
+        categoryMap[cat._id] = cat.name;
+      });
+    }
+
+    const data = menuDatas
+      .filter((item) => item.isDeleted !== true)
+      .map((item, index) => ({
+        "No": index + 1,
+        "Menu Name": item.name || "",
+        "Menu Name (EN)": item.name_en || "",
+        "Menu Code": item.menuCode || "",
+        "Category": categoryMap[item.categoryId] || item.categoryId || "",
+        "Price": item.price || 0,
+        "Currency": item.currency || "LAK",
+        "Unit": item.unit || "",
+        "Quantity": item.quantity || 0,
+        "Status": item.isOpened ? "Open" : "Closed",
+        "Show Customer Web": item.isShowCustomerWeb || "",
+        "Show Customer App": item.isShowCustomerApp || "",
+        "Show Staff App": item.isShowStaffApp || "",
+        "Show Counter App": item.isShowCounterApp || "",
+        "Type": item.type || "MENU",
+        "Recommended": item.recommended ? "Yes" : "No",
+        "Detail": item.detail || "",
+      }));
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+
+    // Set column widths
+    worksheet["!cols"] = [
+      { wch: 5 },   // No
+      { wch: 25 },  // Menu Name
+      { wch: 25 },  // Menu Name (EN)
+      { wch: 12 },  // Menu Code
+      { wch: 18 },  // Category
+      { wch: 12 },  // Price
+      { wch: 8 },   // Currency
+      { wch: 8 },   // Unit
+      { wch: 10 },  // Quantity
+      { wch: 10 },  // Status
+      { wch: 18 },  // Show Customer Web
+      { wch: 18 },  // Show Customer App
+      { wch: 15 },  // Show Staff App
+      { wch: 18 },  // Show Counter App
+      { wch: 12 },  // Type
+      { wch: 12 },  // Recommended
+      { wch: 30 },  // Detail
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Menu List");
+
+    const storeName = storeDetail?.name || "AppZap";
+    const dateStr = new Date().toISOString().split("T")[0];
+    XLSX.writeFile(workbook, `${storeName}_Menu_Export_${dateStr}.xlsx`);
+    successAdd(t("export_success") || "Menu exported successfully!");
+  };
+
   // Handle file upload
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
@@ -1053,30 +1121,56 @@ export default function MenuList() {
 
                 {/* Add Menu Button */}
                 {profile?.data?.role === "APPZAP_ADMIN" ? (
-                  <Button
-                    style={{
-                      backgroundColor: COLOR_APP,
-                      color: "#ffff",
-                      border: 0,
-                    }}
-                    onClick={handleShow}
-                    className={fontMap[language]}
-                  >
-                    + {t("add_menu")}
-                  </Button>
+                  <>
+                    <Button
+                      style={{
+                        backgroundColor: "#28a745",
+                        color: "#ffff",
+                        border: 0,
+                      }}
+                      onClick={exportMenuToExcel}
+                      className={fontMap[language]}
+                    >
+                      <FontAwesomeIcon icon={faFileExport} /> {t("export_menu") || "Export Menu"}
+                    </Button>
+                    <Button
+                      style={{
+                        backgroundColor: COLOR_APP,
+                        color: "#ffff",
+                        border: 0,
+                      }}
+                      onClick={handleShow}
+                      className={fontMap[language]}
+                    >
+                      + {t("add_menu")}
+                    </Button>
+                  </>
                 ) : (
-                  <Button
-                    style={{
-                      backgroundColor: COLOR_APP,
-                      color: "#ffff",
-                      border: 0,
-                    }}
-                    disabled={!counterRoleEditMenu}
-                    onClick={handleShow}
-                    className={fontMap[language]}
-                  >
-                    + {t("add_menu")}
-                  </Button>
+                  <>
+                    <Button
+                      style={{
+                        backgroundColor: "#28a745",
+                        color: "#ffff",
+                        border: 0,
+                      }}
+                      onClick={exportMenuToExcel}
+                      className={fontMap[language]}
+                    >
+                      <FontAwesomeIcon icon={faFileExport} /> {t("export_menu") || "Export Menu"}
+                    </Button>
+                    <Button
+                      style={{
+                        backgroundColor: COLOR_APP,
+                        color: "#ffff",
+                        border: 0,
+                      }}
+                      disabled={!counterRoleEditMenu}
+                      onClick={handleShow}
+                      className={fontMap[language]}
+                    >
+                      + {t("add_menu")}
+                    </Button>
+                  </>
                 )}
               </Col>
             </Row>
